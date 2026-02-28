@@ -17,7 +17,7 @@
 
 **수업 소개 & 개발환경 설정**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 2026년 인공지능과 미디어: LLM·챗봇·에이전트 시대의 연구와 프로젝트
@@ -31,7 +31,7 @@
 
 ### 2주차 (3/9, 3/11): 파이썬 기초
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 변수, 자료형, 조건문, 반복문, 함수
@@ -45,7 +45,7 @@
 
 ### 3주차 (3/16, 3/18): 데이터 관리 — Pandas & NumPy
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) Pandas DataFrame: 읽기, 필터링, 그룹화, 병합
@@ -59,7 +59,7 @@
 
 ### 4주차 (3/23, 3/25): 텍스트 수집 — 웹스크래핑
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 웹스크래핑 원리: HTML/CSS 구조, BeautifulSoup
@@ -74,7 +74,7 @@
 
 ### 5주차 (3/30, 4/1): 이미지·영상 수집 — 구글, 네이버, 유튜브
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 구글 이미지 검색 결과 수집 (키워드 기반 이미지 크롤링)
@@ -90,7 +90,7 @@
 
 ### 6주차 (4/6, 4/8): 이미지·영상 수집과 처리
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 이미지 처리 기초: OpenCV
@@ -105,7 +105,7 @@
 
 ### 7주차 (4/13, 4/15): 딥러닝 이론
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 딥러닝의 역사와 구조: 퍼셉트론 → CNN → RNN → Transformer
@@ -126,7 +126,7 @@
 
 ### 9주차 (4/27, 4/29): Transformer, BERT, GPT 이론 & 추론 활용
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) Transformer: Self-Attention, Multi-Head Attention
@@ -142,7 +142,7 @@
 
 ### 10주차 (5/4, 5/6): LLM API 활용 내용분석 — 텍스트·이미지·영상·음성
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) LLM API 구조: 시스템 프롬프트, Few-shot, JSON mode
@@ -159,7 +159,7 @@
 
 ### 11주차 (5/11, 5/13): 임베딩 & RAG 챗봇
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 문장 임베딩: Sentence-BERT, 코사인 유사도
@@ -177,7 +177,7 @@
 
 ### 12주차 (5/18, 5/20): Search Grounding & 챗봇 실험 설계
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) Search Grounding: 실시간 웹 검색 기반 응답 생성
@@ -197,7 +197,7 @@
 
 **LLM 에이전트 & LangGraph 워크플로우**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 에이전트란 무엇인가: Tool Use, Planning, Memory
@@ -215,7 +215,7 @@
 
 **Vertical AI 프로젝트 — LangGraph 멀티에이전트**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 멀티 에이전트 시스템: 역할 분담, 협업 워크플로우
@@ -232,7 +232,7 @@
 
 ### 15주차 (6/8, 6/10): Vertical AI 실전 구현 & 배포
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) Vertical AI 서비스 아키텍처: 프론트엔드(Gradio/Streamlit) + 백엔드(LangGraph) + DB(ChromaDB)

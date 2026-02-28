@@ -22,7 +22,7 @@
 
 **데이터저널리즘 소개 & 환경 설정**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 데이터저널리즘이란: 정의, 역사, 전통 저널리즘과의 차이
@@ -41,7 +41,7 @@
 
 ### 2주차 (3/9, 3/11): 파이썬 기초 (1)
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 변수, 자료형 (int, float, str, bool), 연산자
@@ -57,7 +57,7 @@
 
 ### 3주차 (3/16, 3/18): 파이썬 기초 (2)
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 함수 정의와 호출, 딕셔너리, 튜플
@@ -73,7 +73,7 @@
 
 ### 4주차 (3/23, 3/25): 데이터 분석 — Pandas
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) DataFrame: CSV/엑셀/JSON 읽기·쓰기, 인덱싱 (loc, iloc)
@@ -93,7 +93,7 @@
 
 ### 5주차 (3/30, 4/1): 웹 기초 + 프롬프트코딩 + 웹스크래핑
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) HTML 구조와 CSS 선택자 읽기 (크롤링·시각화에 필수)
@@ -110,7 +110,7 @@
 
 ### 6주차 (4/6, 4/8): 데이터 수집 심화 — API · PDF OCR · 정보공개청구
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) API 이론: REST API, HTTP 메서드, JSON 응답, API 키 인증
@@ -131,7 +131,7 @@
 
 ### 7주차 (4/13, 4/15): 데이터 정제 + LLM API 대량 분석
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) Pandas 전처리: 결측치, 중복, 타입 변환, 텍스트 정제
@@ -156,7 +156,7 @@
 
 > ★ **조별 프로젝트 기획안 제출 (중간고사 대체)**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) JavaScript 기초: 변수(let/const), 함수, DOM, 이벤트, 배열 메서드(.map/.filter/.reduce)
@@ -172,7 +172,7 @@
 
 ### 9주차 (4/27, 4/29): 네트워크 시각화 (vis.js) + 지도 시각화 (Leaflet)
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 네트워크 시각화: 그래프 기초, 노드·엣지, ICIJ 사례
@@ -189,7 +189,7 @@
 
 ### 10주차 (5/4, 5/6): Scrollytelling + 시각화 종합
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) Scrollytelling: Intersection Observer, Scrollama.js, sticky 레이아웃
@@ -209,7 +209,7 @@
 
 ### 11주차 (5/11, 5/13): Streamlit 입문 & JS 시각화 임베드
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) **Streamlit 기초**: 설치, 실행(`streamlit run app.py`), 핫 리로드
@@ -230,7 +230,7 @@
 
 ### 12주차 (5/18, 5/20): 맞춤형 데이터 검색 & 통합 대시보드
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) **Streamlit 네이티브 위젯으로 맞춤형 검색**
@@ -254,7 +254,7 @@
 
 **RAG 챗봇 (간단) & 최종 웹앱 통합**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) RAG 개념: 외부 문서 기반 LLM 응답으로 환각 방지
@@ -275,7 +275,7 @@
 
 **취재 방법론 + 배포 + 프로젝트 최종 점검**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) 취재 방법론: 현장 취재, 인터뷰, 자료 취재

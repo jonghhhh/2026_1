@@ -19,7 +19,7 @@
 
 ### 1주차 (3/5): 컴퓨테이셔널연구방법론 소개 & 환경 설정
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -37,7 +37,7 @@
 
 ### 2주차 (3/12): 파이썬 기초
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -58,7 +58,7 @@
 
 ### 3주차 (3/19): 데이터 관리 — Pandas & NumPy
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -79,7 +79,7 @@
 
 ### 4주차 (3/26): 텍스트 수집 — 웹스크래핑
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -100,7 +100,7 @@
 
 ### 5주차 (4/2): 이미지·영상·음성 수집과 처리
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -126,7 +126,7 @@
 
 ### 6주차 (4/9): 딥러닝 이론 & PyTorch
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -148,7 +148,7 @@
 
 ### 7주차 (4/16): Transformer, BERT, GPT & 추론 활용
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -175,7 +175,7 @@
 
 ### 8주차 (4/23): LLM API 활용 내용분석 — 텍스트
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -198,7 +198,7 @@
 
 ### 9주차 (4/30): LLM API 활용 내용분석 — 이미지, 영상, 음성
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -221,7 +221,7 @@
 
 ### 10주차 (5/7): 임베딩, 유사도, 벡터 DB
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -250,7 +250,7 @@
 
 > 📌 **연구 아이디어 제출 (5/15, ecampus > 과제및평가)**
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -273,7 +273,7 @@
 
 ### 12주차 (5/21): 챗봇 실험 설계 — 인간 피험자 연구
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -296,7 +296,7 @@
 
 ### 13주차 (5/28): LLM 설문 시뮬레이션 (Silicon Sampling)
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -325,7 +325,7 @@
 
 ### 14주차 (6/4): LLM 에이전트 & LangGraph 워크플로우
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
@@ -348,7 +348,7 @@
 
 ### 15주차 (6/11): 에이전트 간 토론 & Generative ABM
 
-<details>
+<details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**

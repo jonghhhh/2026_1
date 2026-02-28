@@ -33,25 +33,25 @@
 
 ## 전체 구조
 
-| 파트 | 주차 | 내용 |
-|------|------|------|
-| **Part 1: 기초 & 데이터** | 1~5주 | 환경 설정, 파이썬, Pandas/NumPy, 텍스트 수집, 이미지·영상 수집 |
-| **Part 2: 딥러닝 & 추론** | 6~7주 | 딥러닝 이론, Transformer/BERT/GPT, 추론 활용 |
-| **Part 3: LLM 내용분석** | 8~10주 | LLM 텍스트 코딩, 멀티모달 분석, 임베딩·유사도 |
-| **Part 4: 챗봇 & 실험** | 11~13주 | RAG 챗봇, Search Grounding, 챗봇 실험, LLM 설문 시뮬레이션 |
-| **Part 5: 에이전트 & 시뮬레이션** | 14~15주 | 에이전트 워크플로우, 멀티에이전트 토론, Generative ABM |
+| 파트                               | 주차   | 내용                                                         |
+|:-----------------------------------|:-------|:-------------------------------------------------------------|
+| **Part 1: 기초 & 데이터**          | 1~5주  | 환경 설정, 파이썬, Pandas/NumPy, 텍스트 수집, 이미지·영상 수집 |
+| **Part 2: 딥러닝 & 추론**          | 6~7주  | 딥러닝 이론, Transformer/BERT/GPT, 추론 활용                |
+| **Part 3: LLM 내용분석**           | 8~10주 | LLM 텍스트 코딩, 멀티모달 분석, 임베딩·유사도                |
+| **Part 4: 챗봇 & 실험**            | 11~13주 | RAG 챗봇, Search Grounding, 챗봇 실험, LLM 설문 시뮬레이션  |
+| **Part 5: 에이전트 & 시뮬레이션**  | 14~15주 | 에이전트 워크플로우, 멀티에이전트 토론, Generative ABM       |
 
 ---
 
 ## 평가 방법
 
-| 항목 | 비율 |
-|------|------|
-| 출석 | 10% |
-| 토론 참여 | 10% |
-| 논문 발표 | 10% |
-| 분석 능력 테스트 | 30% |
-| 연구 결과 | 40% |
+| 항목             | 비율 |
+|:-----------------|:-----|
+| 출석             | 10%  |
+| 토론 참여        | 10%  |
+| 논문 발표        | 10%  |
+| 분석 능력 테스트 | 30%  |
+| 연구 결과        | 40%  |
 
 - 분석 능력 테스트: 코드리딩 + 텍스트·이미지 처리 분석 (오픈북)
 - 연구 결과: 간단 이론과 분석 결과
@@ -60,24 +60,24 @@
 
 ## 주차별 일정 요약
 
-| 주차 | 날짜 | 내용 | 논문 발표 |
-|------|------|------|-----------|
-| 1 | 3/5 | 수업 소개, 환경 설정 | — |
-| 2 | 3/12 | 파이썬 기초 | Ziems et al. (2024); Lazer et al. (2020) |
-| 3 | 3/19 | Pandas & NumPy | 이종혁 (2021); 백강희 외 (2025) |
-| 4 | 3/26 | 텍스트 수집 — 웹스크래핑 | 조원정·이종혁 (2023); Freelon (2018) |
-| 5 | 4/2 | 이미지·영상·음성 수집과 처리 | 이문혁 (2025); 이문혁 외 (2024) |
-| 6 | 4/9 | 딥러닝 이론 & PyTorch | 이종혁 (2022); 이문혁·이종혁 (2024) |
-| 7 | 4/16 | Transformer, BERT, GPT & 추론 | 이승윤 외 (2023); 정재철·이종혁 (2022) |
-| 8 | 4/23 | LLM 내용분석 — 텍스트 | Gilardi et al. (2023); Törnberg (2024); 이종혁 (2025) |
-| 9 | 4/30 | LLM 내용분석 — 이미지, 영상, 음성 | 박영균·이종혁 (2026); Peng et al. (2024) |
-| 10 | 5/7 | 임베딩, 유사도, 벡터 DB | 이종혁 (2024); Ornstein et al. (2024) |
-| 11 | 5/14 | RAG 챗봇 & Search Grounding | Lewis et al. (2020); Costello et al. (2024) |
-| 12 | 5/21 | 챗봇 실험 설계 | Pennycook et al. (2025); Salvi et al. (2025); Bai et al. (2025) |
-| 13 | 5/28 | LLM 설문 시뮬레이션 | Argyle et al. (2023); Park et al. (2024); Bail (2024) |
-| 14 | 6/4 | 에이전트 & LangGraph | Anthis et al. (2025); Matz et al. (2024) |
-| 15 | 6/11 | 에이전트 토론 & Generative ABM | Park et al. (2023); Chuang et al. (2024); Törnberg et al. (2023) |
-| 16 | 6/18 | **분석 능력 테스트** | — |
+| 주차 | 날짜 | 내용                              | 논문 발표                                                         |
+|:-----|:-----|:----------------------------------|:------------------------------------------------------------------|
+| 1    | 3/5  | 수업 소개, 환경 설정              | —                                                                 |
+| 2    | 3/12 | 파이썬 기초                       | Ziems et al. (2024); Lazer et al. (2020)                          |
+| 3    | 3/19 | Pandas & NumPy                    | 이종혁 (2021); 백강희 외 (2025)                                   |
+| 4    | 3/26 | 텍스트 수집 — 웹스크래핑          | 조원정·이종혁 (2023); Freelon (2018)                              |
+| 5    | 4/2  | 이미지·영상·음성 수집과 처리      | 이문혁 (2025); 이문혁 외 (2024)                                   |
+| 6    | 4/9  | 딥러닝 이론 & PyTorch             | 이종혁 (2022); 이문혁·이종혁 (2024)                               |
+| 7    | 4/16 | Transformer, BERT, GPT & 추론    | 이승윤 외 (2023); 정재철·이종혁 (2022)                            |
+| 8    | 4/23 | LLM 내용분석 — 텍스트             | Gilardi et al. (2023); Törnberg (2024); 이종혁 (2025)             |
+| 9    | 4/30 | LLM 내용분석 — 이미지, 영상, 음성 | 박영균·이종혁 (2026); Peng et al. (2024)                          |
+| 10   | 5/7  | 임베딩, 유사도, 벡터 DB           | 이종혁 (2024); Ornstein et al. (2024)                             |
+| 11   | 5/14 | RAG 챗봇 & Search Grounding      | Lewis et al. (2020); Costello et al. (2024)                       |
+| 12   | 5/21 | 챗봇 실험 설계                    | Pennycook et al. (2025); Salvi et al. (2025); Bai et al. (2025)  |
+| 13   | 5/28 | LLM 설문 시뮬레이션               | Argyle et al. (2023); Park et al. (2024); Bail (2024)             |
+| 14   | 6/4  | 에이전트 & LangGraph              | Anthis et al. (2025); Matz et al. (2024)                          |
+| 15   | 6/11 | 에이전트 토론 & Generative ABM    | Park et al. (2023); Chuang et al. (2024); Törnberg et al. (2023)  |
+| 16   | 6/18 | **분석 능력 테스트**              | —                                                                 |
 
 ---
 
@@ -97,19 +97,19 @@
 11. 이문혁, 김시은, 신동호, 이종혁 (2024). 재난보도 영상과 이미지 프레임. *한국방송학보*, 38(2), 154–195. (5주)
 
 ### 국제 논문
-| 주차 | 논문 |
-|------|------|
-| 2 | Ziems et al. (2024) *Computational Linguistics*; Lazer et al. (2020) *Science* |
-| 4 | Freelon (2018) *Political Communication* |
-| 5 | 이문혁 (2025) *언론정보연구* |
-| 8 | Gilardi et al. (2023) *PNAS*; Törnberg (2024) *PNAS* |
-| 9 | Peng et al. (2024) *arXiv* |
-| 10 | Ornstein et al. (2024) *Political Analysis* |
-| 11 | Lewis et al. (2020) *NeurIPS*; Costello et al. (2024) *Science* |
-| 12 | Pennycook et al. (2025) *Nature*; Salvi et al. (2025) *Nature Human Behaviour*; Bai et al. (2025) *Nature Communications* |
-| 13 | Argyle et al. (2023) *Political Analysis*; Park et al. (2024) *arXiv*; Bail (2024) *PNAS* |
-| 14 | Anthis et al. (2025) *ICML*; Matz et al. (2024) *Scientific Reports* |
-| 15 | Park et al. (2023) *UIST*; Chuang et al. (2024) *NAACL Findings*; Törnberg et al. (2023) *arXiv* |
+| 주차 | 논문                                                                                                |
+|:-----|:----------------------------------------------------------------------------------------------------|
+| 2    | Ziems et al. (2024) *Computational Linguistics*; Lazer et al. (2020) *Science*                      |
+| 4    | Freelon (2018) *Political Communication*                                                            |
+| 5    | 이문혁 (2025) *언론정보연구*                                                                        |
+| 8    | Gilardi et al. (2023) *PNAS*; Törnberg (2024) *PNAS*                                               |
+| 9    | Peng et al. (2024) *arXiv*                                                                          |
+| 10   | Ornstein et al. (2024) *Political Analysis*                                                         |
+| 11   | Lewis et al. (2020) *NeurIPS*; Costello et al. (2024) *Science*                                    |
+| 12   | Pennycook et al. (2025) *Nature*; Salvi et al. (2025) *Nature Human Behaviour*; Bai et al. (2025) *Nature Communications* |
+| 13   | Argyle et al. (2023) *Political Analysis*; Park et al. (2024) *arXiv*; Bail (2024) *PNAS*          |
+| 14   | Anthis et al. (2025) *ICML*; Matz et al. (2024) *Scientific Reports*                               |
+| 15   | Park et al. (2023) *UIST*; Chuang et al. (2024) *NAACL Findings*; Törnberg et al. (2023) *arXiv*  |
 
 ---
 
