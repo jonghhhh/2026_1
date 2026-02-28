@@ -1,0 +1,381 @@
+# 컴퓨테이셔널연구방법론 (2026 봄학기)
+
+**경희대학교 미디어학과 일반대학원 | 목 13:00~15:45 | 정408**
+
+> 📋 [강의개요 · 평가방법 · 교재 · 논문목록](syllabus.md)
+
+---
+
+> 💻 **개발환경**: VSCode + Gemini CLI  
+> 🔑 **API**: Google AI Studio (Gemini) / OpenAI / Anthropic  
+> 🤖 **AI 챗봇**: [chat.khu.ac.kr](https://chat.khu.ac.kr/) — 경희대 구성원 무료 제공  
+> 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
+
+---
+
+## Part 1: 기초 & 데이터 (1~5주)
+
+---
+
+### 1주차 (3/5): 컴퓨테이셔널연구방법론 소개 & 환경 설정
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 2026년 컴퓨테이셔널연구방법론의 지형: LLM이 바꾼 연구 패러다임
+  - 전통적 방법(토픽모델링, 네트워크) → LLM 기반 내용분석, 챗봇 실험, 에이전트 시뮬레이션
+- VSCode + Gemini CLI 설치 및 사용법
+- API Key 발급 안내 (Google AI Studio / OpenAI / Anthropic)
+
+**실습**
+- 개발환경 구축 및 첫 LLM API 호출 체험
+
+</details>
+
+---
+
+### 2주차 (3/12): 파이썬 기초
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 변수, 자료형, 조건문, 반복문, 함수
+- 리스트, 딕셔너리, 문자열 처리
+- 정규표현식(Regex) 기초
+
+**실습**
+- 파이썬 기초 실습 (VSCode + Gemini CLI 활용)
+
+**📄 논문 발표**
+- Ziems et al. (2024). Can Large Language Models Transform Computational Social Science? *Computational Linguistics*
+- Lazer et al. (2020). Computational Social Science: Obstacles and Opportunities. *Science*
+
+</details>
+
+---
+
+### 3주차 (3/19): 데이터 관리 — Pandas & NumPy
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- Pandas DataFrame: 읽기, 필터링, 그룹화, 병합
+- NumPy 기초 연산
+- 데이터 전처리 (결측치, 타입 변환, 정렬)
+
+**실습**
+- 뉴스 데이터셋(CSV) 로드, 탐색적 분석, 전처리
+
+**📄 논문 발표**
+- 이종혁 (2021). 매체 간 뉴스 동질화 현상에 대한 탐색적 연구. *언론정보연구*
+- 백강희, 이승윤, 이종혁 (2025). 언론사와 증권사 간 인용 연결망. *언론정보연구*
+
+</details>
+
+---
+
+### 4주차 (3/26): 텍스트 수집 — 웹스크래핑
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 웹스크래핑 원리: HTML/CSS 구조, BeautifulSoup, Network 활용
+- 네이버 뉴스 기사·댓글 스크래핑
+- Gemini CLI로 스크래핑 코드 생성 → 검증 → 수정 워크플로우
+
+**실습**
+- 네이버 뉴스 기사 + 댓글 대량 수집
+
+**📄 논문 발표**
+- 조원정, 이종혁 (2023). 장애인 시위 관련 뉴스 댓글의 비윤리성 측정. *한국방송학보*
+- Freelon (2018). Computational Research in the Post-API Age. *Political Communication*
+
+</details>
+
+---
+
+### 5주차 (4/2): 이미지·영상·음성 수집과 처리
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 구글 이미지 크롤링, 네이버 방송뉴스 영상 수집
+- 유튜브 API: 검색, 영상 정보·메타데이터, 자막, 댓글 수집
+- 영상 키프레임 추출, OpenCV 이미지 처리
+- 음성 인식: Whisper STT
+
+**실습**
+- 유튜브 뉴스 영상 메타데이터 + 자막 + 키프레임 수집 파이프라인 구축
+
+**📄 논문 발표**
+- 이문혁 (2025). K-POP 뮤직비디오의 이미지 유형화. *언론정보연구*
+- 이문혁, 김시은, 신동호, 이종혁 (2024). 재난보도 영상과 이미지 프레임. *한국방송학보*
+
+</details>
+
+---
+
+## Part 2: 딥러닝 & 추론 (6~7주)
+
+---
+
+### 6주차 (4/9): 딥러닝 이론 & PyTorch
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 딥러닝의 역사와 구조: 퍼셉트론 → CNN → RNN → Transformer
+- 학습 원리: 순전파, 역전파, 경사하강법, 손실함수, 최적화
+- 이미지 딥러닝: CNN → ViT → YOLO 개요
+- PyTorch 기초 문법
+
+**실습**
+- PyTorch 텐서 연산 및 간단한 분류 모형 실습
+
+**📄 논문 발표**
+- 이종혁 (2022). 보수·진보 언론의 북한 전문가 활용 방식. *한국언론학보*
+- 이문혁, 이종혁 (2024). 시위 뉴스 폭력 프레이밍. *한국언론학보*
+
+</details>
+
+---
+
+### 7주차 (4/16): Transformer, BERT, GPT & 추론 활용
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- Transformer: Self-Attention, Multi-Head Attention
+- BERT: 양방향 인코더 / Sentence-BERT: 문장 임베딩
+- GPT: 자기회귀 디코더, Instruction Tuning, RLHF
+- Hugging Face Transformers Pipeline 추론
+
+**실습**
+- KcBERT / KcELECTRA 한국어 감성분석 추론
+- Sentence-BERT로 문장 유사도 측정
+
+**📄 논문 발표**
+- 이승윤, 백강희, 이종혁 (2023). 기업 보도 태도의 차이. *한국언론학보*
+- 정재철, 이종혁 (2022). 한미동맹 보도. *사이버커뮤니케이션학보*
+
+</details>
+
+---
+
+## Part 3: LLM 내용분석 (8~10주)
+
+---
+
+### 8주차 (4/23): LLM API 활용 내용분석 — 텍스트
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- LLM API 구조: 시스템 프롬프트, Few-shot, JSON mode, 배치 처리
+- 뉴스 텍스트 자동 코딩: 프레임, 감성, 논조, 인용 패턴
+- LLM 코딩의 신뢰도 평가: 인간 코더 vs LLM 일치도
+
+**실습**
+- Gemini API로 뉴스 기사 100건 자동 코딩 (프레임, 감성, 논조)
+- 코딩 결과의 일관성 검증
+
+**📄 논문 발표**
+- Gilardi et al. (2023). ChatGPT Outperforms Crowd Workers for Text-Annotation Tasks. *PNAS*
+- Törnberg (2024). How to Use LLMs for Text Analysis. *PNAS*
+- 이종혁 (2025). 12·3 내란과 저널리즘 원칙. *한국방송학보*
+
+</details>
+
+---
+
+### 9주차 (4/30): LLM API 활용 내용분석 — 이미지, 영상, 음성
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 멀티모달 LLM: 이미지 분석 (인물 표현, 감정, 구도, 맥락 해석)
+- 영상 분석: 키프레임 → 멀티모달 LLM 분석 → 시계열 요약
+- 음성 분석: Whisper STT → LLM 텍스트 분석 파이프라인
+- 멀티모달 내용분석의 코딩 스키마 설계
+
+**실습**
+- 멀티모달 LLM으로 정치인 뉴스 사진 분석 (표정, 제스처, 앵글)
+- 유튜브 뉴스 영상 → 키프레임 + 자막 → 통합 분석
+
+**📄 논문 발표**
+- 박영균, 이종혁 (2026). 김정은 보도사진의 시각적 프레이밍. *언론정보연구*
+- Peng et al. (2024). What You See Is What You Get. *arXiv*
+
+</details>
+
+---
+
+### 10주차 (5/7): 임베딩, 유사도, 벡터 DB
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 문장 임베딩: Sentence-BERT, 코사인 유사도
+- K-Means 클러스터링, 차원 축소 시각화 (t-SNE, UMAP)
+- 벡터 데이터베이스: ChromaDB
+- 의미적 검색(Semantic Search)
+
+**실습**
+- 한국어 뉴스 임베딩 생성 → 유사도 매트릭스, K-Means 클러스터링
+- ChromaDB에 뉴스 기사 임베딩 저장 및 유사 기사 검색
+
+**📄 논문 발표**
+- 이종혁 (2024). 온라인 뉴스의 선정성. *한국언론학보*
+- Ornstein et al. (2024). How to Train Your Stochastic Parrot. *Political Analysis*
+
+</details>
+
+---
+
+## Part 4: 챗봇 & 실험 (11~13주)
+
+---
+
+### 11주차 (5/14): RAG 챗봇 & Search Grounding
+
+> 📌 **연구 아이디어 제출 (5/15, ecampus > 과제및평가)**
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- RAG(Retrieval-Augmented Generation) 원리: 문서 청킹 → 임베딩 → 벡터 검색 → LLM 생성
+- LangChain을 활용한 RAG 파이프라인 구축
+- Search Grounding: 실시간 웹 검색 기반 응답 생성
+- 챗봇 인터페이스: Gradio, Streamlit, Hugging Face Spaces 배포
+
+**실습**
+- 특정 이슈 관련 뉴스 문서 기반 RAG 챗봇 구축
+- Search Grounding 기능 추가 챗봇 구현
+
+**📄 논문 발표**
+- Lewis et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. *NeurIPS*
+- Costello et al. (2024). Durably Reducing Conspiracy Beliefs Through Dialogues with AI. *Science*
+
+</details>
+
+---
+
+### 12주차 (5/21): 챗봇 실험 설계 — 인간 피험자 연구
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 챗봇 기반 커뮤니케이션 실험의 이론적 배경: 설득, 프레이밍, 태도 변화
+- 실험 설계: 시스템 프롬프트로 실험 조건 조작 (보수 vs 진보, 공감형 vs 정보형)
+- 대화 로그 수집 및 분석 방법, 사전-사후 태도 측정
+- IRB(연구윤리) 고려사항
+
+**실습**
+- 실험용 챗봇 프로토타입 개발 (조건별 시스템 프롬프트, 대화 로그 자동 저장)
+
+**📄 논문 발표**
+- Pennycook et al. (2025). Persuading Voters Using Human–AI Dialogues. *Nature*
+- Salvi et al. (2025). On the Conversational Persuasiveness of GPT-4. *Nature Human Behaviour*
+- Bai et al. (2025). LLM-generated Messages Can Persuade Humans on Policy Issues. *Nature Communications*
+
+</details>
+
+---
+
+### 13주차 (5/28): LLM 설문 시뮬레이션 (Silicon Sampling)
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- Silicon Sampling: LLM을 활용한 설문 응답 시뮬레이션
+  - 인구통계 페르소나 부여 → LLM 응답 생성 → 실제 설문 결과와 비교
+- Algorithmic Fidelity: LLM 시뮬레이션의 정확성 평가
+- Homo Silicus: LLM을 경제·사회적 행위자로 활용
+- 한계: 스테레오타이핑, 사회적 바람직성 편향, WEIRD 편향
+
+**실습**
+- 한국 사회 이슈에 대한 Silicon Sampling 실험
+  - 인구통계(연령, 성별, 지역, 정치 성향) 페르소나 → LLM 응답 → 실제 여론조사 비교
+
+**📄 논문 발표**
+- Argyle et al. (2023). Out of One, Many. *Political Analysis*
+- Park et al. (2024). Generative Agent Simulations of 1,000 People. *arXiv*
+- Bail (2024). Can Generative AI Improve Social Science? *PNAS*
+
+</details>
+
+---
+
+## Part 5: 에이전트 & 시뮬레이션 (14~15주)
+
+---
+
+### 14주차 (6/4): LLM 에이전트 & LangGraph 워크플로우
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 에이전트란 무엇인가: Tool Use, Planning, Memory
+- 에이전트 아키텍처: ReAct, Function Calling
+- LangGraph를 활용한 에이전트 워크플로우 설계: 상태 관리, 노드/엣지, 조건부 분기
+- 에이전트 프레임워크: LangChain Agents, Google ADK, CrewAI
+
+**실습**
+- LangGraph로 팩트체크 에이전트 구현
+- 뉴스 분석 에이전트: 기사 수집 → 프레임 분석 → 요약 → 보고서
+
+**📄 논문 발표**
+- Anthis et al. (2025). LLM Social Simulations Are a Promising Research Method. *ICML*
+- Matz et al. (2024). The Potential of Generative AI for Personalized Persuasion at Scale. *Scientific Reports*
+
+</details>
+
+---
+
+### 15주차 (6/11): 에이전트 간 토론 & Generative ABM
+
+<details>
+<summary>📖 강의 내용 보기</summary>
+
+**강의**
+- 에이전트 간 토론 시스템
+  - 숙의 민주주의 이론 기반 멀티 에이전트 토론
+  - 에이전트에 페르소나 부여 (인구통계, 정치 성향, 미디어 이용 패턴)
+  - 토론 프로토콜 설계 (라운드제, 자유토론, 모더레이터)
+- Generative Agent-Based Modeling (ABM)
+  - 생성적 에이전트: 기억, 반성, 계획
+  - 태도 극화(polarization) 시뮬레이션
+  - 미디어 노출 → 에이전트 간 상호작용 → 의견 변화 추적
+  - 에코 챔버, 필터 버블 시뮬레이션
+
+**실습**
+- 멀티 에이전트 토론 시스템 구현: 3~5개 에이전트가 특정 이슈에 대해 토론
+- 소규모 Generative ABM: 10~20개 에이전트, 5라운드 상호작용, 태도 변화 시각화
+
+**📄 논문 발표**
+- Park et al. (2023). Generative Agents: Interactive Simulacra of Human Behavior. *UIST*
+- Chuang et al. (2024). Simulating Opinion Dynamics with Networks of LLM-based Agents. *NAACL Findings*
+- Törnberg et al. (2023). Simulating Social Media Using LLMs to Examine Polarization. *arXiv*
+
+</details>
+
+---
+
+### 16주차 (6/18): 분석 능력 테스트 (오픈북)
+
+- **분석 능력 테스트 (6/18)**: 코드해석 + 오픈북 분석 테스트
+- **연구 분석 결과 제출 (6/25, ecampus > 과제및평가에 제출)**
