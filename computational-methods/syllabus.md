@@ -96,20 +96,28 @@
 10. 이문혁, 이종혁 (2024). 시위 뉴스 영상에서 폭력 프레이밍의 작동 기제 분석. *한국언론학보*, 68(2), 100–139. (6주)
 11. 이문혁, 김시은, 신동호, 이종혁 (2024). 재난보도 영상과 이미지 프레임. *한국방송학보*, 38(2), 154–195. (5주)
 
-### 국제 논문
-| 주차 | 논문                                                                                                |
-|:-----|:----------------------------------------------------------------------------------------------------|
-| 2    | Ziems et al. (2024) *Computational Linguistics*; Lazer et al. (2020) *Science*                      |
-| 4    | Freelon (2018) *Political Communication*                                                            |
-| 5    | 이문혁 (2025) *언론정보연구*                                                                        |
-| 8    | Gilardi et al. (2023) *PNAS*; Törnberg (2024) *PNAS*                                               |
-| 9    | Peng et al. (2024) *arXiv*                                                                          |
-| 10   | Ornstein et al. (2024) *Political Analysis*                                                         |
-| 11   | Lewis et al. (2020) *NeurIPS*; Costello et al. (2024) *Science*                                    |
-| 12   | Pennycook et al. (2025) *Nature*; Salvi et al. (2025) *Nature Human Behaviour*; Bai et al. (2025) *Nature Communications* |
-| 13   | Argyle et al. (2023) *Political Analysis*; Park et al. (2024) *arXiv*; Bail (2024) *PNAS*          |
-| 14   | Anthis et al. (2025) *ICML*; Matz et al. (2024) *Scientific Reports*                               |
-| 15   | Park et al. (2023) *UIST*; Chuang et al. (2024) *NAACL Findings*; Törnberg et al. (2023) *arXiv*  |
+### 국제 논문 (16편)
+1. Ziems et al. (2024). Can Large Language Models Transform Computational Social Science? *Computational Linguistics*. (2주)
+2. Lazer et al. (2020). Computational Social Science: Obstacles and Opportunities. *Science*. (2주)
+3. Freelon (2018). Computational Research in the Post-API Age. *Political Communication*. (4주)
+4. 이문혁 (2025). K-POP 뮤직비디오의 이미지 유형화. *언론정보연구*. (5주)
+5. Gilardi et al. (2023). ChatGPT Outperforms Crowd Workers for Text-Annotation Tasks. *PNAS*. (8주)
+6. Törnberg (2024). How to Use LLMs for Text Analysis. *PNAS*. (8주)
+7. Peng et al. (2024). What You See Is What You Get. *arXiv*. (9주)
+8. Ornstein et al. (2024). How to Train Your Stochastic Parrot. *Political Analysis*. (10주)
+9. Lewis et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. *NeurIPS*. (11주)
+10. Costello et al. (2024). Durably Reducing Conspiracy Beliefs Through Dialogues with AI. *Science*. (11주)
+11. Pennycook et al. (2025). Persuading Voters Using Human–AI Dialogues. *Nature*. (12주)
+12. Salvi et al. (2025). On the Conversational Persuasiveness of GPT-4. *Nature Human Behaviour*. (12주)
+13. Bai et al. (2025). LLM-generated Messages Can Persuade Humans on Policy Issues. *Nature Communications*. (12주)
+14. Argyle et al. (2023). Out of One, Many. *Political Analysis*. (13주)
+15. Park et al. (2024). Generative Agent Simulations of 1,000 People. *arXiv*. (13주)
+16. Bail (2024). Can Generative AI Improve Social Science? *PNAS*. (13주)
+17. Anthis et al. (2025). LLM Social Simulations Are a Promising Research Method. *ICML*. (14주)
+18. Matz et al. (2024). The Potential of Generative AI for Personalized Persuasion at Scale. *Scientific Reports*. (14주)
+19. Park et al. (2023). Generative Agents: Interactive Simulacra of Human Behavior. *UIST*. (15주)
+20. Chuang et al. (2024). Simulating Opinion Dynamics with Networks of LLM-based Agents. *NAACL Findings*. (15주)
+21. Törnberg et al. (2023). Simulating Social Media Using LLMs to Examine Polarization. *arXiv*. (15주)
 
 ---
 

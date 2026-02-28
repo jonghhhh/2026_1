@@ -121,24 +121,26 @@
 ## 주요 데이터 취재처
 
 ### 국내
-| 취재처           | URL                          | 활용                       |
-|:-----------------|:-----------------------------|:---------------------------|
-| 공공데이터포털   | data.go.kr                   | 10만+ 데이터셋, Open API   |
-| KOSIS            | kosis.kr                     | 400+ 기관 통계             |
-| DART             | dart.fss.or.kr               | 기업 공시, 재무제표        |
-| 국회 의안정보    | likms.assembly.go.kr/bill    | 발의법안, 표결             |
-| 빅카인즈         | bigkinds.or.kr               | 뉴스 아카이브 (54매체)     |
-| 정보공개포털     | open.go.kr                   | 정보공개청구               |
-| 뉴스타파 DATA    | data.newstapa.org            | 탐사보도 원본 데이터       |
+
+| 취재처 | URL | 활용 |
+|:---|:---|:---|
+| 공공데이터포털 | data.go.kr | 10만+ 데이터셋, Open API |
+| KOSIS | kosis.kr | 400+ 기관 통계 |
+| DART | dart.fss.or.kr | 기업 공시, 재무제표 |
+| 국회 의안정보 | likms.assembly.go.kr/bill | 발의법안, 표결 |
+| 빅카인즈 | bigkinds.or.kr | 뉴스 아카이브 (54매체) |
+| 정보공개포털 | open.go.kr | 정보공개청구 |
+| 뉴스타파 DATA | data.newstapa.org | 탐사보도 원본 데이터 |
 
 ### 국제
-| 취재처              | URL                             | 활용                 |
-|:--------------------|:--------------------------------|:---------------------|
-| ICIJ Offshore Leaks | offshoreleaks.icij.org          | 역외법인 DB          |
-| OCCRP Aleph         | aleph.occrp.org                 | 글로벌 문서·기업 DB  |
-| SEC EDGAR           | sec.gov/edgar                   | 미국 기업 공시       |
-| Bellingcat Toolkit  | bellingcat.gitbook.io/toolkit   | OSINT 도구           |
-| GIJN 리소스         | gijn.org/resource               | 탐사보도 가이드      |
+
+| 취재처 | URL | 활용 |
+|:---|:---|:---|
+| ICIJ Offshore Leaks | offshoreleaks.icij.org | 역외법인 DB |
+| OCCRP Aleph | aleph.occrp.org | 글로벌 문서·기업 DB |
+| SEC EDGAR | sec.gov/edgar | 미국 기업 공시 |
+| Bellingcat Toolkit | bellingcat.gitbook.io/toolkit | OSINT 도구 |
+| GIJN 리소스 | gijn.org/resource | 탐사보도 가이드 |
 
 ---
 
