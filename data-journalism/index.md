@@ -1,6 +1,6 @@
 # 데이터저널리즘 (2026년 1학기)
 
-**경희대학교 미디어학과 | 월수 10:30~11:45 | 정408**
+## **경희대학교 미디어학과 | 월수 10:30~11:45 | 정408**
 
 > 📋 [강의개요 · 평가방법 · 교재](syllabus.md)
 
@@ -12,6 +12,7 @@
 > 🤖 **AI 챗봇**: [chat.khu.ac.kr](https://chat.khu.ac.kr/) — 경희대 구성원 무료 제공  
 > 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
 
+> **취재보도용 도구 가이드**: https://jonghhhh.github.io/test/journalism_ai.html
 ---
 
 ## Part 1. 기초 — 파이썬 & Pandas (1~4주)
