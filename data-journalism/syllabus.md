@@ -162,7 +162,12 @@
 - Python 공식 자습서 (한국어): docs.python.org/ko/3/tutorial
 - 나도코딩 파이썬 무료 강의 (인프런, 6시간): inflearn.com/course/나도코딩-파이썬-기본
 - 노마드코더 파이썬 무료 강의 (웹스크래퍼): nomadcoders.co/python-for-beginners
-- 프로그래머스 파이썬 입문 (무료, 브라우저 실습): school.programmers.co.kr/learn/courses/2
+- 프로그래머스 파이썬 입문 (무료, 브라우저 실습): school.programmers.co.kr/learn/courses/2  
+- 김왼손의 왼손코딩:Hello Coding 한입에 쏙 파이썬. https://www.youtube.com/channel/UC0h8NzL2vllvp3PjdoYSK4g                                                                             
+- 나도코딩. (2020). 파이썬 코딩 무료 강의 (기본편) ? 6시간 뒤면 나도 개발자.  https://www.youtube.com/watch?v=kWiCuklohdY                                            -                    
+- 조코딩 JoCoding. (2024). 2024 점프 투 파이썬 통합본 ? 파이썬 기초부터 실습까지 https://www.youtube.com/@jocoding                                                                 
+- 생활코딩. (2023). Python ? 입문자를 위한 프로그래밍 기초. https://www.youtube.com/watch?v=qYOk-d9bIBs  
+- 이종혁 교수 파이썬 기초 강의편집본(지루할 수 있음): https://sites.google.com/khu.ac.kr/pythoncodingvideo/%ED%99%88  
 
 ### HTML · CSS · JavaScript (한국어 입문)
 - 생활코딩 WEB1/WEB2 (이고잉, 무료 최고 입문): opentutorials.org/course/3084
