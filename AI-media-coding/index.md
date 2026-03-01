@@ -20,7 +20,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [인공지능과 미디어] (https://jonghhhh.github.io/2026_1/AI-media-coding/인공지능과미디어_2026.pdf) 
+- (강의) [인공지능과 미디어](https://jonghhhh.github.io/2026_1/AI-media-coding/인공지능과미디어_2026.pdf) 
 - (실습) WSL, VSCode, Gemini CLI 사용법  
 -- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드  
 -- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드  
