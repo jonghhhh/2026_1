@@ -12,8 +12,7 @@
 > 🤖 **AI 챗봇**: [chat.khu.ac.kr](https://chat.khu.ac.kr/) — 경희대 구성원 무료 제공  
 > 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
 
-> **취재보도용 AI도구 모음**: https://jonghhhh.github.io/2026_1/datajour_ai.html
->
+> **취재보도용 AI도구 모음**: https://jonghhhh.github.io/2026_1/datajour_ai.html  
 > **데이터 수집용 사이트 모음**: https://jonghhhh.github.io/2026_1/datajour_source.html
 ---
 
@@ -29,9 +28,9 @@
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [데이터저널리즘: 이론과 실무](https://jonghhhh.github.io/2026_1/데이터저널리즘_이론과실무_022826.pdf)
-- (실습) WSL, VSCode, Gemini CLI 사용법
--- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드.md
--- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드.md
+- (실습) WSL, VSCode, Gemini CLI 사용법  
+-- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드.md  
+-- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드.md  
 - AI 도구 체험: NotebookLM, Perplexity, Google AI Studio
 - (데이터) 공공데이터포털 [교통사고다발지역](https://www.data.go.kr/data/15029185/standard.do)
 </details>
