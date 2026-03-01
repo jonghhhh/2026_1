@@ -1,4 +1,4 @@
-# 데이터저널리즘 (2026 봄학기)
+# 데이터저널리즘 (2026년 1학기)
 
 **경희대학교 미디어학과 | 월수 10:30~11:45 | 정408**
 
@@ -25,16 +25,10 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) 데이터저널리즘이란: 정의, 역사, 전통 저널리즘과의 차이
-- (강의) 국내외 우수 사례: 뉴스타파, 마부작침(KBS), NYT The Upshot, ProPublica, ICIJ
-- (강의) 수업 전체 로드맵: **기초 → 수집 → 분석 → 시각화 → 웹앱**
-- (강의) 수업 데이터 소개: 전국교통사고다발지역 12,780건 구조 설명
-- (강의) 주요 데이터 취재처·아카이브 소개
-- (실습) VSCode + Gemini CLI 설치 및 기본 사용법
-- (실습) API Key 발급 (Google AI Studio)
-- (실습) AI 도구 체험: NotebookLM, Perplexity, Google AI Studio
-- (실습) 교통사고다발지역 XLS 파일 첫 5행 확인
-
+- (강의) 데이터저널리즘: 이론과 사례
+- (실습) WSL, VSCode, Gemini CLI 사용법
+- AI 도구 체험: NotebookLM, Perplexity, Google AI Studio
+- (데이터) 공공데이터포털 [교통사고다발지역](https://www.data.go.kr/data/15029185/standard.do)
 </details>
 
 ---
