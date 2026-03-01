@@ -27,7 +27,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [데이터저널리즘: 이론과 실무](https://jonghhhh.github.io/2026_1/데이터저널리즘_이론과실무_022826.pdf)
+- (강의) [데이터저널리즘: 이론과 실무](데이터저널리즘_이론과실무_022826.pdf)
 - (실습) WSL, VSCode, Gemini CLI 사용법   
 -- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드  
 -- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드   
