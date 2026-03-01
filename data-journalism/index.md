@@ -29,8 +29,8 @@
 
 - (강의) [데이터저널리즘: 이론과 실무](https://jonghhhh.github.io/2026_1/데이터저널리즘_이론과실무_022826.pdf)
 - (실습) WSL, VSCode, Gemini CLI 사용법  
--- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드.md  
--- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드.md  
+-- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드
+-- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드  
 - AI 도구 체험: NotebookLM, Perplexity, Google AI Studio
 - (데이터) 공공데이터포털 [교통사고다발지역](https://www.data.go.kr/data/15029185/standard.do)
 </details>
