@@ -286,3 +286,14 @@
 
 - 보강 수업 (6/15)
 - **시험 (6/17)**: 코드리딩 + AI 프롬프트 작성 + JS 시각화 코드 이해 + Streamlit 코드 이해
+
+
+---
+
+## 참고자료(프로젝트는 접속 안되는 경우 있음)
+
+- [2025년 데이터저널리즘 프로젝트](https://sites.google.com/khu.ac.kr/2025datajour-projects/%ED%99%88)
+
+- [2024년 데이터저널리즘 프로젝트](https://sites.google.com/khu.ac.kr/datajour2024/%ED%99%88)
+
+- [조별 데이터저널리즘 프로젝트 제출과  평가 가이드라인](https://docs.google.com/document/d/1f1FttS7dG9aAQ9kd4menLzrDeBFY9-HD/edit#heading=h.gjdgxs)
