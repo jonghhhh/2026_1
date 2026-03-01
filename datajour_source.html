@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터 저널리즘 데이터·통계 소스 디렉토리</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222632;
+    --border: #2d3348;
+    --text: #e4e7ef;
+    --text-muted: #8b90a5;
+    --accent: #4f8ff7;
+    --accent2: #7c5cfc;
+    --green: #34d399;
+    --orange: #f59e0b;
+    --pink: #f472b6;
+    --red: #f87171;
+    --cyan: #22d3ee;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .hero {
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #1a1d27 0%, #16192a 50%, #1a1527 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .hero .meta {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+  }
+  .search-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap::before {
+    content: '🔍';
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+  }
+
+  .filter-bar {
+    max-width: 900px;
+    margin: 0.6rem auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: center;
+  }
+  .filter-btn {
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  .section {
+    margin-bottom: 2rem;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    font-size: 1.3rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .section-count {
+    font-size: 0.7rem;
+    background: var(--surface2);
+    color: var(--text-muted);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    background: var(--surface2);
+    transform: translateY(-1px);
+  }
+  .card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .card-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .card-url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.2s;
+  }
+  .card-url:hover { color: var(--cyan); text-decoration: underline; }
+  .card-tags {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin-top: 0.15rem;
+  }
+  .tag {
+    font-size: 0.62rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .tag-kr { border-color: #34d39944; color: var(--green); }
+  .tag-intl { border-color: #4f8ff744; color: var(--accent); }
+  .tag-new { border-color: #f59e0b44; color: var(--orange); }
+
+  .hidden { display: none !important; }
+
+  .stats-bar {
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.6rem; }
+    .grid { grid-template-columns: 1fr; }
+    .container { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>데이터 저널리즘 소스 디렉토리</h1>
+  <p>데이터 저널리즘을 위한 국내외 데이터·통계 사이트 종합 가이드</p>
+  <div class="meta">이종혁 (경희대 미디어학과) · 2025 Spring · 최종 업데이트 2025.03</div>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="사이트명, 분야, URL 검색..." autocomplete="off">
+  </div>
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="종합">종합</button>
+    <button class="filter-btn" data-filter="경제·금융">경제·금융</button>
+    <button class="filter-btn" data-filter="사회·복지">사회·복지</button>
+    <button class="filter-btn" data-filter="교육">교육</button>
+    <button class="filter-btn" data-filter="환경·에너지">환경·에너지</button>
+    <button class="filter-btn" data-filter="교통·국토">교통·국토</button>
+    <button class="filter-btn" data-filter="법률·행정">법률·행정</button>
+    <button class="filter-btn" data-filter="미디어·여론">미디어·여론</button>
+    <button class="filter-btn" data-filter="과학·특허">과학·특허</button>
+    <button class="filter-btn" data-filter="국제기구">국제기구</button>
+    <button class="filter-btn" data-filter="해외오픈데이터">해외오픈데이터</button>
+    <button class="filter-btn" data-filter="저널리즘">저널리즘</button>
+    <button class="filter-btn" data-filter="시각화도구">시각화도구</button>
+  </div>
+</div>
+
+<div class="container" id="content"></div>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<footer>
+  데이터저널리즘: 이론과 실무 · 이종혁 (경희대 미디어학과) · 취재보도 AI 도구 가이드: <a href="https://jonghhhh.github.io/test/journalism_ai.html" target="_blank" style="color:var(--accent)">jonghhhh.github.io/test/journalism_ai.html</a>
+</footer>
+
+<script>
+const DATA = [
+  // ===== 종합 =====
+  { cat: "종합", name: "공공데이터포털", desc: "교육, 행정, 재정, 산업, 복지, 의료, 교통, 환경 등 다양한 공공 데이터 및 Open API 제공. 범정부 통합 창구.", url: "https://www.data.go.kr/", tags: ["kr"] },
+  { cat: "종합", name: "국가통계포털 (KOSIS)", desc: "국가데이터처(구 통계청) 및 각 시도청의 모든 분야 통계자료 검색·다운로드. 시각화 콘텐츠 포함.", url: "https://kosis.kr/", tags: ["kr"] },
+  { cat: "종합", name: "국가데이터처 (구 통계청)", desc: "2025.10부터 통계청이 국가데이터처로 개편. 통계 안내, 간행물, 조사, 데이터베이스 등 제공.", url: "https://mods.go.kr/", tags: ["kr", "new"] },
+  { cat: "종합", name: "정보공개포털", desc: "공개 정보 열람 및 공개 청구. 정보공개청구 가능.", url: "https://www.open.go.kr/", tags: ["kr"] },
+  { cat: "종합", name: "한국갤럽", desc: "조사 전문회사. 마케팅, 사회여론 등 조사 자료모음 제공.", url: "https://www.gallup.co.kr/", tags: ["kr"] },
+  { cat: "종합", name: "한국사회과학데이터센터 (KSDC)", desc: "국내외 통계자료, 국내여론조사자료, 통계항목 검색서비스.", url: "https://www.ksdc.re.kr/", tags: ["kr"] },
+  { cat: "종합", name: "통계지리정보 (SGIS)", desc: "시·도별 국토, 기후, 인구, 재정, 재해 등 통계지리정보 제공.", url: "https://sgis.kostat.go.kr/", tags: ["kr"] },
+  { cat: "종합", name: "서울 열린데이터광장", desc: "서울시 공공데이터. OpenAPI 5,500+건, 시트 7,200+건 제공. 서울 100대 통계 포함.", url: "https://data.seoul.go.kr/", tags: ["kr"] },
+  { cat: "종합", name: "e-나라지표", desc: "국정 주요 지표를 분야별로 제공. 경제, 사회, 환경, 국방 등 국가 핵심 통계 한눈에.", url: "https://www.index.go.kr/", tags: ["kr"] },
+  { cat: "종합", name: "마이크로데이터 통합서비스 (MDIS)", desc: "국가승인통계 원자료(마이크로데이터) 검색·분석·다운로드.", url: "https://mdis.kostat.go.kr/", tags: ["kr"] },
+  { cat: "종합", name: "국가지표체계", desc: "분야별 국가 핵심 지표를 체계적으로 관리·제공. 국제비교 지표 포함.", url: "https://www.index.go.kr/unity/potal/main.do", tags: ["kr"] },
+
+  // ===== 경제·금융 =====
+  { cat: "경제·금융", name: "한국은행 경제통계시스템 (ECOS)", desc: "통계검색, 증감률 계산, 생산자·수출입물가지수 및 결과 다운로드.", url: "https://ecos.bok.or.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "한국금융연구원", desc: "한국 경제 지표와 금융 관련 통계 자료.", url: "https://www.kif.re.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "산업연구원 산업통계 (iSTANS)", desc: "산업의 흐름을 한눈에 파악. 6,000+ 건 산업통계.", url: "https://www.istans.or.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "중소기업중앙회 중소기업통계", desc: "중소기업 기술통계, 임금실태조사, 월별 동향.", url: "https://www.kbiz.or.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "전자공시시스템 (DART)", desc: "기업의 주주, 재산, 총회 의사록, 감사보고서, 재무제표 등 공시.", url: "https://dart.fss.or.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "대법원 인터넷등기소", desc: "등기부 등본 열람. 부동산, 법인 등기 확인.", url: "https://www.iros.go.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "한국무역협회 통계서비스", desc: "무역통계, HS정보, 수출입통계, 수출입실적증명서 등.", url: "https://stat.kita.net/", tags: ["kr"] },
+  { cat: "경제·금융", name: "한국거래소 (KRX) 정보데이터시스템", desc: "주식, 채권, 파생상품 시장 데이터. 종목별 시세·거래량.", url: "http://data.krx.co.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "금융통계정보시스템 (FISIS)", desc: "금융감독원 운영. 은행, 보험, 증권 등 금융통계.", url: "https://fisis.fss.or.kr/", tags: ["kr"] },
+  { cat: "경제·금융", name: "부동산 실거래가 공개시스템", desc: "국토교통부 운영. 아파트, 연립, 단독, 오피스텔 실거래가 조회.", url: "https://rt.molit.go.kr/", tags: ["kr"] },
+
+  // ===== 사회·복지 =====
+  { cat: "사회·복지", name: "노동통계정보시스템", desc: "고용노동부 운영. 노동통계, 보도분석, 임금구조, 기업체노동비용 등.", url: "https://laborstat.moel.go.kr/", tags: ["kr"] },
+  { cat: "사회·복지", name: "국민건강보험공단 통계", desc: "건강보험, 장기요양보험 통계. 질환별, 지역별 진료통계.", url: "https://kosis.kr/statisticsList/statisticsListIndex.do?vwcd=MT_OTITLE&menuId=M_01_02", tags: ["kr"] },
+  { cat: "사회·복지", name: "보건의료 빅데이터 개방시스템", desc: "건강보험심사평가원. 의료 이용 통계, 질병 통계, 의약품 처방.", url: "https://opendata.hira.or.kr/", tags: ["kr"] },
+  { cat: "사회·복지", name: "범죄통계 (대검찰청)", desc: "범죄분석, 범죄통계. 범죄유형, 지역별 발생현황.", url: "https://www.spo.go.kr/", tags: ["kr"] },
+  { cat: "사회·복지", name: "경찰청 범죄통계", desc: "경찰청 운영. 범죄 발생·검거 현황, 교통사고 통계.", url: "https://www.police.go.kr/", tags: ["kr"] },
+  { cat: "사회·복지", name: "질병관리청 통계", desc: "감염병, 만성질환, 건강조사 통계. 국민건강영양조사 등.", url: "https://www.kdca.go.kr/", tags: ["kr"] },
+  { cat: "사회·복지", name: "복지로", desc: "보건복지부 복지서비스 통합 안내. 복지 데이터 포함.", url: "https://www.bokjiro.go.kr/", tags: ["kr"] },
+
+  // ===== 교육 =====
+  { cat: "교육", name: "한국교육개발원 교육통계서비스", desc: "유·초·중등, 고등교육 통계. 학교, 학생, 교원 현황.", url: "https://kess.kedi.re.kr/", tags: ["kr"] },
+  { cat: "교육", name: "한국교육개발원 취업통계시스템", desc: "취업률 조사 전문기관. 업종별, 지역별 취업현황, 학과별 순위.", url: "https://www.academyinfo.go.kr/", tags: ["kr"] },
+  { cat: "교육", name: "학술연구정보서비스 (RISS)", desc: "학위논문, 학술지논문, 단행본, 학술지 등 학술연구 정보 통합 검색.", url: "https://www.riss.kr/", tags: ["kr"] },
+  { cat: "교육", name: "DBpia", desc: "논문, 전자책, 학술정보 제공.", url: "https://www.dbpia.co.kr/", tags: ["kr"] },
+
+  // ===== 환경·에너지 =====
+  { cat: "환경·에너지", name: "환경부 환경통계포털", desc: "분야별 환경통계, OECD 환경지표 제공.", url: "https://stat.me.go.kr/", tags: ["kr"] },
+  { cat: "환경·에너지", name: "온실가스배출량 정보시스템", desc: "기후변화 협약, 배출량 계산, 통계분석, 해외배출량 가이드라인.", url: "https://ngms.gir.go.kr/", tags: ["kr"] },
+  { cat: "환경·에너지", name: "국가에너지통계종합정보시스템 (KESIS)", desc: "에너지 정보·통계. 해외에너지통계, 이용사례.", url: "https://www.kesis.net/", tags: ["kr"] },
+  { cat: "환경·에너지", name: "기상자료개방포털", desc: "기상청. 기온, 강수, 바람, 기후변화 데이터 개방.", url: "https://data.kma.go.kr/", tags: ["kr"] },
+  { cat: "환경·에너지", name: "에어코리아 (실시간 대기질)", desc: "전국 실시간 대기오염도. 미세먼지(PM2.5/PM10) 등.", url: "https://www.airkorea.or.kr/", tags: ["kr"] },
+
+  // ===== 교통·국토 =====
+  { cat: "교통·국토", name: "국토교통통계누리", desc: "국토, 도시, 주택, 건설, 교통, 항공 등 통계 자료.", url: "https://stat.molit.go.kr/", tags: ["kr"] },
+  { cat: "교통·국토", name: "교통사고분석시스템 (TAAS)", desc: "경찰청 운영. 교통사고 데이터 분석, 지도 시각화.", url: "https://taas.koroad.or.kr/", tags: ["kr"] },
+  { cat: "교통·국토", name: "국가교통 데이터베이스 (KTDB)", desc: "교통량, 여객·화물 O/D, 교통시설 등 국가교통 데이터.", url: "https://www.ktdb.go.kr/", tags: ["kr"] },
+  { cat: "교통·국토", name: "네이버 부동산 실거래가", desc: "실거래가, 시세, 매물 정보. 데이터 수집 활용 가능.", url: "https://land.naver.com/", tags: ["kr"] },
+
+  // ===== 법률·행정 =====
+  { cat: "법률·행정", name: "법원 종합법률정보", desc: "화제의 판결, 최근 판례, 법령 정보.", url: "https://glaw.scourt.go.kr/", tags: ["kr"] },
+  { cat: "법률·행정", name: "국회 의안정보시스템", desc: "발의된 법안, 처리 현황, 의원별 의안 검색.", url: "https://likms.assembly.go.kr/bill/main.do", tags: ["kr"] },
+  { cat: "법률·행정", name: "국회 회의록 시스템", desc: "본회의, 상임위 등 국회 회의록 전문 검색.", url: "https://likms.assembly.go.kr/record/", tags: ["kr"] },
+  { cat: "법률·행정", name: "선거통계시스템", desc: "중앙선거관리위원회. 역대 선거 결과, 개표, 투표율 데이터.", url: "http://info.nec.go.kr/", tags: ["kr"] },
+  { cat: "법률·행정", name: "재정정보 열린재정", desc: "국가재정 운영 현황. 세입·세출, 국가채무, 기금.", url: "https://www.openfiscaldata.go.kr/", tags: ["kr"] },
+  { cat: "법률·행정", name: "정치자금 공개시스템", desc: "선관위 운영. 정당·후보자 정치자금 수입·지출 공개.", url: "https://www.nec.go.kr/", tags: ["kr"] },
+
+  // ===== 미디어·여론 =====
+  { cat: "미디어·여론", name: "빅카인즈 (BIGKinds)", desc: "뉴스 검색, 이슈 분석, 일부 공공데이터(국회 회의록, 인구, 고용, 물가, 주가, 부동산, 미세먼지).", url: "https://www.bigkinds.or.kr/", tags: ["kr"] },
+  { cat: "미디어·여론", name: "방송통신위원회 방송통계포털", desc: "방송 미디어 이용 행태. 시청률, 매체별 이용 현황.", url: "https://www.mediastat.or.kr/", tags: ["kr"] },
+  { cat: "미디어·여론", name: "한국방송광고공사 광고통계시스템", desc: "사업체매출, 거래트래픽, MCR미디어 통계.", url: "https://adstat.kobaco.co.kr/", tags: ["kr"] },
+  { cat: "미디어·여론", name: "한국언론진흥재단 미디어통계", desc: "미디어 이용 조사, 뉴스 소비 조사 데이터.", url: "https://www.kpf.or.kr/", tags: ["kr"] },
+  { cat: "미디어·여론", name: "소셜미디어 트렌드 (Sometrend)", desc: "SNS 버즈량·감성 분석. 트렌드 모니터링 (유료/일부 무료).", url: "https://some.co.kr/", tags: ["kr"] },
+
+  // ===== 과학·특허 =====
+  { cat: "과학·특허", name: "특허정보검색서비스 (KIPRIS)", desc: "특허청. 국내외 특허, 실용신안, 디자인, 상표 검색.", url: "http://www.kipris.or.kr/", tags: ["kr"] },
+  { cat: "과학·특허", name: "한국관광공사 관광지식정보시스템", desc: "관광시장 정보, 월별·국가별 통계, 관광법령.", url: "https://datalab.visitkorea.or.kr/", tags: ["kr"] },
+  { cat: "과학·특허", name: "NTIS 국가과학기술지식정보서비스", desc: "국가 R&D 과제, 인력, 성과, 장비 정보 통합 서비스.", url: "https://www.ntis.go.kr/", tags: ["kr"] },
+
+  // ===== 국제기구 =====
+  { cat: "국제기구", name: "World Bank Open Data", desc: "200+ 국가 경제·사회 발전 데이터. World Development Indicators (WDI) 포함.", url: "https://data.worldbank.org/", tags: ["intl"] },
+  { cat: "국제기구", name: "IMF Data", desc: "국제통화기금. World Economic Outlook, 국가별 GDP·물가·채무 등.", url: "https://www.imf.org/en/Data", tags: ["intl"] },
+  { cat: "국제기구", name: "OECD Data Explorer", desc: "OECD 회원국 경제, 교육, 건강, 환경, 과학 비교 데이터.", url: "https://data-explorer.oecd.org/", tags: ["intl"] },
+  { cat: "국제기구", name: "UN Data", desc: "유엔 32개 데이터베이스 통합. 6,000만+ 건 레코드. 인구, 무역, 환경 등.", url: "https://data.un.org/", tags: ["intl"] },
+  { cat: "국제기구", name: "UN Comtrade (무역 데이터)", desc: "국제 상품무역 통계 데이터베이스. 국가 간 수출입 데이터.", url: "https://comtrade.un.org/", tags: ["intl"] },
+  { cat: "국제기구", name: "WHO Global Health Observatory", desc: "세계보건기구. 글로벌 건강 지표, 감염병, 사망 원인 데이터.", url: "https://www.who.int/data/gho", tags: ["intl"] },
+  { cat: "국제기구", name: "ILO (국제노동기구) Statistics", desc: "ILOSTAT. 전 세계 노동시장 통계. 고용, 임금, 노동조건.", url: "https://ilostat.ilo.org/", tags: ["intl"] },
+  { cat: "국제기구", name: "UNESCO Institute for Statistics", desc: "교육, 과학, 문화, 커뮤니케이션 분야 국제 통계.", url: "http://uis.unesco.org/", tags: ["intl"] },
+  { cat: "국제기구", name: "FAO (식량농업기구) FAOSTAT", desc: "전 세계 식량, 농업, 임업, 어업, 영양 통계.", url: "https://www.fao.org/faostat/", tags: ["intl"] },
+  { cat: "국제기구", name: "UNHCR Refugee Statistics", desc: "유엔난민기구. 난민, 실향민, 무국적자 통계.", url: "https://www.unhcr.org/refugee-statistics/", tags: ["intl"] },
+  { cat: "국제기구", name: "Eurostat", desc: "유럽연합 통계청. EU 회원국 경제·사회·인구 통계.", url: "https://ec.europa.eu/eurostat", tags: ["intl"] },
+  { cat: "국제기구", name: "SIPRI (군비지출 데이터)", desc: "스톡홀름 국제평화연구소. 군사비, 무기 거래, 분쟁 데이터.", url: "https://www.sipri.org/databases", tags: ["intl"] },
+  { cat: "국제기구", name: "V-Dem (민주주의 다양성)", desc: "전 세계 민주주의 지표 데이터. 정치체제 비교 연구.", url: "https://www.v-dem.net/", tags: ["intl"] },
+  { cat: "국제기구", name: "Transparency International CPI", desc: "국가별 부패인식지수(CPI). 반부패 관련 데이터.", url: "https://www.transparency.org/cpi", tags: ["intl"] },
+
+  // ===== 해외 오픈 데이터 =====
+  { cat: "해외오픈데이터", name: "Data.gov (미국)", desc: "미국 연방정부 공공데이터. 300,000+ 데이터셋.", url: "https://data.gov/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "data.gov.uk (영국)", desc: "영국 정부 오픈데이터 포털.", url: "https://www.data.gov.uk/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Data.europa.eu", desc: "유럽 오픈데이터 포털. EU 기관 및 회원국 데이터.", url: "https://data.europa.eu/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Google Dataset Search", desc: "구글 데이터셋 검색 엔진. 전 세계 공개 데이터셋 통합 검색.", url: "https://datasetsearch.research.google.com/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Kaggle Datasets", desc: "머신러닝·데이터과학 커뮤니티. 수만 건 공개 데이터셋.", url: "https://www.kaggle.com/datasets", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "DataHub.io", desc: "고품질 오픈데이터 패키지. 경제, 인구, 환경 등 큐레이션.", url: "https://datahub.io/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Our World in Data", desc: "옥스퍼드대. 빈곤, 건강, 교육, 환경 등 글로벌 데이터 시각화·분석.", url: "https://ourworldindata.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Humanitarian Data Exchange (HDX)", desc: "UN OCHA. 인도주의 위기 관련 데이터 공유 플랫폼.", url: "https://data.humdata.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "ACLED (무력충돌 데이터)", desc: "전 세계 정치적 폭력·시위 이벤트 데이터. 지역·유형별 분류.", url: "https://acleddata.com/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "OpenCorporates", desc: "전 세계 기업 등록 정보 오픈 데이터베이스. 2억+ 기업.", url: "https://opencorporates.com/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "GDELT Project", desc: "전 세계 뉴스 이벤트 실시간 데이터베이스. 감성 분석 포함.", url: "https://www.gdeltproject.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Open Spending", desc: "전 세계 정부 재정 지출 데이터 오픈 플랫폼.", url: "https://openspending.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Global Forest Watch", desc: "전 세계 산림 파괴·변화 실시간 모니터링 데이터.", url: "https://www.globalforestwatch.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Climate Watch", desc: "세계자원연구소(WRI). 온실가스 배출, 기후 정책, NDC 데이터.", url: "https://www.climatewatchdata.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "US Census Bureau", desc: "미국 인구총조사 데이터. 인구, 주거, 경제 통계.", url: "https://data.census.gov/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "FRED (Federal Reserve Economic Data)", desc: "세인트루이스 연준. 미국 및 글로벌 경제 시계열 데이터 800,000+.", url: "https://fred.stlouisfed.org/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "Gapminder", desc: "한스 로슬링. 전 세계 국가별 건강, 부, 인구 시계열 데이터 시각화.", url: "https://www.gapminder.org/data/", tags: ["intl"] },
+  { cat: "해외오픈데이터", name: "OpenStreetMap", desc: "전 세계 지리 데이터를 자유롭게 사용·편집 가능한 오픈소스 지도.", url: "https://www.openstreetmap.org/", tags: ["intl"] },
+
+  // ===== 저널리즘 =====
+  { cat: "저널리즘", name: "GIJN Data Journalism Top 10", desc: "Global Investigative Journalism Network. 데이터 저널리즘 최신 사례 주간 선정.", url: "https://gijn.org/topic/data-journalism-top-10/", tags: ["intl"] },
+  { cat: "저널리즘", name: "IRE Past Award Winners", desc: "Investigative Reporters & Editors. 탐사보도 수상작 아카이브.", url: "https://www.ire.org/awards/past-award-winners/", tags: ["intl"] },
+  { cat: "저널리즘", name: "DataJournalism.com", desc: "European Journalism Centre. 데이터 저널리즘 교육·자료·커뮤니티.", url: "https://datajournalism.com/", tags: ["intl"] },
+  { cat: "저널리즘", name: "ICIJ (국제탐사보도언론인협회)", desc: "파나마 페이퍼스 등 세계적 협업 탐사보도. 오프쇼어 리크스 DB.", url: "https://www.icij.org/", tags: ["intl"] },
+  { cat: "저널리즘", name: "ICIJ Offshore Leaks Database", desc: "역외 금융 비밀 문서 검색. 조세피난처 기업·인물 조회.", url: "https://offshoreleaks.icij.org/", tags: ["intl"] },
+  { cat: "저널리즘", name: "한국 데이터저널리즘 어워드", desc: "한국 데이터 저널리즘 수상작 아카이브.", url: "https://datajournalismawards.kr/award_list/", tags: ["kr"] },
+  { cat: "저널리즘", name: "뉴스타파", desc: "한국탐사저널리즘센터. 심층 탐사보도와 데이터저널리즘 특화.", url: "https://newstapa.org/", tags: ["kr"] },
+  { cat: "저널리즘", name: "GIJN Resource Center", desc: "데이터 저널리즘 팁시트, 가이드, 교육 동영상 2,000+ 건.", url: "https://gijn.org/resource/", tags: ["intl"] },
+  { cat: "저널리즘", name: "ProPublica Data Store", desc: "ProPublica의 조사보도용 데이터 및 도구 공개.", url: "https://www.propublica.org/datastore/", tags: ["intl"] },
+  { cat: "저널리즘", name: "The Markup Citizen Browser", desc: "플랫폼 알고리즘 감시 프로젝트.", url: "https://themarkup.org/series/citizen-browser", tags: ["intl"] },
+  { cat: "저널리즘", name: "Bellingcat Tools & Resources", desc: "오픈소스 인텔리전스(OSINT) 도구·가이드 모음.", url: "https://www.bellingcat.com/category/resources/", tags: ["intl", "new"] },
+  { cat: "저널리즘", name: "취재보도용 AI 도구 가이드", desc: "이종혁 교수 제작. 취재 단계별 AI 도구 모음.", url: "https://jonghhhh.github.io/test/journalism_ai.html", tags: ["kr", "new"] },
+
+  // ===== 시각화 도구 =====
+  { cat: "시각화도구", name: "Datawrapper", desc: "코딩 없이 차트, 맵, 테이블 제작. 뉴스룸 표준 도구.", url: "https://www.datawrapper.de/", tags: ["intl"] },
+  { cat: "시각화도구", name: "Flourish", desc: "인터랙티브 차트, 맵, 스토리 제작. 템플릿 다양.", url: "https://flourish.studio/", tags: ["intl"] },
+  { cat: "시각화도구", name: "Tableau Public", desc: "강력한 시각화 플랫폼. 무료 공개 버전. 대시보드 공유.", url: "https://public.tableau.com/", tags: ["intl"] },
+  { cat: "시각화도구", name: "Observable", desc: "D3.js 기반 데이터 시각화·분석 노트북. 협업 지원.", url: "https://observablehq.com/", tags: ["intl"] },
+  { cat: "시각화도구", name: "Kepler.gl", desc: "Uber 개발 지리 데이터 시각화. 대용량 지도 시각화.", url: "https://kepler.gl/", tags: ["intl"] },
+  { cat: "시각화도구", name: "Napkin AI", desc: "텍스트를 시각 다이어그램으로 자동 변환. AI 시각화.", url: "https://www.napkin.ai/", tags: ["intl", "new"] },
+  { cat: "시각화도구", name: "Chartmaker Directory", desc: "차트 유형별 소프트웨어 비교 매트릭스.", url: "https://chartmaker.visualisingdata.com/", tags: ["intl"] },
+  { cat: "시각화도구", name: "From Data to Viz", desc: "데이터 유형에 맞는 최적 시각화 선택 가이드.", url: "https://www.data-to-viz.com/", tags: ["intl"] },
+  { cat: "시각화도구", name: "RAWGraphs", desc: "오픈소스 데이터 시각화 프레임워크. 비정형 차트 지원.", url: "https://rawgraphs.io/", tags: ["intl"] },
+  { cat: "시각화도구", name: "Gephi", desc: "오픈소스 네트워크 분석·시각화. 그래프 탐색.", url: "https://gephi.org/", tags: ["intl"] },
+];
+
+// ===== RENDER =====
+const categories = [...new Set(DATA.map(d => d.cat))];
+const catIcons = {
+  "종합": "📊", "경제·금융": "💰", "사회·복지": "🏥", "교육": "🎓",
+  "환경·에너지": "🌿", "교통·국토": "🚗", "법률·행정": "⚖️",
+  "미디어·여론": "📰", "과학·특허": "🔬", "국제기구": "🌐",
+  "해외오픈데이터": "🗂️", "저널리즘": "🔍", "시각화도구": "📈"
+};
+const catColors = {
+  "종합": "#4f8ff7", "경제·금융": "#f59e0b", "사회·복지": "#f472b6", "교육": "#a78bfa",
+  "환경·에너지": "#34d399", "교통·국토": "#22d3ee", "법률·행정": "#f87171",
+  "미디어·여론": "#fb923c", "과학·특허": "#818cf8", "국제기구": "#4f8ff7",
+  "해외오픈데이터": "#7c5cfc", "저널리즘": "#f472b6", "시각화도구": "#34d399"
+};
+
+function renderAll(filter = "all", search = "") {
+  const container = document.getElementById("content");
+  const q = search.toLowerCase();
+  let totalShown = 0;
+
+  let html = "";
+  categories.forEach(cat => {
+    if (filter !== "all" && filter !== cat) return;
+    let items = DATA.filter(d => d.cat === cat);
+    if (q) {
+      items = items.filter(d =>
+        d.name.toLowerCase().includes(q) ||
+        d.desc.toLowerCase().includes(q) ||
+        d.url.toLowerCase().includes(q) ||
+        d.cat.toLowerCase().includes(q)
+      );
+    }
+    if (!items.length) return;
+    totalShown += items.length;
+
+    html += `<div class="section">
+      <div class="section-header">
+        <div class="section-icon" style="background:${catColors[cat]}22;color:${catColors[cat]}">${catIcons[cat] || "📁"}</div>
+        <div class="section-title">${cat}</div>
+        <div class="section-count">${items.length}건</div>
+      </div>
+      <div class="grid">`;
+
+    items.forEach(d => {
+      const tagHtml = d.tags.map(t => {
+        if (t === "kr") return '<span class="tag tag-kr">🇰🇷 국내</span>';
+        if (t === "intl") return '<span class="tag tag-intl">🌐 해외</span>';
+        if (t === "new") return '<span class="tag tag-new">✨ 신규</span>';
+        return "";
+      }).join("");
+
+      html += `<div class="card">
+        <div class="card-name">${d.name}</div>
+        <div class="card-desc">${d.desc}</div>
+        <a class="card-url" href="${d.url}" target="_blank" rel="noopener">${d.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>
+        <div class="card-tags">${tagHtml}</div>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html || '<div style="text-align:center;padding:3rem;color:var(--text-muted)">검색 결과가 없습니다.</div>';
+  document.getElementById("statsBar").textContent = `총 ${DATA.length}개 사이트 중 ${totalShown}개 표시`;
+}
+
+// Event listeners
+document.getElementById("searchInput").addEventListener("input", e => {
+  const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
+  renderAll(activeFilter, e.target.value);
+});
+
+document.getElementById("filterBar").addEventListener("click", e => {
+  if (!e.target.classList.contains("filter-btn")) return;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  e.target.classList.add("active");
+  renderAll(e.target.dataset.filter, document.getElementById("searchInput").value);
+});
+
+renderAll();
+</script>
+</body>
+</html>

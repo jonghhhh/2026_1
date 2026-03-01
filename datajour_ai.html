@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journalism AI & API Guide 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --header-bg: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] {
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --text: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border: #334155;
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --header-bg: rgba(15, 23, 42, 0.8);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* Header */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--header-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box input {
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--text);
+    width: 250px;
+    font-size: 0.9rem;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.icon-btn:hover {
+    background-color: var(--border);
+}
+
+/* Main Content */
+main {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tab-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tab-btn.active, .tab-btn:hover {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-chip {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.filter-chip.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.stats {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+}
+
+.type-ai {
+    background-color: #e0e7ff;
+    color: #4338ca;
+}
+
+.type-api {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+[data-theme="dark"] .type-ai {
+    background-color: #312e81;
+    color: #e0e7ff;
+}
+
+[data-theme="dark"] .type-api {
+    background-color: #14532d;
+    color: #dcfce7;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.card-category {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.card-desc {
+    font-size: 0.95rem;
+    color: var(--text);
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.card-link:hover {
+    text-decoration: underline;
+}
+
+.tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    background-color: var(--bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+    }
+    .search-box input {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fa-solid fa-robot"></i>
+                <h1>Journalism AI & API Guide</h1>
+            </div>
+            <div class="controls">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search tools & APIs...">
+                </div>
+                <button id="themeToggle" class="icon-btn" aria-label="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="all">All</button>
+            <button class="tab-btn" data-tab="ai">AI Tools</button>
+            <button class="tab-btn" data-tab="api">APIs</button>
+        </div>
+
+        <div class="filters" id="categoryFilters">
+            <- 4: 매우 심각한 위반 ( 삭제 권고 Categories will be injected here -->
+        </div>
+
+        <div class="stats">
+            Showing <span id="count">0</span> tools
+        </div>
+
+        <div class="grid" id="toolsGrid">
+            <- 4: 매우 심각한 위반 ( 삭제 권고 Cards will be injected here -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Journalism AI Guide. Created by Lee Jong-hyuk & AI.</p>
+        </div>
+    </footer>
+
+    <script>
+// Data
+const allTools = [
+  {
+    "name": "ChatGPT",
+    "url": "https://chat.openai.com",
+    "category": "리서치",
+    "description": "특징: 범용 AI, GPT-4o/o1 모델, 웹 검색 기능 | 활용: 브레인스토밍, 아이디어 다각화, 초안 작성, 코드 생성",
+    "type": "AI"
+  },
+  {
+    "name": "Claude",
+    "url": "https://claude.ai",
+    "category": "리서치",
+    "description": "특징: Anthropic, 200K 컨텍스트, 문서 처리 우수 | 활용: 회의록 요약, 복잡한 정책 분석, 긴 문서 처리",
+    "type": "AI"
+  },
+  {
+    "name": "Gemini 2.5 Pro",
+    "url": "https://gemini.google.com",
+    "category": "리서치",
+    "description": "특징: 200만 토큰, Python 실행, Deep Research | 활용: 대량 문서 분석, 코드 생성 및 실행",
+    "type": "AI"
+  },
+  {
+    "name": "Perplexity",
+    "url": "https://perplexity.ai",
+    "category": "리서치",
+    "description": "특징: 실시간 검색+AI 요약, 출처 명시 | 활용: 최신 이슈 파악, 팩트체크",
+    "type": "AI"
+  },
+  {
+    "name": "Genspark",
+    "url": "https://genspark.ai",
+    "category": "리서치",
+    "description": "특징: Sparkpages, Deep Research, 1000+ 출처 분석 | 활용: 종합 리서치, 슬라이드 자동 생성",
+    "type": "AI"
+  },
+  {
+    "name": "NotebookLM",
+    "url": "https://notebooklm.google.com",
+    "category": "리서치",
+    "description": "특징: 50개 소스 통합, Audio/Video Overviews | 활용: 취재 자료 통합, 팟캐스트/영상 자동 생성",
+    "type": "AI"
+  },
+  {
+    "name": "Satchel",
+    "url": "https://satchelai.com",
+    "category": "리서치",
+    "description": "특징: 공공회의 자동 요약 특화 | 활용: 지방의회, 정부 회의록 분석",
+    "type": "AI"
+  },
+  {
+    "name": "AURA",
+    "url": "https://journalismai.info",
+    "category": "리서치",
+    "description": "특징: 기자용 AI 리서치 도구 | 활용: 복잡한 주제 구조화, Q&A 탐색",
+    "type": "AI"
+  },
+  {
+    "name": "Rolli",
+    "url": "https://rolli.ai",
+    "category": "리서치",
+    "description": "특징: 전문가 DB + 디스인포 추적 | 활용: 전문가 찾기, SNS 허위정보 추적",
+    "type": "AI"
+  },
+  {
+    "name": "Pinpoint",
+    "url": "https://journaliststudio.google.com/pinpoint",
+    "category": "리서치",
+    "description": "특징: Google 조사보도, 대량 문서 검색 | 활용: 문서/이미지/오디오 검색",
+    "type": "AI"
+  },
+  {
+    "name": "Powerdrill Bloom",
+    "url": "https://powerdrill.ai",
+    "category": "데이터 분석",
+    "description": "특징: AI 데이터 분석, 자동 시각화, 100배 빠른 분석 | 활용: 데이터셋→인사이트 자동 발견",
+    "type": "AI"
+  },
+  {
+    "name": "Julius AI",
+    "url": "https://julius.ai",
+    "category": "데이터 분석",
+    "description": "특징: 스프레드시트/CSV 직관적 분석 | 활용: 복잡한 데이터 쉽게 해석",
+    "type": "AI"
+  },
+  {
+    "name": "Datawrapper",
+    "url": "https://datawrapper.de",
+    "category": "데이터 분석",
+    "description": "특징: 노코드 차트/지도, 언론사 애용 | 활용: 뉴스용 시각화, 임베드",
+    "type": "AI"
+  },
+  {
+    "name": "Flourish",
+    "url": "https://flourish.studio",
+    "category": "데이터 분석",
+    "description": "특징: 인터랙티브 그래픽, 타임라인, 맵 | 활용: 데이터 스토리텔링",
+    "type": "AI"
+  },
+  {
+    "name": "Tableau",
+    "url": "https://tableau.com",
+    "category": "데이터 분석",
+    "description": "특징: AI 기반 분석, Einstein AI | 활용: 고급 분석, 패턴 자동 발견",
+    "type": "AI"
+  },
+  {
+    "name": "Graphext",
+    "url": "https://graphext.com",
+    "category": "데이터 분석",
+    "description": "특징: 노코드 데이터 사이언스, 클러스터링 | 활용: 네트워크 분석, 트렌드 발견",
+    "type": "AI"
+  },
+  {
+    "name": "Microsoft Power BI",
+    "url": "https://powerbi.microsoft.com",
+    "category": "데이터 분석",
+    "description": "특징: AI 데이터 분석, 대시보드 | 활용: 리포트, 실시간 모니터링",
+    "type": "AI"
+  },
+  {
+    "name": "Felt",
+    "url": "https://felt.com",
+    "category": "데이터 분석",
+    "description": "특징: 협업 지도 제작, 데이터 시각화 | 활용: 지리 데이터 보도",
+    "type": "AI"
+  },
+  {
+    "name": "Browse AI",
+    "url": "https://browse.ai",
+    "category": "데이터 분석",
+    "description": "특징: 2분 만에 웹 스크래핑 로봇 훈련 | 활용: 정기 데이터 수집 자동화",
+    "type": "AI"
+  },
+  {
+    "name": "네이버 클로바노트",
+    "url": "https://clovanote.naver.com",
+    "category": "녹취/전사",
+    "description": "특징: 화자 구분, 요약, 한국어 특화 | 활용: 인터뷰, 회의 녹취",
+    "type": "AI"
+  },
+  {
+    "name": "다글로",
+    "url": "https://daglo.ai",
+    "category": "녹취/전사",
+    "description": "특징: 한국 1등 AI 플랫폼 | 활용: 다국어 지원, 실시간 협업",
+    "type": "AI"
+  },
+  {
+    "name": "Notta",
+    "url": "https://notta.ai",
+    "category": "녹취/전사",
+    "description": "특징: 98.86% 정확도, Zoom/Meet 연동 | 활용: 온라인 회의 녹취",
+    "type": "AI"
+  },
+  {
+    "name": "HappyScribe",
+    "url": "https://happyscribe.com",
+    "category": "녹취/전사",
+    "description": "특징: 85% 정확도, 45개 형식 지원 | 활용: 오디오/비디오 전사, 자막",
+    "type": "AI"
+  },
+  {
+    "name": "Sonix",
+    "url": "https://sonix.ai",
+    "category": "녹취/전사",
+    "description": "특징: 40개 언어, 10분 내 전사 | 활용: 팟캐스트, 인터뷰 전사",
+    "type": "AI"
+  },
+  {
+    "name": "Otter.ai",
+    "url": "https://otter.ai",
+    "category": "녹취/전사",
+    "description": "특징: 영어 특화, 실시간 전사 | 활용: 영어 인터뷰, 국제 회의",
+    "type": "AI"
+  },
+  {
+    "name": "Descript",
+    "url": "https://descript.com",
+    "category": "녹취/전사",
+    "description": "특징: 텍스트 편집→비디오 편집 | 활용: 팟캐스트, 영상 제작",
+    "type": "AI"
+  },
+  {
+    "name": "DeepL",
+    "url": "https://deepl.com",
+    "category": "번역",
+    "description": "특징: 고품질 AI 번역, 한↔영 최고 | 활용: 해외 기사, 보고서 번역",
+    "type": "AI"
+  },
+  {
+    "name": "Papago",
+    "url": "https://papago.naver.com",
+    "category": "번역",
+    "description": "특징: 네이버, 한중일 특화 | 활용: 동아시아 언어",
+    "type": "AI"
+  },
+  {
+    "name": "Google Translate",
+    "url": "https://translate.google.com",
+    "category": "번역",
+    "description": "특징: 100개 언어, 무료 | 활용: 다양한 언어 빠른 번역",
+    "type": "AI"
+  },
+  {
+    "name": "ChatGPT/Claude",
+    "url": "https://chat.openai.com",
+    "category": "기사작성",
+    "description": "특징: 범용 AI 글쓰기 | 활용: 초안, 구조 제안, 리드문",
+    "type": "AI"
+  },
+  {
+    "name": "QuillBot",
+    "url": "https://quillbot.com",
+    "category": "기사작성",
+    "description": "특징: 패러프레이징, 문법 검사 | 활용: 문장 다듬기",
+    "type": "AI"
+  },
+  {
+    "name": "Grammarly",
+    "url": "https://grammarly.com",
+    "category": "기사작성",
+    "description": "특징: 영문 문법, 톤 검사 | 활용: 영문 기사 교정",
+    "type": "AI"
+  },
+  {
+    "name": "부산대 맞춤법",
+    "url": "http://speller.cs.pusan.ac.kr",
+    "category": "기사작성",
+    "description": "특징: 한국어 맞춤법, 띄어쓰기 | 활용: 한국어 기사 교정",
+    "type": "AI"
+  },
+  {
+    "name": "Google Fact Check Explorer",
+    "url": "https://toolbox.google.com/factcheck",
+    "category": "사실검증",
+    "description": "특징: 기존 팩트체크 검색 | 활용: 바이럴 주장 검증",
+    "type": "AI"
+  },
+  {
+    "name": "InVID-WeVerify",
+    "url": "https://www.invid-project.eu",
+    "category": "사실검증",
+    "description": "특징: 이미지/비디오 검증 | 활용: 영상 진위 확인",
+    "type": "AI"
+  },
+  {
+    "name": "GeoSpy",
+    "url": "https://geospy.ai",
+    "category": "사실검증",
+    "description": "특징: 사진 위치 추정 | 활용: 사진 촬영 위치 확인",
+    "type": "AI"
+  },
+  {
+    "name": "Deepfake-o-Meter",
+    "url": "https://deepfake-o-meter.org",
+    "category": "사실검증",
+    "description": "특징: 이미지/비디오/오디오 확인 | 활용: 딥페이크 여부",
+    "type": "AI"
+  },
+  {
+    "name": "Canva AI",
+    "url": "https://canva.com",
+    "category": "멀티미디어",
+    "description": "특징: 디자인 템플릿 + AI | 활용: 소셜미디어 그래픽",
+    "type": "AI"
+  },
+  {
+    "name": "DALL-E 3",
+    "url": "https://openai.com/dall-e-3",
+    "category": "멀티미디어",
+    "description": "특징: 텍스트→이미지 | 활용: 인포그래픽, 일러스트",
+    "type": "AI"
+  },
+  {
+    "name": "CapCut AI",
+    "url": "https://capcut.com",
+    "category": "멀티미디어",
+    "description": "특징: 자동 편집, 자막 생성 | 활용: 소셜미디어 편집",
+    "type": "AI"
+  },
+  {
+    "name": "Lumen5",
+    "url": "https://lumen5.com",
+    "category": "멀티미디어",
+    "description": "특징: 기사→비디오 자동 | 활용: 기사 영상화",
+    "type": "AI"
+  },
+  {
+    "name": "Hootsuite",
+    "url": "https://hootsuite.com",
+    "category": "소셜미디어",
+    "description": "특징: AI 캡션, 일정 관리 | 활용: 소셜미디어 통합 관리",
+    "type": "AI"
+  },
+  {
+    "name": "Google Analytics 4",
+    "url": "https://analytics.google.com",
+    "category": "독자분석",
+    "description": "특징: AI 인사이트, 독자 행동 | 활용: 웹사이트 성과 분석",
+    "type": "AI"
+  },
+  {
+    "name": "Microsoft Clarity",
+    "url": "https://clarity.microsoft.com",
+    "category": "독자분석",
+    "description": "특징: 히트맵, 세션 녹화 | 활용: 독자 경험 개선",
+    "type": "AI"
+  },
+  {
+    "name": "점프 투 파이썬",
+    "url": "https://wikidocs.net/book/1",
+    "category": "코딩학습",
+    "description": "특징: 무료 한국어 Python 튜토리얼 | 활용: Python 기초부터 고급까지",
+    "type": "AI"
+  },
+  {
+    "name": "생활코딩",
+    "url": "https://opentutorials.org",
+    "category": "코딩학습",
+    "description": "특징: HTML부터 AWS까지 웹 개발 | 활용: 초보자도 이해하기 쉬운 설명",
+    "type": "AI"
+  },
+  {
+    "name": "Python 공식 문서",
+    "url": "https://docs.python.org/ko/3/",
+    "category": "코딩학습",
+    "description": "특징: Python 공식 튜토리얼 (한국어) | 활용: Python 표준 라이브러리 학습",
+    "type": "AI"
+  },
+  {
+    "name": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
+    "category": "코딩학습",
+    "description": "특징: HTML, CSS, JavaScript 공식 문서 | 활용: 웹 기술 종합 레퍼런스",
+    "type": "AI"
+  },
+  {
+    "name": "CodeOnWeb",
+    "url": "https://codeonweb.com",
+    "category": "코딩학습",
+    "description": "특징: 브라우저에서 10개 언어 실행 | 활용: 온라인 코딩 실습",
+    "type": "AI"
+  },
+  {
+    "name": "코드아카데미 (Codecademy)",
+    "url": "https://www.codecademy.com",
+    "category": "코딩학습",
+    "description": "특징: 인터랙티브 코딩 학습 | 활용: 다양한 언어 실전 학습",
+    "type": "AI"
+  },
+  {
+    "name": "freeCodeCamp",
+    "url": "https://www.freecodecamp.org",
+    "category": "코딩학습",
+    "description": "특징: 무료 풀스택 웹 개발 커리큘럼 | 활용: 프로젝트 기반 학습",
+    "type": "AI"
+  },
+  {
+    "name": "Coursera",
+    "url": "https://www.coursera.org",
+    "category": "코딩학습",
+    "description": "특징: 대학 수준 프로그래밍 강의 | 활용: 전문적인 CS 교육",
+    "type": "AI"
+  },
+  {
+    "name": "edX",
+    "url": "https://www.edx.org",
+    "category": "코딩학습",
+    "description": "특징: MIT, Harvard 등 명문대 강의 | 활용: Python, CS 전문 교육",
+    "type": "AI"
+  },
+  {
+    "name": "인프런",
+    "url": "https://www.inflearn.com",
+    "category": "코딩학습",
+    "description": "특징: 한국어 코딩 강의 플랫폼 | 활용: Python, JS, AI 학습",
+    "type": "AI"
+  },
+  {
+    "name": "코드트리",
+    "url": "https://codetree.ai",
+    "category": "코딩학습",
+    "description": "특징: 알고리즘 문제 풀이 플랫폼 | 활용: 코딩 테스트 준비",
+    "type": "AI"
+  },
+  {
+    "name": "Python Tutor",
+    "url": "https://pythontutor.com",
+    "category": "코딩학습",
+    "description": "특징: 코드 실행 과정 시각화 | 활용: Python/JS 코드 이해",
+    "type": "AI"
+  },
+  {
+    "name": "W3Schools",
+    "url": "https://www.w3schools.com",
+    "category": "코딩학습",
+    "description": "특징: 웹 기술 튜토리얼 + 연습 | 활용: HTML/CSS/JS 빠른 학습",
+    "type": "AI"
+  },
+  {
+    "name": "Stack Overflow",
+    "url": "https://stackoverflow.com",
+    "category": "코딩학습",
+    "description": "특징: 개발자 Q&A 커뮤니티 | 활용: 코딩 문제 해결",
+    "type": "AI"
+  },
+  {
+    "name": "GitHub",
+    "url": "https://github.com",
+    "category": "코딩학습",
+    "description": "특징: 코드 저장소 + 협업 | 활용: 버전 관리, 오픈소스",
+    "type": "AI"
+  },
+  {
+    "name": "Replit",
+    "url": "https://replit.com",
+    "category": "코딩학습",
+    "description": "특징: 브라우저 IDE, 50개 언어 | 활용: 즉시 코딩 시작",
+    "type": "AI"
+  },
+  {
+    "name": "Google Colab",
+    "url": "https://colab.research.google.com",
+    "category": "코딩학습",
+    "description": "특징: 무료 GPU, Jupyter Notebook | 활용: Python 데이터 분석, ML",
+    "type": "AI"
+  },
+  {
+    "name": "Libraries.io",
+    "url": "https://libraries.io",
+    "category": "패키지추적",
+    "description": "특징: 32개 패키지 매니저 통합 추적 | 활용: Python, npm, Ruby 등 업데이트 알림",
+    "type": "AI"
+  },
+  {
+    "name": "PyPI RSS",
+    "url": "https://pypi.org/rss/updates.xml",
+    "category": "패키지추적",
+    "description": "특징: Python 패키지 RSS 피드 | 활용: PyPI 새 릴리즈 추적",
+    "type": "AI"
+  },
+  {
+    "name": "npm-check-updates",
+    "url": "https://www.npmjs.com/package/npm-check-updates",
+    "category": "패키지추적",
+    "description": "특징: npm 패키지 업데이트 체커 | 활용: package.json 자동 업데이트",
+    "type": "AI"
+  },
+  {
+    "name": "Dependabot (GitHub)",
+    "url": "https://github.com/dependabot",
+    "category": "패키지추적",
+    "description": "특징: GitHub 자동 의존성 업데이트 | 활용: 보안 취약점 자동 수정",
+    "type": "AI"
+  },
+  {
+    "name": "Snyk",
+    "url": "https://snyk.io",
+    "category": "패키지추적",
+    "description": "특징: 보안 취약점 + 업데이트 추적 | 활용: 패키지 보안 모니터링",
+    "type": "AI"
+  },
+  {
+    "name": "Renovate",
+    "url": "https://www.mend.io/renovate/",
+    "category": "패키지추적",
+    "description": "특징: 자동 의존성 업데이트 봇 | 활용: PR 자동 생성",
+    "type": "AI"
+  },
+  {
+    "name": "PyUp",
+    "url": "https://pyup.io",
+    "category": "패키지추적",
+    "description": "특징: Python 의존성 보안 스캔 | 활용: requirements.txt 자동 업데이트",
+    "type": "AI"
+  },
+  {
+    "name": "Greenkeeper",
+    "url": "https://greenkeeper.io",
+    "category": "패키지추적",
+    "description": "특징: npm 실시간 의존성 업데이트 | 활용: package.json 자동 PR",
+    "type": "AI"
+  },
+  {
+    "name": "VersionEye",
+    "url": "https://www.versioneye.com",
+    "category": "패키지추적",
+    "description": "특징: 22개 패키지 매니저 지원 | 활용: 의존성 알림",
+    "type": "AI"
+  },
+  {
+    "name": "Anitya",
+    "url": "https://release-monitoring.org",
+    "category": "패키지추적",
+    "description": "특징: Fedora 릴리즈 모니터링 | 활용: 오픈소스 릴리즈 추적",
+    "type": "AI"
+  },
+  {
+    "name": "pip list --outdated",
+    "url": "https://pip.pypa.io",
+    "category": "패키지추적",
+    "description": "특징: pip 내장 업데이트 체크 | 활용: CLI로 오래된 패키지 확인",
+    "type": "AI"
+  },
+  {
+    "name": "npm outdated",
+    "url": "https://docs.npmjs.com",
+    "category": "패키지추적",
+    "description": "특징: npm 내장 업데이트 체크 | 활용: CLI로 오래된 패키지 확인",
+    "type": "AI"
+  },
+  {
+    "name": "Notion",
+    "url": "https://notion.so",
+    "category": "고급/시스템",
+    "description": "특징: AI 노트+DB, 자동화 | 활용: 취재원 관리, 팀 협업",
+    "type": "AI"
+  },
+  {
+    "name": "Airtable",
+    "url": "https://airtable.com",
+    "category": "고급/시스템",
+    "description": "특징: 스프레드시트+DB, AI | 활용: 데이터베이스 구축",
+    "type": "AI"
+  },
+  {
+    "name": "Ollama",
+    "url": "https://ollama.com",
+    "category": "고급/시스템",
+    "description": "특징: 로컬 LLM 실행 | 활용: 민감 데이터 분석",
+    "type": "AI"
+  },
+  {
+    "name": "LangChain",
+    "url": "https://langchain.com",
+    "category": "고급/시스템",
+    "description": "특징: LLM 앱 개발 프레임워크 | 활용: RAG 시스템 구축",
+    "type": "AI"
+  },
+  {
+    "name": "ChromaDB",
+    "url": "https://trychroma.com",
+    "category": "고급/시스템",
+    "description": "특징: 벡터 데이터베이스 | 활용: 자사 아카이브 RAG",
+    "type": "AI"
+  },
+  {
+    "name": "NewsAPI",
+    "url": "https://newsapi.org",
+    "description": "전 세계 80,000+ 소스의 뉴스 기사 검색 및 수집. 키워드, 언어, 날짜별 필터링 제공.\n\n💡 활용: 특정 이슈에 대한 글로벌 보도 흐름 파악, 키워드 알림 봇 제작.",
+    "category": "뉴스 수집",
+    "type": "API"
+  },
+  {
+    "name": "NewsCatcher API",
+    "url": "https://newscatcherapi.com",
+    "description": "150개국 20,000+ 소스에서 실시간 뉴스 수집. NLP 기반 토픽 분류 및 중복 제거.\n\n💡 활용: 틈새 시장이나 특정 산업군 뉴스 모니터링, 경쟁사 보도 분석.",
+    "category": "뉴스 수집",
+    "type": "API"
+  },
+  {
+    "name": "Media Cloud",
+    "url": "https://mediacloud.org",
+    "description": "미디어 생태계 분석을 위한 오픈소스 플랫폼. 특정 주제의 보도량, 주목도, 언어 사용 패턴 분석.\n\n💡 활용: 장기간의 이슈 생명주기 분석, 프레임 분석, 언론사 간 논조 비교.",
+    "category": "뉴스 수집",
+    "type": "API"
+  },
+  {
+    "name": "Google Trends API",
+    "url": "https://pypi.org/project/pytrends/",
+    "description": "(비공식) 구글 검색 트렌드 데이터 접근. 지역별, 시간별 검색어 관심도 추적.\n\n💡 활용: 대중의 관심사 변화 감지, 기획 기사 아이템 발굴, 선거철 여론 추이 분석.",
+    "category": "뉴스 수집",
+    "type": "API"
+  },
+  {
+    "name": "Webz.io",
+    "url": "https://webz.io",
+    "description": "다크웹, 블로그, 포럼 등 오픈 웹 데이터 수집.\n\n💡 활용: 탐사 보도, 리스크 모니터링, 여론 형성 과정 추적.",
+    "category": "뉴스 수집",
+    "type": "API"
+  },
+  {
+    "name": "OpenAI API",
+    "url": "https://openai.com/api",
+    "description": "GPT-4, DALL-E 3 등 최신 LLM 및 이미지 생성 모델. 텍스트 생성, 요약, 번역, 코드 작성.\n\n💡 활용: 기사 초안 작성, 제목 추천, 긴 보고서 요약, 보도자료 자동 변환, 삽화 생성.",
+    "category": "콘텐츠 제작",
+    "type": "API"
+  },
+  {
+    "name": "Anthropic Claude API",
+    "url": "https://www.anthropic.com/api",
+    "description": "긴 문맥(Context Window) 처리에 강점. 자연스러운 문장 생성 및 분석.\n\n💡 활용: 방대한 취재 자료(녹취록, 논문) 분석 및 요약, 심층 기사 구조화 지원.",
+    "category": "콘텐츠 제작",
+    "type": "API"
+  },
+  {
+    "name": "DeepL API",
+    "url": "https://www.deepl.com/pro-api",
+    "description": "고품질 신경망 번역. 뉘앙스를 살린 자연스러운 번역 제공.\n\n💡 활용: 외신 기사 신속 번역, 다국어 뉴스 서비스 제공, 글로벌 취재원 인터뷰 번역.",
+    "category": "콘텐츠 제작",
+    "type": "API"
+  },
+  {
+    "name": "Google Cloud Speech-to-Text",
+    "url": "https://cloud.google.com/speech-to-text",
+    "description": "125개 이상 언어 지원, 높은 정확도의 음성 인식 및 텍스트 변환.\n\n💡 활용: 인터뷰 녹취록 자동 작성, 영상 자막 생성, 팟캐스트 스크립트 추출.",
+    "category": "콘텐츠 제작",
+    "type": "API"
+  },
+  {
+    "name": "Whisper (OpenAI)",
+    "url": "https://github.com/openai/whisper",
+    "description": "오픈소스 음성 인식 모델. 다국어 지원 및 높은 정확도 (API 및 로컬 구동 가능).\n\n💡 활용: 보안이 중요한 취재원 인터뷰의 로컬 텍스트 변환.",
+    "category": "콘텐츠 제작",
+    "type": "API"
+  },
+  {
+    "name": "Datawrapper API",
+    "url": "https://developer.datawrapper.de",
+    "description": "차트, 지도, 표를 쉽게 생성. 반응형 디자인 지원. 뉴스룸에서 가장 많이 사용.\n\n💡 활용: 실시간 데이터(선거 개표, 코로나 현황) 연동 차트 자동 업데이트 및 배포.",
+    "category": "데이터 분석",
+    "type": "API"
+  },
+  {
+    "name": "Flourish API",
+    "url": "https://flourish.studio",
+    "description": "인터랙티브한 스토리텔링 시각화 도구. 다양한 템플릿 제공.\n\n💡 활용: 독자가 직접 탐색 가능한 인터랙티브 기사 제작, 데이터 스토리텔링.",
+    "category": "데이터 분석",
+    "type": "API"
+  },
+  {
+    "name": "Tabula",
+    "url": "https://tabula.technology",
+    "description": "(소프트웨어/라이브러리) PDF 내 표 데이터를 CSV로 추출.\n\n💡 활용: 정부 보도자료, 논문 등 PDF 문서에서 데이터 추출 및 DB화.",
+    "category": "데이터 분석",
+    "type": "API"
+  },
+  {
+    "name": "ScrapingBee",
+    "url": "https://www.scrapingbee.com",
+    "description": "프록시 관리가 필요 없는 웹 스크래핑 API. JS 렌더링 지원.\n\n💡 활용: 공공 데이터 포털, 부동산 시세 등 웹상의 정형 데이터 수집 자동화.",
+    "category": "데이터 분석",
+    "type": "API"
+  },
+  {
+    "name": "Google Fact Check Tools API",
+    "url": "https://toolbox.google.com/factcheck/explorer",
+    "description": "ClaimReview 마크업이 적용된 팩트체크 기사 검색 및 관리.\n\n💡 활용: 특정 발언이나 주장에 대한 기존 팩트체크 결과 신속 검색 및 인용.",
+    "category": "사실검증",
+    "type": "API"
+  },
+  {
+    "name": "ClaimBuster API",
+    "url": "https://idir.uta.edu/claimbuster",
+    "description": "텍스트 내에서 팩트체크가 필요한 주장(Claim)을 AI로 자동 식별 및 점수화.\n\n💡 활용: 정치인 연설문, 토론회 속기록에서 검증이 필요한 핵심 주장 우선순위 선별.",
+    "category": "사실검증",
+    "type": "API"
+  },
+  {
+    "name": "InVid / WeVerify",
+    "url": "https://www.invid-project.eu",
+    "description": "(플러그인/도구) 동영상 및 이미지 진위 검증. 메타데이터 분석, 키프레임 추출.\n\n💡 활용: 소셜 미디어에 유포된 영상의 조작 여부(딥페이크 등) 및 원본 추적.",
+    "category": "사실검증",
+    "type": "API"
+  },
+  {
+    "name": "Google Search Console API",
+    "url": "https://developers.google.com/webmaster-tools",
+    "description": "검색 트래픽, 노출수, 클릭률 데이터 제공. 사이트 문제 진단.\n\n💡 활용: 기사 키워드 성과 분석, SEO 최적화 전략 수립, 인기 검색어 대응.",
+    "category": "유통/SEO",
+    "type": "API"
+  },
+  {
+    "name": "Twitter (X) API",
+    "url": "https://developer.twitter.com",
+    "description": "트윗 게시, 검색, 타임라인 조회. (현재 유료화 정책으로 접근 제한적일 수 있음)\n\n💡 활용: 속보 자동 트윗, 독자 반응(멘션, 리트윗) 모니터링, 여론 분석.",
+    "category": "유통/SEO",
+    "type": "API"
+  },
+  {
+    "name": "YouTube Data API",
+    "url": "https://developers.google.com/youtube/v3",
+    "description": "동영상 업로드, 재생목록 관리, 댓글 및 조회수 데이터 접근.\n\n💡 활용: 뉴스 영상 자동 업로드, 댓글 반응 분석을 통한 시청자 피드백 수집.",
+    "category": "유통/SEO",
+    "type": "API"
+  },
+  {
+    "name": "SEMrush API",
+    "url": "https://www.semrush.com/api",
+    "description": "키워드 리서치, 경쟁사 분석, 백링크 추적 등 종합 SEO 데이터.\n\n💡 활용: 경쟁 언론사 유입 키워드 분석, 롱테일 키워드 발굴을 통한 트래픽 증대.",
+    "category": "유통/SEO",
+    "type": "API"
+  }
+];
+
+// Application code
+// Global state
+let tools = [];
+let currentTab = 'all';
+let currentCategory = 'all';
+let searchTerm = '';
+
+// DOM Elements
+const grid = document.getElementById('toolsGrid');
+const countSpan = document.getElementById('count');
+const categoryContainer = document.getElementById('categoryFilters');
+const searchInput = document.getElementById('searchInput');
+const themeToggle = document.getElementById('themeToggle');
+const tabBtns = document.querySelectorAll('.tab-btn');
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
+
+function init() {
+    // Load data from data.js (global allTools variable)
+    if (typeof allTools !== 'undefined' && Array.isArray(allTools)) {
+        tools = allTools;
+        console.log(`Loaded ${tools.length} tools`);
+    } else {
+        tools = [];
+        console.error('allTools not found in data.js');
+    }
+
+    // Setup event listeners
+    setupEventListeners();
+
+    // Initial render
+    renderCategories();
+    renderTools();
+}
+
+function setupEventListeners() {
+    // Tab buttons
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTab = btn.dataset.tab;
+            currentCategory = 'all';
+            renderCategories();
+            renderTools();
+        });
+    });
+
+    // Search
+    searchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value.toLowerCase();
+        renderTools();
+    });
+
+    // Theme toggle
+    themeToggle.addEventListener('click', () => {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+
+        const icon = themeToggle.querySelector('i');
+        icon.className = newTheme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    });
+}
+
+function getFilteredTools() {
+    return tools.filter(tool => {
+        // Tab filter
+        if (currentTab === 'ai' && tool.type !== 'AI') return false;
+        if (currentTab === 'api' && tool.type !== 'API') return false;
+
+        // Category filter
+        if (currentCategory !== 'all' && tool.category !== currentCategory) return false;
+
+        // Search filter
+        if (searchTerm) {
+            const matchName = (tool.name || '').toLowerCase().includes(searchTerm);
+            const matchDesc = (tool.description || '').toLowerCase().includes(searchTerm);
+            const matchCat = (tool.category || '').toLowerCase().includes(searchTerm);
+            return matchName || matchDesc || matchCat;
+        }
+
+        return true;
+    });
+}
+
+function renderCategories() {
+    // Get categories for current tab
+    const toolsInTab = tools.filter(tool => {
+        if (currentTab === 'ai' && tool.type !== 'AI') return false;
+        if (currentTab === 'api' && tool.type !== 'API') return false;
+        return true;
+    });
+
+    const categories = ['all', ...new Set(toolsInTab.map(t => t.category))].sort();
+
+    categoryContainer.innerHTML = categories.map(cat => `
+        <button class="filter-chip ${currentCategory === cat ? 'active' : ''}" 
+                data-category="${cat}">
+            ${cat === 'all' ? 'All Categories' : cat}
+        </button>
+    `).join('');
+
+    // Add click listeners
+    categoryContainer.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            categoryContainer.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentCategory = chip.dataset.category;
+            renderTools();
+        });
+    });
+}
+
+function renderTools() {
+    const filtered = getFilteredTools();
+    countSpan.textContent = filtered.length;
+    grid.innerHTML = '';
+
+    if (filtered.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-secondary);">No tools found</p>';
+        return;
+    }
+
+    filtered.forEach(tool => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        card.innerHTML = `
+            <div class="card-header">
+                <span class="card-type type-${(tool.type || 'ai').toLowerCase()}">${tool.type || 'AI'}</span>
+                ${tool.url ? `<a href="${tool.url}" target="_blank" class="icon-btn"><i class="fa-solid fa-external-link-alt"></i></a>` : ''}
+            </div>
+            <div>
+                <h3 class="card-title">${tool.name || 'Unnamed'}</h3>
+                <div class="card-category">${tool.category || '기타'}</div>
+                <p class="card-desc">${tool.description || 'No description available'}</p>
+            </div>
+            <div class="card-footer">
+                <div class="tags"></div>
+                ${tool.url ? `<a href="${tool.url}" target="_blank" class="card-link">Visit <i class="fa-solid fa-arrow-right"></i></a>` : ''}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+    </script>
+</body>
+</html>
