@@ -22,13 +22,11 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- [2026년 컴퓨테이셔널연구방법론 소개](컴퓨테이셔널연구방법론_2026.pdf)  
-- VSCode + Gemini CLI 설치 및 사용법
-- API Key 발급 안내 (Google AI Studio / OpenAI / Anthropic)
-
-**실습**
-- 개발환경 구축 및 첫 LLM API 호출 체험
+- (강의) [2026년 컴퓨테이셔널연구방법론 소개](컴퓨테이셔널연구방법론_2026.pdf)  
+- (실습) WSL, VSCode, Gemini CLI 사용법  
+-- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드  
+-- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드  
+- (실습) Gemini CLI로 첫 번째 파이썬 코드 생성 체험  
 
 </details>
 
