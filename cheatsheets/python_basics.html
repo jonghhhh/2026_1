@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 기초 Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 6mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', sans-serif; font-size: 10px; line-height: 1.38; color: #1a1a2e; background: #fff; padding: 8px; }
+  .page { max-width: 1100px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #306998, #FFD43B); color: #fff; padding: 8px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .header h1 { font-size: 18px; font-weight: 900; }
+  .header .ver { font-size: 9px; opacity: 0.9; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .section { background: #f8f9fb; border-radius: 5px; border-left: 3px solid #306998; padding: 5px 7px; break-inside: avoid; }
+  .c1 { border-left-color: #306998; } .c2 { border-left-color: #b8860b; } .c3 { border-left-color: #27ae60; }
+  .c4 { border-left-color: #8e44ad; } .c5 { border-left-color: #d35400; } .c6 { border-left-color: #16a085; }
+  .c7 { border-left-color: #c0392b; } .c8 { border-left-color: #2980b9; } .c9 { border-left-color: #e74c3c; }
+  .c10 { border-left-color: #27ae60; } .c11 { border-left-color: #b8860b; } .c12 { border-left-color: #8e44ad; }
+  .section h2 { font-size: 10.5px; font-weight: 700; margin-bottom: 3px; padding-bottom: 2px; border-bottom: 1px solid #e0e0e0; }
+  .c1 h2 { color: #306998; } .c2 h2 { color: #b8860b; } .c3 h2 { color: #27ae60; }
+  .c4 h2 { color: #8e44ad; } .c5 h2 { color: #d35400; } .c6 h2 { color: #16a085; }
+  .c7 h2 { color: #c0392b; } .c8 h2 { color: #2980b9; } .c9 h2 { color: #e74c3c; }
+  .c10 h2 { color: #27ae60; } .c11 h2 { color: #b8860b; } .c12 h2 { color: #8e44ad; }
+  code, pre { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; }
+  pre { background: #1a1a2e; color: #e0e0e0; padding: 3px 5px; border-radius: 4px; margin: 2px 0; overflow-x: auto; line-height: 1.32; }
+  .kw { color: #ff79c6; } .fn { color: #50fa7b; } .str { color: #f1fa8c; } .cm { color: #6272a4; } .num { color: #bd93f9; }
+  table { width: 100%; border-collapse: collapse; margin: 2px 0; font-size: 8.5px; }
+  table th { background: #306998; color: white; padding: 2px 4px; text-align: left; font-weight: 600; }
+  table td { padding: 2px 4px; border-bottom: 1px solid #eee; }
+  table tr:nth-child(even) td { background: #f0f2f5; }
+  .nb { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; font-size: 8px; font-weight: 700; color: #fff; margin-right: 3px; }
+  .c1 .nb { background: #306998; } .c2 .nb { background: #b8860b; } .c3 .nb { background: #27ae60; }
+  .c4 .nb { background: #8e44ad; } .c5 .nb { background: #d35400; } .c6 .nb { background: #16a085; }
+  .c7 .nb { background: #c0392b; } .c8 .nb { background: #2980b9; } .c9 .nb { background: #e74c3c; }
+  .c10 .nb { background: #27ae60; } .c11 .nb { background: #b8860b; } .c12 .nb { background: #8e44ad; }
+  .note { background: #fff3cd; padding: 2px 5px; border-radius: 3px; font-size: 8px; margin-top: 2px; color: #856404; }
+  .footer { text-align: center; font-size: 8px; color: #999; margin-top: 4px; padding-top: 3px; border-top: 1px solid #eee; }
+  @media screen and (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media screen and (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    body { font-size: 13px; } .header h1 { font-size: 20px; }
+    code, pre { font-size: 11.5px; } table { font-size: 11.5px; }
+    pre { padding: 8px; line-height: 1.5; } .section { padding: 10px 12px; }
+    .section h2 { font-size: 15px; } .nb { width: 20px; height: 20px; font-size: 11px; }
+    .header { flex-direction: column; gap: 4px; text-align: center; }
+  }
+  @media print {
+    body { padding: 0; font-size: 9.2px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grid { grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .section { padding: 3px 5px; } pre { font-size: 7.8px; padding: 2px 4px; }
+    table { font-size: 7.8px; } .header { padding: 5px 10px; margin-bottom: 3px; } .header h1 { font-size: 15px; }
+    .footer { margin-top: 2px; padding-top: 2px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header">
+  <h1>🐍 Python 기초 Cheat Sheet</h1>
+  <span class="ver">Python 3.12+ | 2026 Updated</span>
+</div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>변수 & 데이터 타입</h2>
+<pre>x = <span class="num">5</span>              <span class="cm"># int</span>
+name = <span class="str">"Python"</span>    <span class="cm"># str</span>
+pi = <span class="num">3.14</span>          <span class="cm"># float</span>
+is_ok = <span class="kw">True</span>       <span class="cm"># bool</span>
+nothing = <span class="kw">None</span>     <span class="cm"># NoneType</span>
+a, b = <span class="num">1</span>, <span class="num">2</span>        <span class="cm"># 다중할당</span></pre>
+  <table>
+    <tr><th>타입</th><th>예시</th><th>변환</th></tr>
+    <tr><td>int</td><td>5, -3</td><td>int("5")</td></tr>
+    <tr><td>float</td><td>3.14</td><td>float("3.14")</td></tr>
+    <tr><td>str</td><td>"hello"</td><td>str(42)</td></tr>
+    <tr><td>bool</td><td>True</td><td>bool(1)</td></tr>
+  </table>
+<pre><span class="fn">type</span>(x)  <span class="fn">isinstance</span>(x, <span class="fn">int</span>)</pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>연산자</h2>
+  <table>
+    <tr><th>산술</th><th>기호</th><th>예시</th></tr>
+    <tr><td>덧셈/뺄셈</td><td>+ -</td><td>10+3→13</td></tr>
+    <tr><td>곱셈/나눗셈</td><td>* /</td><td>10/3→3.33</td></tr>
+    <tr><td>몫/나머지</td><td>// %</td><td>10//3→3</td></tr>
+    <tr><td>거듭제곱</td><td>**</td><td>2**3→8</td></tr>
+  </table>
+  <table>
+    <tr><th>비교</th><th>논리</th><th>멤버십</th></tr>
+    <tr><td>== != < ></td><td>and</td><td>in</td></tr>
+    <tr><td><= >=</td><td>or, not</td><td>not in</td></tr>
+    <tr><td>is, is not</td><td></td><td></td></tr>
+  </table>
+  <div class="note">⚠️ and/or/not 사용 (&&, ||, ! 아님)</div>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>문자열 (str)</h2>
+<pre>s = <span class="str">"Hello, World!"</span>
+s[<span class="num">0</span>]    <span class="cm"># 'H'     인덱싱</span>
+s[-<span class="num">1</span>]   <span class="cm"># '!'     뒤에서</span>
+s[<span class="num">0</span>:<span class="num">5</span>] <span class="cm"># 'Hello'  슬라이싱</span>
+s[::-<span class="num">1</span>] <span class="cm"># 뒤집기</span>
+f<span class="str">"값: {name}, {3.14:.1f}"</span> <span class="cm"># f-string</span></pre>
+  <table>
+    <tr><th>메서드</th><th>설명</th></tr>
+    <tr><td>.upper() .lower()</td><td>대/소문자</td></tr>
+    <tr><td>.strip()</td><td>공백 제거</td></tr>
+    <tr><td>.split(sep)</td><td>분할→리스트</td></tr>
+    <tr><td>sep.join(list)</td><td>리스트→문자열</td></tr>
+    <tr><td>.replace(a,b)</td><td>치환</td></tr>
+    <tr><td>.find() .count()</td><td>검색 / 개수</td></tr>
+  </table>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>리스트 (list) — 가변 시퀀스</h2>
+<pre>lst = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+lst[<span class="num">0</span>]    <span class="cm"># 1 (첫번째)</span>
+lst[-<span class="num">1</span>]   <span class="cm"># 5 (마지막)</span>
+lst[<span class="num">1</span>:<span class="num">3</span>] <span class="cm"># [2,3] 슬라이싱</span></pre>
+  <table>
+    <tr><th>메서드</th><th>설명</th></tr>
+    <tr><td>.append(x)</td><td>끝에 추가</td></tr>
+    <tr><td>.insert(i,x)</td><td>위치 삽입</td></tr>
+    <tr><td>.extend(lst2)</td><td>리스트 확장</td></tr>
+    <tr><td>.pop(i) .remove(x)</td><td>삭제</td></tr>
+    <tr><td>.sort() .reverse()</td><td>정렬/뒤집기</td></tr>
+    <tr><td>.index(x) .count(x)</td><td>검색/개수</td></tr>
+  </table>
+<pre><span class="cm"># 컴프리헨션</span>
+[x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>) <span class="kw">if</span> x%<span class="num">2</span>==<span class="num">0</span>]</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>튜플 & 세트</h2>
+<pre><span class="cm"># 튜플 (불변)</span>
+t = (<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>)
+a, b, c = t        <span class="cm"># 언패킹</span>
+first, *rest = t   <span class="cm"># 확장 언패킹</span>
+<span class="cm"># 세트 (중복 없음)</span>
+s = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
+s.<span class="fn">add</span>(<span class="num">4</span>);  s.<span class="fn">remove</span>(<span class="num">1</span>)</pre>
+  <table>
+    <tr><th>세트 연산</th><th>기호</th></tr>
+    <tr><td>합집합/교집합</td><td>a | b / a & b</td></tr>
+    <tr><td>차집합/대칭차</td><td>a - b / a ^ b</td></tr>
+  </table>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>딕셔너리 (dict)</h2>
+<pre>d = {<span class="str">"name"</span>:<span class="str">"Kim"</span>, <span class="str">"age"</span>:<span class="num">30</span>}
+d[<span class="str">"name"</span>]             <span class="cm"># 'Kim'</span>
+d.<span class="fn">get</span>(<span class="str">"job"</span>,<span class="str">"N/A"</span>)    <span class="cm"># 기본값</span>
+d[<span class="str">"email"</span>] = <span class="str">"a@b"</span>   <span class="cm"># 추가</span>
+<span class="kw">del</span> d[<span class="str">"age"</span>]          <span class="cm"># 삭제</span></pre>
+  <table>
+    <tr><th>메서드</th><th>설명</th></tr>
+    <tr><td>.keys() .values()</td><td>키 / 값</td></tr>
+    <tr><td>.items()</td><td>(키,값) 쌍</td></tr>
+    <tr><td>.update(d2) .pop(k)</td><td>병합 / 꺼내기</td></tr>
+  </table>
+<pre>{k:v**<span class="num">2</span> <span class="kw">for</span> k,v <span class="kw">in</span> d.<span class="fn">items</span>()} <span class="cm"># 컴프</span></pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>조건문 & 반복문</h2>
+<pre><span class="kw">if</span> x > <span class="num">0</span>:   <span class="fn">print</span>(<span class="str">"양수"</span>)
+<span class="kw">elif</span> x==<span class="num">0</span>: <span class="fn">print</span>(<span class="str">"영"</span>)
+<span class="kw">else</span>:      <span class="fn">print</span>(<span class="str">"음수"</span>)
+<span class="cm"># 삼항</span>
+r = <span class="str">"짝"</span> <span class="kw">if</span> x%<span class="num">2</span>==<span class="num">0</span> <span class="kw">else</span> <span class="str">"홀"</span>
+<span class="cm"># for</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):       <span class="cm"># 0~4</span>
+<span class="kw">for</span> i,v <span class="kw">in</span> <span class="fn">enumerate</span>(lst):
+<span class="kw">for</span> a,b <span class="kw">in</span> <span class="fn">zip</span>(x, y):
+<span class="cm"># while</span>
+<span class="kw">while</span> x > <span class="num">0</span>: x -= <span class="num">1</span>
+<span class="cm"># break continue pass</span></pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>함수</h2>
+<pre><span class="kw">def</span> <span class="fn">greet</span>(name, msg=<span class="str">"Hi"</span>):
+    <span class="str">"""docstring"""</span>
+    <span class="kw">return</span> f<span class="str">"{msg}, {name}!"</span>
+
+<span class="cm"># 가변인자</span>
+<span class="kw">def</span> <span class="fn">f</span>(*args, **kwargs): <span class="kw">pass</span>
+<span class="cm"># lambda</span>
+sq = <span class="kw">lambda</span> x: x**<span class="num">2</span>
+<span class="cm"># 다중 반환</span>
+<span class="kw">def</span> <span class="fn">mm</span>(l): <span class="kw">return</span> <span class="fn">min</span>(l),<span class="fn">max</span>(l)
+lo, hi = <span class="fn">mm</span>([<span class="num">3</span>,<span class="num">1</span>,<span class="num">2</span>])</pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>예외 처리</h2>
+<pre><span class="kw">try</span>:
+    result = <span class="num">10</span> / <span class="num">0</span>
+<span class="kw">except</span> ZeroDivisionError <span class="kw">as</span> e:
+    <span class="fn">print</span>(e)
+<span class="kw">except</span> (TypeError, ValueError):
+    <span class="fn">print</span>(<span class="str">"에러"</span>)
+<span class="kw">else</span>:    <span class="cm"># 성공 시</span>
+    <span class="fn">print</span>(<span class="str">"OK"</span>)
+<span class="kw">finally</span>: <span class="cm"># 항상</span>
+    <span class="fn">print</span>(<span class="str">"끝"</span>)
+<span class="kw">raise</span> ValueError(<span class="str">"잘못된 값"</span>)</pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>파일 I/O</h2>
+<pre><span class="kw">with</span> <span class="fn">open</span>(<span class="str">"f.txt"</span>,<span class="str">"r"</span>,
+  encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    text = f.<span class="fn">read</span>()
+    lines = f.<span class="fn">readlines</span>()
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"f.txt"</span>,<span class="str">"w"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">"Hello\n"</span>)
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"f.txt"</span>,<span class="str">"a"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">"추가\n"</span>)</pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>주요 내장 함수</h2>
+  <table>
+    <tr><th>함수</th><th>설명</th></tr>
+    <tr><td>len() range()</td><td>길이 / 정수시퀀스</td></tr>
+    <tr><td>enumerate() zip()</td><td>인덱스쌍 / 병렬</td></tr>
+    <tr><td>map() filter()</td><td>매핑 / 필터링</td></tr>
+    <tr><td>sorted() reversed()</td><td>정렬 / 역순</td></tr>
+    <tr><td>sum() min() max()</td><td>합/최소/최대</td></tr>
+    <tr><td>abs() round(x,n)</td><td>절대값/반올림</td></tr>
+    <tr><td>print() input()</td><td>출력/입력</td></tr>
+    <tr><td>type() isinstance()</td><td>타입 확인</td></tr>
+  </table>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>모듈 & 클래스</h2>
+<pre><span class="kw">import</span> math
+<span class="kw">from</span> math <span class="kw">import</span> sqrt, pi
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">class</span> <span class="fn">Dog</span>:
+  <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
+    self.name = name
+  <span class="kw">def</span> <span class="fn">bark</span>(self):
+    <span class="kw">return</span> f<span class="str">"{self.name}: 멍!"</span>
+<span class="cm"># 상속</span>
+<span class="kw">class</span> <span class="fn">Puppy</span>(Dog):
+  <span class="kw">def</span> <span class="fn">bark</span>(self):
+    <span class="kw">return</span> f<span class="str">"{self.name}: 낑!"</span></pre>
+</div>
+
+</div>
+<div class="footer">Python 기초 Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

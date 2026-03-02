@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pandas Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 6mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', sans-serif; font-size: 9.5px; line-height: 1.35; color: #1a1a2e; background: #fff; padding: 8px; }
+  .page { max-width: 1100px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #150458, #E70488); color: #fff; padding: 8px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .header h1 { font-size: 18px; font-weight: 900; }
+  .header .ver { font-size: 9px; opacity: 0.9; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .section { background: #f8f9fb; border-radius: 5px; border-left: 3px solid #150458; padding: 4px 6px; break-inside: avoid; }
+  .c1{border-left-color:#150458} .c2{border-left-color:#E70488} .c3{border-left-color:#27ae60}
+  .c4{border-left-color:#e67e22} .c5{border-left-color:#e74c3c} .c6{border-left-color:#8e44ad}
+  .c7{border-left-color:#2980b9} .c8{border-left-color:#c00070} .c9{border-left-color:#16a085}
+  .c10{border-left-color:#d35400} .c11{border-left-color:#27ae60} .c12{border-left-color:#c0392b}
+  .section h2 { font-size: 10px; font-weight: 700; margin-bottom: 2px; padding-bottom: 2px; border-bottom: 1px solid #e0e0e0; }
+  .c1 h2{color:#150458} .c2 h2{color:#c00070} .c3 h2{color:#27ae60}
+  .c4 h2{color:#d35400} .c5 h2{color:#c0392b} .c6 h2{color:#8e44ad}
+  .c7 h2{color:#2980b9} .c8 h2{color:#c00070} .c9 h2{color:#16a085}
+  .c10 h2{color:#d35400} .c11 h2{color:#27ae60} .c12 h2{color:#c0392b}
+  code, pre { font-family: 'JetBrains Mono', monospace; font-size: 8px; }
+  pre { background: #150458; color: #e0e0e0; padding: 3px 5px; border-radius: 4px; margin: 2px 0; overflow-x: auto; line-height: 1.3; }
+  .kw{color:#ff79c6} .fn{color:#50fa7b} .str{color:#f1fa8c} .cm{color:#6272a4} .num{color:#bd93f9}
+  table { width: 100%; border-collapse: collapse; margin: 2px 0; font-size: 8px; }
+  table th { background: #150458; color: white; padding: 1px 3px; text-align: left; font-weight: 600; }
+  table td { padding: 1px 3px; border-bottom: 1px solid #eee; }
+  table tr:nth-child(even) td { background: #f0f2f5; }
+  .nb { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; font-size: 7.5px; font-weight: 700; color: #fff; margin-right: 2px; }
+  .c1 .nb{background:#150458} .c2 .nb{background:#c00070} .c3 .nb{background:#27ae60}
+  .c4 .nb{background:#d35400} .c5 .nb{background:#c0392b} .c6 .nb{background:#8e44ad}
+  .c7 .nb{background:#2980b9} .c8 .nb{background:#c00070} .c9 .nb{background:#16a085}
+  .c10 .nb{background:#d35400} .c11 .nb{background:#27ae60} .c12 .nb{background:#c0392b}
+  .footer { text-align: center; font-size: 8px; color: #999; margin-top: 3px; padding-top: 2px; border-top: 1px solid #eee; }
+  @media screen and (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media screen and (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    body { font-size: 13px; } .header h1 { font-size: 20px; }
+    code, pre { font-size: 11px; } table { font-size: 11px; }
+    pre { padding: 8px; line-height: 1.5; } .section { padding: 10px 12px; }
+    .section h2 { font-size: 15px; } .nb { width: 20px; height: 20px; font-size: 11px; }
+    .header { flex-direction: column; gap: 4px; text-align: center; }
+  }
+  @media print {
+    body { padding: 0; font-size: 8.8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grid { grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .section { padding: 3px 4px; } pre { font-size: 7.2px; padding: 2px 3px; }
+    table { font-size: 7.2px; } .header { padding: 4px 10px; margin-bottom: 3px; } .header h1 { font-size: 14px; }
+    .footer { margin-top: 1px; padding-top: 1px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header">
+  <h1>🐼 Pandas Cheat Sheet</h1>
+  <span class="ver">import pandas as pd | 2026 Updated</span>
+</div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>데이터 구조 생성</h2>
+<pre><span class="cm"># Series (1D)</span>
+s = pd.<span class="fn">Series</span>([<span class="num">3</span>,-<span class="num">5</span>,<span class="num">7</span>],
+  index=[<span class="str">'a'</span>,<span class="str">'b'</span>,<span class="str">'c'</span>])
+
+<span class="cm"># DataFrame (2D)</span>
+data = {<span class="str">'이름'</span>: [<span class="str">'김'</span>,<span class="str">'이'</span>,<span class="str">'박'</span>],
+        <span class="str">'나이'</span>: [<span class="num">25</span>,<span class="num">30</span>,<span class="num">28</span>],
+        <span class="str">'점수'</span>: [<span class="num">90</span>,<span class="num">85</span>,<span class="num">95</span>]}
+df = pd.<span class="fn">DataFrame</span>(data)
+<span class="cm">#    이름 나이 점수</span>
+<span class="cm"># 0  김   25   90</span>
+<span class="cm"># 1  이   30   85</span>
+<span class="cm"># 2  박   28   95</span></pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>I/O (읽기/쓰기)</h2>
+<pre><span class="cm"># CSV</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">'f.csv'</span>,
+  encoding=<span class="str">'utf-8'</span>, header=<span class="num">0</span>)
+df.<span class="fn">to_csv</span>(<span class="str">'out.csv'</span>, index=<span class="kw">False</span>)
+
+<span class="cm"># Excel</span>
+df = pd.<span class="fn">read_excel</span>(<span class="str">'f.xlsx'</span>,
+  sheet_name=<span class="str">'Sheet1'</span>)
+df.<span class="fn">to_excel</span>(<span class="str">'out.xlsx'</span>)
+
+<span class="cm"># JSON</span>
+df = pd.<span class="fn">read_json</span>(<span class="str">'f.json'</span>)
+
+<span class="cm"># SQL</span>
+df = pd.<span class="fn">read_sql</span>(query, engine)</pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>기본 정보 확인</h2>
+  <table>
+    <tr><th>메서드</th><th>설명</th></tr>
+    <tr><td>df.head(n) .tail(n)</td><td>처음/마지막 n행</td></tr>
+    <tr><td>df.shape</td><td>(행수, 열수)</td></tr>
+    <tr><td>df.info()</td><td>타입, 널 요약</td></tr>
+    <tr><td>df.describe()</td><td>기술통계</td></tr>
+    <tr><td>df.dtypes</td><td>열별 데이터타입</td></tr>
+    <tr><td>df.columns / .index</td><td>열명 / 인덱스</td></tr>
+    <tr><td>df.count() .nunique()</td><td>비결측/고유값 수</td></tr>
+    <tr><td>df['c'].value_counts()</td><td>값별 빈도</td></tr>
+  </table>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>선택 & 인덱싱</h2>
+<pre><span class="cm"># 열 선택</span>
+df[<span class="str">'이름'</span>]            <span class="cm"># Series</span>
+df[[<span class="str">'이름'</span>,<span class="str">'나이'</span>]]   <span class="cm"># DataFrame</span>
+
+<span class="cm"># loc: 라벨 기반</span>
+df.<span class="fn">loc</span>[<span class="num">0</span>,<span class="str">'이름'</span>]
+df.<span class="fn">loc</span>[<span class="num">0</span>:<span class="num">2</span>,[<span class="str">'이름'</span>,<span class="str">'점수'</span>]]
+
+<span class="cm"># iloc: 위치(정수) 기반</span>
+df.<span class="fn">iloc</span>[<span class="num">0</span>,<span class="num">0</span>]
+df.<span class="fn">iloc</span>[<span class="num">0</span>:<span class="num">2</span>, <span class="num">0</span>:<span class="num">2</span>]
+
+<span class="cm"># 불리언 인덱싱</span>
+df[df[<span class="str">'나이'</span>] > <span class="num">25</span>]
+df[(df[<span class="str">'나이'</span>]><span class="num">25</span>) & (df[<span class="str">'점수'</span>]><span class="num">85</span>)]
+df[df[<span class="str">'이름'</span>].<span class="fn">isin</span>([<span class="str">'김'</span>,<span class="str">'박'</span>])]
+df.<span class="fn">query</span>(<span class="str">'나이>25 and 점수>85'</span>)</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>데이터 정제 (결측/중복)</h2>
+<pre><span class="cm"># 결측치</span>
+df.<span class="fn">isnull</span>().<span class="fn">sum</span>()       <span class="cm"># 열별 결측</span>
+df.<span class="fn">dropna</span>()             <span class="cm"># 결측 행 삭제</span>
+df.<span class="fn">dropna</span>(axis=<span class="num">1</span>)      <span class="cm"># 결측 열 삭제</span>
+df.<span class="fn">fillna</span>(<span class="num">0</span>)            <span class="cm"># 0으로 채움</span>
+df.<span class="fn">fillna</span>(method=<span class="str">'ffill'</span>)<span class="cm"># 앞값</span>
+df.<span class="fn">fillna</span>(df.<span class="fn">mean</span>())   <span class="cm"># 평균</span>
+
+<span class="cm"># 중복</span>
+df.<span class="fn">duplicated</span>()
+df.<span class="fn">drop_duplicates</span>()
+
+<span class="cm"># 타입 변환</span>
+df[<span class="str">'나이'</span>].<span class="fn">astype</span>(<span class="fn">int</span>)
+<span class="cm"># 이름 변경 / 값 치환</span>
+df.<span class="fn">rename</span>(columns={<span class="str">'나이'</span>:<span class="str">'age'</span>})
+df.<span class="fn">replace</span>({<span class="str">'김'</span>:<span class="str">'Kim'</span>})</pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>열 추가/삭제/변환</h2>
+<pre><span class="cm"># 추가</span>
+df[<span class="str">'등급'</span>] = [<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'A'</span>]
+df[<span class="str">'비율'</span>] = df[<span class="str">'점수'</span>]/df[<span class="str">'나이'</span>]
+
+<span class="cm"># 삭제</span>
+df.<span class="fn">drop</span>(columns=[<span class="str">'등급'</span>])
+df.<span class="fn">drop</span>([<span class="num">0</span>,<span class="num">2</span>])  <span class="cm"># 행 삭제</span>
+
+<span class="cm"># apply (함수 적용)</span>
+df[<span class="str">'점수'</span>].<span class="fn">apply</span>(<span class="kw">lambda</span> x: x*<span class="num">1.1</span>)
+df.<span class="fn">apply</span>(<span class="kw">lambda</span> x: x.<span class="fn">max</span>()-x.<span class="fn">min</span>())
+
+<span class="cm"># map (Series 매핑)</span>
+df[<span class="str">'등급'</span>].<span class="fn">map</span>({<span class="str">'A'</span>:<span class="num">4</span>,<span class="str">'B'</span>:<span class="num">3</span>})</pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>정렬 & 통계</h2>
+<pre><span class="cm"># 정렬</span>
+df.<span class="fn">sort_values</span>(<span class="str">'나이'</span>)
+df.<span class="fn">sort_values</span>(<span class="str">'점수'</span>,ascending=<span class="kw">False</span>)
+df.<span class="fn">sort_values</span>([<span class="str">'등급'</span>,<span class="str">'점수'</span>])
+df.<span class="fn">nlargest</span>(<span class="num">3</span>,<span class="str">'점수'</span>)  <span class="cm"># 상위3</span></pre>
+  <table>
+    <tr><th>통계 메서드</th><th>설명</th></tr>
+    <tr><td>.sum() .mean()</td><td>합계 / 평균</td></tr>
+    <tr><td>.median() .std()</td><td>중앙값/표준편차</td></tr>
+    <tr><td>.min() .max()</td><td>최소 / 최대</td></tr>
+    <tr><td>.cumsum()</td><td>누적합</td></tr>
+    <tr><td>.corr()</td><td>상관행렬</td></tr>
+    <tr><td>.describe()</td><td>기술통계 전체</td></tr>
+    <tr><td>.rank()</td><td>순위</td></tr>
+  </table>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>GroupBy (그룹 연산)</h2>
+<pre>g = df.<span class="fn">groupby</span>(<span class="str">'등급'</span>)
+g.<span class="fn">mean</span>()          <span class="cm"># 그룹별 평균</span>
+g.<span class="fn">size</span>()          <span class="cm"># 그룹별 크기</span>
+g.<span class="fn">describe</span>()      <span class="cm"># 기술통계</span>
+
+<span class="cm"># 다중 키</span>
+df.<span class="fn">groupby</span>([<span class="str">'등급'</span>,<span class="str">'성별'</span>]).<span class="fn">mean</span>()
+
+<span class="cm"># agg: 다양한 집계</span>
+g.<span class="fn">agg</span>({<span class="str">'점수'</span>:[<span class="str">'mean'</span>,<span class="str">'max'</span>],
+      <span class="str">'나이'</span>:<span class="str">'min'</span>})
+
+<span class="cm"># transform: 원래 크기 유지</span>
+g[<span class="str">'점수'</span>].<span class="fn">transform</span>(
+  <span class="kw">lambda</span> x:(x-x.mean())/x.std())
+
+<span class="cm"># filter: 조건 그룹만</span>
+g.<span class="fn">filter</span>(<span class="kw">lambda</span> x: x[<span class="str">'점수'</span>].mean()><span class="num">85</span>)</pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>병합 & 결합</h2>
+<pre><span class="cm"># merge (SQL JOIN)</span>
+pd.<span class="fn">merge</span>(df1, df2, on=<span class="str">'key'</span>)
+pd.<span class="fn">merge</span>(df1, df2,
+  left_on=<span class="str">'a'</span>, right_on=<span class="str">'b'</span>,
+  how=<span class="str">'left'</span>)
+<span class="cm"># how: inner outer left right</span>
+
+<span class="cm"># concat (단순 결합)</span>
+pd.<span class="fn">concat</span>([df1, df2])       <span class="cm"># 세로</span>
+pd.<span class="fn">concat</span>([df1,df2],axis=<span class="num">1</span>)<span class="cm"># 가로</span>
+
+<span class="cm"># join (인덱스 기반)</span>
+df1.<span class="fn">join</span>(df2, how=<span class="str">'outer'</span>)</pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>피벗 & 리셰이프</h2>
+<pre><span class="cm"># pivot_table</span>
+pd.<span class="fn">pivot_table</span>(df,
+  values=<span class="str">'점수'</span>, index=<span class="str">'등급'</span>,
+  columns=<span class="str">'성별'</span>, aggfunc=<span class="str">'mean'</span>)
+
+<span class="cm"># melt (wide → long)</span>
+pd.<span class="fn">melt</span>(df, id_vars=[<span class="str">'이름'</span>],
+  value_vars=[<span class="str">'국어'</span>,<span class="str">'영어'</span>])
+
+<span class="cm"># stack/unstack</span>
+df.<span class="fn">stack</span>()    <span class="cm"># 열→행</span>
+df.<span class="fn">unstack</span>()  <span class="cm"># 행→열</span>
+
+<span class="cm"># 더미변수</span>
+pd.<span class="fn">get_dummies</span>(df[<span class="str">'등급'</span>])</pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>문자열 (.str 접근자)</h2>
+<pre>df[<span class="str">'이름'</span>].str.<span class="fn">upper</span>()
+df[<span class="str">'이름'</span>].str.<span class="fn">contains</span>(<span class="str">'김'</span>)
+df[<span class="str">'이름'</span>].str.<span class="fn">replace</span>(<span class="str">'김'</span>,<span class="str">'Kim'</span>)
+df[<span class="str">'이름'</span>].str.<span class="fn">split</span>(<span class="str">' '</span>)
+df[<span class="str">'이름'</span>].str.<span class="fn">len</span>()
+df[<span class="str">'이름'</span>].str.<span class="fn">strip</span>()
+df[<span class="str">'이름'</span>].str.<span class="fn">lower</span>()
+df[<span class="str">'이름'</span>].str.<span class="fn">startswith</span>(<span class="str">'김'</span>)</pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>날짜/시간 (.dt 접근자)</h2>
+<pre>df[<span class="str">'날짜'</span>] = pd.<span class="fn">to_datetime</span>(df[<span class="str">'날짜'</span>])
+df[<span class="str">'년'</span>]  = df[<span class="str">'날짜'</span>].dt.year
+df[<span class="str">'월'</span>]  = df[<span class="str">'날짜'</span>].dt.month
+df[<span class="str">'요일'</span>] = df[<span class="str">'날짜'</span>].dt.day_name()
+
+<span class="cm"># 날짜 범위</span>
+pd.<span class="fn">date_range</span>(<span class="str">'2026-01-01'</span>,
+  periods=<span class="num">30</span>, freq=<span class="str">'D'</span>)
+
+<span class="cm"># 리샘플링</span>
+df.<span class="fn">resample</span>(<span class="str">'M'</span>).<span class="fn">mean</span>()   <span class="cm"># 월별</span>
+df.<span class="fn">resample</span>(<span class="str">'W'</span>).<span class="fn">sum</span>()    <span class="cm"># 주별</span></pre>
+</div>
+
+</div>
+<div class="footer">Pandas Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

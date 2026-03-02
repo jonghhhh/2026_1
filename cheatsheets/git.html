@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:6mm}*{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;font-size:9.5px;line-height:1.35;color:#1a1a2e;background:#fff;padding:8px}
+  .page{max-width:1100px;margin:0 auto}
+  .header{background:linear-gradient(135deg,#F05032,#333);color:#fff;padding:8px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .header h1{font-size:18px;font-weight:900}.header .ver{font-size:9px;opacity:.9;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px}
+  .workflow{display:flex;gap:3px;margin:0 0 5px 0;flex-wrap:wrap;align-items:center}
+  .workflow .step{background:#F05032;color:white;padding:2px 7px;border-radius:10px;font-size:8px;font-weight:600}
+  .workflow .arrow{color:#999;font-size:10px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .section{background:#f8f9fb;border-radius:5px;border-left:3px solid #F05032;padding:4px 6px;break-inside:avoid}
+  .c1{border-left-color:#F05032}.c2{border-left-color:#e67e22}.c3{border-left-color:#27ae60}.c4{border-left-color:#2980b9}
+  .c5{border-left-color:#8e44ad}.c6{border-left-color:#16a085}.c7{border-left-color:#c0392b}.c8{border-left-color:#d35400}
+  .c9{border-left-color:#1abc9c}.c10{border-left-color:#9b59b6}.c11{border-left-color:#2c3e50}.c12{border-left-color:#e74c3c}
+  .section h2{font-size:10px;font-weight:700;margin-bottom:2px;padding-bottom:2px;border-bottom:1px solid #e0e0e0}
+  .c1 h2{color:#F05032}.c2 h2{color:#d35400}.c3 h2{color:#27ae60}.c4 h2{color:#2980b9}
+  .c5 h2{color:#8e44ad}.c6 h2{color:#16a085}.c7 h2{color:#c0392b}.c8 h2{color:#d35400}
+  .c9 h2{color:#1abc9c}.c10 h2{color:#9b59b6}.c11 h2{color:#2c3e50}.c12 h2{color:#e74c3c}
+  code,pre{font-family:'JetBrains Mono',monospace;font-size:8px}
+  pre{background:#1e1e1e;color:#d4d4d4;padding:3px 5px;border-radius:4px;margin:2px 0;overflow-x:auto;line-height:1.3}
+  .cmd{color:#569cd6}.opt{color:#ce9178}.cm{color:#6a9955}.arg{color:#9cdcfe}
+  table{width:100%;border-collapse:collapse;margin:2px 0;font-size:8px}
+  table th{background:#F05032;color:white;padding:1px 3px;text-align:left;font-weight:600}
+  table td{padding:1px 3px;border-bottom:1px solid #eee}
+  table tr:nth-child(even) td{background:#f0f2f5}
+  .nb{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:7.5px;font-weight:700;color:#fff;margin-right:2px;background:#F05032}
+  .note{background:#fff3cd;padding:2px 5px;border-radius:3px;font-size:7.5px;margin-top:2px;color:#856404}
+  .footer{text-align:center;font-size:8px;color:#999;margin-top:3px;padding-top:2px;border-top:1px solid #eee}
+  @media screen and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media screen and (max-width:520px){.grid{grid-template-columns:1fr}body{font-size:13px}.header h1{font-size:20px}code,pre{font-size:11px}table{font-size:11px}pre{padding:8px;line-height:1.5}.section{padding:10px 12px}.section h2{font-size:15px}.nb{width:20px;height:20px;font-size:11px}.header{flex-direction:column;gap:4px;text-align:center}.workflow .step{font-size:10px;padding:3px 8px}}
+  @media print{body{padding:0;font-size:8.8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.grid{grid-template-columns:repeat(4,1fr);gap:3px}.section{padding:3px 4px}pre{font-size:7.2px;padding:2px 3px}table{font-size:7.2px}.header{padding:4px 10px;margin-bottom:2px}.header h1{font-size:14px}.footer{margin-top:1px;padding-top:1px}.workflow{margin-bottom:3px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header"><h1>🌿 Git Cheat Sheet</h1><span class="ver">Git | 2026 Updated</span></div>
+<div class="workflow">
+  <span class="step">Working Dir</span><span class="arrow">→ git add →</span>
+  <span class="step">Staging Area</span><span class="arrow">→ git commit →</span>
+  <span class="step">Local Repo</span><span class="arrow">→ git push →</span>
+  <span class="step">Remote Repo</span>
+</div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>설정 & 초기화</h2>
+<pre><span class="cm"># 사용자 설정</span>
+<span class="cmd">git config</span> <span class="opt">--global</span> <span class="arg">user.name</span> <span class="opt">"이름"</span>
+<span class="cmd">git config</span> <span class="opt">--global</span> <span class="arg">user.email</span> <span class="opt">"email"</span>
+<span class="cmd">git config</span> <span class="opt">--list</span>     <span class="cm"># 설정 확인</span>
+
+<span class="cm"># 저장소 생성</span>
+<span class="cmd">git init</span>              <span class="cm"># 새 저장소</span>
+<span class="cmd">git clone</span> <span class="arg">url</span>         <span class="cm"># 복제</span>
+<span class="cmd">git clone</span> <span class="arg">url</span> <span class="arg">folder</span> <span class="cm"># 폴더명 지정</span></pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>상태 확인 & 변경사항</h2>
+<pre><span class="cmd">git status</span>           <span class="cm"># 상태 확인</span>
+<span class="cmd">git diff</span>             <span class="cm"># 변경사항 비교</span>
+<span class="cmd">git diff</span> <span class="opt">--staged</span>    <span class="cm"># 스테이지 비교</span>
+<span class="cmd">git diff</span> <span class="arg">branch1</span> <span class="arg">branch2</span>
+
+<span class="cm"># 스테이징</span>
+<span class="cmd">git add</span> <span class="arg">file.txt</span>     <span class="cm"># 파일 추가</span>
+<span class="cmd">git add</span> <span class="opt">.</span>            <span class="cm"># 전체 추가</span>
+<span class="cmd">git add</span> <span class="opt">-p</span> <span class="arg">file</span>     <span class="cm"># 부분 추가</span>
+<span class="cmd">git reset</span> <span class="arg">file</span>       <span class="cm"># 언스테이지</span></pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>커밋</h2>
+<pre><span class="cmd">git commit</span> <span class="opt">-m</span> <span class="opt">"메시지"</span>
+<span class="cmd">git commit</span> <span class="opt">-a -m</span> <span class="opt">"msg"</span>
+  <span class="cm"># tracked 파일 자동 add+commit</span>
+<span class="cmd">git commit</span> <span class="opt">--amend</span>
+  <span class="cm"># 마지막 커밋 수정</span>
+<span class="cmd">git commit</span> <span class="opt">--amend -m</span> <span class="opt">"새메시지"</span></pre>
+  <div class="note">⚠️ 커밋 메시지: 50자 이내, 현재시제, 명령형으로 작성 (예: "Add login feature")</div>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>로그 & 히스토리</h2>
+<pre><span class="cmd">git log</span>              <span class="cm"># 전체 로그</span>
+<span class="cmd">git log</span> <span class="opt">--oneline</span>    <span class="cm"># 한줄 요약</span>
+<span class="cmd">git log</span> <span class="opt">--graph</span>      <span class="cm"># 그래프</span>
+<span class="cmd">git log</span> <span class="opt">--oneline --graph --all</span>
+<span class="cmd">git log</span> <span class="opt">-p</span> <span class="arg">file</span>     <span class="cm"># 파일 변경이력</span>
+<span class="cmd">git log</span> <span class="opt">--since</span>=<span class="opt">"2w"</span> <span class="cm"># 2주내</span>
+<span class="cmd">git show</span> <span class="arg">commit_id</span>  <span class="cm"># 커밋 상세</span>
+<span class="cmd">git blame</span> <span class="arg">file</span>      <span class="cm"># 라인별 작성자</span>
+<span class="cmd">git reflog</span>           <span class="cm"># HEAD 이력</span></pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>브랜치</h2>
+<pre><span class="cmd">git branch</span>           <span class="cm"># 목록</span>
+<span class="cmd">git branch</span> <span class="arg">name</span>     <span class="cm"># 생성</span>
+<span class="cmd">git checkout</span> <span class="arg">name</span>   <span class="cm"># 전환</span>
+<span class="cmd">git switch</span> <span class="arg">name</span>     <span class="cm"># 전환 (신규)</span>
+<span class="cmd">git checkout</span> <span class="opt">-b</span> <span class="arg">name</span> <span class="cm"># 생성+전환</span>
+<span class="cmd">git switch</span> <span class="opt">-c</span> <span class="arg">name</span>  <span class="cm"># 생성+전환</span>
+<span class="cmd">git branch</span> <span class="opt">-d</span> <span class="arg">name</span>  <span class="cm"># 삭제</span>
+<span class="cmd">git branch</span> <span class="opt">-D</span> <span class="arg">name</span>  <span class="cm"># 강제삭제</span>
+<span class="cmd">git branch</span> <span class="opt">-m</span> <span class="arg">old</span> <span class="arg">new</span> <span class="cm"># 이름변경</span>
+<span class="cmd">git branch</span> <span class="opt">-a</span>       <span class="cm"># 전체(원격포함)</span></pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>병합 & 리베이스</h2>
+<pre><span class="cm"># merge (현재 브랜치에 병합)</span>
+<span class="cmd">git merge</span> <span class="arg">branch</span>
+
+<span class="cm"># 충돌 해결 후</span>
+<span class="cmd">git add</span> <span class="arg">resolved-file</span>
+<span class="cmd">git commit</span>
+
+<span class="cm"># rebase (히스토리 정리)</span>
+<span class="cmd">git rebase</span> <span class="arg">main</span>
+<span class="cmd">git rebase</span> <span class="opt">--abort</span>    <span class="cm"># 취소</span>
+<span class="cmd">git rebase</span> <span class="opt">--continue</span> <span class="cm"># 계속</span>
+<span class="cmd">git rebase</span> <span class="opt">-i</span> <span class="arg">HEAD~3</span>  <span class="cm"># 대화형</span></pre>
+  <div class="note">⚠️ 공유된 브랜치에서는 rebase 금지!</div>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>원격 저장소 (Remote)</h2>
+<pre><span class="cmd">git remote</span> <span class="opt">-v</span>         <span class="cm"># 원격 목록</span>
+<span class="cmd">git remote add</span> <span class="arg">origin</span> <span class="arg">url</span>
+<span class="cmd">git remote remove</span> <span class="arg">origin</span>
+
+<span class="cm"># 가져오기 & 보내기</span>
+<span class="cmd">git fetch</span> <span class="arg">origin</span>     <span class="cm"># 다운로드만</span>
+<span class="cmd">git pull</span> <span class="arg">origin main</span> <span class="cm"># fetch+merge</span>
+<span class="cmd">git pull</span> <span class="opt">--rebase</span>    <span class="cm"># fetch+rebase</span>
+<span class="cmd">git push</span> <span class="arg">origin main</span> <span class="cm"># 업로드</span>
+<span class="cmd">git push</span> <span class="opt">-u</span> <span class="arg">origin main</span>
+  <span class="cm"># 업스트림 설정+push</span>
+<span class="cmd">git push</span> <span class="opt">--tags</span>      <span class="cm"># 태그 전송</span></pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>되돌리기 (Undo)</h2>
+<pre><span class="cm"># 작업 디렉토리 변경 취소</span>
+<span class="cmd">git checkout</span> <span class="opt">--</span> <span class="arg">file</span>
+<span class="cmd">git restore</span> <span class="arg">file</span>    <span class="cm"># 신규</span>
+
+<span class="cm"># 스테이지 취소</span>
+<span class="cmd">git restore</span> <span class="opt">--staged</span> <span class="arg">file</span>
+
+<span class="cm"># 커밋 되돌리기</span>
+<span class="cmd">git revert</span> <span class="arg">commit</span>   <span class="cm"># 새 커밋 생성</span>
+
+<span class="cm"># 히스토리 리셋 (주의!)</span>
+<span class="cmd">git reset</span> <span class="opt">--soft</span> <span class="arg">HEAD~1</span>
+  <span class="cm"># 커밋 취소, 스테이지 유지</span>
+<span class="cmd">git reset</span> <span class="opt">--mixed</span> <span class="arg">HEAD~1</span>
+  <span class="cm"># 커밋+스테이지 취소</span>
+<span class="cmd">git reset</span> <span class="opt">--hard</span> <span class="arg">HEAD~1</span>
+  <span class="cm"># 모든 변경 삭제 (위험!)</span></pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>스태시 (Stash)</h2>
+<pre><span class="cmd">git stash</span>            <span class="cm"># 임시 저장</span>
+<span class="cmd">git stash</span> <span class="opt">save</span> <span class="opt">"msg"</span><span class="cm"># 메시지 포함</span>
+<span class="cmd">git stash list</span>       <span class="cm"># 목록</span>
+<span class="cmd">git stash pop</span>        <span class="cm"># 복원+삭제</span>
+<span class="cmd">git stash apply</span>      <span class="cm"># 복원 (유지)</span>
+<span class="cmd">git stash drop</span>       <span class="cm"># 삭제</span>
+<span class="cmd">git stash clear</span>      <span class="cm"># 전체 삭제</span></pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>태그 & 릴리스</h2>
+<pre><span class="cmd">git tag</span>              <span class="cm"># 태그 목록</span>
+<span class="cmd">git tag</span> <span class="arg">v1.0</span>         <span class="cm"># 경량 태그</span>
+<span class="cmd">git tag</span> <span class="opt">-a</span> <span class="arg">v1.0</span> <span class="opt">-m</span> <span class="opt">"msg"</span>
+  <span class="cm"># 주석 태그 (권장)</span>
+<span class="cmd">git tag</span> <span class="opt">-d</span> <span class="arg">v1.0</span>     <span class="cm"># 태그 삭제</span>
+<span class="cmd">git show</span> <span class="arg">v1.0</span>       <span class="cm"># 태그 상세</span>
+<span class="cmd">git push</span> <span class="arg">origin</span> <span class="arg">v1.0</span>
+<span class="cmd">git push</span> <span class="opt">--tags</span>      <span class="cm"># 전체 태그</span></pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>.gitignore</h2>
+<pre><span class="cm"># .gitignore 파일 예시</span>
+*.log              <span class="cm"># 모든 .log 파일</span>
+node_modules/      <span class="cm"># 폴더 전체</span>
+.env               <span class="cm"># 환경변수</span>
+__pycache__/       <span class="cm"># 파이썬 캐시</span>
+*.pyc              <span class="cm"># 컴파일 파일</span>
+.DS_Store          <span class="cm"># macOS</span>
+dist/              <span class="cm"># 빌드 출력</span>
+!important.log     <span class="cm"># 예외 (추적)</span>
+
+<span class="cm"># 이미 추적중인 파일 무시</span>
+<span class="cmd">git rm</span> <span class="opt">--cached</span> <span class="arg">file</span></pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>유용한 명령어</h2>
+<pre><span class="cm"># Cherry-pick (특정 커밋 가져오기)</span>
+<span class="cmd">git cherry-pick</span> <span class="arg">commit_id</span>
+
+<span class="cm"># Bisect (버그 커밋 찾기)</span>
+<span class="cmd">git bisect start</span>
+<span class="cmd">git bisect bad</span>   <span class="cm"># 현재=버그</span>
+<span class="cmd">git bisect good</span> <span class="arg">commit</span>
+
+<span class="cm"># 파일 삭제/이동</span>
+<span class="cmd">git rm</span> <span class="arg">file</span>
+<span class="cmd">git mv</span> <span class="arg">old</span> <span class="arg">new</span>
+
+<span class="cm"># 단축 명령 설정</span>
+<span class="cmd">git config</span> <span class="opt">--global</span> alias.co checkout
+<span class="cmd">git config</span> <span class="opt">--global</span> alias.br branch
+<span class="cmd">git config</span> <span class="opt">--global</span> alias.st status
+<span class="cmd">git config</span> <span class="opt">--global</span> alias.lg \
+  <span class="opt">"log --oneline --graph --all"</span></pre>
+</div>
+
+</div>
+<div class="footer">Git Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

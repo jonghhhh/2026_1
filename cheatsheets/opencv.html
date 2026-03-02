@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenCV Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:6mm}*{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;font-size:9.5px;line-height:1.35;color:#1a1a2e;background:#fff;padding:8px}
+  .page{max-width:1100px;margin:0 auto}
+  .header{background:linear-gradient(135deg,#5C3EE8,#49B04D);color:#fff;padding:8px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .header h1{font-size:18px;font-weight:900}.header .ver{font-size:9px;opacity:.9;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .section{background:#f8f9fb;border-radius:5px;border-left:3px solid #5C3EE8;padding:4px 6px;break-inside:avoid}
+  .c1{border-left-color:#5C3EE8}.c2{border-left-color:#49B04D}.c3{border-left-color:#e74c3c}.c4{border-left-color:#e67e22}
+  .c5{border-left-color:#2980b9}.c6{border-left-color:#8e44ad}.c7{border-left-color:#16a085}.c8{border-left-color:#c0392b}
+  .c9{border-left-color:#d35400}.c10{border-left-color:#1abc9c}.c11{border-left-color:#9b59b6}.c12{border-left-color:#27ae60}
+  .section h2{font-size:10px;font-weight:700;margin-bottom:2px;padding-bottom:2px;border-bottom:1px solid #e0e0e0}
+  .c1 h2{color:#5C3EE8}.c2 h2{color:#2d8a30}.c3 h2{color:#c0392b}.c4 h2{color:#d35400}
+  .c5 h2{color:#2980b9}.c6 h2{color:#8e44ad}.c7 h2{color:#16a085}.c8 h2{color:#c0392b}
+  .c9 h2{color:#d35400}.c10 h2{color:#1abc9c}.c11 h2{color:#9b59b6}.c12 h2{color:#27ae60}
+  code,pre{font-family:'JetBrains Mono',monospace;font-size:8px}
+  pre{background:#1e1e2e;color:#cdd6f4;padding:3px 5px;border-radius:4px;margin:2px 0;overflow-x:auto;line-height:1.3}
+  .kw{color:#cba6f7}.fn{color:#89b4fa}.str{color:#a6e3a1}.cm{color:#6c7086}.num{color:#fab387}
+  table{width:100%;border-collapse:collapse;margin:2px 0;font-size:8px}
+  table th{background:#5C3EE8;color:white;padding:1px 3px;text-align:left;font-weight:600}
+  table td{padding:1px 3px;border-bottom:1px solid #eee}
+  table tr:nth-child(even) td{background:#f0f2f5}
+  .nb{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:7.5px;font-weight:700;color:#fff;margin-right:2px;background:#5C3EE8}
+  .note{background:#d1ecf1;padding:2px 5px;border-radius:3px;font-size:7.5px;margin-top:2px;color:#0c5460}
+  .footer{text-align:center;font-size:8px;color:#999;margin-top:3px;padding-top:2px;border-top:1px solid #eee}
+  @media screen and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media screen and (max-width:520px){.grid{grid-template-columns:1fr}body{font-size:13px}.header h1{font-size:20px}code,pre{font-size:11px}table{font-size:11px}pre{padding:8px;line-height:1.5}.section{padding:10px 12px}.section h2{font-size:15px}.nb{width:20px;height:20px;font-size:11px}.header{flex-direction:column;gap:4px;text-align:center}}
+  @media print{body{padding:0;font-size:8.8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.grid{grid-template-columns:repeat(4,1fr);gap:3px}.section{padding:3px 4px}pre{font-size:7.2px;padding:2px 3px}table{font-size:7.2px}.header{padding:4px 10px;margin-bottom:3px}.header h1{font-size:14px}.footer{margin-top:1px;padding-top:1px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header"><h1>👁️ OpenCV (Python) Cheat Sheet</h1><span class="ver">import cv2 | 2026 Updated</span></div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>이미지 읽기 / 쓰기 / 표시</h2>
+<pre><span class="kw">import</span> cv2
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 읽기</span>
+img = cv2.<span class="fn">imread</span>(<span class="str">"img.jpg"</span>)
+  <span class="cm"># IMREAD_COLOR (기본, BGR)</span>
+  <span class="cm"># IMREAD_GRAYSCALE (흑백)</span>
+  <span class="cm"># IMREAD_UNCHANGED (알파)</span>
+gray = cv2.<span class="fn">imread</span>(<span class="str">"img.jpg"</span>, <span class="num">0</span>)
+
+<span class="cm"># 표시</span>
+cv2.<span class="fn">imshow</span>(<span class="str">"윈도우"</span>, img)
+cv2.<span class="fn">waitKey</span>(<span class="num">0</span>)
+cv2.<span class="fn">destroyAllWindows</span>()
+
+<span class="cm"># 저장</span>
+cv2.<span class="fn">imwrite</span>(<span class="str">"out.jpg"</span>, img)</pre>
+  <div class="note">⚠️ OpenCV는 RGB가 아닌 BGR 색상!</div>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>속성 & 색상 변환</h2>
+<pre>img.shape   <span class="cm"># (높이, 너비, 채널)</span>
+img.size    <span class="cm"># 전체 픽셀 수</span>
+img.dtype   <span class="cm"># uint8</span>
+h, w, c = img.shape
+
+<span class="cm"># 색상 변환</span>
+rgb  = cv2.<span class="fn">cvtColor</span>(img,
+  cv2.COLOR_BGR2RGB)
+gray = cv2.<span class="fn">cvtColor</span>(img,
+  cv2.COLOR_BGR2GRAY)
+hsv  = cv2.<span class="fn">cvtColor</span>(img,
+  cv2.COLOR_BGR2HSV)
+
+<span class="cm"># 채널 분리/합치기</span>
+b, g, r = cv2.<span class="fn">split</span>(img)
+merged = cv2.<span class="fn">merge</span>([b, g, r])</pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>크기 조절 & 기하 변환</h2>
+<pre><span class="cm"># 리사이즈</span>
+resized = cv2.<span class="fn">resize</span>(img,
+  (<span class="num">400</span>,<span class="num">300</span>))  <span class="cm"># (너비,높이)</span>
+resized = cv2.<span class="fn">resize</span>(img, <span class="kw">None</span>,
+  fx=<span class="num">0.5</span>, fy=<span class="num">0.5</span>)  <span class="cm"># 비율</span>
+
+<span class="cm"># 자르기 (NumPy 슬라이싱)</span>
+crop = img[<span class="num">100</span>:<span class="num">300</span>, <span class="num">50</span>:<span class="num">250</span>]
+  <span class="cm"># img[y1:y2, x1:x2]</span>
+
+<span class="cm"># 회전</span>
+center = (w//<span class="num">2</span>, h//<span class="num">2</span>)
+M = cv2.<span class="fn">getRotationMatrix2D</span>(
+  center, <span class="num">45</span>, <span class="num">1.0</span>)
+rot = cv2.<span class="fn">warpAffine</span>(img,M,(w,h))
+
+<span class="cm"># 뒤집기</span>
+cv2.<span class="fn">flip</span>(img, <span class="num">1</span>)
+  <span class="cm"># 0:상하 1:좌우 -1:둘다</span></pre>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>그리기 (Drawing)</h2>
+<pre><span class="cm"># 선</span>
+cv2.<span class="fn">line</span>(img, (<span class="num">0</span>,<span class="num">0</span>), (<span class="num">200</span>,<span class="num">200</span>),
+  (<span class="num">0</span>,<span class="num">255</span>,<span class="num">0</span>), <span class="num">2</span>)  <span class="cm"># BGR, 두께</span>
+
+<span class="cm"># 사각형</span>
+cv2.<span class="fn">rectangle</span>(img,
+  (<span class="num">50</span>,<span class="num">50</span>), (<span class="num">200</span>,<span class="num">200</span>),
+  (<span class="num">255</span>,<span class="num">0</span>,<span class="num">0</span>), <span class="num">2</span>)  <span class="cm"># -1:채움</span>
+
+<span class="cm"># 원</span>
+cv2.<span class="fn">circle</span>(img,
+  (<span class="num">100</span>,<span class="num">100</span>), <span class="num">50</span>,
+  (<span class="num">0</span>,<span class="num">0</span>,<span class="num">255</span>), -<span class="num">1</span>)
+
+<span class="cm"># 텍스트</span>
+cv2.<span class="fn">putText</span>(img, <span class="str">"Hello"</span>,
+  (<span class="num">10</span>,<span class="num">50</span>),
+  cv2.FONT_HERSHEY_SIMPLEX,
+  <span class="num">1</span>, (<span class="num">255</span>,<span class="num">255</span>,<span class="num">255</span>), <span class="num">2</span>)</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>필터 & 블러</h2>
+<pre><span class="cm"># 가우시안 블러</span>
+blur = cv2.<span class="fn">GaussianBlur</span>(img,
+  (<span class="num">5</span>,<span class="num">5</span>), <span class="num">0</span>)
+
+<span class="cm"># 미디언 블러 (노이즈 제거)</span>
+med = cv2.<span class="fn">medianBlur</span>(img, <span class="num">5</span>)
+
+<span class="cm"># 양방향 필터 (에지 보존)</span>
+bi = cv2.<span class="fn">bilateralFilter</span>(
+  img, <span class="num">9</span>, <span class="num">75</span>, <span class="num">75</span>)
+
+<span class="cm"># 사용자 정의 커널</span>
+kernel = np.<span class="fn">ones</span>((<span class="num">3</span>,<span class="num">3</span>)) / <span class="num">9</span>
+filtered = cv2.<span class="fn">filter2D</span>(
+  img, -<span class="num">1</span>, kernel)
+
+<span class="cm"># 샤프닝 커널</span>
+sharp = np.<span class="fn">array</span>([
+  [<span class="num">0</span>,-<span class="num">1</span>,<span class="num">0</span>],[-<span class="num">1</span>,<span class="num">5</span>,-<span class="num">1</span>],[<span class="num">0</span>,-<span class="num">1</span>,<span class="num">0</span>]])</pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>이진화 & 임계값</h2>
+<pre><span class="cm"># 전역 임계값</span>
+ret, thresh = cv2.<span class="fn">threshold</span>(
+  gray, <span class="num">127</span>, <span class="num">255</span>,
+  cv2.THRESH_BINARY)
+  <span class="cm"># THRESH_BINARY_INV</span>
+  <span class="cm"># THRESH_TRUNC</span>
+  <span class="cm"># THRESH_OTSU (자동)</span>
+
+<span class="cm"># 적응형 임계값</span>
+adap = cv2.<span class="fn">adaptiveThreshold</span>(
+  gray, <span class="num">255</span>,
+  cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+  cv2.THRESH_BINARY, <span class="num">11</span>, <span class="num">2</span>)
+
+<span class="cm"># Otsu 자동 이진화</span>
+_, otsu = cv2.<span class="fn">threshold</span>(
+  gray, <span class="num">0</span>, <span class="num">255</span>,
+  cv2.THRESH_BINARY + cv2.THRESH_OTSU)</pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>에지 검출 & 모폴로지</h2>
+<pre><span class="cm"># Canny 에지</span>
+edges = cv2.<span class="fn">Canny</span>(gray, <span class="num">100</span>, <span class="num">200</span>)
+
+<span class="cm"># Sobel / Laplacian</span>
+sx = cv2.<span class="fn">Sobel</span>(gray,cv2.CV_64F,<span class="num">1</span>,<span class="num">0</span>)
+sy = cv2.<span class="fn">Sobel</span>(gray,cv2.CV_64F,<span class="num">0</span>,<span class="num">1</span>)
+lap = cv2.<span class="fn">Laplacian</span>(gray,cv2.CV_64F)
+
+<span class="cm"># 모폴로지 연산</span>
+k = cv2.<span class="fn">getStructuringElement</span>(
+  cv2.MORPH_RECT, (<span class="num">5</span>,<span class="num">5</span>))
+erode = cv2.<span class="fn">erode</span>(img, k, iterations=<span class="num">1</span>)
+dilate = cv2.<span class="fn">dilate</span>(img, k)
+opening = cv2.<span class="fn">morphologyEx</span>(
+  img, cv2.MORPH_OPEN, k)
+closing = cv2.<span class="fn">morphologyEx</span>(
+  img, cv2.MORPH_CLOSE, k)</pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>컨투어 (Contour)</h2>
+<pre><span class="cm"># 컨투어 찾기</span>
+contours, hier = cv2.<span class="fn">findContours</span>(
+  thresh, cv2.RETR_TREE,
+  cv2.CHAIN_APPROX_SIMPLE)
+
+<span class="cm"># 컨투어 그리기</span>
+cv2.<span class="fn">drawContours</span>(img,
+  contours, -<span class="num">1</span>, (<span class="num">0</span>,<span class="num">255</span>,<span class="num">0</span>), <span class="num">2</span>)
+
+<span class="cm"># 컨투어 속성</span>
+area = cv2.<span class="fn">contourArea</span>(cnt)
+peri = cv2.<span class="fn">arcLength</span>(cnt, <span class="kw">True</span>)
+x,y,w,h = cv2.<span class="fn">boundingRect</span>(cnt)
+
+<span class="cm"># 근사 & 볼록 껍질</span>
+approx = cv2.<span class="fn">approxPolyDP</span>(
+  cnt, <span class="num">0.02</span>*peri, <span class="kw">True</span>)
+hull = cv2.<span class="fn">convexHull</span>(cnt)</pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>히스토그램 & 색상 분석</h2>
+<pre><span class="cm"># 히스토그램 계산</span>
+hist = cv2.<span class="fn">calcHist</span>(
+  [img], [<span class="num">0</span>], <span class="kw">None</span>,
+  [<span class="num">256</span>], [<span class="num">0</span>,<span class="num">256</span>])
+
+<span class="cm"># 히스토그램 평활화</span>
+eq = cv2.<span class="fn">equalizeHist</span>(gray)
+
+<span class="cm"># CLAHE (적응형 평활화)</span>
+clahe = cv2.<span class="fn">createCLAHE</span>(
+  clipLimit=<span class="num">2.0</span>,
+  tileGridSize=(<span class="num">8</span>,<span class="num">8</span>))
+cl = clahe.<span class="fn">apply</span>(gray)
+
+<span class="cm"># HSV 기반 색상 마스킹</span>
+lower = np.<span class="fn">array</span>([<span class="num">35</span>,<span class="num">50</span>,<span class="num">50</span>])
+upper = np.<span class="fn">array</span>([<span class="num">85</span>,<span class="num">255</span>,<span class="num">255</span>])
+mask = cv2.<span class="fn">inRange</span>(hsv,lower,upper)
+result = cv2.<span class="fn">bitwise_and</span>(
+  img, img, mask=mask)</pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>비디오 처리</h2>
+<pre><span class="cm"># 비디오/카메라 열기</span>
+cap = cv2.<span class="fn">VideoCapture</span>(<span class="num">0</span>)  <span class="cm"># 웹캠</span>
+cap = cv2.<span class="fn">VideoCapture</span>(<span class="str">"v.mp4"</span>)
+
+<span class="kw">while</span> cap.<span class="fn">isOpened</span>():
+    ret, frame = cap.<span class="fn">read</span>()
+    <span class="kw">if not</span> ret: <span class="kw">break</span>
+    cv2.<span class="fn">imshow</span>(<span class="str">"Video"</span>, frame)
+    <span class="kw">if</span> cv2.<span class="fn">waitKey</span>(<span class="num">1</span>) & <span class="num">0xFF</span> \
+       == <span class="fn">ord</span>(<span class="str">'q'</span>): <span class="kw">break</span>
+cap.<span class="fn">release</span>()
+
+<span class="cm"># 비디오 저장</span>
+fourcc = cv2.<span class="fn">VideoWriter_fourcc</span>(
+  *<span class="str">'mp4v'</span>)
+out = cv2.<span class="fn">VideoWriter</span>(<span class="str">'out.mp4'</span>,
+  fourcc, <span class="num">30</span>, (w,h))
+out.<span class="fn">write</span>(frame)
+out.<span class="fn">release</span>()</pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>특징점 & 매칭</h2>
+<pre><span class="cm"># ORB 특징점</span>
+orb = cv2.<span class="fn">ORB_create</span>()
+kp, des = orb.<span class="fn">detectAndCompute</span>(
+  gray, <span class="kw">None</span>)
+
+<span class="cm"># 특징점 그리기</span>
+cv2.<span class="fn">drawKeypoints</span>(img, kp, img)
+
+<span class="cm"># 특징 매칭 (BFMatcher)</span>
+bf = cv2.<span class="fn">BFMatcher</span>(
+  cv2.NORM_HAMMING)
+matches = bf.<span class="fn">match</span>(des1, des2)
+matches = <span class="fn">sorted</span>(matches,
+  key=<span class="kw">lambda</span> x: x.distance)
+
+<span class="cm"># SIFT (특허 해제)</span>
+sift = cv2.<span class="fn">SIFT_create</span>()
+kp, des = sift.<span class="fn">detectAndCompute</span>(
+  gray, <span class="kw">None</span>)</pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>얼굴/객체 검출 & DNN</h2>
+<pre><span class="cm"># Haar Cascade 얼굴 검출</span>
+face_cas = cv2.<span class="fn">CascadeClassifier</span>(
+  cv2.data.haarcascades +
+  <span class="str">'haarcascade_frontalface_default.xml'</span>)
+faces = face_cas.<span class="fn">detectMultiScale</span>(
+  gray, <span class="num">1.3</span>, <span class="num">5</span>)
+<span class="kw">for</span> (x,y,w,h) <span class="kw">in</span> faces:
+  cv2.<span class="fn">rectangle</span>(img,
+    (x,y),(x+w,y+h),(<span class="num">0</span>,<span class="num">255</span>,<span class="num">0</span>),<span class="num">2</span>)
+
+<span class="cm"># DNN 모델 로드</span>
+net = cv2.dnn.<span class="fn">readNetFromCaffe</span>(
+  <span class="str">"deploy.prototxt"</span>,
+  <span class="str">"model.caffemodel"</span>)
+blob = cv2.dnn.<span class="fn">blobFromImage</span>(
+  img, <span class="num">1.0</span>, (<span class="num">300</span>,<span class="num">300</span>))
+net.<span class="fn">setInput</span>(blob)
+out = net.<span class="fn">forward</span>()</pre>
+</div>
+
+</div>
+<div class="footer">OpenCV Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

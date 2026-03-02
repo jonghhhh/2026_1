@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML5 Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:6mm}*{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;font-size:9.5px;line-height:1.35;color:#1a1a2e;background:#fff;padding:8px}
+  .page{max-width:1100px;margin:0 auto}
+  .header{background:linear-gradient(135deg,#E44D26,#F16529);color:#fff;padding:8px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .header h1{font-size:18px;font-weight:900}.header .ver{font-size:9px;opacity:.9;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .section{background:#f8f9fb;border-radius:5px;border-left:3px solid #E44D26;padding:4px 6px;break-inside:avoid}
+  .c1{border-left-color:#E44D26}.c2{border-left-color:#264de4}.c3{border-left-color:#27ae60}.c4{border-left-color:#8e44ad}
+  .c5{border-left-color:#d35400}.c6{border-left-color:#2980b9}.c7{border-left-color:#c0392b}.c8{border-left-color:#16a085}
+  .c9{border-left-color:#e67e22}.c10{border-left-color:#1abc9c}.c11{border-left-color:#9b59b6}.c12{border-left-color:#2c3e50}
+  .section h2{font-size:10px;font-weight:700;margin-bottom:2px;padding-bottom:2px;border-bottom:1px solid #e0e0e0}
+  .c1 h2{color:#E44D26}.c2 h2{color:#264de4}.c3 h2{color:#27ae60}.c4 h2{color:#8e44ad}
+  .c5 h2{color:#d35400}.c6 h2{color:#2980b9}.c7 h2{color:#c0392b}.c8 h2{color:#16a085}
+  .c9 h2{color:#e67e22}.c10 h2{color:#1abc9c}.c11 h2{color:#9b59b6}.c12 h2{color:#2c3e50}
+  code,pre{font-family:'JetBrains Mono',monospace;font-size:8px}
+  pre{background:#2c3e50;color:#ecf0f1;padding:3px 5px;border-radius:4px;margin:2px 0;overflow-x:auto;line-height:1.3}
+  .tag{color:#e74c3c}.attr{color:#e67e22}.val{color:#2ecc71}.cm{color:#7f8c8d}
+  table{width:100%;border-collapse:collapse;margin:2px 0;font-size:8px}
+  table th{background:#E44D26;color:white;padding:1px 3px;text-align:left;font-weight:600}
+  table td{padding:1px 3px;border-bottom:1px solid #eee}
+  table tr:nth-child(even) td{background:#f0f2f5}
+  .nb{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:7.5px;font-weight:700;color:#fff;margin-right:2px}
+  .c1 .nb{background:#E44D26}.c2 .nb{background:#264de4}.c3 .nb{background:#27ae60}.c4 .nb{background:#8e44ad}
+  .c5 .nb{background:#d35400}.c6 .nb{background:#2980b9}.c7 .nb{background:#c0392b}.c8 .nb{background:#16a085}
+  .c9 .nb{background:#e67e22}.c10 .nb{background:#1abc9c}.c11 .nb{background:#9b59b6}.c12 .nb{background:#2c3e50}
+  .footer{text-align:center;font-size:8px;color:#999;margin-top:3px;padding-top:2px;border-top:1px solid #eee}
+  @media screen and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media screen and (max-width:520px){.grid{grid-template-columns:1fr}body{font-size:13px}.header h1{font-size:20px}code,pre{font-size:11px}table{font-size:11px}pre{padding:8px;line-height:1.5}.section{padding:10px 12px}.section h2{font-size:15px}.nb{width:20px;height:20px;font-size:11px}.header{flex-direction:column;gap:4px;text-align:center}}
+  @media print{body{padding:0;font-size:8.8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.grid{grid-template-columns:repeat(4,1fr);gap:3px}.section{padding:3px 4px}pre{font-size:7.2px;padding:2px 3px}table{font-size:7.2px}.header{padding:4px 10px;margin-bottom:3px}.header h1{font-size:14px}.footer{margin-top:1px;padding-top:1px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header"><h1>🌐 HTML5 Cheat Sheet</h1><span class="ver">HTML5 | 2026 Updated</span></div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>기본 구조</h2>
+<pre><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="val">"ko"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"viewport"</span>
+    <span class="attr">content</span>=<span class="val">"width=device-width,
+    initial-scale=1.0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>제목<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span>
+    <span class="attr">href</span>=<span class="val">"style.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="cm">&lt;!-- 콘텐츠 --&gt;</span>
+  <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"app.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>Head 요소</h2>
+  <table>
+    <tr><th>태그</th><th>설명</th></tr>
+    <tr><td>&lt;title&gt;</td><td>페이지 제목 (탭에 표시)</td></tr>
+    <tr><td>&lt;meta&gt;</td><td>메타데이터 (charset, viewport 등)</td></tr>
+    <tr><td>&lt;link&gt;</td><td>외부 리소스 연결 (CSS 등)</td></tr>
+    <tr><td>&lt;style&gt;</td><td>내부 CSS 스타일</td></tr>
+    <tr><td>&lt;script&gt;</td><td>JavaScript 연결/삽입</td></tr>
+    <tr><td>&lt;base&gt;</td><td>기본 URL 설정</td></tr>
+  </table>
+<pre><span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"description"</span>
+  <span class="attr">content</span>=<span class="val">"설명"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"keywords"</span>
+  <span class="attr">content</span>=<span class="val">"HTML,CSS"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="val">"og:title"</span>
+  <span class="attr">content</span>=<span class="val">"OG제목"</span><span class="tag">&gt;</span></pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>텍스트 & 제목</h2>
+  <table>
+    <tr><th>태그</th><th>설명</th></tr>
+    <tr><td>&lt;h1&gt;~&lt;h6&gt;</td><td>제목 (h1이 가장 큼)</td></tr>
+    <tr><td>&lt;p&gt;</td><td>문단 (paragraph)</td></tr>
+    <tr><td>&lt;br&gt;</td><td>줄바꿈</td></tr>
+    <tr><td>&lt;hr&gt;</td><td>수평선</td></tr>
+    <tr><td>&lt;strong&gt; / &lt;b&gt;</td><td>굵게 (의미/시각)</td></tr>
+    <tr><td>&lt;em&gt; / &lt;i&gt;</td><td>강조/기울임</td></tr>
+    <tr><td>&lt;mark&gt;</td><td>형광펜 강조</td></tr>
+    <tr><td>&lt;del&gt; / &lt;ins&gt;</td><td>삭제선 / 밑줄</td></tr>
+    <tr><td>&lt;sub&gt; / &lt;sup&gt;</td><td>아래첨자 / 위첨자</td></tr>
+    <tr><td>&lt;blockquote&gt;</td><td>인용문</td></tr>
+    <tr><td>&lt;code&gt; / &lt;pre&gt;</td><td>코드 / 서식유지</td></tr>
+    <tr><td>&lt;span&gt;</td><td>인라인 그룹핑</td></tr>
+  </table>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>리스트</h2>
+<pre><span class="cm">&lt;!-- 순서 없는 리스트 --&gt;</span>
+<span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span>항목 1<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>항목 2<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span>
+
+<span class="cm">&lt;!-- 순서 있는 리스트 --&gt;</span>
+<span class="tag">&lt;ol</span> <span class="attr">type</span>=<span class="val">"1"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;li&gt;</span>첫번째<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>두번째<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ol&gt;</span>
+
+<span class="cm">&lt;!-- 정의 리스트 --&gt;</span>
+<span class="tag">&lt;dl&gt;</span>
+  <span class="tag">&lt;dt&gt;</span>용어<span class="tag">&lt;/dt&gt;</span>
+  <span class="tag">&lt;dd&gt;</span>정의<span class="tag">&lt;/dd&gt;</span>
+<span class="tag">&lt;/dl&gt;</span></pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>링크 & 이미지 & 미디어</h2>
+<pre><span class="cm">&lt;!-- 하이퍼링크 --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"url"</span> <span class="attr">target</span>=<span class="val">"_blank"</span><span class="tag">&gt;</span>
+  링크텍스트<span class="tag">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- 이미지 --&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"img.jpg"</span> <span class="attr">alt</span>=<span class="val">"설명"</span>
+  <span class="attr">width</span>=<span class="val">"300"</span><span class="tag">&gt;</span>
+
+<span class="cm">&lt;!-- 비디오 --&gt;</span>
+<span class="tag">&lt;video</span> <span class="attr">controls</span> <span class="attr">width</span>=<span class="val">"400"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="attr">src</span>=<span class="val">"v.mp4"</span>
+    <span class="attr">type</span>=<span class="val">"video/mp4"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/video&gt;</span>
+
+<span class="cm">&lt;!-- 오디오 --&gt;</span>
+<span class="tag">&lt;audio</span> <span class="attr">controls</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="attr">src</span>=<span class="val">"a.mp3"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/audio&gt;</span>
+
+<span class="cm">&lt;!-- iframe --&gt;</span>
+<span class="tag">&lt;iframe</span> <span class="attr">src</span>=<span class="val">"url"</span>
+  <span class="attr">width</span>=<span class="val">"600"</span> <span class="attr">height</span>=<span class="val">"400"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/iframe&gt;</span></pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>테이블</h2>
+<pre><span class="tag">&lt;table&gt;</span>
+  <span class="tag">&lt;thead&gt;</span>
+    <span class="tag">&lt;tr&gt;</span>
+      <span class="tag">&lt;th&gt;</span>이름<span class="tag">&lt;/th&gt;</span>
+      <span class="tag">&lt;th&gt;</span>점수<span class="tag">&lt;/th&gt;</span>
+    <span class="tag">&lt;/tr&gt;</span>
+  <span class="tag">&lt;/thead&gt;</span>
+  <span class="tag">&lt;tbody&gt;</span>
+    <span class="tag">&lt;tr&gt;</span>
+      <span class="tag">&lt;td&gt;</span>김<span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;td&gt;</span>90<span class="tag">&lt;/td&gt;</span>
+    <span class="tag">&lt;/tr&gt;</span>
+  <span class="tag">&lt;/tbody&gt;</span>
+<span class="tag">&lt;/table&gt;</span></pre>
+  <table>
+    <tr><th>속성</th><th>설명</th></tr>
+    <tr><td>colspan="2"</td><td>열 병합</td></tr>
+    <tr><td>rowspan="3"</td><td>행 병합</td></tr>
+  </table>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>폼 (Form) — 입력 요소</h2>
+<pre><span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="val">"/submit"</span> <span class="attr">method</span>=<span class="val">"POST"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="val">"name"</span><span class="tag">&gt;</span>이름<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"name"</span>
+    <span class="attr">placeholder</span>=<span class="val">"입력"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>전송<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/form&gt;</span></pre>
+  <table>
+    <tr><th>input type</th><th>설명</th></tr>
+    <tr><td>text / password</td><td>텍스트 / 비밀번호</td></tr>
+    <tr><td>email / tel / url</td><td>이메일/전화/URL</td></tr>
+    <tr><td>number / range</td><td>숫자/슬라이더</td></tr>
+    <tr><td>date / time</td><td>날짜/시간 선택</td></tr>
+    <tr><td>checkbox / radio</td><td>체크/라디오</td></tr>
+    <tr><td>file / color</td><td>파일/색상 선택</td></tr>
+    <tr><td>hidden / submit</td><td>숨김/제출</td></tr>
+  </table>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>폼 — 기타 입력</h2>
+<pre><span class="cm">&lt;!-- 드롭다운 --&gt;</span>
+<span class="tag">&lt;select</span> <span class="attr">name</span>=<span class="val">"city"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"seoul"</span><span class="tag">&gt;</span>서울<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"busan"</span><span class="tag">&gt;</span>부산<span class="tag">&lt;/option&gt;</span>
+<span class="tag">&lt;/select&gt;</span>
+
+<span class="cm">&lt;!-- 텍스트영역 --&gt;</span>
+<span class="tag">&lt;textarea</span> <span class="attr">rows</span>=<span class="val">"4"</span> <span class="attr">cols</span>=<span class="val">"50"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/textarea&gt;</span>
+
+<span class="cm">&lt;!-- 필드셋 --&gt;</span>
+<span class="tag">&lt;fieldset&gt;</span>
+  <span class="tag">&lt;legend&gt;</span>개인정보<span class="tag">&lt;/legend&gt;</span>
+  ...
+<span class="tag">&lt;/fieldset&gt;</span>
+
+<span class="cm">&lt;!-- datalist (자동완성) --&gt;</span>
+<span class="tag">&lt;input</span> <span class="attr">list</span>=<span class="val">"fruits"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;datalist</span> <span class="attr">id</span>=<span class="val">"fruits"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="val">"사과"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/datalist&gt;</span></pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>시맨틱 태그 (HTML5)</h2>
+<pre><span class="tag">&lt;header&gt;</span>  <span class="cm">헤더 영역</span>
+<span class="tag">&lt;nav&gt;</span>     <span class="cm">내비게이션</span>
+<span class="tag">&lt;main&gt;</span>    <span class="cm">주요 콘텐츠</span>
+<span class="tag">&lt;article&gt;</span> <span class="cm">독립적 콘텐츠</span>
+<span class="tag">&lt;section&gt;</span> <span class="cm">구역</span>
+<span class="tag">&lt;aside&gt;</span>   <span class="cm">사이드바</span>
+<span class="tag">&lt;footer&gt;</span>  <span class="cm">푸터 영역</span>
+<span class="tag">&lt;figure&gt;</span>  <span class="cm">그림+캡션 묶음</span>
+  <span class="tag">&lt;figcaption&gt;</span> <span class="cm">캡션</span>
+<span class="tag">&lt;details&gt;</span> <span class="cm">접기/펼치기</span>
+  <span class="tag">&lt;summary&gt;</span> <span class="cm">요약 제목</span>
+<span class="tag">&lt;dialog&gt;</span>  <span class="cm">대화상자</span>
+<span class="tag">&lt;time&gt;</span>    <span class="cm">날짜/시간</span></pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>글로벌 속성</h2>
+  <table>
+    <tr><th>속성</th><th>설명</th></tr>
+    <tr><td>id</td><td>고유 식별자</td></tr>
+    <tr><td>class</td><td>CSS 클래스</td></tr>
+    <tr><td>style</td><td>인라인 스타일</td></tr>
+    <tr><td>title</td><td>툴팁 텍스트</td></tr>
+    <tr><td>data-*</td><td>사용자 정의 데이터</td></tr>
+    <tr><td>hidden</td><td>숨김 처리</td></tr>
+    <tr><td>tabindex</td><td>탭 순서</td></tr>
+    <tr><td>contenteditable</td><td>편집 가능</td></tr>
+    <tr><td>draggable</td><td>드래그 가능</td></tr>
+    <tr><td>lang</td><td>언어 지정</td></tr>
+    <tr><td>role / aria-*</td><td>접근성 (ARIA)</td></tr>
+  </table>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>HTML 엔티티 & 특수문자</h2>
+  <table>
+    <tr><th>문자</th><th>코드</th><th>문자</th><th>코드</th></tr>
+    <tr><td>&lt;</td><td>&amp;lt;</td><td>&gt;</td><td>&amp;gt;</td></tr>
+    <tr><td>&amp;</td><td>&amp;amp;</td><td>"</td><td>&amp;quot;</td></tr>
+    <tr><td>&nbsp;</td><td>&amp;nbsp;</td><td>©</td><td>&amp;copy;</td></tr>
+    <tr><td>—</td><td>&amp;mdash;</td><td>→</td><td>&amp;rarr;</td></tr>
+  </table>
+<pre><span class="cm">&lt;!-- 주석 (Comment) --&gt;</span>
+<span class="cm">&lt;!-- 브라우저에 표시 안됨 --&gt;</span>
+
+<span class="cm">&lt;!-- target 속성 --&gt;</span>
+<span class="attr">_blank</span>  <span class="cm">새 탭</span>
+<span class="attr">_self</span>   <span class="cm">현재 탭 (기본)</span>
+<span class="attr">_parent</span> <span class="cm">부모 프레임</span>
+<span class="attr">_top</span>    <span class="cm">최상위 프레임</span></pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>Canvas & SVG & 기타</h2>
+<pre><span class="cm">&lt;!-- Canvas (JS 그래픽) --&gt;</span>
+<span class="tag">&lt;canvas</span> <span class="attr">id</span>=<span class="val">"c"</span> <span class="attr">width</span>=<span class="val">"400"</span>
+  <span class="attr">height</span>=<span class="val">"300"</span><span class="tag">&gt;&lt;/canvas&gt;</span>
+
+<span class="cm">&lt;!-- SVG (벡터 그래픽) --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">width</span>=<span class="val">"100"</span> <span class="attr">height</span>=<span class="val">"100"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"50"</span> <span class="attr">cy</span>=<span class="val">"50"</span>
+    <span class="attr">r</span>=<span class="val">"40"</span> <span class="attr">fill</span>=<span class="val">"red"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/svg&gt;</span>
+
+<span class="cm">&lt;!-- Progress / Meter --&gt;</span>
+<span class="tag">&lt;progress</span> <span class="attr">value</span>=<span class="val">"70"</span>
+  <span class="attr">max</span>=<span class="val">"100"</span><span class="tag">&gt;&lt;/progress&gt;</span>
+<span class="tag">&lt;meter</span> <span class="attr">value</span>=<span class="val">"0.7"</span><span class="tag">&gt;&lt;/meter&gt;</span>
+
+<span class="cm">&lt;!-- div (블록) vs span (인라인) --&gt;</span>
+<span class="tag">&lt;div&gt;</span> 블록 컨테이너 <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;span&gt;</span> 인라인 컨테이너 <span class="tag">&lt;/span&gt;</span></pre>
+</div>
+
+</div>
+<div class="footer">HTML5 Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

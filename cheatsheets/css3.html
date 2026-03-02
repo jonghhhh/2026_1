@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS3 Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:6mm}*{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;font-size:9.5px;line-height:1.35;color:#1a1a2e;background:#fff;padding:8px}
+  .page{max-width:1100px;margin:0 auto}
+  .header{background:linear-gradient(135deg,#264de4,#2965f1);color:#fff;padding:8px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .header h1{font-size:18px;font-weight:900}.header .ver{font-size:9px;opacity:.9;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .section{background:#f8f9fb;border-radius:5px;border-left:3px solid #264de4;padding:4px 6px;break-inside:avoid}
+  .c1{border-left-color:#264de4}.c2{border-left-color:#e74c3c}.c3{border-left-color:#27ae60}.c4{border-left-color:#8e44ad}
+  .c5{border-left-color:#d35400}.c6{border-left-color:#2980b9}.c7{border-left-color:#c0392b}.c8{border-left-color:#16a085}
+  .c9{border-left-color:#e67e22}.c10{border-left-color:#1abc9c}.c11{border-left-color:#9b59b6}.c12{border-left-color:#2c3e50}
+  .section h2{font-size:10px;font-weight:700;margin-bottom:2px;padding-bottom:2px;border-bottom:1px solid #e0e0e0}
+  .c1 h2{color:#264de4}.c2 h2{color:#c0392b}.c3 h2{color:#27ae60}.c4 h2{color:#8e44ad}
+  .c5 h2{color:#d35400}.c6 h2{color:#2980b9}.c7 h2{color:#c0392b}.c8 h2{color:#16a085}
+  .c9 h2{color:#e67e22}.c10 h2{color:#1abc9c}.c11 h2{color:#9b59b6}.c12 h2{color:#2c3e50}
+  code,pre{font-family:'JetBrains Mono',monospace;font-size:8px}
+  pre{background:#1a1a2e;color:#ecf0f1;padding:3px 5px;border-radius:4px;margin:2px 0;overflow-x:auto;line-height:1.3}
+  .sel{color:#50fa7b}.prop{color:#8be9fd}.val{color:#f1fa8c}.cm{color:#6272a4}.kw{color:#ff79c6}
+  table{width:100%;border-collapse:collapse;margin:2px 0;font-size:8px}
+  table th{background:#264de4;color:white;padding:1px 3px;text-align:left;font-weight:600}
+  table td{padding:1px 3px;border-bottom:1px solid #eee}
+  table tr:nth-child(even) td{background:#f0f2f5}
+  .nb{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:7.5px;font-weight:700;color:#fff;margin-right:2px}
+  .c1 .nb{background:#264de4}.c2 .nb{background:#c0392b}.c3 .nb{background:#27ae60}.c4 .nb{background:#8e44ad}
+  .c5 .nb{background:#d35400}.c6 .nb{background:#2980b9}.c7 .nb{background:#c0392b}.c8 .nb{background:#16a085}
+  .c9 .nb{background:#e67e22}.c10 .nb{background:#1abc9c}.c11 .nb{background:#9b59b6}.c12 .nb{background:#2c3e50}
+  .footer{text-align:center;font-size:8px;color:#999;margin-top:3px;padding-top:2px;border-top:1px solid #eee}
+  @media screen and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media screen and (max-width:520px){.grid{grid-template-columns:1fr}body{font-size:13px}.header h1{font-size:20px}code,pre{font-size:11px}table{font-size:11px}pre{padding:8px;line-height:1.5}.section{padding:10px 12px}.section h2{font-size:15px}.nb{width:20px;height:20px;font-size:11px}.header{flex-direction:column;gap:4px;text-align:center}}
+  @media print{body{padding:0;font-size:8.8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.grid{grid-template-columns:repeat(4,1fr);gap:3px}.section{padding:3px 4px}pre{font-size:7.2px;padding:2px 3px}table{font-size:7.2px}.header{padding:4px 10px;margin-bottom:3px}.header h1{font-size:14px}.footer{margin-top:1px;padding-top:1px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header"><h1>🎨 CSS3 Cheat Sheet</h1><span class="ver">CSS3 | 2026 Updated</span></div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>선택자 (Selectors)</h2>
+<pre><span class="sel">*</span>         <span class="cm">/* 전체 */</span>
+<span class="sel">div</span>       <span class="cm">/* 태그 */</span>
+<span class="sel">.class</span>    <span class="cm">/* 클래스 */</span>
+<span class="sel">#id</span>       <span class="cm">/* ID */</span>
+<span class="sel">div p</span>     <span class="cm">/* 자손 */</span>
+<span class="sel">div > p</span>   <span class="cm">/* 직계 자식 */</span>
+<span class="sel">h1 + p</span>   <span class="cm">/* 인접 형제 */</span>
+<span class="sel">h1 ~ p</span>   <span class="cm">/* 일반 형제 */</span>
+<span class="sel">[attr]</span>     <span class="cm">/* 속성 존재 */</span>
+<span class="sel">[attr="val"]</span> <span class="cm">/* 속성=값 */</span>
+<span class="sel">[attr^="v"]</span>  <span class="cm">/* 시작 */</span>
+<span class="sel">[attr$="v"]</span>  <span class="cm">/* 끝 */</span>
+<span class="sel">[attr*="v"]</span>  <span class="cm">/* 포함 */</span></pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>가상 클래스 & 요소</h2>
+  <table>
+    <tr><th>가상 클래스</th><th>설명</th></tr>
+    <tr><td>:hover</td><td>마우스 올릴 때</td></tr>
+    <tr><td>:active</td><td>클릭 중</td></tr>
+    <tr><td>:focus</td><td>포커스 상태</td></tr>
+    <tr><td>:visited / :link</td><td>방문/미방문 링크</td></tr>
+    <tr><td>:first-child</td><td>첫번째 자식</td></tr>
+    <tr><td>:last-child</td><td>마지막 자식</td></tr>
+    <tr><td>:nth-child(n)</td><td>n번째 자식</td></tr>
+    <tr><td>:not(sel)</td><td>제외</td></tr>
+    <tr><td>:checked</td><td>체크됨</td></tr>
+    <tr><td>:disabled</td><td>비활성</td></tr>
+  </table>
+<pre><span class="sel">::before</span>  <span class="cm">/* 앞 삽입 */</span>
+<span class="sel">::after</span>   <span class="cm">/* 뒤 삽입 */</span>
+<span class="sel">::first-line</span>  <span class="cm">/* 첫 줄 */</span>
+<span class="sel">::placeholder</span> <span class="cm">/* 힌트 */</span></pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>박스 모델 & 크기</h2>
+<pre><span class="sel">div</span> {
+  <span class="prop">box-sizing</span>: <span class="val">border-box</span>;
+  <span class="prop">width</span>: <span class="val">300px</span>;
+  <span class="prop">height</span>: <span class="val">auto</span>;
+  <span class="prop">padding</span>: <span class="val">10px 20px</span>;
+  <span class="prop">margin</span>: <span class="val">10px auto</span>;
+  <span class="prop">border</span>: <span class="val">1px solid #ccc</span>;
+  <span class="prop">border-radius</span>: <span class="val">8px</span>;
+  <span class="prop">max-width</span>: <span class="val">1200px</span>;
+  <span class="prop">min-height</span>: <span class="val">100vh</span>;
+  <span class="prop">overflow</span>: <span class="val">hidden</span>;
+  <span class="cm">/* scroll | auto | visible */</span>
+}</pre>
+  <table>
+    <tr><th>단위</th><th>설명</th></tr>
+    <tr><td>px, em, rem</td><td>절대/상대/루트상대</td></tr>
+    <tr><td>%, vw, vh</td><td>부모비율/뷰포트</td></tr>
+  </table>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>색상 & 배경</h2>
+<pre><span class="prop">color</span>: <span class="val">#FF5733</span>;
+<span class="prop">color</span>: <span class="val">rgb(255, 87, 51)</span>;
+<span class="prop">color</span>: <span class="val">rgba(255,87,51,0.8)</span>;
+<span class="prop">color</span>: <span class="val">hsl(14, 100%, 60%)</span>;
+<span class="prop">opacity</span>: <span class="val">0.8</span>;
+
+<span class="prop">background</span>: <span class="val">#f0f0f0</span>;
+<span class="prop">background-image</span>: <span class="val">url(bg.jpg)</span>;
+<span class="prop">background-size</span>: <span class="val">cover</span>;
+  <span class="cm">/* contain | 100% 100% */</span>
+<span class="prop">background-position</span>: <span class="val">center</span>;
+<span class="prop">background-repeat</span>: <span class="val">no-repeat</span>;
+<span class="cm">/* 그라디언트 */</span>
+<span class="prop">background</span>: <span class="val">linear-gradient(
+  to right, #e66, #33f)</span>;
+<span class="prop">background</span>: <span class="val">radial-gradient(
+  circle, #fff, #000)</span>;</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>텍스트 & 폰트</h2>
+<pre><span class="prop">font-family</span>: <span class="val">'Noto Sans KR'</span>;
+<span class="prop">font-size</span>: <span class="val">16px</span>;
+<span class="prop">font-weight</span>: <span class="val">bold</span>; <span class="cm">/* 100~900 */</span>
+<span class="prop">font-style</span>: <span class="val">italic</span>;
+<span class="prop">text-align</span>: <span class="val">center</span>;
+  <span class="cm">/* left right justify */</span>
+<span class="prop">text-decoration</span>: <span class="val">underline</span>;
+  <span class="cm">/* none line-through */</span>
+<span class="prop">text-transform</span>: <span class="val">uppercase</span>;
+<span class="prop">line-height</span>: <span class="val">1.6</span>;
+<span class="prop">letter-spacing</span>: <span class="val">2px</span>;
+<span class="prop">word-spacing</span>: <span class="val">5px</span>;
+<span class="prop">text-shadow</span>: <span class="val">2px 2px 4px #999</span>;
+<span class="prop">white-space</span>: <span class="val">nowrap</span>;
+<span class="prop">text-overflow</span>: <span class="val">ellipsis</span>;</pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>Display & Position</h2>
+<pre><span class="prop">display</span>: <span class="val">block</span>;
+  <span class="cm">/* inline | inline-block |
+     none | flex | grid */</span>
+<span class="prop">visibility</span>: <span class="val">hidden</span>; <span class="cm">/* 자리 유지 */</span>
+
+<span class="prop">position</span>: <span class="val">static</span>;   <span class="cm">/* 기본 */</span>
+<span class="prop">position</span>: <span class="val">relative</span>; <span class="cm">/* 원래위치 기준 */</span>
+<span class="prop">position</span>: <span class="val">absolute</span>; <span class="cm">/* 부모 기준 */</span>
+<span class="prop">position</span>: <span class="val">fixed</span>;    <span class="cm">/* 뷰포트 고정 */</span>
+<span class="prop">position</span>: <span class="val">sticky</span>;   <span class="cm">/* 스크롤 고정 */</span>
+<span class="prop">top</span>: <span class="val">0</span>; <span class="prop">left</span>: <span class="val">0</span>;
+<span class="prop">z-index</span>: <span class="val">100</span>;
+<span class="prop">float</span>: <span class="val">left</span>;  <span class="cm">/* right none */</span>
+<span class="prop">clear</span>: <span class="val">both</span>;</pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>Flexbox</h2>
+<pre><span class="sel">.container</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">flex-direction</span>: <span class="val">row</span>;
+    <span class="cm">/* column row-reverse */</span>
+  <span class="prop">justify-content</span>: <span class="val">center</span>;
+    <span class="cm">/* start end space-between
+       space-around space-evenly */</span>
+  <span class="prop">align-items</span>: <span class="val">center</span>;
+    <span class="cm">/* start end stretch */</span>
+  <span class="prop">flex-wrap</span>: <span class="val">wrap</span>;
+  <span class="prop">gap</span>: <span class="val">10px</span>;
+}
+<span class="sel">.item</span> {
+  <span class="prop">flex</span>: <span class="val">1</span>;  <span class="cm">/* grow shrink basis */</span>
+  <span class="prop">order</span>: <span class="val">2</span>;
+  <span class="prop">align-self</span>: <span class="val">flex-end</span>;
+}</pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>Grid</h2>
+<pre><span class="sel">.container</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-columns</span>:
+    <span class="val">repeat(3, 1fr)</span>;
+    <span class="cm">/* 200px auto 1fr */</span>
+  <span class="prop">grid-template-rows</span>:
+    <span class="val">100px auto</span>;
+  <span class="prop">gap</span>: <span class="val">10px 20px</span>;
+  <span class="prop">place-items</span>: <span class="val">center</span>;
+}
+<span class="sel">.item</span> {
+  <span class="prop">grid-column</span>: <span class="val">1 / 3</span>; <span class="cm">/* 병합 */</span>
+  <span class="prop">grid-row</span>: <span class="val">1 / 2</span>;
+}</pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>변환 & 애니메이션</h2>
+<pre><span class="cm">/* Transform */</span>
+<span class="prop">transform</span>: <span class="val">translateX(50px)</span>;
+<span class="prop">transform</span>: <span class="val">rotate(45deg)</span>;
+<span class="prop">transform</span>: <span class="val">scale(1.5)</span>;
+<span class="prop">transform</span>: <span class="val">skewX(10deg)</span>;
+
+<span class="cm">/* Transition */</span>
+<span class="prop">transition</span>: <span class="val">all 0.3s ease</span>;
+  <span class="cm">/* ease-in ease-out
+     ease-in-out linear */</span>
+
+<span class="cm">/* Animation */</span>
+<span class="kw">@keyframes</span> <span class="sel">slide</span> {
+  <span class="val">from</span> { <span class="prop">transform</span>:<span class="val">translateX(0)</span>; }
+  <span class="val">to</span>   { <span class="prop">transform</span>:<span class="val">translateX(100px)</span>; }
+}
+<span class="prop">animation</span>: <span class="val">slide 2s ease
+  infinite alternate</span>;</pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>그림자 & 효과</h2>
+<pre><span class="cm">/* 박스 그림자 */</span>
+<span class="prop">box-shadow</span>: <span class="val">0 4px 6px rgba(0,0,0,.1)</span>;
+<span class="prop">box-shadow</span>: <span class="val">inset 0 0 10px #ccc</span>;
+
+<span class="cm">/* 필터 */</span>
+<span class="prop">filter</span>: <span class="val">blur(5px)</span>;
+<span class="prop">filter</span>: <span class="val">brightness(1.2)</span>;
+<span class="prop">filter</span>: <span class="val">grayscale(100%)</span>;
+<span class="prop">filter</span>: <span class="val">drop-shadow(2px 2px 4px)</span>;
+
+<span class="cm">/* 커서 */</span>
+<span class="prop">cursor</span>: <span class="val">pointer</span>;
+  <span class="cm">/* default text move
+     not-allowed grab */</span></pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>반응형 (Media Query)</h2>
+<pre><span class="kw">@media</span> (<span class="prop">max-width</span>: <span class="val">768px</span>) {
+  <span class="sel">.container</span> {
+    <span class="prop">flex-direction</span>: <span class="val">column</span>;
+  }
+}
+<span class="kw">@media</span> (<span class="prop">min-width</span>: <span class="val">1024px</span>) {
+  <span class="sel">.sidebar</span> {
+    <span class="prop">display</span>: <span class="val">block</span>;
+  }
+}
+<span class="kw">@media</span> <span class="val">print</span> {
+  <span class="sel">.no-print</span> { <span class="prop">display</span>:<span class="val">none</span>; }
+}
+<span class="cm">/* 브레이크포인트 관례 */</span>
+<span class="cm">/* 모바일: ~480px  태블릿: ~768px
+   데스크탑: ~1024px+  */</span></pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>CSS 변수 & 기타</h2>
+<pre><span class="cm">/* CSS 변수 */</span>
+<span class="sel">:root</span> {
+  <span class="prop">--primary</span>: <span class="val">#264de4</span>;
+  <span class="prop">--gap</span>: <span class="val">16px</span>;
+}
+<span class="sel">.btn</span> {
+  <span class="prop">color</span>: <span class="val">var(--primary)</span>;
+  <span class="prop">padding</span>: <span class="val">var(--gap)</span>;
+}
+
+<span class="cm">/* 우선순위 (높→낮) */</span>
+<span class="cm">/* !important > inline style >
+   #id > .class > tag > * */</span>
+
+<span class="cm">/* calc() */</span>
+<span class="prop">width</span>: <span class="val">calc(100% - 200px)</span>;
+
+<span class="cm">/* clamp() */</span>
+<span class="prop">font-size</span>: <span class="val">clamp(14px,2vw,20px)</span>;</pre>
+</div>
+
+</div>
+<div class="footer">CSS3 Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

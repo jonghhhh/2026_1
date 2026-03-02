@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:6mm}*{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;font-size:9.5px;line-height:1.35;color:#1a1a2e;background:#fff;padding:8px}
+  .page{max-width:1100px;margin:0 auto}
+  .header{background:linear-gradient(135deg,#F7DF1E,#323330);color:#fff;padding:8px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .header h1{font-size:18px;font-weight:900}.header .ver{font-size:9px;opacity:.9;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .section{background:#f8f9fb;border-radius:5px;border-left:3px solid #F7DF1E;padding:4px 6px;break-inside:avoid}
+  .c1{border-left-color:#323330}.c2{border-left-color:#F7DF1E}.c3{border-left-color:#27ae60}.c4{border-left-color:#e74c3c}
+  .c5{border-left-color:#8e44ad}.c6{border-left-color:#d35400}.c7{border-left-color:#2980b9}.c8{border-left-color:#16a085}
+  .c9{border-left-color:#c0392b}.c10{border-left-color:#1abc9c}.c11{border-left-color:#9b59b6}.c12{border-left-color:#e67e22}
+  .section h2{font-size:10px;font-weight:700;margin-bottom:2px;padding-bottom:2px;border-bottom:1px solid #e0e0e0}
+  .c1 h2{color:#323330}.c2 h2{color:#b8a100}.c3 h2{color:#27ae60}.c4 h2{color:#c0392b}
+  .c5 h2{color:#8e44ad}.c6 h2{color:#d35400}.c7 h2{color:#2980b9}.c8 h2{color:#16a085}
+  .c9 h2{color:#c0392b}.c10 h2{color:#1abc9c}.c11 h2{color:#9b59b6}.c12 h2{color:#d35400}
+  code,pre{font-family:'JetBrains Mono',monospace;font-size:8px}
+  pre{background:#323330;color:#F7DF1E;padding:3px 5px;border-radius:4px;margin:2px 0;overflow-x:auto;line-height:1.3}
+  .kw{color:#c678dd}.fn{color:#61afef}.str{color:#98c379}.cm{color:#5c6370}.num{color:#d19a66}.wh{color:#abb2bf}
+  table{width:100%;border-collapse:collapse;margin:2px 0;font-size:8px}
+  table th{background:#323330;color:#F7DF1E;padding:1px 3px;text-align:left;font-weight:600}
+  table td{padding:1px 3px;border-bottom:1px solid #eee}
+  table tr:nth-child(even) td{background:#f0f2f5}
+  .nb{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:7.5px;font-weight:700;color:#323330;margin-right:2px;background:#F7DF1E}
+  .footer{text-align:center;font-size:8px;color:#999;margin-top:3px;padding-top:2px;border-top:1px solid #eee}
+  @media screen and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media screen and (max-width:520px){.grid{grid-template-columns:1fr}body{font-size:13px}.header h1{font-size:20px}code,pre{font-size:11px}table{font-size:11px}pre{padding:8px;line-height:1.5}.section{padding:10px 12px}.section h2{font-size:15px}.nb{width:20px;height:20px;font-size:11px}.header{flex-direction:column;gap:4px;text-align:center}}
+  @media print{body{padding:0;font-size:8.8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.grid{grid-template-columns:repeat(4,1fr);gap:3px}.section{padding:3px 4px}pre{font-size:7.2px;padding:2px 3px}table{font-size:7.2px}.header{padding:4px 10px;margin-bottom:3px}.header h1{font-size:14px}.footer{margin-top:1px;padding-top:1px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header"><h1>⚡ JavaScript Cheat Sheet</h1><span class="ver">ES6+ | 2026 Updated</span></div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>변수 & 데이터 타입</h2>
+<pre><span class="kw">let</span> x = <span class="num">5</span>;         <span class="cm">// 재할당 가능</span>
+<span class="kw">const</span> PI = <span class="num">3.14</span>;    <span class="cm">// 상수</span>
+<span class="kw">var</span> old = <span class="str">"사용X"</span>;  <span class="cm">// 구식 (비권장)</span>
+
+<span class="cm">// 7가지 원시 타입</span>
+<span class="kw">typeof</span> <span class="num">42</span>          <span class="cm">// "number"</span>
+<span class="kw">typeof</span> <span class="str">"hello"</span>     <span class="cm">// "string"</span>
+<span class="kw">typeof</span> <span class="kw">true</span>        <span class="cm">// "boolean"</span>
+<span class="kw">typeof</span> <span class="kw">undefined</span>   <span class="cm">// "undefined"</span>
+<span class="kw">typeof</span> <span class="kw">null</span>        <span class="cm">// "object" (!)</span>
+<span class="kw">typeof</span> <span class="fn">Symbol</span>()    <span class="cm">// "symbol"</span>
+<span class="kw">typeof</span> <span class="num">9007n</span>       <span class="cm">// "bigint"</span></pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>연산자</h2>
+  <table>
+    <tr><th>연산자</th><th>설명</th><th>예시</th></tr>
+    <tr><td>== / ===</td><td>동등/일치</td><td>'3'==3 ✓</td></tr>
+    <tr><td>!= / !==</td><td>부등/불일치</td><td>'3'!==3 ✓</td></tr>
+    <tr><td>&& || !</td><td>논리 AND OR NOT</td><td></td></tr>
+    <tr><td>?? </td><td>Null 병합</td><td>a ?? 'default'</td></tr>
+    <tr><td>?.</td><td>옵셔널 체이닝</td><td>obj?.prop</td></tr>
+    <tr><td>...</td><td>전개 연산자</td><td>[...arr]</td></tr>
+    <tr><td>**</td><td>거듭제곱</td><td>2**3 → 8</td></tr>
+  </table>
+<pre><span class="cm">// 삼항 연산자</span>
+<span class="kw">let</span> r = x > <span class="num">0</span> ? <span class="str">"양수"</span> : <span class="str">"음수"</span>;</pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>문자열 (String)</h2>
+<pre><span class="kw">let</span> s = <span class="str">"Hello"</span>;
+s.<span class="fn">length</span>           <span class="cm">// 5</span>
+s[<span class="num">0</span>]               <span class="cm">// 'H'</span>
+s.<span class="fn">toUpperCase</span>()    <span class="cm">// 'HELLO'</span>
+s.<span class="fn">includes</span>(<span class="str">"ell"</span>) <span class="cm">// true</span>
+s.<span class="fn">startsWith</span>(<span class="str">"He"</span>)<span class="cm">// true</span>
+s.<span class="fn">slice</span>(<span class="num">1</span>,<span class="num">3</span>)       <span class="cm">// 'el'</span>
+s.<span class="fn">split</span>(<span class="str">""</span>)        <span class="cm">// ['H','e',...]</span>
+s.<span class="fn">replace</span>(<span class="str">"H"</span>,<span class="str">"h"</span>)<span class="cm">// 'hello'</span>
+s.<span class="fn">trim</span>()           <span class="cm">// 양쪽 공백 제거</span>
+s.<span class="fn">padStart</span>(<span class="num">8</span>,<span class="str">"0"</span>) <span class="cm">// '000Hello'</span>
+s.<span class="fn">repeat</span>(<span class="num">2</span>)       <span class="cm">// 'HelloHello'</span>
+
+<span class="cm">// 템플릿 리터럴</span>
+<span class="str">`이름: ${name}, 값: ${1+2}`</span></pre>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>배열 (Array)</h2>
+<pre><span class="kw">let</span> arr = [<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>];
+arr.<span class="fn">push</span>(<span class="num">6</span>)    <span class="cm">// 끝에 추가</span>
+arr.<span class="fn">pop</span>()      <span class="cm">// 끝에서 제거</span>
+arr.<span class="fn">unshift</span>(<span class="num">0</span>) <span class="cm">// 앞에 추가</span>
+arr.<span class="fn">shift</span>()    <span class="cm">// 앞에서 제거</span>
+arr.<span class="fn">slice</span>(<span class="num">1</span>,<span class="num">3</span>) <span class="cm">// [2,3] 복사</span>
+arr.<span class="fn">splice</span>(<span class="num">1</span>,<span class="num">2</span>)<span class="cm">// 삭제+삽입</span>
+arr.<span class="fn">indexOf</span>(<span class="num">3</span>) <span class="cm">// 2</span>
+arr.<span class="fn">includes</span>(<span class="num">3</span>)<span class="cm">// true</span>
+arr.<span class="fn">concat</span>([<span class="num">6</span>])<span class="cm">// 합치기</span>
+arr.<span class="fn">join</span>(<span class="str">"-"</span>)  <span class="cm">// "1-2-3-4-5"</span>
+[...arr]        <span class="cm">// 배열 복사</span>
+
+<span class="cm">// 구조분해</span>
+<span class="kw">let</span> [a, b, ...rest] = arr;</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>배열 고차함수</h2>
+<pre>arr.<span class="fn">forEach</span>(<span class="wh">(v,i) =></span> { ... })
+arr.<span class="fn">map</span>(<span class="wh">x =></span> x * <span class="num">2</span>)
+  <span class="cm">// [2,4,6,8,10]</span>
+arr.<span class="fn">filter</span>(<span class="wh">x =></span> x > <span class="num">2</span>)
+  <span class="cm">// [3,4,5]</span>
+arr.<span class="fn">reduce</span>(<span class="wh">(acc,x) =></span> acc+x, <span class="num">0</span>)
+  <span class="cm">// 15 (합계)</span>
+arr.<span class="fn">find</span>(<span class="wh">x =></span> x > <span class="num">3</span>)
+  <span class="cm">// 4 (첫 매칭)</span>
+arr.<span class="fn">findIndex</span>(<span class="wh">x =></span> x > <span class="num">3</span>)
+  <span class="cm">// 3</span>
+arr.<span class="fn">some</span>(<span class="wh">x =></span> x > <span class="num">4</span>)  <span class="cm">// true</span>
+arr.<span class="fn">every</span>(<span class="wh">x =></span> x > <span class="num">0</span>) <span class="cm">// true</span>
+arr.<span class="fn">sort</span>(<span class="wh">(a,b) =></span> a-b)
+arr.<span class="fn">flat</span>()  <span class="cm">// 중첩 해제</span>
+arr.<span class="fn">flatMap</span>(<span class="wh">x =></span> [x, x*<span class="num">2</span>])</pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>객체 (Object)</h2>
+<pre><span class="kw">const</span> obj = {
+  name: <span class="str">"Kim"</span>, age: <span class="num">30</span>,
+  greet() { <span class="kw">return</span> <span class="str">`Hi ${this.name}`</span>; }
+};
+obj.name          <span class="cm">// 'Kim'</span>
+obj[<span class="str">"age"</span>]        <span class="cm">// 30</span>
+obj.email = <span class="str">"a@b"</span> <span class="cm">// 추가</span>
+<span class="kw">delete</span> obj.age     <span class="cm">// 삭제</span>
+
+<span class="fn">Object</span>.<span class="fn">keys</span>(obj)   <span class="cm">// ['name',...]</span>
+<span class="fn">Object</span>.<span class="fn">values</span>(obj) <span class="cm">// ['Kim',...]</span>
+<span class="fn">Object</span>.<span class="fn">entries</span>(obj)<span class="cm">// [['name','Kim']]</span>
+<span class="fn">Object</span>.<span class="fn">assign</span>({},obj) <span class="cm">// 복사</span>
+{...obj}           <span class="cm">// 전개 복사</span>
+
+<span class="cm">// 구조분해</span>
+<span class="kw">const</span> {name, age} = obj;</pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>조건문 & 반복문</h2>
+<pre><span class="kw">if</span> (x > <span class="num">0</span>) { ... }
+<span class="kw">else if</span> (x === <span class="num">0</span>) { ... }
+<span class="kw">else</span> { ... }
+
+<span class="kw">switch</span>(val) {
+  <span class="kw">case</span> <span class="str">"a"</span>: ...; <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="str">"b"</span>: ...; <span class="kw">break</span>;
+  <span class="kw">default</span>: ...;
+}
+
+<span class="kw">for</span> (<span class="kw">let</span> i=<span class="num">0</span>; i<<span class="num">5</span>; i++) { ... }
+<span class="kw">for</span> (<span class="kw">let</span> item <span class="kw">of</span> arr) { ... }
+<span class="kw">for</span> (<span class="kw">let</span> key <span class="kw">in</span> obj) { ... }
+<span class="kw">while</span> (cond) { ... }
+<span class="kw">do</span> { ... } <span class="kw">while</span> (cond);
+<span class="cm">// break, continue</span></pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>함수</h2>
+<pre><span class="cm">// 함수 선언</span>
+<span class="kw">function</span> <span class="fn">add</span>(a, b=<span class="num">0</span>) {
+  <span class="kw">return</span> a + b;
+}
+
+<span class="cm">// 화살표 함수 (ES6)</span>
+<span class="kw">const</span> <span class="fn">add</span> = (a, b) => a + b;
+<span class="kw">const</span> <span class="fn">greet</span> = name => <span class="str">`Hi ${name}`</span>;
+<span class="kw">const</span> <span class="fn">log</span> = () => <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"!"</span>);
+
+<span class="cm">// Rest 파라미터</span>
+<span class="kw">const</span> <span class="fn">sum</span> = (...nums) =>
+  nums.<span class="fn">reduce</span>((a,b)=>a+b, <span class="num">0</span>);
+
+<span class="cm">// 즉시실행 (IIFE)</span>
+(<span class="wh">() => { ... }</span>)();</pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>비동기 (Promise / async)</h2>
+<pre><span class="cm">// Promise</span>
+<span class="fn">fetch</span>(<span class="str">"/api/data"</span>)
+  .<span class="fn">then</span>(<span class="wh">res =></span> res.<span class="fn">json</span>())
+  .<span class="fn">then</span>(<span class="wh">data =></span> <span class="fn">console</span>.<span class="fn">log</span>(data))
+  .<span class="fn">catch</span>(<span class="wh">err =></span> <span class="fn">console</span>.<span class="fn">error</span>(err));
+
+<span class="cm">// async/await (권장)</span>
+<span class="kw">async function</span> <span class="fn">getData</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"/api"</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="kw">return</span> data;
+  } <span class="kw">catch</span> (err) {
+    <span class="fn">console</span>.<span class="fn">error</span>(err);
+  }
+}</pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>DOM 조작</h2>
+<pre><span class="cm">// 요소 선택</span>
+document.<span class="fn">getElementById</span>(<span class="str">"id"</span>)
+document.<span class="fn">querySelector</span>(<span class="str">".cls"</span>)
+document.<span class="fn">querySelectorAll</span>(<span class="str">"p"</span>)
+
+<span class="cm">// 콘텐츠 변경</span>
+el.<span class="fn">textContent</span> = <span class="str">"텍스트"</span>;
+el.<span class="fn">innerHTML</span> = <span class="str">"&lt;b&gt;HTML&lt;/b&gt;"</span>;
+el.<span class="fn">setAttribute</span>(<span class="str">"src"</span>, <span class="str">"img.jpg"</span>);
+
+<span class="cm">// 스타일 & 클래스</span>
+el.style.color = <span class="str">"red"</span>;
+el.classList.<span class="fn">add</span>(<span class="str">"active"</span>);
+el.classList.<span class="fn">toggle</span>(<span class="str">"show"</span>);
+
+<span class="cm">// 요소 생성/삭제</span>
+<span class="kw">const</span> div = document.<span class="fn">createElement</span>(<span class="str">"div"</span>);
+parent.<span class="fn">appendChild</span>(div);
+parent.<span class="fn">removeChild</span>(child);</pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>이벤트</h2>
+<pre>el.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (e) => {
+  e.<span class="fn">preventDefault</span>();  <span class="cm">// 기본 막기</span>
+  e.<span class="fn">stopPropagation</span>(); <span class="cm">// 전파 막기</span>
+  e.target;     <span class="cm">// 이벤트 대상</span>
+});</pre>
+  <table>
+    <tr><th>이벤트</th><th>설명</th></tr>
+    <tr><td>click / dblclick</td><td>클릭 / 더블</td></tr>
+    <tr><td>mouseover / out</td><td>마우스 인/아웃</td></tr>
+    <tr><td>keydown / keyup</td><td>키 누름/뗌</td></tr>
+    <tr><td>submit</td><td>폼 제출</td></tr>
+    <tr><td>change / input</td><td>값 변경</td></tr>
+    <tr><td>load / DOMContentLoaded</td><td>로딩완료</td></tr>
+    <tr><td>scroll / resize</td><td>스크롤/리사이즈</td></tr>
+  </table>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>클래스 & 모듈</h2>
+<pre><span class="cm">// 클래스 (ES6)</span>
+<span class="kw">class</span> <span class="fn">Animal</span> {
+  <span class="fn">constructor</span>(name) {
+    <span class="kw">this</span>.name = name;
+  }
+  <span class="fn">speak</span>() { <span class="kw">return</span> <span class="str">`${this.name}!`</span>; }
+}
+<span class="kw">class</span> <span class="fn">Dog</span> <span class="kw">extends</span> <span class="fn">Animal</span> {
+  <span class="fn">bark</span>() { <span class="kw">return</span> <span class="str">"멍!"</span>; }
+}
+
+<span class="cm">// 모듈</span>
+<span class="kw">export</span> <span class="kw">const</span> PI = <span class="num">3.14</span>;
+<span class="kw">export default</span> <span class="kw">function</span> <span class="fn">add</span>() {}
+<span class="kw">import</span> add, {PI} <span class="kw">from</span> <span class="str">'./math.js'</span>;</pre>
+</div>
+
+</div>
+<div class="footer">JavaScript Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

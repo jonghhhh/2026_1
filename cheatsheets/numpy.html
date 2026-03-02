@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumPy Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 6mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', sans-serif; font-size: 10px; line-height: 1.38; color: #1a1a2e; background: #fff; padding: 8px; }
+  .page { max-width: 1100px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #4DABCF, #013243); color: #fff; padding: 8px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .header h1 { font-size: 18px; font-weight: 900; }
+  .header .ver { font-size: 9px; opacity: 0.9; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .section { background: #f8f9fb; border-radius: 5px; border-left: 3px solid #4DABCF; padding: 5px 7px; break-inside: avoid; }
+  .c1 { border-left-color: #013243; } .c2 { border-left-color: #4DABCF; } .c3 { border-left-color: #27ae60; }
+  .c4 { border-left-color: #e67e22; } .c5 { border-left-color: #e74c3c; } .c6 { border-left-color: #9b59b6; }
+  .c7 { border-left-color: #1abc9c; } .c8 { border-left-color: #2980b9; }
+  .section h2 { font-size: 10.5px; font-weight: 700; margin-bottom: 3px; padding-bottom: 2px; border-bottom: 1px solid #e0e0e0; }
+  .c1 h2 { color: #013243; } .c2 h2 { color: #0e6e8f; } .c3 h2 { color: #27ae60; }
+  .c4 h2 { color: #d35400; } .c5 h2 { color: #c0392b; } .c6 h2 { color: #8e44ad; }
+  .c7 h2 { color: #16a085; } .c8 h2 { color: #2980b9; }
+  code, pre { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; }
+  pre { background: #013243; color: #e0e0e0; padding: 3px 5px; border-radius: 4px; margin: 2px 0; overflow-x: auto; line-height: 1.32; }
+  .kw { color: #ff79c6; } .fn { color: #50fa7b; } .str { color: #f1fa8c; } .cm { color: #6272a4; } .num { color: #bd93f9; }
+  table { width: 100%; border-collapse: collapse; margin: 2px 0; font-size: 8.5px; }
+  table th { background: #013243; color: white; padding: 2px 4px; text-align: left; font-weight: 600; }
+  table td { padding: 2px 4px; border-bottom: 1px solid #eee; }
+  table tr:nth-child(even) td { background: #f0f2f5; }
+  .nb { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; font-size: 8px; font-weight: 700; color: #fff; margin-right: 3px; }
+  .c1 .nb{background:#013243} .c2 .nb{background:#0e6e8f} .c3 .nb{background:#27ae60}
+  .c4 .nb{background:#d35400} .c5 .nb{background:#c0392b} .c6 .nb{background:#8e44ad}
+  .c7 .nb{background:#16a085} .c8 .nb{background:#2980b9}
+  .note { background: #d1ecf1; padding: 2px 5px; border-radius: 3px; font-size: 8px; margin-top: 2px; color: #0c5460; }
+  .footer { text-align: center; font-size: 8px; color: #999; margin-top: 4px; padding-top: 3px; border-top: 1px solid #eee; }
+  @media screen and (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media screen and (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    body { font-size: 13px; } .header h1 { font-size: 20px; }
+    code, pre { font-size: 11.5px; } table { font-size: 11.5px; }
+    pre { padding: 8px; line-height: 1.5; } .section { padding: 10px 12px; }
+    .section h2 { font-size: 15px; } .nb { width: 20px; height: 20px; font-size: 11px; }
+    .header { flex-direction: column; gap: 4px; text-align: center; }
+  }
+  @media print {
+    body { padding: 0; font-size: 9.2px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grid { grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .section { padding: 3px 5px; } pre { font-size: 7.8px; padding: 2px 4px; }
+    table { font-size: 7.8px; } .header { padding: 5px 10px; margin-bottom: 3px; } .header h1 { font-size: 15px; }
+    .footer { margin-top: 2px; padding-top: 2px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header">
+  <h1>🔢 NumPy Cheat Sheet</h1>
+  <span class="ver">import numpy as np | 2026 Updated</span>
+</div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>배열 생성</h2>
+<pre>np.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>])        <span class="cm"># 1D</span>
+np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]])  <span class="cm"># 2D</span>
+np.<span class="fn">zeros</span>(<span class="num">5</span>)          <span class="cm"># [0,0,0,0,0]</span>
+np.<span class="fn">ones</span>((<span class="num">3</span>,<span class="num">4</span>))       <span class="cm"># 3×4 전부 1</span>
+np.<span class="fn">full</span>((<span class="num">2</span>,<span class="num">3</span>), <span class="num">7</span>)    <span class="cm"># 2×3 전부 7</span>
+np.<span class="fn">eye</span>(<span class="num">4</span>)            <span class="cm"># 4×4 단위행렬</span>
+np.<span class="fn">empty</span>((<span class="num">2</span>,<span class="num">3</span>))      <span class="cm"># 초기화X</span>
+np.<span class="fn">arange</span>(<span class="num">0</span>,<span class="num">10</span>,<span class="num">2</span>)    <span class="cm"># [0,2,4,6,8]</span>
+np.<span class="fn">linspace</span>(<span class="num">0</span>,<span class="num">1</span>,<span class="num">5</span>)   <span class="cm"># 균등 5개</span></pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>배열 속성 & 형태</h2>
+  <table>
+    <tr><th>속성</th><th>설명</th></tr>
+    <tr><td>arr.shape</td><td>차원 크기 (행,열)</td></tr>
+    <tr><td>arr.ndim</td><td>차원 수</td></tr>
+    <tr><td>arr.size</td><td>전체 요소 수</td></tr>
+    <tr><td>arr.dtype</td><td>데이터 타입</td></tr>
+    <tr><td>arr.T</td><td>전치 (행↔열)</td></tr>
+  </table>
+<pre>arr.<span class="fn">astype</span>(np.float64) <span class="cm"># 타입변환</span>
+arr.<span class="fn">reshape</span>(<span class="num">3</span>,<span class="num">4</span>)      <span class="cm"># 형태 변경</span>
+arr.<span class="fn">flatten</span>()          <span class="cm"># 1D 평탄화</span>
+arr.<span class="fn">tolist</span>()           <span class="cm"># 리스트로</span>
+np.<span class="fn">copy</span>(arr)           <span class="cm"># 복사</span></pre>
+  <div class="note">⚠️ reshape=view(원본 연결), copy()로 독립 복사</div>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>인덱싱 & 슬라이싱</h2>
+<pre>a = np.<span class="fn">array</span>([<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>,<span class="num">50</span>])
+a[<span class="num">0</span>]      <span class="cm"># 10 (첫번째)</span>
+a[-<span class="num">1</span>]     <span class="cm"># 50 (마지막)</span>
+a[<span class="num">1</span>:<span class="num">4</span>]   <span class="cm"># [20,30,40]</span>
+<span class="cm"># 2D</span>
+m = np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>]])
+m[<span class="num">0</span>,<span class="num">1</span>]    <span class="cm"># 2   (0행1열)</span>
+m[<span class="num">0</span>,:]    <span class="cm"># [1,2,3] 0행</span>
+m[:,<span class="num">0</span>]    <span class="cm"># [1,4,7] 0열</span>
+m[<span class="num">0</span>:<span class="num">2</span>,<span class="num">1</span>:] <span class="cm"># [[2,3],[5,6]]</span>
+<span class="cm"># 불리언 / 팬시</span>
+a[a > <span class="num">25</span>]       <span class="cm"># [30,40,50]</span>
+a[[<span class="num">0</span>,<span class="num">2</span>,<span class="num">4</span>]]     <span class="cm"># [10,30,50]</span></pre>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>배열 연산 (Element-wise)</h2>
+<pre>a = np.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>])
+b = np.<span class="fn">array</span>([<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>])
+a + b  <span class="cm"># [5,7,9]   덧셈</span>
+a * b  <span class="cm"># [4,10,18] 곱셈</span>
+a ** <span class="num">2</span> <span class="cm"># [1,4,9]   제곱</span>
+a + <span class="num">10</span> <span class="cm"># [11,12,13] 스칼라</span></pre>
+  <table>
+    <tr><th>함수</th><th>설명</th></tr>
+    <tr><td>np.add / subtract</td><td>덧셈 / 뺄셈</td></tr>
+    <tr><td>np.multiply / divide</td><td>곱셈 / 나눗셈</td></tr>
+    <tr><td>np.sqrt / exp / log</td><td>제곱근/지수/로그</td></tr>
+    <tr><td>np.abs / round</td><td>절대값 / 반올림</td></tr>
+    <tr><td>np.sin / cos / tan</td><td>삼각함수</td></tr>
+  </table>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>통계 함수</h2>
+  <table>
+    <tr><th>함수</th><th>설명</th></tr>
+    <tr><td>np.mean(a) / a.mean()</td><td>평균</td></tr>
+    <tr><td>np.median(a)</td><td>중앙값</td></tr>
+    <tr><td>np.std(a) / np.var(a)</td><td>표준편차/분산</td></tr>
+    <tr><td>a.sum() a.min() a.max()</td><td>합/최소/최대</td></tr>
+    <tr><td>a.argmin() a.argmax()</td><td>최소/최대 위치</td></tr>
+    <tr><td>np.cumsum(a)</td><td>누적합</td></tr>
+    <tr><td>np.corrcoef(a,b)</td><td>상관계수</td></tr>
+    <tr><td>np.percentile(a,75)</td><td>백분위</td></tr>
+  </table>
+<pre><span class="cm"># axis 지정</span>
+m.<span class="fn">mean</span>(axis=<span class="num">0</span>)  <span class="cm"># 열별(↓) 평균</span>
+m.<span class="fn">sum</span>(axis=<span class="num">1</span>)   <span class="cm"># 행별(→) 합계</span></pre>
+  <div class="note">axis=0: 열 방향(↓), axis=1: 행 방향(→)</div>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>배열 조작 (추가/결합/분할)</h2>
+<pre><span class="cm"># 추가 / 삽입 / 삭제</span>
+np.<span class="fn">append</span>(a, [<span class="num">4</span>,<span class="num">5</span>])
+np.<span class="fn">insert</span>(a, <span class="num">1</span>, <span class="num">99</span>)
+np.<span class="fn">delete</span>(a, [<span class="num">0</span>,<span class="num">2</span>])
+<span class="cm"># 결합</span>
+np.<span class="fn">concatenate</span>([a, b])
+np.<span class="fn">vstack</span>([a, b]) <span class="cm"># 세로</span>
+np.<span class="fn">hstack</span>([a, b]) <span class="cm"># 가로</span>
+<span class="cm"># 분할</span>
+np.<span class="fn">split</span>(a, <span class="num">3</span>)
+np.<span class="fn">hsplit</span>(m, <span class="num">2</span>)  <span class="cm"># 가로</span>
+np.<span class="fn">vsplit</span>(m, <span class="num">2</span>)  <span class="cm"># 세로</span>
+<span class="cm"># 정렬</span>
+np.<span class="fn">sort</span>(a)       <span class="cm"># 복사본</span>
+np.<span class="fn">argsort</span>(a)    <span class="cm"># 정렬 인덱스</span></pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>브로드캐스팅 & 조건</h2>
+<pre><span class="cm"># 브로드캐스팅 (크기 다른 배열)</span>
+m = np.<span class="fn">ones</span>((<span class="num">2</span>,<span class="num">3</span>))   <span class="cm"># (2,3)</span>
+v = np.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>]) <span class="cm"># (3,)</span>
+m + v  <span class="cm"># [[2,3,4],[2,3,4]]</span>
+
+<span class="cm"># np.where (조건부 선택)</span>
+np.<span class="fn">where</span>(a><span class="num">2</span>, a, <span class="num">0</span>)
+<span class="cm"># a>2이면 a값, 아니면 0</span>
+
+<span class="cm"># 불리언 메서드</span>
+(a><span class="num">2</span>).<span class="fn">sum</span>()  <span class="cm"># True 개수</span>
+(a><span class="num">2</span>).<span class="fn">any</span>()  <span class="cm"># 하나라도?</span>
+(a><span class="num">2</span>).<span class="fn">all</span>()  <span class="cm"># 모두?</span>
+
+<span class="cm"># 고유값 / 멤버십</span>
+np.<span class="fn">unique</span>(a)
+np.<span class="fn">in1d</span>(a, [<span class="num">1</span>,<span class="num">3</span>])</pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>선형대수 & 랜덤 & I/O</h2>
+<pre><span class="cm"># 랜덤</span>
+np.random.<span class="fn">rand</span>(<span class="num">3</span>,<span class="num">4</span>)      <span class="cm"># 0~1</span>
+np.random.<span class="fn">randn</span>(<span class="num">3</span>,<span class="num">4</span>)     <span class="cm"># 정규</span>
+np.random.<span class="fn">randint</span>(<span class="num">0</span>,<span class="num">10</span>,(<span class="num">3</span>,<span class="num">4</span>))
+np.random.<span class="fn">seed</span>(<span class="num">42</span>)       <span class="cm"># 재현성</span>
+
+<span class="cm"># 선형대수</span>
+a @ b               <span class="cm"># 행렬곱</span>
+np.linalg.<span class="fn">inv</span>(m)    <span class="cm"># 역행렬</span>
+np.linalg.<span class="fn">det</span>(m)    <span class="cm"># 행렬식</span>
+np.linalg.<span class="fn">eig</span>(m)    <span class="cm"># 고유값</span>
+
+<span class="cm"># 파일 I/O</span>
+np.<span class="fn">save</span>(<span class="str">'a.npy'</span>, a)
+a = np.<span class="fn">load</span>(<span class="str">'a.npy'</span>)
+np.<span class="fn">savetxt</span>(<span class="str">'a.csv'</span>,a,delimiter=<span class="str">','</span>)
+a = np.<span class="fn">loadtxt</span>(<span class="str">'a.csv'</span>,delimiter=<span class="str">','</span>)</pre>
+</div>
+
+</div>
+<div class="footer">NumPy Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

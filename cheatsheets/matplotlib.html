@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matplotlib Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 6mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', sans-serif; font-size: 9.5px; line-height: 1.35; color: #1a1a2e; background: #fff; padding: 8px; }
+  .page { max-width: 1100px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #11557C, #E24A33); color: #fff; padding: 8px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .header h1 { font-size: 18px; font-weight: 900; }
+  .header .ver { font-size: 9px; opacity: 0.9; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+  .workflow { display: flex; gap: 3px; margin: 0 0 5px 0; flex-wrap: wrap; align-items: center; }
+  .workflow .step { background: #11557C; color: white; padding: 2px 7px; border-radius: 10px; font-size: 8px; font-weight: 600; }
+  .workflow .arrow { color: #999; font-size: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .section { background: #f8f9fb; border-radius: 5px; border-left: 3px solid #11557C; padding: 4px 6px; break-inside: avoid; }
+  .c1{border-left-color:#11557C} .c2{border-left-color:#E24A33} .c3{border-left-color:#27ae60}
+  .c4{border-left-color:#e67e22} .c5{border-left-color:#8e44ad} .c6{border-left-color:#1abc9c}
+  .c7{border-left-color:#2980b9} .c8{border-left-color:#e91e63} .c9{border-left-color:#c0392b}
+  .c10{border-left-color:#27ae60} .c11{border-left-color:#d35400} .c12{border-left-color:#11557C}
+  .section h2 { font-size: 10px; font-weight: 700; margin-bottom: 2px; padding-bottom: 2px; border-bottom: 1px solid #e0e0e0; }
+  .c1 h2{color:#11557C} .c2 h2{color:#c0392b} .c3 h2{color:#27ae60}
+  .c4 h2{color:#d35400} .c5 h2{color:#8e44ad} .c6 h2{color:#16a085}
+  .c7 h2{color:#2980b9} .c8 h2{color:#c2185b} .c9 h2{color:#c0392b}
+  .c10 h2{color:#27ae60} .c11 h2{color:#d35400} .c12 h2{color:#11557C}
+  code, pre { font-family: 'JetBrains Mono', monospace; font-size: 8px; }
+  pre { background: #1a1a2e; color: #e0e0e0; padding: 3px 5px; border-radius: 4px; margin: 2px 0; overflow-x: auto; line-height: 1.3; }
+  .kw{color:#ff79c6} .fn{color:#50fa7b} .str{color:#f1fa8c} .cm{color:#6272a4} .num{color:#bd93f9}
+  table { width: 100%; border-collapse: collapse; margin: 2px 0; font-size: 8px; }
+  table th { background: #11557C; color: white; padding: 1px 3px; text-align: left; font-weight: 600; }
+  table td { padding: 1px 3px; border-bottom: 1px solid #eee; }
+  table tr:nth-child(even) td { background: #f0f2f5; }
+  .nb { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; font-size: 7.5px; font-weight: 700; color: #fff; margin-right: 2px; }
+  .c1 .nb{background:#11557C} .c2 .nb{background:#c0392b} .c3 .nb{background:#27ae60}
+  .c4 .nb{background:#d35400} .c5 .nb{background:#8e44ad} .c6 .nb{background:#16a085}
+  .c7 .nb{background:#2980b9} .c8 .nb{background:#c2185b} .c9 .nb{background:#c0392b}
+  .c10 .nb{background:#27ae60} .c11 .nb{background:#d35400} .c12 .nb{background:#11557C}
+  .footer { text-align: center; font-size: 8px; color: #999; margin-top: 3px; padding-top: 2px; border-top: 1px solid #eee; }
+  @media screen and (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media screen and (max-width: 520px) {
+    .grid { grid-template-columns: 1fr; }
+    body { font-size: 13px; } .header h1 { font-size: 20px; }
+    code, pre { font-size: 11px; } table { font-size: 11px; }
+    pre { padding: 8px; line-height: 1.5; } .section { padding: 10px 12px; }
+    .section h2 { font-size: 15px; } .nb { width: 20px; height: 20px; font-size: 11px; }
+    .header { flex-direction: column; gap: 4px; text-align: center; }
+    .workflow .step { font-size: 10px; padding: 3px 8px; }
+  }
+  @media print {
+    body { padding: 0; font-size: 8.8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grid { grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .section { padding: 3px 4px; } pre { font-size: 7.2px; padding: 2px 3px; }
+    table { font-size: 7.2px; } .header { padding: 4px 10px; margin-bottom: 2px; } .header h1 { font-size: 14px; }
+    .footer { margin-top: 1px; padding-top: 1px; } .workflow { margin-bottom: 3px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header">
+  <h1>📊 Matplotlib Cheat Sheet</h1>
+  <span class="ver">import matplotlib.pyplot as plt | 2026 Updated</span>
+</div>
+<div class="workflow">
+  <span class="step">❶ 데이터 준비</span><span class="arrow">→</span>
+  <span class="step">❷ Figure/Axes 생성</span><span class="arrow">→</span>
+  <span class="step">❸ 플롯 그리기</span><span class="arrow">→</span>
+  <span class="step">❹ 제목/축/범례 설정</span><span class="arrow">→</span>
+  <span class="step">❺ 저장 savefig()</span><span class="arrow">→</span>
+  <span class="step">❻ 보기 show()</span>
+</div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>기본 구조 (Figure & Axes)</h2>
+<pre><span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># 방법 1: 간단한 방식</span>
+plt.<span class="fn">plot</span>(x, y)
+plt.<span class="fn">show</span>()
+
+<span class="cm"># 방법 2: OOP 방식 (권장)</span>
+fig, ax = plt.<span class="fn">subplots</span>(
+    figsize=(<span class="num">10</span>,<span class="num">6</span>))
+ax.<span class="fn">plot</span>(x, y)
+plt.<span class="fn">show</span>()
+
+<span class="cm"># 방법 3: 여러 서브플롯</span>
+fig, axes = plt.<span class="fn">subplots</span>(
+    nrows=<span class="num">2</span>, ncols=<span class="num">2</span>)
+axes[<span class="num">0</span>,<span class="num">0</span>].<span class="fn">plot</span>(x, y)
+axes[<span class="num">0</span>,<span class="num">1</span>].<span class="fn">bar</span>(x, y)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>선 그래프 (Line Plot)</h2>
+<pre>ax.<span class="fn">plot</span>(x, y,
+  color=<span class="str">'red'</span>,        <span class="cm"># 색상</span>
+  linewidth=<span class="num">2</span>,        <span class="cm"># 선 굵기</span>
+  linestyle=<span class="str">'--'</span>,     <span class="cm"># 선 스타일</span>
+  marker=<span class="str">'o'</span>,         <span class="cm"># 마커</span>
+  markersize=<span class="num">5</span>,       <span class="cm"># 마커 크기</span>
+  alpha=<span class="num">0.7</span>,          <span class="cm"># 투명도</span>
+  label=<span class="str">'데이터1'</span>)     <span class="cm"># 범례</span>
+
+<span class="cm"># 여러 선</span>
+ax.<span class="fn">plot</span>(x,y1,<span class="str">'r-'</span>,label=<span class="str">'sin'</span>)
+ax.<span class="fn">plot</span>(x,y2,<span class="str">'b--'</span>,label=<span class="str">'cos'</span>)</pre>
+  <table>
+    <tr><th>선 스타일</th><th>마커</th></tr>
+    <tr><td>'-' 실선  '--' 대시</td><td>'o' 원  's' 사각</td></tr>
+    <tr><td>'-.' 대시점  ':' 점선</td><td>'^' 삼각  '*' 별</td></tr>
+  </table>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>산점도 & 막대그래프</h2>
+<pre><span class="cm"># 산점도 (Scatter)</span>
+ax.<span class="fn">scatter</span>(x, y,
+  c=colors, s=sizes,
+  cmap=<span class="str">'viridis'</span>, alpha=<span class="num">0.6</span>,
+  edgecolors=<span class="str">'black'</span>)
+
+<span class="cm"># 막대그래프 (Bar)</span>
+ax.<span class="fn">bar</span>(x, height, width=<span class="num">0.8</span>,
+  color=[<span class="str">'r'</span>,<span class="str">'g'</span>,<span class="str">'b'</span>])
+ax.<span class="fn">barh</span>(y, width)  <span class="cm"># 수평</span>
+
+<span class="cm"># 그룹 막대</span>
+w = <span class="num">0.35</span>
+ax.<span class="fn">bar</span>(x-w/<span class="num">2</span>, v1, w, label=<span class="str">'A'</span>)
+ax.<span class="fn">bar</span>(x+w/<span class="num">2</span>, v2, w, label=<span class="str">'B'</span>)</pre>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>히스토그램 / 파이 / 박스</h2>
+<pre><span class="cm"># 히스토그램</span>
+ax.<span class="fn">hist</span>(data, bins=<span class="num">20</span>,
+  color=<span class="str">'skyblue'</span>,
+  edgecolor=<span class="str">'black'</span>,
+  density=<span class="kw">True</span>) <span class="cm"># 확률밀도</span>
+
+<span class="cm"># 파이차트</span>
+ax.<span class="fn">pie</span>(sizes, labels=labels,
+  autopct=<span class="str">'%1.1f%%'</span>,
+  startangle=<span class="num">90</span>,
+  explode=(<span class="num">0.1</span>,<span class="num">0</span>,<span class="num">0</span>,<span class="num">0</span>))
+
+<span class="cm"># 박스플롯 / 바이올린</span>
+ax.<span class="fn">boxplot</span>([d1,d2],labels=[<span class="str">'A'</span>,<span class="str">'B'</span>])
+ax.<span class="fn">violinplot</span>([d1, d2])</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>제목 / 축 / 범례</h2>
+<pre><span class="cm"># 제목 & 라벨</span>
+ax.<span class="fn">set_title</span>(<span class="str">'제목'</span>, fontsize=<span class="num">14</span>)
+ax.<span class="fn">set_xlabel</span>(<span class="str">'X축'</span>)
+ax.<span class="fn">set_ylabel</span>(<span class="str">'Y축'</span>)
+
+<span class="cm"># 축 범위</span>
+ax.<span class="fn">set_xlim</span>(<span class="num">0</span>, <span class="num">10</span>)
+ax.<span class="fn">set_ylim</span>(-<span class="num">1</span>, <span class="num">1</span>)
+
+<span class="cm"># 눈금</span>
+ax.<span class="fn">set_xticks</span>([<span class="num">0</span>,<span class="num">2</span>,<span class="num">4</span>,<span class="num">6</span>,<span class="num">8</span>])
+ax.<span class="fn">set_xticklabels</span>([<span class="str">'a'</span>,<span class="str">'b'</span>,...],
+  rotation=<span class="num">45</span>)
+
+<span class="cm"># 범례</span>
+ax.<span class="fn">legend</span>(loc=<span class="str">'best'</span>)
+ax.<span class="fn">legend</span>(loc=<span class="str">'upper right'</span>)
+
+<span class="cm"># 그리드</span>
+ax.<span class="fn">grid</span>(<span class="kw">True</span>, alpha=<span class="num">0.3</span>)</pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>텍스트 & 주석 & 선</h2>
+<pre><span class="cm"># 텍스트</span>
+ax.<span class="fn">text</span>(<span class="num">5</span>, <span class="num">3</span>, <span class="str">'텍스트'</span>,
+  fontsize=<span class="num">12</span>, ha=<span class="str">'center'</span>,
+  color=<span class="str">'red'</span>, fontweight=<span class="str">'bold'</span>)
+
+<span class="cm"># 화살표 주석</span>
+ax.<span class="fn">annotate</span>(<span class="str">'최대값'</span>,
+  xy=(<span class="num">5</span>,<span class="num">10</span>),        <span class="cm"># 화살표 끝</span>
+  xytext=(<span class="num">6</span>,<span class="num">12</span>),    <span class="cm"># 텍스트 위치</span>
+  arrowprops=<span class="fn">dict</span>(
+    arrowstyle=<span class="str">'->'</span>))
+
+<span class="cm"># 수평/수직 참조선</span>
+ax.<span class="fn">axhline</span>(y=<span class="num">0</span>,color=<span class="str">'k'</span>,ls=<span class="str">'--'</span>)
+ax.<span class="fn">axvline</span>(x=<span class="num">5</span>,color=<span class="str">'r'</span>,ls=<span class="str">':'</span>)
+
+<span class="cm"># 영역 채우기</span>
+ax.<span class="fn">fill_between</span>(x,y1,y2,alpha=<span class="num">0.3</span>)</pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>색상 & 컬러맵</h2>
+  <table>
+    <tr><th>색상 지정</th><th>예시</th></tr>
+    <tr><td>이름</td><td>'red', 'blue', 'green'</td></tr>
+    <tr><td>약어</td><td>'r', 'b', 'g', 'k', 'w'</td></tr>
+    <tr><td>16진수</td><td>'#FF5733'</td></tr>
+    <tr><td>RGB 튜플</td><td>(0.2, 0.4, 0.6)</td></tr>
+  </table>
+  <table>
+    <tr><th>컬러맵 (cmap)</th><th>용도</th></tr>
+    <tr><td>viridis, plasma</td><td>순차적</td></tr>
+    <tr><td>coolwarm, RdBu</td><td>발산형</td></tr>
+    <tr><td>Set1, tab10</td><td>범주형</td></tr>
+    <tr><td>Blues, Reds</td><td>단색 순차</td></tr>
+  </table>
+<pre><span class="cm"># 컬러바</span>
+im = ax.<span class="fn">imshow</span>(data, cmap=<span class="str">'hot'</span>)
+fig.<span class="fn">colorbar</span>(im)</pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>스타일 & 한글 설정</h2>
+<pre><span class="cm"># 스타일 테마</span>
+plt.style.<span class="fn">use</span>(<span class="str">'seaborn-v0_8'</span>)
+plt.style.<span class="fn">use</span>(<span class="str">'ggplot'</span>)
+plt.style.<span class="fn">use</span>(<span class="str">'dark_background'</span>)
+plt.style.<span class="fn">use</span>(<span class="str">'fivethirtyeight'</span>)
+<span class="fn">print</span>(plt.style.available)
+
+<span class="cm"># 한글 폰트 (Windows)</span>
+plt.rcParams[<span class="str">'font.family'</span>] = \
+  <span class="str">'Malgun Gothic'</span>
+<span class="cm"># 한글 폰트 (Mac)</span>
+plt.rcParams[<span class="str">'font.family'</span>] = \
+  <span class="str">'AppleGothic'</span>
+plt.rcParams[<span class="str">'axes.unicode_minus'</span>]\
+  = <span class="kw">False</span>  <span class="cm"># 마이너스 깨짐 방지</span></pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>저장 & 닫기</h2>
+<pre><span class="cm"># 저장 (show 전에 호출)</span>
+plt.<span class="fn">savefig</span>(<span class="str">'chart.png'</span>,
+  dpi=<span class="num">300</span>,
+  bbox_inches=<span class="str">'tight'</span>,
+  transparent=<span class="kw">False</span>)
+plt.<span class="fn">savefig</span>(<span class="str">'chart.pdf'</span>)
+plt.<span class="fn">savefig</span>(<span class="str">'chart.svg'</span>)
+
+<span class="cm"># 닫기/초기화</span>
+plt.<span class="fn">cla</span>()    <span class="cm"># 축 초기화</span>
+plt.<span class="fn">clf</span>()    <span class="cm"># 그림 초기화</span>
+plt.<span class="fn">close</span>()  <span class="cm"># 창 닫기</span>
+plt.<span class="fn">close</span>(<span class="str">'all'</span>) <span class="cm"># 전체 닫기</span></pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>레이아웃 & 고급 축</h2>
+<pre><span class="cm"># 서브플롯 간격</span>
+plt.<span class="fn">tight_layout</span>()   <span class="cm"># 자동</span>
+plt.<span class="fn">subplots_adjust</span>(
+  wspace=<span class="num">0.3</span>, hspace=<span class="num">0.3</span>)
+
+<span class="cm"># 축 테두리 제거</span>
+ax.spines[<span class="str">'top'</span>].<span class="fn">set_visible</span>(<span class="kw">False</span>)
+ax.spines[<span class="str">'right'</span>].<span class="fn">set_visible</span>(<span class="kw">False</span>)
+
+<span class="cm"># 로그 스케일</span>
+ax.<span class="fn">set_xscale</span>(<span class="str">'log'</span>)
+ax.<span class="fn">set_yscale</span>(<span class="str">'log'</span>)
+
+<span class="cm"># 이중 축</span>
+ax2 = ax.<span class="fn">twinx</span>()
+ax2.<span class="fn">plot</span>(x, y2, <span class="str">'r-'</span>)</pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>Pandas 직접 플롯</h2>
+<pre><span class="cm"># DataFrame에서 바로</span>
+df.<span class="fn">plot</span>()               <span class="cm"># 선그래프</span>
+df.<span class="fn">plot</span>(kind=<span class="str">'bar'</span>)     <span class="cm"># 막대</span>
+df.<span class="fn">plot</span>(kind=<span class="str">'barh'</span>)    <span class="cm"># 수평막대</span>
+df.<span class="fn">plot</span>(kind=<span class="str">'scatter'</span>,
+  x=<span class="str">'col1'</span>, y=<span class="str">'col2'</span>)  <span class="cm"># 산점도</span>
+df[<span class="str">'c'</span>].<span class="fn">plot</span>(kind=<span class="str">'hist'</span>)
+df.<span class="fn">plot</span>(kind=<span class="str">'box'</span>)
+df.<span class="fn">plot</span>(kind=<span class="str">'pie'</span>,y=<span class="str">'c'</span>)
+
+<span class="cm"># Pandas + Matplotlib 조합</span>
+fig, ax = plt.<span class="fn">subplots</span>(
+  figsize=(<span class="num">10</span>,<span class="num">6</span>))
+df.<span class="fn">plot</span>(kind=<span class="str">'bar'</span>, ax=ax)
+ax.<span class="fn">set_title</span>(<span class="str">'제목'</span>)
+plt.<span class="fn">savefig</span>(<span class="str">'out.png'</span>)</pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>2D 데이터 & 이미지</h2>
+<pre><span class="cm"># 히트맵</span>
+im = ax.<span class="fn">imshow</span>(data,
+  cmap=<span class="str">'hot'</span>,
+  interpolation=<span class="str">'nearest'</span>)
+fig.<span class="fn">colorbar</span>(im)
+
+<span class="cm"># 등고선</span>
+ax.<span class="fn">contour</span>(X, Y, Z)
+ax.<span class="fn">contourf</span>(X, Y, Z,
+  cmap=<span class="str">'RdBu'</span>)
+
+<span class="cm"># 의사색 (Pseudocolor)</span>
+ax.<span class="fn">pcolormesh</span>(data)
+
+<span class="cm"># 이미지 표시</span>
+img = plt.<span class="fn">imread</span>(<span class="str">'img.png'</span>)
+ax.<span class="fn">imshow</span>(img)
+ax.<span class="fn">axis</span>(<span class="str">'off'</span>)</pre>
+</div>
+
+</div>
+<div class="footer">Matplotlib Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>

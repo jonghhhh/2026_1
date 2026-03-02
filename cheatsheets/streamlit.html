@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streamlit Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page{size:A4;margin:6mm}*{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Noto Sans KR',sans-serif;font-size:9.5px;line-height:1.35;color:#1a1a2e;background:#fff;padding:8px}
+  .page{max-width:1100px;margin:0 auto}
+  .header{background:linear-gradient(135deg,#FF4B4B,#7D353B);color:#fff;padding:8px 16px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .header h1{font-size:18px;font-weight:900}.header .ver{font-size:9px;opacity:.9;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .section{background:#f8f9fb;border-radius:5px;border-left:3px solid #FF4B4B;padding:4px 6px;break-inside:avoid}
+  .c1{border-left-color:#FF4B4B}.c2{border-left-color:#e67e22}.c3{border-left-color:#27ae60}.c4{border-left-color:#2980b9}
+  .c5{border-left-color:#8e44ad}.c6{border-left-color:#16a085}.c7{border-left-color:#c0392b}.c8{border-left-color:#d35400}
+  .c9{border-left-color:#1abc9c}.c10{border-left-color:#9b59b6}.c11{border-left-color:#e74c3c}.c12{border-left-color:#2c3e50}
+  .section h2{font-size:10px;font-weight:700;margin-bottom:2px;padding-bottom:2px;border-bottom:1px solid #e0e0e0}
+  .c1 h2{color:#FF4B4B}.c2 h2{color:#d35400}.c3 h2{color:#27ae60}.c4 h2{color:#2980b9}
+  .c5 h2{color:#8e44ad}.c6 h2{color:#16a085}.c7 h2{color:#c0392b}.c8 h2{color:#d35400}
+  .c9 h2{color:#1abc9c}.c10 h2{color:#9b59b6}.c11 h2{color:#e74c3c}.c12 h2{color:#2c3e50}
+  code,pre{font-family:'JetBrains Mono',monospace;font-size:8px}
+  pre{background:#262730;color:#fafafa;padding:3px 5px;border-radius:4px;margin:2px 0;overflow-x:auto;line-height:1.3}
+  .kw{color:#ff6b6b}.fn{color:#51cf66}.str{color:#ffd43b}.cm{color:#868e96}.num{color:#74c0fc}
+  table{width:100%;border-collapse:collapse;margin:2px 0;font-size:8px}
+  table th{background:#FF4B4B;color:white;padding:1px 3px;text-align:left;font-weight:600}
+  table td{padding:1px 3px;border-bottom:1px solid #eee}
+  table tr:nth-child(even) td{background:#f0f2f5}
+  .nb{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:7.5px;font-weight:700;color:#fff;margin-right:2px;background:#FF4B4B}
+  .footer{text-align:center;font-size:8px;color:#999;margin-top:3px;padding-top:2px;border-top:1px solid #eee}
+  @media screen and (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media screen and (max-width:520px){.grid{grid-template-columns:1fr}body{font-size:13px}.header h1{font-size:20px}code,pre{font-size:11px}table{font-size:11px}pre{padding:8px;line-height:1.5}.section{padding:10px 12px}.section h2{font-size:15px}.nb{width:20px;height:20px;font-size:11px}.header{flex-direction:column;gap:4px;text-align:center}}
+  @media print{body{padding:0;font-size:8.8px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.grid{grid-template-columns:repeat(4,1fr);gap:3px}.section{padding:3px 4px}pre{font-size:7.2px;padding:2px 3px}table{font-size:7.2px}.header{padding:4px 10px;margin-bottom:3px}.header h1{font-size:14px}.footer{margin-top:1px;padding-top:1px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="header"><h1>🎈 Streamlit Cheat Sheet</h1><span class="ver">import streamlit as st | 2026 Updated</span></div>
+<div class="grid">
+
+<div class="section c1">
+  <h2><span class="nb">1</span>설치 & 실행</h2>
+<pre><span class="cm"># 설치</span>
+pip install streamlit
+
+<span class="cm"># 실행</span>
+streamlit run app.py
+
+<span class="cm"># 기본 구조 (app.py)</span>
+<span class="kw">import</span> streamlit <span class="kw">as</span> st
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+st.<span class="fn">set_page_config</span>(
+  page_title=<span class="str">"My App"</span>,
+  page_icon=<span class="str">"🎈"</span>,
+  layout=<span class="str">"wide"</span>,
+  <span class="cm"># "centered" (기본)</span>
+)
+
+st.<span class="fn">title</span>(<span class="str">"Hello Streamlit!"</span>)</pre>
+</div>
+
+<div class="section c2">
+  <h2><span class="nb">2</span>텍스트 출력</h2>
+<pre>st.<span class="fn">title</span>(<span class="str">"제목"</span>)
+st.<span class="fn">header</span>(<span class="str">"헤더"</span>)
+st.<span class="fn">subheader</span>(<span class="str">"서브헤더"</span>)
+st.<span class="fn">text</span>(<span class="str">"고정폭 텍스트"</span>)
+st.<span class="fn">markdown</span>(<span class="str">"**굵게** _기울임_"</span>)
+st.<span class="fn">caption</span>(<span class="str">"캡션 (작은글씨)"</span>)
+st.<span class="fn">code</span>(<span class="str">"print('hello')"</span>)
+st.<span class="fn">latex</span>(<span class="str">r"e^{i\pi}+1=0"</span>)
+
+<span class="cm"># 범용 출력 (자동 감지)</span>
+st.<span class="fn">write</span>(<span class="str">"텍스트"</span>)
+st.<span class="fn">write</span>(df)  <span class="cm"># DataFrame</span>
+st.<span class="fn">write</span>(fig) <span class="cm"># Matplotlib</span>
+
+<span class="cm"># Magic (변수만 적으면 출력)</span>
+<span class="str">"이것도 출력됩니다"</span>
+df  <span class="cm"># DataFrame 자동 표시</span></pre>
+</div>
+
+<div class="section c3">
+  <h2><span class="nb">3</span>데이터 표시</h2>
+<pre><span class="cm"># 데이터프레임 (인터랙티브)</span>
+st.<span class="fn">dataframe</span>(df, height=<span class="num">300</span>)
+
+<span class="cm"># 정적 테이블</span>
+st.<span class="fn">table</span>(df.head(<span class="num">10</span>))
+
+<span class="cm"># JSON</span>
+st.<span class="fn">json</span>({<span class="str">"key"</span>: <span class="str">"val"</span>})
+
+<span class="cm"># 메트릭 (KPI 카드)</span>
+st.<span class="fn">metric</span>(<span class="str">"매출"</span>, <span class="str">"₩1.2M"</span>,
+  delta=<span class="str">"+12%"</span>)
+
+<span class="cm"># 미디어</span>
+st.<span class="fn">image</span>(<span class="str">"photo.jpg"</span>,
+  caption=<span class="str">"사진"</span>)
+st.<span class="fn">audio</span>(audio_bytes)
+st.<span class="fn">video</span>(video_bytes)</pre>
+</div>
+
+<div class="section c4">
+  <h2><span class="nb">4</span>입력 위젯 — 버튼/텍스트</h2>
+<pre><span class="cm"># 버튼</span>
+<span class="kw">if</span> st.<span class="fn">button</span>(<span class="str">"클릭"</span>):
+    st.<span class="fn">write</span>(<span class="str">"클릭됨!"</span>)
+
+<span class="cm"># 텍스트 입력</span>
+name = st.<span class="fn">text_input</span>(<span class="str">"이름"</span>,
+  value=<span class="str">"기본값"</span>)
+text = st.<span class="fn">text_area</span>(<span class="str">"내용"</span>,
+  height=<span class="num">200</span>)
+
+<span class="cm"># 숫자 입력</span>
+n = st.<span class="fn">number_input</span>(<span class="str">"숫자"</span>,
+  min_value=<span class="num">0</span>, max_value=<span class="num">100</span>,
+  value=<span class="num">50</span>, step=<span class="num">1</span>)
+
+<span class="cm"># 날짜/시간</span>
+d = st.<span class="fn">date_input</span>(<span class="str">"날짜"</span>)
+t = st.<span class="fn">time_input</span>(<span class="str">"시간"</span>)
+
+<span class="cm"># 파일 업로드</span>
+f = st.<span class="fn">file_uploader</span>(<span class="str">"파일"</span>,
+  type=[<span class="str">"csv"</span>,<span class="str">"xlsx"</span>])</pre>
+</div>
+
+<div class="section c5">
+  <h2><span class="nb">5</span>입력 위젯 — 선택/슬라이더</h2>
+<pre><span class="cm"># 셀렉트박스</span>
+opt = st.<span class="fn">selectbox</span>(<span class="str">"선택"</span>,
+  [<span class="str">"A"</span>, <span class="str">"B"</span>, <span class="str">"C"</span>])
+
+<span class="cm"># 멀티셀렉트</span>
+opts = st.<span class="fn">multiselect</span>(<span class="str">"다중선택"</span>,
+  [<span class="str">"사과"</span>,<span class="str">"바나나"</span>,<span class="str">"체리"</span>])
+
+<span class="cm"># 라디오</span>
+r = st.<span class="fn">radio</span>(<span class="str">"성별"</span>,
+  [<span class="str">"남"</span>, <span class="str">"여"</span>])
+
+<span class="cm"># 체크박스</span>
+<span class="kw">if</span> st.<span class="fn">checkbox</span>(<span class="str">"동의"</span>):
+    st.<span class="fn">write</span>(<span class="str">"동의함"</span>)
+
+<span class="cm"># 슬라이더</span>
+val = st.<span class="fn">slider</span>(<span class="str">"값"</span>,
+  <span class="num">0</span>, <span class="num">100</span>, <span class="num">50</span>)
+rng = st.<span class="fn">slider</span>(<span class="str">"범위"</span>,
+  <span class="num">0.0</span>, <span class="num">1.0</span>, (<span class="num">0.2</span>,<span class="num">0.8</span>))
+
+<span class="cm"># 토글</span>
+on = st.<span class="fn">toggle</span>(<span class="str">"활성화"</span>)</pre>
+</div>
+
+<div class="section c6">
+  <h2><span class="nb">6</span>레이아웃</h2>
+<pre><span class="cm"># 사이드바</span>
+<span class="kw">with</span> st.<span class="fn">sidebar</span>:
+    st.<span class="fn">title</span>(<span class="str">"사이드바"</span>)
+    opt = st.<span class="fn">radio</span>(<span class="str">"메뉴"</span>, [<span class="str">"A"</span>,<span class="str">"B"</span>])
+
+<span class="cm"># 컬럼</span>
+col1, col2 = st.<span class="fn">columns</span>(<span class="num">2</span>)
+<span class="kw">with</span> col1:
+    st.<span class="fn">write</span>(<span class="str">"왼쪽"</span>)
+<span class="kw">with</span> col2:
+    st.<span class="fn">write</span>(<span class="str">"오른쪽"</span>)
+<span class="cm"># 비율 지정: st.columns([3,1,1])</span>
+
+<span class="cm"># 탭</span>
+t1, t2 = st.<span class="fn">tabs</span>([<span class="str">"탭1"</span>,<span class="str">"탭2"</span>])
+<span class="kw">with</span> t1: st.<span class="fn">write</span>(<span class="str">"탭1 내용"</span>)
+
+<span class="cm"># 확장</span>
+<span class="kw">with</span> st.<span class="fn">expander</span>(<span class="str">"더보기"</span>):
+    st.<span class="fn">write</span>(<span class="str">"숨겨진 내용"</span>)
+
+<span class="cm"># 컨테이너</span>
+<span class="kw">with</span> st.<span class="fn">container</span>():
+    st.<span class="fn">write</span>(<span class="str">"그룹"</span>)</pre>
+</div>
+
+<div class="section c7">
+  <h2><span class="nb">7</span>차트 & 시각화</h2>
+<pre><span class="cm"># 내장 차트</span>
+st.<span class="fn">line_chart</span>(df)
+st.<span class="fn">area_chart</span>(df)
+st.<span class="fn">bar_chart</span>(df)
+st.<span class="fn">scatter_chart</span>(df, x=<span class="str">"x"</span>, y=<span class="str">"y"</span>)
+st.<span class="fn">map</span>(df)  <span class="cm"># lat, lon 컬럼</span>
+
+<span class="cm"># Matplotlib / Plotly</span>
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+fig, ax = plt.<span class="fn">subplots</span>()
+ax.<span class="fn">plot</span>(x, y)
+st.<span class="fn">pyplot</span>(fig)
+
+<span class="kw">import</span> plotly.express <span class="kw">as</span> px
+fig = px.<span class="fn">scatter</span>(df, x=<span class="str">"x"</span>, y=<span class="str">"y"</span>)
+st.<span class="fn">plotly_chart</span>(fig,
+  use_container_width=<span class="kw">True</span>)</pre>
+</div>
+
+<div class="section c8">
+  <h2><span class="nb">8</span>상태 & 알림</h2>
+<pre><span class="cm"># 알림 메시지</span>
+st.<span class="fn">success</span>(<span class="str">"성공!"</span>)
+st.<span class="fn">info</span>(<span class="str">"정보"</span>)
+st.<span class="fn">warning</span>(<span class="str">"경고!"</span>)
+st.<span class="fn">error</span>(<span class="str">"에러!"</span>)
+st.<span class="fn">toast</span>(<span class="str">"토스트!"</span>)
+st.<span class="fn">balloons</span>()  <span class="cm"># 풍선 효과</span>
+st.<span class="fn">snow</span>()      <span class="cm"># 눈 효과</span>
+
+<span class="cm"># 프로그레스</span>
+bar = st.<span class="fn">progress</span>(<span class="num">0</span>)
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):
+    bar.<span class="fn">progress</span>(i+<span class="num">1</span>)
+
+<span class="cm"># 스피너</span>
+<span class="kw">with</span> st.<span class="fn">spinner</span>(<span class="str">"로딩 중..."</span>):
+    time.<span class="fn">sleep</span>(<span class="num">2</span>)
+st.<span class="fn">success</span>(<span class="str">"완료!"</span>)</pre>
+</div>
+
+<div class="section c9">
+  <h2><span class="nb">9</span>Session State (상태 관리)</h2>
+<pre><span class="cm"># 초기화</span>
+<span class="kw">if</span> <span class="str">"count"</span> <span class="kw">not in</span> st.session_state:
+    st.session_state.count = <span class="num">0</span>
+
+<span class="cm"># 증가 버튼</span>
+<span class="kw">if</span> st.<span class="fn">button</span>(<span class="str">"증가"</span>):
+    st.session_state.count += <span class="num">1</span>
+
+st.<span class="fn">write</span>(st.session_state.count)
+
+<span class="cm"># 콜백 함수</span>
+<span class="kw">def</span> <span class="fn">on_change</span>():
+    st.session_state.result = \
+      st.session_state.input * <span class="num">2</span>
+
+st.<span class="fn">number_input</span>(<span class="str">"값"</span>,
+  key=<span class="str">"input"</span>,
+  on_change=on_change)</pre>
+</div>
+
+<div class="section c10">
+  <h2><span class="nb">10</span>캐싱 & 성능</h2>
+<pre><span class="cm"># 데이터 캐싱 (직렬화 가능)</span>
+<span class="fn">@st.cache_data</span>
+<span class="kw">def</span> <span class="fn">load_data</span>(url):
+    <span class="kw">return</span> pd.<span class="fn">read_csv</span>(url)
+
+<span class="cm"># 리소스 캐싱 (DB 연결 등)</span>
+<span class="fn">@st.cache_resource</span>
+<span class="kw">def</span> <span class="fn">get_model</span>():
+    <span class="kw">return</span> load_ml_model()
+
+<span class="cm"># 캐시 TTL (만료 시간)</span>
+<span class="fn">@st.cache_data</span>(ttl=<span class="num">600</span>)
+<span class="kw">def</span> <span class="fn">fetch_api</span>(url):
+    <span class="kw">return</span> requests.<span class="fn">get</span>(url).<span class="fn">json</span>()
+
+<span class="cm"># 캐시 초기화</span>
+st.cache_data.<span class="fn">clear</span>()</pre>
+</div>
+
+<div class="section c11">
+  <h2><span class="nb">11</span>폼 & 채팅</h2>
+<pre><span class="cm"># 폼 (한번에 제출)</span>
+<span class="kw">with</span> st.<span class="fn">form</span>(<span class="str">"my_form"</span>):
+    name = st.<span class="fn">text_input</span>(<span class="str">"이름"</span>)
+    age = st.<span class="fn">number_input</span>(<span class="str">"나이"</span>)
+    submitted = st.<span class="fn">form_submit_button</span>(
+      <span class="str">"제출"</span>)
+    <span class="kw">if</span> submitted:
+        st.<span class="fn">write</span>(name, age)
+
+<span class="cm"># 채팅 인터페이스</span>
+msg = st.<span class="fn">chat_input</span>(<span class="str">"메시지"</span>)
+<span class="kw">if</span> msg:
+    <span class="kw">with</span> st.<span class="fn">chat_message</span>(<span class="str">"user"</span>):
+        st.<span class="fn">write</span>(msg)
+    <span class="kw">with</span> st.<span class="fn">chat_message</span>(<span class="str">"assistant"</span>):
+        st.<span class="fn">write</span>(<span class="str">"응답..."</span>)</pre>
+</div>
+
+<div class="section c12">
+  <h2><span class="nb">12</span>멀티페이지 & 배포</h2>
+<pre><span class="cm"># 멀티페이지 구조</span>
+<span class="cm"># app.py</span>
+<span class="cm"># pages/</span>
+<span class="cm">#   1_📊_Dashboard.py</span>
+<span class="cm">#   2_📈_Analysis.py</span>
+
+<span class="cm"># 네비게이션</span>
+pg = st.<span class="fn">navigation</span>([
+  st.<span class="fn">Page</span>(<span class="str">"home.py"</span>, title=<span class="str">"홈"</span>),
+  st.<span class="fn">Page</span>(<span class="str">"about.py"</span>, title=<span class="str">"소개"</span>)
+])
+pg.<span class="fn">run</span>()
+
+<span class="cm"># 배포 (Streamlit Cloud)</span>
+<span class="cm"># 1. GitHub에 push</span>
+<span class="cm"># 2. share.streamlit.io 접속</span>
+<span class="cm"># 3. 저장소 연결 → Deploy</span>
+
+<span class="cm"># requirements.txt 필수!</span>
+streamlit
+pandas
+plotly</pre>
+</div>
+
+</div>
+<div class="footer">Streamlit Cheat Sheet · 경희대학교 미디어학과 이종혁 교수 · 2026</div>
+</div>
+</body>
+</html>
