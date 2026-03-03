@@ -2,7 +2,7 @@
 
 ## **경희대학교 미디어학과 | 월수 10:30~11:45 | 정408**
 
-> 📋 [강의개요 · 평가방법 · 교재](syllabus.md)
+## 📋 [강의개요 · 평가방법 · 교재](syllabus.md)
 
 ---
 
@@ -12,8 +12,8 @@
 > 🤖 **AI 챗봇**: [chat.khu.ac.kr](https://chat.khu.ac.kr/) — 경희대 구성원 무료 제공  
 > 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
 
-> **취재보도용 AI도구 모음**: https://jonghhhh.github.io/2026_1/datajour_ai.html  
-> **데이터 수집용 사이트 모음**: https://jonghhhh.github.io/2026_1/datajour_source.html
+> **[취재보도용 AI도구 모음](https://jonghhhh.github.io/2026_1/datajour_ai.html)**    
+> **[데이터 수집용 사이트 모음](https://jonghhhh.github.io/2026_1/datajour_source.html)**     
 ---
 
 ## Part 1. 기초 — 파이썬 & Pandas (1~4주)
@@ -29,8 +29,8 @@
 
 - (강의) [데이터저널리즘: 이론과 실무](https://jonghhhh.github.io/2026_1/data-journalism/데이터저널리즘_이론과실무_022826.pdf)
 - (실습) WSL, VSCode, Gemini CLI 사용법   
--- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드  
--- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드   
+-- [윈도우](https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드)  
+-- [Mac](https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드)   
 - AI 도구 체험: NotebookLM, Perplexity, Google AI Studio
 - (데이터) 공공데이터포털 [교통사고다발지역](https://www.data.go.kr/data/15029185/standard.do)
 </details>
