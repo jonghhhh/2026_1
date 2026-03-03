@@ -2,7 +2,7 @@
 
 ## **경희대학교 미디어학과 일반대학원 | 목 13:00~15:45 | 정408**
 
-> 📋 [강의개요 · 평가방법 · 교재 · 논문목록](syllabus.md)
+## 📋 [강의개요 · 평가방법 · 교재 · 논문목록](syllabus.md)
 
 ---
 
@@ -24,8 +24,8 @@
 
 - (강의) [2026년 컴퓨테이셔널연구방법론 소개](컴퓨테이셔널연구방법론_2026.pdf)  
 - (실습) WSL, VSCode, Gemini CLI 사용법  
--- 윈도우: https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드  
--- Mac: https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드  
+-- [윈도우](https://jonghhhh.github.io/2026_1/WSL_VSCode_GeminiCLI_완전초보_가이드)  
+-- [Mac](https://jonghhhh.github.io/2026_1/Mac_VSCode_GeminiCLI_완전초보_가이드)  
 - (실습) Gemini CLI로 첫 번째 파이썬 코드 생성 체험  
 
 </details>
