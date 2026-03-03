@@ -83,6 +83,37 @@
 
 ## 전체 논문 목록
 
+박영균, & 이종혁. (2026). 언론 시스템과 정치적 성향에 따른 김정은 보도사진의 시각적 프레이밍 연구: Multimodal LLM 을 활용한 국제 언론 비교 분석. 언론정보연구, 63(1), 157-198.  
+백강희, 이승윤, & 이종혁. (2025). 언론사와 증권사 간 인용 연결망을 통한 정보 불균형 탐구: 토픽모델링, 감성분석, 연결망분석을 통해. 언론정보연구, 62(1), 97-144.  
+이문혁, & 이종혁. (2024). 시위 뉴스 영상에서 폭력 프레이밍의 작동 기제 분석: 비전 트랜스포머 (Vision Transformer) 를 활용한 폭력 이미지 분류를 통해. 한국언론학보, 68(2), 100-139.  
+이문혁, 김시은, 신동호, & 이종혁. (2024). 재난보도 영상과 이미지 프레임에 나타난 국가 불평등 탐색: 비전 트랜스포머 (Vision Transformer) 를 활용한 KBS< 세계는 지금> 영상 분석. 한국방송학보, 154-195.  
+이문혁. (2025). K-POP 뮤직비디오의 이미지 유형화를 통한 시각적 특징 분석: 임베딩 벡터 추출 (CLIP) 과 유사도 검색 (FAISS) 을 통한 클러스터링. 언론정보연구, 62(2), 53-115.  
+이승윤, 백강희, & 이종혁. (2023). 언론의 정치 성향에 따른 기업 보도 태도의 차이와 기업인 경기평가 심리에 미치는 영향 분석: BERT 기반 딥러닝 모형을 적용한 빅데이터 분석. 한국언론학보, 67(1), 185-229.  
+이종혁. (2021). 매체 간 뉴스 동질화 현상에 대한 탐색적 연구: Doc2Vec 을 통한 문서 유사도 측정의 활용. 언론정보연구, 58(4), 5-48.  
+이종혁. (2022). 보수 언론과 진보 언론의 북한 전문가 활용 방식의 차이 탐색: 인용문에 대한 KPF-BERT 기반 딥러닝 분석을 중심으로. 한국언론학보, 66(6), 154-194.  
+이종혁. (2024). 온라인 뉴스의 선정성이 게재 시간과 이용자 평가에 미치는 영향: Sentence-BERT 와 BERT 모델을 활용한 텍스트 유사성, 비윤리성, 감정 측정. 한국언론학보, 68(5), 75-119.  
+이종혁. (2025). 12· 3 내란과 저널리즘 원칙: 오픈소스 생성형 LLM 을 활용한 언론보도 분석. 한국방송학보, 123-166.  
+정재철, & 이종혁. (2022). 한미동맹 보도에 대한 의제 도출과 ‘동맹-자주’관점의 비교 분석: BERT 모델 기반 딥러닝 모형의 활용. 사이버커뮤니케이션학보, 205-263.  
+조원정, & 이종혁. (2023). 장애인 시위 관련 뉴스 댓글의 비윤리성 측정과 정치 성향에 따른 차이 비교: BERT 기반 딥러닝 분류기 개발과 적용. 한국방송학보, 232-269.  
+
+Anthis, J. R., Liu, R., Richardson, S. M., Kozlowski, A. C., Koch, B., Evans, J., ... & Bernstein, M. (2025). Llm social simulations are a promising research method. arXiv preprint arXiv:2504.02234.  
+Bai, H., Voelkel, J. G., Muldowney, S., Eichstaedt, J. C., & Willer, R. (2025). LLM-generated messages can persuade humans on policy issues. Nature Communications, 16(1), 6037.  
+Chuang, Y. S., Goyal, A., Harlalka, N., Suresh, S., Hawkins, R., Yang, S., ... & Rogers, T. (2024, June). Simulating opinion dynamics with networks of llm-based agents. In Findings of the association for computational linguistics: NAACL 2024 (pp. 3326-3346).  
+Costello, T. H., Pennycook, G., & Rand, D. G. (2024). Durably reducing conspiracy beliefs through dialogues with AI. Science, 385(6714), eadq1814.  
+Freelon, D. (2018). Computational research in the post-API age. Political Communication, 35(4), 665-668.  
+Gilardi, F., Alizadeh, M., & Kubli, M. (2023). ChatGPT outperforms crowd workers for text-annotation tasks. Proceedings of the National Academy of Sciences, 120(30), e2305016120.  
+Lazer, D. M., Pentland, A., Watts, D. J., Aral, S., Athey, S., Contractor, N., ... & Wagner, C. (2020). Computational social science: Obstacles and opportunities. Science, 369(6507), 1060-1062.  
+Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., ... & Kiela, D. (2020). Retrieval-augmented generation for knowledge-intensive nlp tasks. Advances in neural information processing systems, 33, 9459-9474.  
+Lin, H., Czarnek, G., Lewis, B., White, J. P., Berinsky, A. J., Costello, T., ... & Rand, D. G. (2025). Persuading voters using human–artificial intelligence dialogues. Nature, 1-8.  
+Matz, S. C., Teeny, J. D., Vaid, S. S., Peters, H., Harari, G. M., & Cerf, M. (2024). The potential of generative AI for personalized persuasion at scale. Scientific Reports, 14(1), 4692.  
+Ornstein, J. T., Blasingame, E. N., & Truscott, J. S. (2025). How to train your stochastic parrot: Large language models for political texts. Political Science Research and Methods, 13(2), 264-281.  
+Park, J. S., O'Brien, J., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023, October). Generative agents: Interactive simulacra of human behavior. In Proceedings of the 36th annual acm symposium on user interface software and technology (pp. 1-22).  
+Peng, A., Nushi, B., Kıcıman, E., Inkpen, K., Suri, S., & Kamar, E. (2019, October). What you see is what you get? the impact of representation criteria on human bias in hiring. In Proceedings of the AAAI Conference on Human Computation and Crowdsourcing (Vol. 7, pp. 125-134).  
+Salvi, F., Horta Ribeiro, M., Gallotti, R., & West, R. (2025). On the conversational persuasiveness of GPT-4. Nature Human Behaviour, 9(8), 1645-1653.  
+Törnberg, P. (2023). How to use LLMs for text analysis. arXiv preprint arXiv:2307.13106.  
+Törnberg, P., Valeeva, D., Uitermark, J., & Bail, C. (2023). Simulating social media using large language models to evaluate alternative news feed algorithms. arXiv preprint arXiv:2310.05984.  
+Ziems, C., Held, W., Shaikh, O., Chen, J., Zhang, Z., & Yang, D. (2024). Can large language models transform computational social science?. Computational Linguistics, 50(1), 237-291.  
+
 ### 국내 논문 (11편)
 1. 이종혁 (2021). 매체 간 뉴스 동질화 현상에 대한 탐색적 연구: Doc2Vec을 통한 문서 유사도 측정의 활용. *언론정보연구*, 58(4), 5–48. (3주)
 2. 이종혁 (2022). 보수 언론과 진보 언론의 북한 전문가 활용 방식의 차이 탐색. *한국언론학보*, 66(6), 154–194. (6주)
