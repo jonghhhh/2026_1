@@ -35,10 +35,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) 변수, 자료형, 조건문, 반복문, 함수
-- (강의) 리스트, 딕셔너리, 문자열 처리
-- (실습) 파이썬 기초 실습 (VSCode + Gemini CLI 활용)
-- (자료) 파이썬 cheat sheet 모음
+- (실습) [파이썬 기초 실습](https://jonghhhh.github.io/2026_1/ipyn/python_basic_vscode.opynb): 변수, 자료형, 리스트, 조건문, 반복문, 함수, 클래스 등
+- (자료) [cheat sheet](https://jonghhhh.github.io/2026_1/cheatsheets/python_basic.html)
 
 </details>
 
