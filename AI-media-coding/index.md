@@ -35,8 +35,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (실습) [파이썬 기초 실습](https://jonghhhh.github.io/2026_1/ipyn/python_basic_vscode.opynb): 변수, 자료형, 리스트, 조건문, 반복문, 함수, 클래스 등
-- (자료) [cheat sheet](https://jonghhhh.github.io/2026_1/cheatsheets/python_basic.html)
+- (실습) [파이썬 기초 실습](https://jonghhhh.github.io/2026_1/ipynb/python_basic_vscode.ipynb): 변수, 자료형, 리스트, 조건문, 반복문, 함수, 클래스 등
+- (자료) [cheat sheet](https://jonghhhh.github.io/2026_1/cheatsheets/python_basics.html)
 
 </details>
 
