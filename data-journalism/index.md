@@ -12,6 +12,7 @@
 > 🤖 **AI 챗봇**: [chat.khu.ac.kr](https://chat.khu.ac.kr/) — 경희대 구성원 무료 제공  
 > 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
 
+> **[조 구성 및 출석체크](https://jonghhhh.github.io/test/attendance_datajour.html)**
 > **[취재보도용 AI도구 모음](https://jonghhhh.github.io/2026_1/datajour_ai.html)**    
 > **[데이터 수집용 사이트 모음](https://jonghhhh.github.io/2026_1/datajour_source.html)**     
 ---
