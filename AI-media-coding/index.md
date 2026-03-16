@@ -12,6 +12,7 @@
 > 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
 
 ---
+> **[출석체크](https://jonghhhh.github.io/test/attendance_aicoding.html)**
 
 ### 1주차 (3/4) 
 
