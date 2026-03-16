@@ -12,7 +12,8 @@
 > 🖥️ **OS**: Windows → WSL 사용 / Mac → 그대로 사용
 
 ---
-
+> **[출석체크](https://jonghhhh.github.io/test/attendance_compmethod.html)**
+> 
 ## Part 1: 기초 & 데이터 (1~5주)
 
 ---
