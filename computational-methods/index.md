@@ -57,7 +57,8 @@
 - (실습) [pandas 실습](https://jonghhhh.github.io/2026_1/ipynb/pandas_vscode.ipynb): 표 형태의 데이터(DataFrame)를 다루고 분석  
 - (자료) [cheat sheet: pandas ](https://jonghhhh.github.io/2026_1/cheatsheets/pandas.html)  
 - (실습) [numpy 실습](https://jonghhhh.github.io/2026_1/ipynb/numpy_vscode.ipynb): 수치 계산과 배열 연산  
-- (자료) [cheat sheet: numpy](https://jonghhhh.github.io/2026_1/cheatsheets/numpy.html)  
+- (자료) [cheat sheet: numpy](https://jonghhhh.github.io/2026_1/cheatsheets/numpy.html)
+- (데이터) [교통사고다발지역](https://jonghhhh.github.io/2026_1/전국교통사고다발지역표준데이터-20260301.xls)  
 
 **📄 논문 발표**
 - 안순태, 임유진, & 이하나. (2020). 온라인 먹방 (먹는 방송, Mukbang) 의 댓글 연구: 식행동 관련 인식에 대한 빅데이터 분석. 한국언론학보, 64(2), 269-310.  
