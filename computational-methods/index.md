@@ -39,7 +39,7 @@
 <summary>📖 강의 내용 보기</summary>
 
 - (실습) [파이썬 기초 실습](https://jonghhhh.github.io/2026_1/ipynb/python_basic_vscode.ipynb): 변수, 자료형, 리스트, 조건문, 반복문, 함수, 클래스 등
-- (자료) [cheat sheet](https://jonghhhh.github.io/2026_1/cheatsheets/python_basics.html)
+- (자료) [cheat sheet: python](https://jonghhhh.github.io/2026_1/cheatsheets/python_basics.html)
 
 **📄 논문 발표**
 - Ziems, C., Held, W., Shaikh, O., Chen, J., Zhang, Z., & Yang, D. (2024). Can large language models transform computational social science?. Computational Linguistics, 50(1), 237-291.  
@@ -54,13 +54,10 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- Pandas DataFrame: 읽기, 필터링, 그룹화, 병합
-- NumPy 기초 연산
-- 데이터 전처리 (결측치, 타입 변환, 정렬)
-
-**실습**
-- 뉴스 데이터셋(CSV) 로드, 탐색적 분석, 전처리
+- (실습) [pandas 실습](https://jonghhhh.github.io/2026_1/ipynb/pandas_vscode.ipynb): 표 형태의 데이터(DataFrame)를 다루고 분석  
+- (자료) [cheat sheet: pandas ](https://jonghhhh.github.io/2026_1/cheatsheets/pandas.html)  
+- (실습) [numpy 실습](https://jonghhhh.github.io/2026_1/ipynb/numpy_vscode.ipynb): 수치 계산과 배열 연산  
+- (자료) [cheat sheet: numpy](https://jonghhhh.github.io/2026_1/cheatsheets/numpy.html)  
 
 **📄 논문 발표**
 - 안순태, 임유진, & 이하나. (2020). 온라인 먹방 (먹는 방송, Mukbang) 의 댓글 연구: 식행동 관련 인식에 대한 빅데이터 분석. 한국언론학보, 64(2), 269-310.  
