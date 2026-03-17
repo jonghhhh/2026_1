@@ -54,7 +54,11 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (실습) 파이썬 기초 계속
+- (실습) [pandas 실습](https://jonghhhh.github.io/2026_1/ipynb/pandas_vscode.ipynb): 표 형태의 데이터(DataFrame)를 다루고 분석  
+- (자료) [cheat sheet: pandas ](https://jonghhhh.github.io/2026_1/cheatsheets/pandas.html)  
+- (실습) [numpy 실습](https://jonghhhh.github.io/2026_1/ipynb/numpy_vscode.ipynb): 수치 계산과 배열 연산  
+- (자료) [cheat sheet: numpy](https://jonghhhh.github.io/2026_1/cheatsheets/numpy.html)  
+ 
 </details>
 
 ---
@@ -64,7 +68,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (실습) 파이썬 pandas
+- 위 내용 계속   
 </details>
 
 ---
