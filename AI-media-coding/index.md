@@ -63,9 +63,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) 벡터 공간과 임베딩: One-hot → TF-IDF → 밀집 벡터, 텍스트·이미지의 벡터 표현과 코사인 유사도
+- (강의) [임베딩_벡터와유사도](https://jonghhhh.github.io/2026_1/임베딩_벡터와유사도.pdf): One-hot → TF-IDF → 밀집 벡터, 텍스트·이미지의 벡터 표현과 코사인 유사도
 - (실습) PyTorch 텐서 기초: 텐서 생성, 연산, 벡터·행렬 조작
-- (실습) Sentence-BERT로 한국어 뉴스 제목 임베딩 → 코사인 유사도 계산
 
 </details>
 
