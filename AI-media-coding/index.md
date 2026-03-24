@@ -64,7 +64,6 @@
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [임베딩_벡터와유사도](https://jonghhhh.github.io/2026_1/임베딩_벡터와유사도.pdf): One-hot → TF-IDF → 밀집 벡터, 텍스트·이미지의 벡터 표현과 코사인 유사도
-- (실습) [PyTorch 실습](https://jonghhhh.github.io/2026_1/ipynb/pytorch_vscode.ipynb): 텐서 생성, 연산, 벡터·행렬 조작
 
 </details>
 
@@ -87,12 +86,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) 딥러닝이란: 퍼셉트론 → 다층 신경망
-- (강의) 학습 원리: 순전파, 손실함수, 역전파, 경사하강법
-- (강의) 학습 vs 검증 vs 테스트: 과적합 방지, 데이터 분할
-- (실습) PyTorch로 아주 간단한 분류 모델 만들기
-  - 뉴스 제목 → 카테고리 분류 (TF-IDF + 2층 신경망)
-  - 데이터 로드 → 학습 → 손실 그래프 → 정확도 평가
+- (강의) 딥러닝
+- (실습) [PyTorch 실습](https://jonghhhh.github.io/2026_1/ipynb/pytorch_vscode.ipynb)
 
 </details>
 
