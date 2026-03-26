@@ -73,13 +73,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- 웹스크래핑 원리: HTML/CSS 구조, BeautifulSoup, Network 활용
-- 네이버 뉴스 기사·댓글 스크래핑
-- Gemini CLI로 스크래핑 코드 생성 → 검증 → 수정 워크플로우
-
-**실습**
-- 네이버 뉴스 기사 + 댓글 대량 수집
+- (강의) [웹크롤링](https://jonghhhh.github.io/2026_1/ipynb/web_crawling_vscode.ipynb): HTML 구조, BeautifulSoup, Network 활용, playwright 등
+- (자료) [HTML](https://jonghhhh.github.io/2026_1/ipynb/html_basic_vscode.ipynb): HTML 코드 원리 기초
+- (실습) 네이버 뉴스 기사, 댓글 수집
 
 **📄 논문 발표**
 - 이종혁. (2021). 매체 간 뉴스 동질화 현상에 대한 탐색적 연구: Doc2Vec 을 통한 문서 유사도 측정의 활용. 언론정보연구, 58(4), 5-48.   
