@@ -85,7 +85,7 @@
 
 - (강의) [웹크롤링](https://jonghhhh.github.io/2026_1/ipynb/web_crawling_vscode.ipynb): HTML 구조, BeautifulSoup, Network 활용, playwright 등
 - (자료) [HTML](https://jonghhhh.github.io/2026_1/ipynb/html_basic_vscode.ipynb): HTML 코드 원리 기초
-- (실습) 네이버뉴스 수집  
+- (실습) [네이버뉴스 수집](https://jonghhhh.github.io/2026_1/py/navernews_crawl.py): 네이버 뉴스 검색 수집
 </details>
 
 ---
