@@ -83,9 +83,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
--(강의) 웹크롤링: HTML 구조, BeautifulSoup, Network 활용, playwright 등
--(자료) HTML: HTML 코드 원리 기초
--(실습) 네이버뉴스 수집
+-(강의) 웹크롤링: HTML 구조, BeautifulSoup, Network 활용, playwright 등  
+-(자료) HTML: HTML 코드 원리 기초  
+-(실습) 네이버뉴스 수집  
 </details>
 
 ---
