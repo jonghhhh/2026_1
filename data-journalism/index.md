@@ -83,14 +83,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) HTML 구조와 CSS 선택자 읽기 (크롤링·시각화에 필수)
-- (강의) 프롬프트코딩 5원칙: 구체성, 단계별 요청, 컨텍스트, 출력 형식, 반복 수정
-- (강의) 웹 크롤링: requests + BeautifulSoup, Playwright
-- (강의) 윤리적 크롤링: robots.txt, 요청 간격, 개인정보보호법
-- (실습) 브라우저 개발자 도구(F12) → CSS 선택자 추출
-- (실습) Gemini CLI로 네이버 뉴스 '교통사고' 기사 크롤링
-- (실습) 프롬프트 비교 실험: 모호한 vs. 구체적 프롬프트
-
+-(강의) 웹크롤링: HTML 구조, BeautifulSoup, Network 활용, playwright 등
+-(자료) HTML: HTML 코드 원리 기초
+-(실습) 네이버뉴스 수집
 </details>
 
 ---
