@@ -64,7 +64,7 @@
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [임베딩_벡터와유사도](https://jonghhhh.github.io/2026_1/임베딩_벡터와유사도.pdf): One-hot → TF-IDF → 밀집 벡터, 텍스트·이미지의 벡터 표현과 코사인 유사도
-- (강의) [임베딩_토크나이징과클러스터링](https://jonghhhh.github.io/2026_1/임베딩_토크나이징과클러스터링.pdf): 토크나이징, 클러스터링(k-means)    
+
 
 </details>
 
@@ -73,10 +73,8 @@
 ### 5주차 (4/1, 4/6): 임베딩 ② — 클러스터링
 
 <details markdown="1">
-<summary>📖 강의 내용 보기</summary>
-
-- (강의) K-Means 클러스터링: 비지도학습으로 텍스트 그룹화
-- (실습) 뉴스 기사 임베딩 → K-Means 클러스터링 → 주제별 분류
+<summary>📖 강의 내용 보기</summary>  
+- (강의) [임베딩_토크나이징과클러스터링](https://jonghhhh.github.io/2026_1/임베딩_토크나이징과클러스터링.pdf): 토크나이징, 클러스터링(k-means)    
 
 </details>
 
