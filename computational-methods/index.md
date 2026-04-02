@@ -92,7 +92,7 @@
 
 **강의**
 - (강의) [youtube 분석](https://jonghhhh.github.io/2026_1/ipynb/youtube_vscode.ipynb)  
-- (강의) [키프레임 추출](https://jonghhhh.github.io/2026_1/keyframe_extract_vscode.ipynb)  
+- (강의) [키프레임 추출](https://jonghhhh.github.io/2026_1/ipynb/keyframe_extract_vscode.ipynb)  
 - (자료) [open_cv](https://jonghhhh.github.io/2026_1/ipynb/opencv_vscode.ipynb)  
 
 **📄 논문 발표**
