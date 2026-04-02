@@ -85,19 +85,15 @@
 
 ---
 
-### 5주차 (4/2): 이미지·영상·음성 수집과 처리
+### 5주차 (4/2): 이미지·영상 수집과 분석  
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 **강의**
-- 구글 이미지 크롤링, 네이버 방송뉴스 영상 수집
-- 유튜브 API: 검색, 영상 정보·메타데이터, 자막, 댓글 수집
-- 영상 키프레임 추출, OpenCV 이미지 처리
-- 음성 인식: Whisper STT
-
-**실습**
-- 유튜브 뉴스 영상 메타데이터 + 자막 + 키프레임 수집 파이프라인 구축
+- (강의) [youtube 분석](https://jonghhhh.github.io/2026_1/ipynb/youtube_vscode.ipynb)  
+- (강의) [키프레임 추출](https://jonghhhh.github.io/2026_1/keyframe_extract_vscode.ipynb)  
+- (자료) [open_cv](https://jonghhhh.github.io/2026_1/ipynb/opencv_vscode.ipynb)  
 
 **📄 논문 발표**
 - 박대민. (2022). 미디어 인공지능: 컴퓨터 비전 관련 딥러닝 모델의 미디어 동영상 분야 적용 가능성에 관한 연구. 커뮤니케이션 이론, 18(1), 111-154.   
