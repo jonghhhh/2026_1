@@ -90,18 +90,12 @@
 
 ---
 
-### 6주차 (4/8, 4/13): 데이터 수집 심화 — API · PDF OCR · 정보공개청구
+### 6주차 (4/8, 4/13): 데이터 수집 심화 — API 활용
 
 <details markdown="1">
-<summary>📖 강의 내용 보기</summary>
+<summary>📖 강의 내용 보기</summary>  
 
-- (강의) API 이론: REST API, HTTP 메서드, JSON 응답, API 키 인증
-- (강의) PDF OCR: Google AI Studio + PaddleOCR + pdfplumber
-- (강의) 정보공개청구(FOI): 정보공개포털, 청구 전략, 뉴스타파 사례
-- (실습) KOROAD Open API로 교통사고 통계 수집
-- (실습) DART Open API로 기업 재무 데이터 수집
-- (실습) Gemini API로 교통사고 PDF 보고서 표 추출 → DataFrame
-- (과제) 조별 프로젝트 데이터를 2개+ 소스에서 수집
+- (강의) [API: 이론과 실습](https://jonghhhh.github.io/2026_1/API홯용 데이터 수집_040226.pdf)     
 
 </details>
 
