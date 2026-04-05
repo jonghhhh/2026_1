@@ -95,7 +95,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>  
   
-- (강의) [API: 이론과 실습](https://jonghhhh.github.io/2026_1/API활용데이터수집_040226.pdf)       
+- (강의) [API: 이론과 실습](https://jonghhhh.github.io/2026_1/API활용_데이터수집_040226.pdf)       
 
 </details>
 
