@@ -70,22 +70,23 @@
 
 ---
 
-### 5주차 (4/1, 4/6): 임베딩 ② — 클러스터링
+### 5주차 (4/1, 4/6): 임베딩 ② — 토크나이징과 클러스터링
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>  
+  
 - (강의) [임베딩_토크나이징과클러스터링](https://jonghhhh.github.io/2026_1/임베딩_토크나이징과클러스터링.pdf) - 토크나이징, 클러스터링(k-means)    
 
 </details>
 
 ---
 
-### 6주차 (4/8, 4/13): 딥러닝 기초 — 학습 원리 & PyTorch
+### 6주차 (4/8, 4/13): 딥러닝: 개념과 작동원리
 
 <details markdown="1">
-<summary>📖 강의 내용 보기</summary>
+<summary>📖 강의 내용 보기</summary>  
 
-- (강의) 딥러닝
+- (강의) [딥러닝: 개념과 작동 원리](https://jonghhhh.github.io/2026_1/딥러닝_개념과작동원리.pdf)  
 - (실습) [PyTorch 실습](https://jonghhhh.github.io/2026_1/ipynb/pytorch_vscode.ipynb)
 
 </details>
