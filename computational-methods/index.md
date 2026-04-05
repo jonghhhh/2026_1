@@ -112,14 +112,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- 딥러닝의 역사와 구조: 퍼셉트론 → CNN → RNN → Transformer
-- 학습 원리: 순전파, 역전파, 경사하강법, 손실함수, 최적화
-- 이미지 딥러닝: CNN → ViT → YOLO 개요
-- PyTorch 기초 문법
-
-**실습**
-- PyTorch 텐서 연산 및 간단한 분류 모형 실습
+**강의**  
+- (강의) [딥러닝: 개념과 작동 원리](https://jonghhhh.github.io/2026_1/딥러닝_개념과작동원리.pdf)    
+- (자료) [PyTorch 실습](https://jonghhhh.github.io/2026_1/ipynb/pytorch_vscode.ipynb)   
 
 **📄 논문 발표**
 - 이문혁, 김시은, 신동호, & 이종혁. (2024). 재난보도 영상과 이미지 프레임에 나타난 국가 불평등 탐색: 비전 트랜스포머 (Vision Transformer) 를 활용한 KBS< 세계는 지금> 영상 분석. 한국방송학보, 38(2), 154-195.  
