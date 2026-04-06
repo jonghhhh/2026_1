@@ -113,7 +113,7 @@
 <summary>📖 강의 내용 보기</summary>
 
 **강의**  
-- (강의) [딥러닝: 개념과 작동 원리](https://jonghhhh.github.io/2026_1/딥러닝_개념과작동원리.pdf)    
+- (강의) [딥러닝: 개념과 작동 원리](https://jonghhhh.github.io/2026_1/딥러닝_개념과작동원리_040226.pdf)    
 - (자료) [PyTorch 실습](https://jonghhhh.github.io/2026_1/ipynb/pytorch_vscode.ipynb)   
 
 **📄 논문 발표**
