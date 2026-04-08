@@ -94,6 +94,7 @@
 - (강의) [youtube 분석](https://jonghhhh.github.io/2026_1/ipynb/youtube_vscode.ipynb)  
 - (강의) [키프레임 추출](https://jonghhhh.github.io/2026_1/ipynb/keyframe_extract_vscode.ipynb)  
 - (자료) [open_cv](https://jonghhhh.github.io/2026_1/ipynb/opencv_vscode.ipynb)  
+- (자료) [한국 Public API 모음](https://github.com/yybmion/public-apis-4Kr)   
 
 **📄 논문 발표**
 - 박대민. (2022). 미디어 인공지능: 컴퓨터 비전 관련 딥러닝 모델의 미디어 동영상 분야 적용 가능성에 관한 연구. 커뮤니케이션 이론, 18(1), 111-154.   
