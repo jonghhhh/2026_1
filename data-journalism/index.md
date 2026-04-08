@@ -14,7 +14,8 @@
 
 > **[조 구성 및 출석체크](https://jonghhhh.github.io/test/attendance_datajour.html)**  
 > **[취재보도용 AI도구 모음](https://jonghhhh.github.io/2026_1/datajour_ai.html)**    
-> **[데이터 수집용 사이트 모음](https://jonghhhh.github.io/2026_1/datajour_source.html)**     
+> **[데이터 수집용 사이트 모음](https://jonghhhh.github.io/2026_1/datajour_source.html)**
+> **[한국 Public API 모음](github.com/yybmion/public-apis-4Kr)**   
 ---
 
 ## Part 1. 기초 — 파이썬 & Pandas (1~4주)
