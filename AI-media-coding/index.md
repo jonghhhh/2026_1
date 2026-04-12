@@ -98,12 +98,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) CNN: 합성곱, 풀링, 특징 추출 — 이미지 인식의 핵심
-- (강의) RNN / LSTM: 순차 데이터 처리 — 텍스트·시계열의 핵심
-- (강의) CNN → ViT, RNN → Transformer로의 발전 흐름
-- (실습) PyTorch CNN으로 간단한 이미지 분류 (MNIST 또는 뉴스 이미지)
-- (실습) PyTorch RNN/LSTM으로 간단한 텍스트 감성 분류
-
+- (강의) [RNN과_CNN](https://jonghhhh.github.io/2026_1/RNN_CNN_041026.pdf)
+  
 </details>
 
 ---
