@@ -96,7 +96,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>  
   
-- (강의) [API: 이론과 실습](https://jonghhhh.github.io/2026_1/API활용_데이터수집_040226.pdf)       
+- (강의) [API: 이론과 실습](https://jonghhhh.github.io/2026_1/API활용_데이터수집_040226.pdf)
+- (실습) [네이버 API 수집](https://jonghhhh.github.io/2026_1/py/naver_search_api.py): 네이버 API 검색 수집(엔드포인트 7종)    
 
 </details>
 
