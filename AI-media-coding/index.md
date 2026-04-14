@@ -93,7 +93,7 @@
 
 ---
 
-### 7주차 (4/15, 4/20): CNN & RNN — 이미지와 텍스트의 딥러닝
+### 7주차 (4/15, 4/20): RNN & CNN — 이미지와 텍스트의 딥러닝
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
@@ -107,7 +107,7 @@
 ### 8주차 (4/22, 4/27): 중간고사
 
 - 보강 수업 (4/22)
-- **중간고사 (4/27)**: 코드해석 시험 + 오픈북 분석 테스트
+- **중간고사 (4/27)**: 코드해석 + 이론 (cheat sheet 테스트)
 
 ---
 
@@ -116,13 +116,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) Transformer: Self-Attention, Multi-Head Attention, 위치 인코딩
-- (강의) BERT: 양방향 인코더, MLM, NSP — 사전학습과 파인튜닝
-- (강의) Sentence-BERT: 문장 수준 임베딩과 유사도
-- (실습) Hugging Face Transformers 기초: Pipeline API 사용법
-- (실습) KcBERT / KcELECTRA로 한국어 뉴스 감성분석
-- (실습) Hugging Face Hub 탐색: 모델·데이터셋 검색, 불러오기, 추론
-  - 감성분석, NER, 문장 유사도, 이미지 분류, 요약 등
+- (강의) [Transformer와 BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)  
 
 </details>
 
