@@ -107,8 +107,10 @@
 ### 8주차 (4/22, 4/27): Transformer & BERT & 중간고사
 
 <details markdown="1">
-<summary>📖 강의 내용 보기</summary>    
+<summary>📖 강의 내용 보기</summary>   
+  
 - (강의) [Transformer와 BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)   
+
 </details>  
 - **중간고사 (4/27)**: 코드해석 + 이론 (cheat sheet 테스트)
 
