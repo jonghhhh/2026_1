@@ -104,25 +104,25 @@
 
 ---
 
-### 8주차 (4/22, 4/27): 중간고사
+### 8주차 (4/22, 4/27): Transformer & BERT & 중간고사
 
-- 보강 수업 (4/22)
+- (강의) [Transformer와 BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)    
 - **중간고사 (4/27)**: 코드해석 + 이론 (cheat sheet 테스트)
 
 ---
 
-### 9주차 (4/29, 5/4): Transformer & BERT — 이론과 감성분석 실습
+### 9주차 (4/29, 5/4): GPT & LLM
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [Transformer와 BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)  
+
 
 </details>
 
 ---
 
-### 10주차 (5/6, 5/11): GPT & LLM API — 텍스트·멀티모달 내용분석
+### 10주차 (5/6, 5/11): LLM API — 텍스트·멀티모달 내용분석
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
