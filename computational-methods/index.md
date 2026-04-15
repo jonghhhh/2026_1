@@ -113,7 +113,6 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**  
 - (강의) [딥러닝: 개념과 작동 원리](https://jonghhhh.github.io/2026_1/딥러닝_개념과작동원리_040226.pdf)
 - (강의) [RNN과_CNN](https://jonghhhh.github.io/2026_1/RNN_CNN_041026.pdf)    
 - (자료) [PyTorch 실습](https://jonghhhh.github.io/2026_1/ipynb/pytorch_vscode.ipynb)   
@@ -132,15 +131,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- Transformer: Self-Attention, Multi-Head Attention
-- BERT: 양방향 인코더 / Sentence-BERT: 문장 임베딩
-- GPT: 자기회귀 디코더, Instruction Tuning, RLHF
-- Hugging Face Transformers Pipeline 추론
-
-**실습**
-- KcBERT / KcELECTRA 한국어 감성분석 추론
-- Sentence-BERT로 문장 유사도 측정
+- (강의) [Transformer와_BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)    
 
 **📄 논문 발표**
 - 조원정, & 이종혁. (2023). 장애인 시위 관련 뉴스 댓글의 비윤리성 측정과 정치 성향에 따른 차이 비교: BERT 기반 딥러닝 분류기 개발과 적용. 한국방송학보, 37(2), 232-269.  
