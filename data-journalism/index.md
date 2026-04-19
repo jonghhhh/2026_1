@@ -107,20 +107,14 @@
 
 ---
 
-### 7주차 (4/15, 4/20): 데이터 정제 + LLM API 대량 분석
+### 7주차 (4/15, 4/20): LLM 활용 데이터 분석: 텍스트 + 이미지
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) Pandas 전처리: 결측치, 중복, 타입 변환, 텍스트 정제
-- (강의) LLM API 대량 분석 패턴: DataFrame 순회 → API 호출 → 분류/요약 → 새 열 저장
-- (강의) 모델 라우팅: Flash-Lite(대량 단순) → Flash(중간) → Pro(소량 고복잡도)
-- (강의) 실제 언론사 사례: NYT, ProPublica, IStories
-- (강의) 구글 시트 =AI() 함수, Gemini Vision 이미지 분석
-- (실습) Flash-Lite API로 교통사고 위치명 667건 장소유형 분류
-- (실습) 구글 시트 =AI()로 대량 텍스트 분류
-- (실습) NotebookLM 심층 활용: 뉴스 기사 + PDF → 요약·FAQ
-- (과제) 조별 데이터 전처리 + LLM 분석 결과 1건+
+- (강의) [LLM 활용 데이터 분석](https://jonghhhh.github.io/2026_1/ipynb/llm_content_analysis.ipynb): API, 텍스트, 이미지, json, pandas  
+- (실습) 구글 시트 =AI()로 대량 텍스트 분류  
+- (실습) NotebookLM 심층 활용  
 
 </details>
 
