@@ -114,7 +114,7 @@
 </details>  
 - **중간고사 (4/27)**: 코드해석 + 이론 (cheat sheet 테스트)  
 
-- (자료) [중간고사_예제](https://jonghhhh.github.io/2026_1/AI_media_coding/문제사례_인공지능미디어코딩.pdf)    
+- (자료) [중간고사_예제](https://jonghhhh.github.io/2026_1/AI-media-coding/문제사례_인공지능미디어코딩.pdf)    
 
 ---
 
