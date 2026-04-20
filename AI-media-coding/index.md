@@ -110,7 +110,8 @@
 <summary>📖 강의 내용 보기</summary>   
   
 - (강의) [Transformer와 BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)   
-
+- (자료) [중간고사 예제](https://jonghhhh.github.io/2026_1/AI_media_coding/문제사례_인공지능미디어코딩.pdf)
+     
 </details>  
 - **중간고사 (4/27)**: 코드해석 + 이론 (cheat sheet 테스트)
 
