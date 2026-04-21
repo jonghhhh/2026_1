@@ -123,7 +123,7 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-
+- (강의) [GPT와 LLM](https://jonghhhh.github.io/2026_1/GPT_LLM_agent_041526.pdf)   
 
 </details>
 
