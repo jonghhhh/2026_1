@@ -131,7 +131,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [Transformer와_BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)    
+- (강의) [Transformer와_BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)   
+- (강의) [GPT와 LLM](https://jonghhhh.github.io/2026_1/GPT_LLM_agent_041526.pdf)   
 
 **📄 논문 발표**
 - 조원정, & 이종혁. (2023). 장애인 시위 관련 뉴스 댓글의 비윤리성 측정과 정치 성향에 따른 차이 비교: BERT 기반 딥러닝 분류기 개발과 적용. 한국방송학보, 37(2), 232-269.  
