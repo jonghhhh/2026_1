@@ -154,9 +154,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
--(강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_network.html): vis-network, D3, Cytoscape 기반 Force Network, Tree, 양분망, 의미연결망  
--(강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_maps.html): Leaflet 지도, 마커, 클러스터링, 히트맵, 코로플레스, 폴리라인·폴리곤, 베이스맵 전환  
--(강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_scrollytelling.html): DataTables, Scrollama, 스크롤리텔링, 스티키 차트, 인터랙티브 기사 제작  
+-(강의) [network](https://jonghhhh.github.io/2026_1/js/js_network.html): vis-network, D3, Cytoscape 기반 Force Network, Tree, 양분망, 의미연결망  
+-(강의) [maps](https://jonghhhh.github.io/2026_1/js/js_maps.html): Leaflet 지도, 마커, 클러스터링, 히트맵, 코로플레스, 폴리라인·폴리곤, 베이스맵 전환  
+-(강의) [scrollytelling](https://jonghhhh.github.io/2026_1/js/js_scrollytelling.html): DataTables, Scrollama, 스크롤리텔링, 스티키 차트, 인터랙티브 기사 제작  
 </details>
 
 ---
