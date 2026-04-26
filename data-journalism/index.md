@@ -124,29 +124,25 @@
 
 ---
 
-### 8주차 (4/22, 4/27): JS 시각화 입문 — 인터랙티브 그래프 (Chart.js)
+### 8주차 (4/22, 4/27): JS 시각화 입문 — JavaScript 기초
 
 > ★ **조별 프로젝트 기획안 제출 (4/27, 중간고사 대체)**
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) JavaScript 기초: 변수(let/const), 함수, DOM, 이벤트, 배열 메서드(.map/.filter/.reduce)
-- (강의) **비동기 데이터 로딩**: `fetch()` + `async/await` — JSON 파일 로드 핵심 패턴
-- (강의) Chart.js: CDN, 차트 유형(bar/line/pie/doughnut/radar/bubble), 데이터 업데이트
-- (실습) 교통사고 연도별 추이 선·막대 그래프 (JSON fetch)
-- (실습) 사고유형 드롭다운 필터 → 그래프 애니메이션 업데이트
-- (실습) 도넛·레이더·버블 차트 탭 전환
+- (강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_basics.html): javaScript 기초 - 변수(let/const), 함수, 조건문, 반복문, DOM 조작   
 
 </details>
 
 ---
 
-### 9주차 (4/29, 5/4): 네트워크 시각화 (vis.js) + 지도 시각화 (Leaflet)
+### 9주차 (4/29, 5/4): 인터랙티브 그래프 (Chart.js), 네트워크 시각화 (vis.js) + 지도 시각화 (Leaflet)
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
+- (강의) Chart.js: CDN, 차트 유형(bar/line/pie/doughnut/radar/bubble), 데이터 업데이트  
 - (강의) 네트워크 시각화: 그래프 기초, 노드·엣지, ICIJ 사례
 - (강의) vis.js Network: 물리 시뮬레이션, 인터랙티브 (클릭, 호버, 줌)
 - (강의) Leaflet.js: 마커, 코로플레스, 히트맵, 마커 클러스터, 레이어 전환
