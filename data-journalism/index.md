@@ -137,36 +137,26 @@
 
 ---
 
-### 9주차 (4/29, 5/4): 인터랙티브 그래프 (Chart.js), 네트워크 시각화 (vis.js) + 지도 시각화 (Leaflet)
+### 9주차 (4/29, 5/4): 인터랙티브 그래프(Chart.js) +  
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) Chart.js: CDN, 차트 유형(bar/line/pie/doughnut/radar/bubble), 데이터 업데이트  
-- (강의) 네트워크 시각화: 그래프 기초, 노드·엣지, ICIJ 사례
-- (강의) vis.js Network: 물리 시뮬레이션, 인터랙티브 (클릭, 호버, 줌)
-- (강의) Leaflet.js: 마커, 코로플레스, 히트맵, 마커 클러스터, 레이어 전환
-- (강의) 좌표계, 타일 맵, GeoJSON 형식
-- (실습) vis.js: 시도-사고유형 네트워크 (노드 크기=건수, 클릭 시 상세)
-- (실습) Leaflet: 교통사고 12,780건 마커 클러스터 (유형별 색상, 체크박스 토글)
-- (실습) 시도별 코로플레스 + 히트맵
+- (강의) [charts](https://jonghhhh.github.io/2026_1/js/js_charts.html): Bar, Line, Pie, Doughnut, Radar, Scatter, Bubble, Mixed, Treemap, 인터랙티브 필터   
+- (강의) [more charts](https://jonghhhh.github.io/2026_1/js/js_more_charts.html): 워드클라우드, Sankey, Calendar Heatmap, Sunburst, Boxplot, Gauge, Funnel 등 시각화 추가
 
 </details>
 
 ---
 
-### 10주차 (5/6, 5/11): Scrollytelling + 시각화 종합
+### 10주차 (5/6, 5/11): 네트워크 시각화(vis.js), 지도 시각화(Leaflet), Scrollytelling
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) Scrollytelling: Intersection Observer, Scrollama.js, sticky 레이아웃
-- (강의) 멀티미디어 요소: Napkin AI 인포그래픽, AI 삽화, Gamma 발표자료
-- (강의) 데이터 검증 & 팩트체크: Bulletproofing, TAAS 교차 검증, OSINT 기초
-- (실습) 교통사고 Scrollytelling 기사 (5섹션: 히트맵→도넛→확대지도→선그래프→하이라이트)
-- (실습) 지금까지 만든 시각화(그래프+지도+네트워크) 통합 HTML 구성
-- (과제) 조별 JS 시각화 3종+ 완성 (HTML 파일)
-
+-(강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_network.html): vis-network, D3, Cytoscape 기반 Force Network, Tree, 양분망, 의미연결망  
+-(강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_maps.html): Leaflet 지도, 마커, 클러스터링, 히트맵, 코로플레스, 폴리라인·폴리곤, 베이스맵 전환  
+-(강의) [JavaScript 기초](https://jonghhhh.github.io/2026_1/js/js_scrollytelling.html): DataTables, Scrollama, 스크롤리텔링, 스티키 차트, 인터랙티브 기사 제작  
 </details>
 
 ---
