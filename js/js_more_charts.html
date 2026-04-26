@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>JS 기타 분석 시각화 종합</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.1/dist/chartjs-chart-matrix.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-sankey@0.12.1/dist/chartjs-chart-sankey.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/d3-cloud@1.2.7/build/d3.layout.cloud.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f8fafc; color: #1e293b; }
+
+  header { background: linear-gradient(135deg, #be185d, #ec4899);
+    color: white; padding: 24px 32px; }
+  header h1 { font-size: 22px; font-weight: 600; }
+  header p  { font-size: 13px; opacity: .85; margin-top: 4px; }
+  header a  { color: #fde68a; text-decoration: none; margin-right: 12px; font-size: 12px; }
+
+  .tabs { display: flex; gap: 4px; padding: 14px 24px;
+    background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+  .tab { padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0;
+    font-size: 13px; cursor: pointer; white-space: nowrap;
+    background: #f8fafc; color: #64748b; transition: all .15s; }
+  .tab.active { background: #ec4899; color: white; border-color: #ec4899; }
+  .tab:hover:not(.active) { background: #fdf2f8; border-color: #fbcfe8; }
+
+  .panel { display: none; padding: 24px; max-width: 980px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  .card { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 20px; }
+  .card-head { padding: 12px 20px; background: #fdf2f8; border-bottom: 1px solid #fbcfe8; font-size: 14px; font-weight: 600; }
+  .card-body { padding: 20px; }
+
+  pre.code {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 8px; padding: 14px 16px;
+    font-size: 12px; line-height: 1.7;
+    overflow-x: auto; margin-bottom: 12px;
+    font-family: 'Consolas', 'Monaco', monospace; white-space: pre;
+  }
+
+  .box { height: 480px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa; }
+  .box-sm { height: 400px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa; }
+  .canvas-wrap { position: relative; height: 440px; margin-top: 10px; }
+
+  .ctrl { display: flex; align-items: center; gap: 10px; padding: 8px 0 12px; flex-wrap: wrap; }
+  .ctrl select, .ctrl button, .ctrl input, .ctrl textarea {
+    padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px;
+    font-family: inherit;
+  }
+  .ctrl button { background: #ec4899; color: white; border-color: #ec4899; cursor: pointer; }
+  .ctrl label { font-size: 13px; color: #475569; }
+
+  .explain { background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: 14px 18px; margin: 14px 0;
+    font-size: 13px; line-height: 1.65; color: #334155; }
+  .explain h5 { font-size: 14px; color: #0f172a; margin-bottom: 8px; }
+  .exp-row { padding: 4px 0; }
+  .exp-row b { color: #0f172a; }
+  .exp-row.purpose b { color: #be185d; }
+  .exp-row.feature b { color: #0f766e; }
+  .exp-row.example b { color: #1e40af; }
+  .exp-row.warn b    { color: #b45309; }
+  .exp-list { padding-left: 22px; margin-top: 4px; }
+  .exp-list li { padding: 2px 0; }
+
+  .tip { background: #fdf2f8; border-left: 3px solid #ec4899;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    font-size: 12px; color: #9d174d; margin-top: 10px; }
+  .warn-box { background: #fef2f2; border-left: 3px solid #ef4444;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    font-size: 12px; color: #991b1b; margin-top: 10px; }
+
+  #wc-svg text { cursor: pointer; transition: opacity .2s; }
+  #wc-svg text:hover { opacity: .65; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✨ JS 기타 분석 시각화 종합</h1>
+  <p>워드클라우드 · Sankey · Calendar Heatmap · Sunburst · Parallel Coords · Matrix · 박스플롯 · Gauge · Funnel</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(0)">① 워드클라우드 ⭐</div>
+  <div class="tab" onclick="showTab(1)">② Sankey</div>
+  <div class="tab" onclick="showTab(2)">③ Calendar Heatmap</div>
+  <div class="tab" onclick="showTab(3)">④ Sunburst</div>
+  <div class="tab" onclick="showTab(4)">⑤ Parallel Coordinates</div>
+  <div class="tab" onclick="showTab(5)">⑥ 매트릭스 히트맵</div>
+  <div class="tab" onclick="showTab(6)">⑦ 박스플롯</div>
+  <div class="tab" onclick="showTab(7)">⑧ Gauge / KPI</div>
+  <div class="tab" onclick="showTab(8)">⑨ Funnel</div>
+</div>
+
+<!-- ═════════════════ ① 워드클라우드 ═════════════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <div class="card-head">⭐ 워드클라우드 — 텍스트의 단어 빈도 시각화 (d3-cloud)</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 워드클라우드란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 긴 텍스트(기사·인터뷰·SNS·민원)에서 <b>"어떤 단어가 자주 나오는지"</b>를 글자 크기로 시각화. 큰 글자 = 자주 등장.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 정량적 분석은 아니지만 <b>"한눈에 핵심 키워드"</b>를 잡아내는 데 효과 만점. 회전·색·폰트로 시각적 임팩트.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>경찰 사고 진술서 1년치 → "음주" "신호" "야간" "보행자"가 가장 큰 글자로 부각</li>
+            <li>국민 민원 텍스트 → 정책 우선순위 단서</li>
+            <li>SNS·뉴스에서 "교통사고" 언급 맥락 파악</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 워드클라우드는 <b>정확한 빈도 비교에는 부적합</b>(글자 크기·회전·길이가 인식을 왜곡). 보조용으로 막대 차트와 함께 사용 권장. 또 불용어(은·는·이·가)를 반드시 제거.</div>
+      </div>
+<pre class="code">// CDN: d3.v7 + d3.layout.cloud
+const layout = d3.layout.cloud()
+    .size([W, H])
+    .words(words.map(d => ({ text:d.word, size:scale(d.count) })))
+    .padding(4).rotate(() => ~~(Math.random()*2)*90)
+    .font('Pretendard, "Malgun Gothic"')
+    .fontSize(d => d.size)
+    .on('end', draw);
+layout.start();</pre>
+      <div class="ctrl">
+        <label>회전:</label>
+        <select id="wc-rotate">
+          <option value="2">0° / 90° (기본)</option>
+          <option value="1">0°만</option>
+          <option value="4">0°/45°/90°/135°</option>
+        </select>
+        <label>배경:</label>
+        <select id="wc-bg">
+          <option value="white">흰색</option>
+          <option value="#0f172a">어두움</option>
+        </select>
+        <button onclick="renderWC()">▶ 렌더링</button>
+      </div>
+      <textarea id="wc-text" rows="4" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-family:inherit; margin-bottom:8px"
+        placeholder="여기에 직접 텍스트 붙여넣기 (공백·줄바꿈으로 구분)">교통 사고 안전 보행자 차량 도로 신호 운전 사망 부상 음주 속도 횡단보도 어린이 노인 신호위반 과속 야간 주말 휴일 사고 사고 사고 사고 안전 안전 안전 차량 차량 차량 보행자 보행자 운전 운전 사망 음주 음주 야간 야간 노인 노인 어린이 신호 신호 신호 횡단보도 횡단보도 신호위반 과속 과속</textarea>
+      <div id="wc-host" class="box" style="display:flex;align-items:center;justify-content:center;background:white;overflow:hidden">
+        <svg id="wc-svg" width="100%" height="100%"></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ② Sankey ═════════════════ -->
+<div class="panel" id="panel1">
+  <div class="card">
+    <div class="card-head">Sankey — 흐름(flow) 시각화</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Sankey 다이어그램이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · "A에서 B로, B에서 C로" 같은 <b>단계별 흐름의 양</b>을 두께로 시각화. 합계 보존(들어온 만큼 나감)이 핵심 가치.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 좌→우 또는 상→하로 흐름. 각 단계에서의 분기·합류·손실이 자연스럽게 보임.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"사고유형 → 시도 → 결과(경상/중상/사망)" 3단계 흐름</li>
+            <li>"가해 차종 → 피해 보행자/차량 → 처분(불기소/벌금/실형)"</li>
+            <li>"보험 청구 → 평가 → 합의/소송 → 종결" 같은 프로세스</li>
+            <li>에너지·예산·인구 이동 같은 비교통 분야에도 광범위 사용</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 단계가 5개 넘으면 시각이 복잡해짐. 사이클(A→B→A)은 표현 불가.</div>
+      </div>
+<pre class="code">// 사고유형 → 시도 → 결과 흐름
+new Chart(ctx, {
+    type: 'sankey',
+    data: { datasets: [{
+        data: [
+            { from:'차대차', to:'서울', flow:25800 },
+            { from:'서울',   to:'경상', flow:15000 }
+        ],
+        colorFrom: c => '#3b82f6',
+        colorTo:   c => '#ef4444'
+    }]}
+});</pre>
+      <div class="canvas-wrap"><canvas id="sankey"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ③ Calendar Heatmap ═════════════════ -->
+<div class="panel" id="panel2">
+  <div class="card">
+    <div class="card-head">Calendar Heatmap — 일자별 강도 (GitHub 스타일)</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Calendar Heatmap이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 1년치 일별 데이터를 <b>요일 × 주(week)</b> 격자로 펼쳐 색 농도로 표현. GitHub의 contribution graph가 대표 사례.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 시계열의 <b>주기성·계절성·요일효과·연휴효과</b>가 한 화면에서 동시에 드러남. 365일을 한눈에.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"금/토요일이 다른 요일보다 짙다" → 주말 음주 사고 효과</li>
+            <li>"여름·연말이 더 짙다" → 휴가철·연휴 집중</li>
+            <li>"특정 일자에만 폭증" → 폭우·폭설 같은 외부 사건 추적</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 색 단계(범위)를 잘 잡지 않으면 모든 칸이 비슷해 보임 → 데이터 분포에 맞춰 구간 조정 필수.</div>
+      </div>
+<pre class="code">new ApexCharts(el, {
+    chart: { type: 'heatmap', height: 280 },
+    series: weekData,
+    plotOptions: { heatmap: {
+        colorScale: { ranges: [
+            { from:0, to:40,  color:'#fdf2f8', name:'한산' },
+            { from:41,to:70,  color:'#fbcfe8', name:'보통' },
+            { from:71,to:100, color:'#ec4899', name:'많음' }
+        ]}
+    }}
+});</pre>
+      <div id="cal-heat" style="min-height:300px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ④ Sunburst ═════════════════ -->
+<div class="panel" id="panel3">
+  <div class="card">
+    <div class="card-head">Sunburst — 계층 비율 (Plotly)</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Sunburst란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 트리맵과 비슷하지만 원형 방사 구조. <b>안쪽 원이 상위 카테고리, 바깥 원이 하위</b>. 클릭으로 줌인 가능.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 계층 깊이를 깔끔히 표현. 면적 = 비율. 인터랙티브 탐색에 좋음.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"권역(수도권·영남·호남·중부) → 시도 → 사고유형" 3계층 구조</li>
+            <li>"가해자 연령대 → 면허 종류 → 위반항목"</li>
+            <li>"차종 → 연식 → 사고원인" 다층 비교</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 4계층 넘으면 바깥 원이 잘 안 보임. 색상 스케일을 카테고리에 맞춰 잘 골라야 함.</div>
+      </div>
+<pre class="code">// 계층은 labels + parents 쌍으로 표현
+Plotly.newPlot('sunburst', [{
+    type: 'sunburst',
+    labels:  ['전국','수도권','영남','서울','경기','부산'],
+    parents: ['',  '전국','전국','수도권','수도권','영남'],
+    values:  [191418, 107170, 47932, 34215, 58432, 15621],
+    branchvalues: 'total'
+}], { margin: { t:0, l:0, r:0, b:0 } });</pre>
+      <div id="sunburst" class="box"></div>
+      <div class="tip">💡 조각을 <b>클릭</b>하면 그 그룹만 확대됩니다. 가운데 클릭으로 복귀.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑤ Parallel Coords ═════════════════ -->
+<div class="panel" id="panel4">
+  <div class="card">
+    <div class="card-head">Parallel Coordinates — 다변수 동시 비교 (Plotly)</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Parallel Coordinates란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 4~10개의 변수(축)를 평행하게 늘어놓고, <b>각 데이터(시도 등)가 모든 축을 통과하는 선</b>으로 표현. 다변수 분포·이상치·클러스터 탐색에 강력.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 각 축을 <b>드래그하면 그 범위만 필터링</b>. 색은 또 다른 변수(예: 사망률)로 매핑해 패턴 강조.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>17개 시도의 (사고건수·사망자·사망률·10만명당) 4축 동시 비교 → "건수는 적은데 사망률은 높은" 시도 발견</li>
+            <li>차종별 (평균속도·중상비율·연식·연료종류) 다변수 패턴</li>
+            <li>운전자 프로파일(나이·경력·과실비율·재발률) 클러스터 탐색</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 축 순서에 따라 패턴이 달라 보임. 단위가 매우 다르면 정규화 권장.</div>
+      </div>
+<pre class="code">Plotly.newPlot('parallel', [{
+    type: 'parcoords',
+    line: { color: dataValues, colorscale: 'Viridis', showscale: true },
+    dimensions: [
+        { label:'사고건수', values:[...] },
+        { label:'사망자',   values:[...] },
+        { label:'사망률',   values:[...] },
+        { label:'10만명당', values:[...] }
+    ]
+}]);</pre>
+      <div id="parallel" class="box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑥ 매트릭스 히트맵 ═════════════════ -->
+<div class="panel" id="panel5">
+  <div class="card">
+    <div class="card-head">매트릭스 히트맵 — 시간대 × 요일 (chartjs-chart-matrix)</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 매트릭스 히트맵이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 두 범주형 변수(요일 × 시간대 등) 교차로 만들어진 격자에 <b>색 농도로 값을 표현</b>. 두 차원의 패턴을 동시 인식.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 표보다 패턴이 잘 보임. 흰색~짙은색 그라디언트로 가독성↑.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"금요일 오후 6–24시"가 가장 짙음 → 퇴근+불금 효과</li>
+            <li>월별 × 시도별 사고 매트릭스 → 특정 지역의 계절성</li>
+            <li>차종 × 위반항목 교차표 → "이륜차는 신호위반이 압도적" 같은 발견</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 숫자 정확도는 떨어짐. 표시값을 칸 안에 적거나 툴팁으로 보완.</div>
+      </div>
+<pre class="code">new Chart(ctx, {
+    type: 'matrix',
+    data: { datasets: [{
+        data: [{x:'월', y:'0–6시', v:120}, ...],
+        backgroundColor: c => `rgba(236,72,153,${c.raw.v/maxV})`,
+        width:  ({chart}) => chart.chartArea.width  / 7 - 2,
+        height: ({chart}) => chart.chartArea.height / 4 - 2
+    }]},
+    options: { scales: { x:{type:'category',labels:days}, y:{type:'category',labels:hours} } }
+});</pre>
+      <div class="canvas-wrap"><canvas id="matrix"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑦ 박스플롯 ═════════════════ -->
+<div class="panel" id="panel6">
+  <div class="card">
+    <div class="card-head">박스플롯 — 분포(중앙·사분위·이상치) 비교</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 박스플롯이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 평균 한 숫자만 보여주는 막대와 달리 <b>분포 전체</b>(중앙값·25%·75%·이상치)를 한 박스로 요약. 통계 분석의 기본 도구.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 박스 = 25~75% 구간(IQR). 가운데 선 = 중앙값. 점 = 이상치. 여러 그룹을 옆에 놓고 비교 가능.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>시도별 월별 사고건수 분포 → "경기는 평균도 높고 변동도 큼"</li>
+            <li>차종별 부상 정도(0~3 척도) 분포</li>
+            <li>같은 도로 구간의 일별 사고건수 분포로 "비정상적으로 사고가 많은 날" 탐지</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 일반 독자에게는 낯선 그래프. 중앙값·사분위 의미를 캡션으로 풀어주는 게 좋음.</div>
+      </div>
+<pre class="code">// 그룹별 분포의 중앙·25%/75%·이상치를 한 박스로
+Plotly.newPlot('box', [
+    { type:'box', y:서울월별,   name:'서울', boxpoints:'outliers' },
+    { type:'box', y:경기월별,   name:'경기' },
+    { type:'box', y:부산월별,   name:'부산' }
+]);</pre>
+      <div id="box" class="box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑧ Gauge / KPI ═════════════════ -->
+<div class="panel" id="panel7">
+  <div class="card">
+    <div class="card-head">Gauge / KPI — 핵심 지표를 큼직하게 강조</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Gauge / KPI 카드란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · "올해 사망자 2,551명, 작년 대비 -184명" 같은 <b>핵심 단일 지표</b>를 강하게 부각. 대시보드 상단에 흔히 배치.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 숫자 + 변화량(델타) + 게이지. <b>구간 색칠(녹색·노란색·빨강)</b>로 상태(정상·경계·위험)를 즉시 인식.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>실시간 도로 안전 대시보드: 오늘 사고 건수, 사망자, 부상자, 사망률</li>
+            <li>경찰서 종합 KPI: 단속 건수·검거율·민원 처리 시간</li>
+            <li>목표 대비 현재 위치: "사망자 2,000명 이하 목표" 게이지</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 숫자 한 개의 임팩트가 너무 크므로 맥락(전년·평균·목표)을 함께 보여줘야 오해를 줄임.</div>
+      </div>
+<pre class="code">Plotly.newPlot('gauge', [{
+    type: 'indicator',
+    mode: 'gauge+number+delta',
+    value: 191418,
+    delta: { reference: 196836 },
+    gauge: { axis:{ range:[0, 250000] },
+             steps:[{range:[0,200000],color:'lightgreen'},{range:[200000,250000],color:'tomato'}] }
+}]);</pre>
+      <div id="kpi-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
+        <div id="kpi1" style="height:240px"></div>
+        <div id="kpi2" style="height:240px"></div>
+        <div id="kpi3" style="height:240px"></div>
+        <div id="kpi4" style="height:240px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑨ Funnel ═════════════════ -->
+<div class="panel" id="panel8">
+  <div class="card">
+    <div class="card-head">Funnel — 단계별 감소 시각화</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Funnel(깔때기) 차트란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 단계가 진행될수록 <b>대상 수가 줄어드는 과정</b>을 깔때기 모양으로. 각 단계의 통과율·이탈률을 직관적으로.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 마케팅의 전환 깔때기(방문→가입→구매)에서 유래. 각 단계 라벨에 절대값 + 첫 단계 대비 % 동시 표시 가능.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"신고된 사고 → 경찰 출동 → 부상 → 중상 → 사망" 단계별 감소</li>
+            <li>"위반 적발 → 입건 → 기소 → 유죄" 형사 처리 과정</li>
+            <li>"교육 신청 → 출석 → 이수 → 면허 취득" 같은 절차 흐름</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 단계 순서가 명확하고 단조 감소일 때만 효과적. 단계가 다시 늘면 막대 차트가 더 정직.</div>
+      </div>
+<pre class="code">Plotly.newPlot('funnel', [{
+    type: 'funnel',
+    y: ['신고된 사고','경찰 출동','부상 발생','중상 이상','사망'],
+    x: [191418, 178520, 134128, 28430, 2551],
+    textinfo: 'value+percent initial'
+}]);</pre>
+      <div id="funnel" class="box-sm"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 탭 전환 — 지연 초기화 + Plotly 리사이즈
+// ═══════════════════════════════════════════════════════════
+const initFns = {};
+const initialized = {};
+function showTab(i) {
+    document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', i===j));
+    document.querySelectorAll('.panel').forEach((p,j) => p.classList.toggle('active', i===j));
+    requestAnimationFrame(() => {
+        if (!initialized[i]) { initFns[i]?.(); initialized[i] = true; }
+        setTimeout(() => {
+            Object.values(Chart.instances || {}).forEach(c => c.resize());
+            ['sunburst','parallel','box','funnel','kpi1','kpi2','kpi3','kpi4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.data) try { Plotly.Plots.resize(el); } catch(e){}
+            });
+            if (window.__calApex) try { window.__calApex.resize(); } catch(e){}
+        }, 120);
+    });
+}
+
+// ═══════════════════════════════════════════════════════════
+// ① 워드클라우드
+// ═══════════════════════════════════════════════════════════
+function tokenize(text) {
+    const stop = new Set(['그리고','그러나','또한','이는','대한','관련','등','및','수','이','가','은','는','을','를','에','의','와','과','도','로','으로']);
+    const tokens = text.split(/[\s,.\n\r·\-—()【】\[\]"'?!]+/).filter(t => t.length >= 2 && !stop.has(t));
+    const freq = {};
+    tokens.forEach(t => { freq[t] = (freq[t] || 0) + 1; });
+    return Object.entries(freq).map(([word,count]) => ({ word, count })).sort((a,b) => b.count - a.count).slice(0, 80);
+}
+function renderWC() {
+    const text = document.getElementById('wc-text').value;
+    const rotateMode = +document.getElementById('wc-rotate').value;
+    const bg = document.getElementById('wc-bg').value;
+    document.getElementById('wc-host').style.background = bg;
+    const words = tokenize(text);
+    if (words.length === 0) return;
+    const max = words[0].count, min = words[words.length-1].count;
+    const scale = d3.scaleLinear().domain([min, max]).range([13, 56]);
+    const palette = d3.scaleOrdinal(d3.schemeTableau10);
+    const host = document.getElementById('wc-host');
+    const W = host.clientWidth || 800, H = host.clientHeight || 480;
+    d3.layout.cloud()
+        .size([W, H])
+        .words(words.map(d => ({ text: d.word, size: scale(d.count), count: d.count })))
+        .padding(4)
+        .rotate(() => {
+            if (rotateMode === 1) return 0;
+            if (rotateMode === 2) return ~~(Math.random()*2)*90;
+            return ~~(Math.random()*4)*45;
+        })
+        .font('Pretendard, "Malgun Gothic", sans-serif')
+        .fontSize(d => d.size)
+        .on('end', draw)
+        .start();
+    function draw(words) {
+        const svg = d3.select('#wc-svg').attr('viewBox', `0 0 ${W} ${H}`);
+        svg.selectAll('*').remove();
+        svg.append('g').attr('transform', `translate(${W/2},${H/2})`)
+            .selectAll('text').data(words).enter().append('text')
+            .style('font-size', d => d.size + 'px')
+            .style('font-family', 'Pretendard, "Malgun Gothic", sans-serif')
+            .style('font-weight', '700')
+            .style('fill', (_,i) => palette(i))
+            .attr('text-anchor', 'middle')
+            .attr('transform', d => `translate(${d.x},${d.y})rotate(${d.rotate})`)
+            .text(d => d.text)
+            .append('title').text(d => `${d.text}: ${d.count}회`);
+    }
+}
+initFns[0] = () => {
+    document.getElementById('wc-rotate').addEventListener('change', renderWC);
+    document.getElementById('wc-bg').addEventListener('change', renderWC);
+    renderWC();
+};
+initFns[0](); initialized[0] = true;
+
+// ═══════════════════════════════════════════════════════════
+// ② Sankey
+// ═══════════════════════════════════════════════════════════
+const sankeyData = [
+    {from:'차대차',  to:'서울', flow:25800},
+    {from:'차대차',  to:'경기', flow:44100},
+    {from:'차대차',  to:'부산', flow:11800},
+    {from:'차대차',  to:'기타', flow:60650},
+    {from:'차대사람',to:'서울', flow:6800},
+    {from:'차대사람',to:'경기', flow:10800},
+    {from:'차대사람',to:'부산', flow:2900},
+    {from:'차대사람',to:'기타', flow:22080},
+    {from:'차량단독',to:'서울', flow:1615},
+    {from:'차량단독',to:'경기', flow:3532},
+    {from:'차량단독',to:'기타', flow:1233},
+    {from:'서울', to:'경상', flow:18000},
+    {from:'서울', to:'중상', flow:9000},
+    {from:'서울', to:'사망', flow:252},
+    {from:'경기', to:'경상', flow:32000},
+    {from:'경기', to:'중상', flow:18000},
+    {from:'경기', to:'사망', flow:681},
+    {from:'부산', to:'경상', flow:9000},
+    {from:'부산', to:'중상', flow:5000},
+    {from:'부산', to:'사망', flow:178},
+    {from:'기타', to:'경상', flow:55000},
+    {from:'기타', to:'중상', flow:30000},
+    {from:'기타', to:'사망', flow:1440}
+];
+const sankeyColors = {
+    '차대차':'#3b82f6','차대사람':'#ef4444','차량단독':'#f59e0b',
+    '서울':'#10b981','경기':'#10b981','부산':'#10b981','기타':'#94a3b8',
+    '경상':'#22c55e','중상':'#f97316','사망':'#dc2626'
+};
+initFns[1] = () => {
+    new Chart(document.getElementById('sankey'), {
+        type: 'sankey',
+        data: { datasets: [{
+            data: sankeyData,
+            colorFrom: c => sankeyColors[c.dataset.data[c.dataIndex].from] || '#94a3b8',
+            colorTo:   c => sankeyColors[c.dataset.data[c.dataIndex].to]   || '#94a3b8',
+            colorMode: 'gradient',
+            size: 'max'
+        }]},
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+};
+
+// ═══════════════════════════════════════════════════════════
+// ③ Calendar Heatmap
+// ═══════════════════════════════════════════════════════════
+initFns[2] = () => {
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const calSeries = days.map(d => {
+        const data = [];
+        for (let w = 1; w <= 52; w++) {
+            let base = 50 + Math.sin(w/8)*15;
+            if (d === 'Fri' || d === 'Sat') base += 25;
+            if (d === 'Sun') base += 10;
+            data.push({ x: w + '째', y: Math.round(base + Math.random()*30) });
+        }
+        return { name: d, data };
+    });
+    window.__calApex = new ApexCharts(document.getElementById('cal-heat'), {
+        chart: { type: 'heatmap', height: 300, toolbar: { show: false } },
+        series: calSeries,
+        plotOptions: {
+            heatmap: {
+                shadeIntensity: 0.5, radius: 2,
+                colorScale: { ranges: [
+                    { from:0,  to:40,  color:'#fdf2f8', name:'한산' },
+                    { from:41, to:70,  color:'#fbcfe8', name:'보통' },
+                    { from:71, to:100, color:'#ec4899', name:'많음' },
+                    { from:101,to:200, color:'#9d174d', name:'매우 많음' }
+                ]}
+            }
+        },
+        dataLabels: { enabled: false },
+        title: { text: '연간 1년치 일자별 × 요일별 사고 강도 (가상 데이터)', align: 'left', style: { fontSize:'14px' } },
+        xaxis: { type: 'category', labels: { show: false } }
+    });
+    window.__calApex.render();
+};
+
+// ═══════════════════════════════════════════════════════════
+// ④ Sunburst (Plotly)
+// ═══════════════════════════════════════════════════════════
+initFns[3] = () => {
+    // 부모 값 = 자식 합으로 정합성 유지 (branchvalues:'total' 필수 요건)
+    const labels = ['전국',
+        '수도권','영남','호남','중부',
+        '서울','경기','인천',
+        '부산','대구','울산','경남','경북',
+        '광주','전남','전북',
+        '대전','세종','충남','충북','강원','제주'];
+    const parents = ['',
+        '전국','전국','전국','전국',
+        '수도권','수도권','수도권',
+        '영남','영남','영남','영남','영남',
+        '호남','호남','호남',
+        '중부','중부','중부','중부','중부','중부'];
+    // leaf 17개 시도 값
+    const sido = {
+        '서울':34215,'경기':58432,'인천':14523,
+        '부산':15621,'대구':9843,'울산':5234,'경남':17234,'경북':13234,
+        '광주':7234,'전남':10234,'전북':9123,
+        '대전':8123,'세종':1893,'충남':11234,'충북':8234,'강원':7891,'제주':4823
+    };
+    const sumOf = (...names) => names.reduce((a,n) => a + sido[n], 0);
+    const 수도권 = sumOf('서울','경기','인천');
+    const 영남   = sumOf('부산','대구','울산','경남','경북');
+    const 호남   = sumOf('광주','전남','전북');
+    const 중부   = sumOf('대전','세종','충남','충북','강원','제주');
+    const 전국   = 수도권 + 영남 + 호남 + 중부;
+    const values = [전국, 수도권, 영남, 호남, 중부,
+        sido['서울'], sido['경기'], sido['인천'],
+        sido['부산'], sido['대구'], sido['울산'], sido['경남'], sido['경북'],
+        sido['광주'], sido['전남'], sido['전북'],
+        sido['대전'], sido['세종'], sido['충남'], sido['충북'], sido['강원'], sido['제주']];
+
+    Plotly.newPlot('sunburst', [{
+        type: 'sunburst',
+        labels, parents, values,
+        branchvalues: 'total',
+        marker: { colorscale: 'Pinkyl', line: { width: 1, color: 'white' } },
+        hovertemplate: '<b>%{label}</b><br>%{value:,} 건<extra></extra>',
+        textinfo: 'label+percent parent'
+    }], {
+        margin: { t: 10, l: 10, r: 10, b: 10 },
+        height: 480,
+        font: { family: 'Segoe UI, Malgun Gothic', size: 12 }
+    }, { responsive: true });
+};
+
+// ═══════════════════════════════════════════════════════════
+// ⑤ Parallel Coords (Plotly) — 라벨 잘림 방지를 위해 top margin 키움
+// ═══════════════════════════════════════════════════════════
+initFns[4] = () => {
+    const 시도   = ['서울','경기','부산','대구','인천','광주','대전','울산','강원','충북','충남','전북','전남','경북','경남','제주'];
+    const 건수   = [34215,58432,15621,9843,14523,7234,8123,5234,7891,8234,11234,9123,10234,13234,17234,4823];
+    const 사망   = [252,681,178,98,141,67,83,52,156,143,198,145,187,243,254,52];
+    const 사망률 = 사망.map((v,i) => +(v/건수[i]*100).toFixed(2));
+    const 십만명 = [35.2,43.8,47.2,41.3,48.1,50.3,55.7,45.2,51.6,52.3,53.5,51.2,56.1,50.8,51.7,72.1];
+    Plotly.newPlot('parallel', [{
+        type: 'parcoords',
+        line: { color: 사망률, colorscale: 'Viridis', showscale: true, cmin: 0.7, cmax: 2.0,
+                colorbar: { title: '사망률(%)' } },
+        dimensions: [
+            { label: '사고건수',  values: 건수 },
+            { label: '사망자',    values: 사망 },
+            { label: '사망률(%)', values: 사망률 },
+            { label: '10만명당',  values: 십만명 }
+        ]
+    }], {
+        height: 480,
+        margin: { t: 70, l: 70, r: 90, b: 40 },   // top margin 충분히 → 라벨 잘림 방지
+        font: { family: 'Segoe UI, Malgun Gothic', size: 13 }
+    }, { responsive: true });
+};
+
+// ═══════════════════════════════════════════════════════════
+// ⑥ Matrix
+// ═══════════════════════════════════════════════════════════
+initFns[5] = () => {
+    const dayLabels  = ['월','화','수','목','금','토','일'];
+    const hourLabels = ['0–6시','6–12시','12–18시','18–24시'];
+    const data = [];
+    let maxV = 0;
+    dayLabels.forEach(d => {
+        hourLabels.forEach(h => {
+            let base = 80;
+            if (h === '12–18시' || h === '18–24시') base += 50;
+            if (d === '금' || d === '토') base += 30;
+            const v = Math.round(base + Math.random() * 40);
+            if (v > maxV) maxV = v;
+            data.push({ x: d, y: h, v });
+        });
+    });
+    new Chart(document.getElementById('matrix'), {
+        type: 'matrix',
+        data: { datasets: [{
+            label: '사고 강도', data,
+            backgroundColor(c) {
+                const v = c.raw && c.raw.v ? c.raw.v : 0;
+                return `rgba(236,72,153,${0.15 + 0.75 * v/maxV})`;
+            },
+            borderColor: 'white', borderWidth: 1,
+            width:  ({chart}) => (chart.chartArea?.width  || 0) / dayLabels.length - 4,
+            height: ({chart}) => (chart.chartArea?.height || 0) / hourLabels.length - 4
+        }]},
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: {
+                    title: items => `${items[0].raw.x} · ${items[0].raw.y}`,
+                    label: c => `사고 ${c.raw.v}건`
+                }}
+            },
+            scales: {
+                x: { type:'category', labels: dayLabels, grid:{ display:false } },
+                y: { type:'category', labels: hourLabels, offset:true, reverse: true, grid:{ display:false } }
+            }
+        }
+    });
+};
+
+// ═══════════════════════════════════════════════════════════
+// ⑦ Box (Plotly)
+// ═══════════════════════════════════════════════════════════
+initFns[6] = () => {
+    function gen(mean, sd) {
+        return Array.from({length: 24}, () => Math.max(0, Math.round(mean + (Math.random() + Math.random() + Math.random() - 1.5) * sd)));
+    }
+    const traces = [
+        { type:'box', y: gen(2850, 400), name:'서울', boxpoints:'outliers' },
+        { type:'box', y: gen(4870, 600), name:'경기' },
+        { type:'box', y: gen(1300, 220), name:'부산' },
+        { type:'box', y: gen(820,  150), name:'대구' },
+        { type:'box', y: gen(1210, 180), name:'인천' }
+    ];
+    Plotly.newPlot('box', traces, { yaxis:{ title:'월별 사고건수' }, margin:{t:30,l:60,r:30,b:50}, height: 480 }, { responsive: true });
+};
+
+// ═══════════════════════════════════════════════════════════
+// ⑧ Gauge (Plotly indicator)
+// ═══════════════════════════════════════════════════════════
+function makeKPI(id, value, ref, max, title, color) {
+    Plotly.newPlot(id, [{
+        type: 'indicator',
+        mode: 'gauge+number+delta',
+        value, number: { font: { size: 32 } },
+        delta: { reference: ref, increasing: { color:'#ef4444' }, decreasing: { color:'#10b981' }, valueformat: ',' },
+        gauge: {
+            axis: { range:[0, max] }, bar: { color },
+            steps:[
+                { range:[0,        max*0.6], color:'#dcfce7' },
+                { range:[max*0.6,  max*0.85],color:'#fef3c7' },
+                { range:[max*0.85, max],     color:'#fee2e2' }
+            ],
+            threshold: { line:{ color:'#1e293b', width:3 }, value: ref }
+        },
+        title: { text: title, font: { size: 14 } }
+    }], { margin:{t:40,l:20,r:20,b:10}, height: 240 }, { responsive: true });
+}
+initFns[7] = () => {
+    makeKPI('kpi1', 191418, 196836, 250000, '사고건수 (전년 대비)', '#3b82f6');
+    makeKPI('kpi2',   2551,   2735,   5000, '사망자 (전년 대비)',   '#ef4444');
+    makeKPI('kpi3', 260296, 273363, 350000, '부상자 (전년 대비)',   '#f59e0b');
+    makeKPI('kpi4',   1.33,   1.39,   3.0,  '사망률 % (전년 대비)', '#a855f7');
+};
+
+// ═══════════════════════════════════════════════════════════
+// ⑨ Funnel (Plotly)
+// ═══════════════════════════════════════════════════════════
+initFns[8] = () => {
+    Plotly.newPlot('funnel', [{
+        type: 'funnel',
+        y: ['신고된 사고','경찰 출동','부상 발생','중상 이상','사망'],
+        x: [191418, 178520, 134128, 28430, 2551],
+        textinfo: 'value+percent initial',
+        marker: { color: ['#3b82f6','#6366f1','#a855f7','#ec4899','#ef4444'] }
+    }], { margin:{t:30,l:120,r:30,b:30}, height: 400 }, { responsive: true });
+};
+</script>
+</body>
+</html>

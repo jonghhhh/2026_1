@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>네트워크 시각화 종합 — vis-network · D3 · Cytoscape</title>
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f8fafc; color: #1e293b; }
+
+  header { background: linear-gradient(135deg, #4338ca, #818cf8);
+    color: white; padding: 24px 32px; }
+  header h1 { font-size: 22px; font-weight: 600; }
+  header p  { font-size: 13px; opacity: .85; margin-top: 4px; }
+  header a  { color: #fde68a; text-decoration: none; margin-right: 12px; font-size: 12px; }
+
+  .tabs { display: flex; gap: 4px; padding: 14px 24px;
+    background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+  .tab { padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0;
+    font-size: 13px; cursor: pointer; white-space: nowrap;
+    background: #f8fafc; color: #64748b; transition: all .15s; }
+  .tab.active { background: #4338ca; color: white; border-color: #4338ca; }
+  .tab:hover:not(.active) { background: #eef2ff; border-color: #c7d2fe; }
+
+  .panel { display: none; padding: 24px; max-width: 980px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  .card { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 20px; }
+  .card-head { padding: 12px 20px; background: #eef2ff; border-bottom: 1px solid #c7d2fe; font-size: 14px; font-weight: 600; }
+  .card-body { padding: 20px; }
+
+  pre.code {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 8px; padding: 14px 16px;
+    font-size: 12px; line-height: 1.7;
+    overflow-x: auto; margin-bottom: 12px;
+    font-family: 'Consolas', 'Monaco', monospace; white-space: pre;
+  }
+
+  .net-box { height: 480px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+
+  .ctrl { display: flex; align-items: center; gap: 10px; padding: 10px 0; flex-wrap: wrap; }
+  .ctrl label { font-size: 13px; color:#475569; }
+  .ctrl select, .ctrl button {
+    padding: 6px 12px; border:1px solid #cbd5e1; border-radius:6px;
+    font-size: 13px; cursor: pointer; background: white;
+  }
+  .ctrl button.primary { background:#4338ca; color:white; border-color:#4338ca; }
+
+  .info { padding: 10px 14px; font-size: 13px;
+    background: #eef2ff; border-radius: 6px; margin-top: 8px; color: #312e81; }
+  .legend-box {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    padding: 8px 12px; background: #f8fafc;
+    border-radius: 6px; font-size: 12px; margin-bottom: 10px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+  .explain { background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: 14px 18px; margin: 14px 0;
+    font-size: 13px; line-height: 1.65; color: #334155; }
+  .explain h5 { font-size: 14px; color: #0f172a; margin-bottom: 8px; }
+  .exp-row { padding: 4px 0; }
+  .exp-row b { color: #0f172a; }
+  .exp-row.purpose b { color: #4338ca; }
+  .exp-row.feature b { color: #0f766e; }
+  .exp-row.example b { color: #be185d; }
+  .exp-row.warn b    { color: #b45309; }
+  .exp-list { padding-left: 22px; margin-top: 4px; }
+  .exp-list li { padding: 2px 0; }
+
+  .tip { background: #eef2ff; border-left: 3px solid #4338ca;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    font-size: 12px; color: #312e81; margin-top: 10px; }
+
+  .d3-link { stroke: #94a3b8; stroke-opacity: 0.6; }
+  .d3-node circle { stroke: white; stroke-width: 2px; cursor: grab; }
+  .d3-node text { font-size: 11px; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🕸️ 네트워크 시각화 — vis-network · D3 · Cytoscape</h1>
+  <p>관계망(노드-엣지) 분석을 위한 8가지 패턴 + 데이터 구성 가이드</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(0)">📋 데이터 구성</div>
+  <div class="tab" onclick="showTab(1)">① vis-network 기본</div>
+  <div class="tab" onclick="showTab(2)">② 양분 (시도×유형) ⭐</div>
+  <div class="tab" onclick="showTab(3)">③ 계층 (Tree)</div>
+  <div class="tab" onclick="showTab(4)">④ D3 Force-Directed</div>
+  <div class="tab" onclick="showTab(5)">⑤ Cytoscape (Dagre)</div>
+  <div class="tab" onclick="showTab(6)">⑥ 인터랙티브 조작</div>
+  <div class="tab" onclick="showTab(7)">🗣️ 의미연결망 ⭐</div>
+</div>
+
+<!-- ═════════════════ 📋 데이터 구성 가이드 ═════════════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <div class="card-head">📋 네트워크 분석을 위한 데이터 구성 — Excel·CSV·JSON</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 네트워크 데이터의 본질</h5>
+        <div class="exp-row purpose"><b>🎯 핵심</b> · 모든 네트워크 데이터는 <b>두 개의 표</b>로 환원됩니다 — <b>노드 표(Nodes)</b>와 <b>엣지 표(Edges)</b>. 이 두 가지만 만들어지면 어떤 라이브러리에서든 시각화 가능.</div>
+        <div class="exp-row feature"><b>✨ 비유</b> · "사람 명단(노드)" + "누가 누구와 통화했는지 통화 기록(엣지)" — 둘만 있으면 통화 관계망이 그려집니다.</div>
+      </div>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">1️⃣ 노드(Node) 표 — "점"의 명단</h4>
+      <p style="font-size:13px; color:#475569; margin-bottom:8px">
+        각 행 = 하나의 노드(사람·시도·키워드 등). <code>id</code>는 <b>고유</b>해야 합니다.
+      </p>
+      <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:8px">
+        <thead style="background:#eef2ff"><tr>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">id (필수·고유)</th>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">label (화면 표시)</th>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">group (색·범주)</th>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">value (크기, 선택)</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="border:1px solid #e2e8f0; padding:5px 10px">서울</td><td style="border:1px solid #e2e8f0; padding:5px 10px">서울특별시</td><td style="border:1px solid #e2e8f0; padding:5px 10px">시도</td><td style="border:1px solid #e2e8f0; padding:5px 10px">34215</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:5px 10px">경기</td><td style="border:1px solid #e2e8f0; padding:5px 10px">경기도</td><td style="border:1px solid #e2e8f0; padding:5px 10px">시도</td><td style="border:1px solid #e2e8f0; padding:5px 10px">58432</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:5px 10px">차대차</td><td style="border:1px solid #e2e8f0; padding:5px 10px">차대차 사고</td><td style="border:1px solid #e2e8f0; padding:5px 10px">유형</td><td style="border:1px solid #e2e8f0; padding:5px 10px">142350</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">2️⃣ 엣지(Edge) 표 — "연결"의 명단</h4>
+      <p style="font-size:13px; color:#475569; margin-bottom:8px">
+        각 행 = 한 쌍의 연결. <code>from</code>/<code>to</code>는 위 노드 표의 <code>id</code>와 정확히 일치해야 합니다.
+      </p>
+      <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:8px">
+        <thead style="background:#eef2ff"><tr>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">from (시작 id)</th>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">to (끝 id)</th>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">value (선 굵기·가중치)</th>
+          <th style="border:1px solid #e2e8f0; padding:6px 10px; text-align:left">label (선 라벨, 선택)</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="border:1px solid #e2e8f0; padding:5px 10px">서울</td><td style="border:1px solid #e2e8f0; padding:5px 10px">차대차</td><td style="border:1px solid #e2e8f0; padding:5px 10px">25800</td><td style="border:1px solid #e2e8f0; padding:5px 10px">25,800건</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:5px 10px">서울</td><td style="border:1px solid #e2e8f0; padding:5px 10px">차대사람</td><td style="border:1px solid #e2e8f0; padding:5px 10px">6800</td><td style="border:1px solid #e2e8f0; padding:5px 10px">6,800건</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:5px 10px">경기</td><td style="border:1px solid #e2e8f0; padding:5px 10px">차대차</td><td style="border:1px solid #e2e8f0; padding:5px 10px">44100</td><td style="border:1px solid #e2e8f0; padding:5px 10px">44,100건</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">💡 <b>핵심 규칙</b>: 엣지 표의 <code>from</code>·<code>to</code> 값은 노드 표의 <code>id</code>와 <b>정확히 같아야</b> 합니다. 한 글자라도 다르면(예: "서울"과 "서울시") 그 노드가 자동 생성되거나 연결이 끊깁니다.</div>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">3️⃣ Excel에서 작성하는 가장 쉬운 방법</h4>
+      <pre class="code">📂 my_network.xlsx
+├── Sheet1: nodes        ← 노드 표
+│     id    | label       | group  | value
+│     서울  | 서울특별시  | 시도   | 34215
+│     ...
+└── Sheet2: edges        ← 엣지 표
+      from  | to          | value
+      서울  | 차대차      | 25800
+      ...</pre>
+      <p style="font-size:13px; color:#475569; margin-top:8px">
+        ① Excel에서 <b>두 시트</b>를 만들고 위처럼 입력 → ② 각각을 <b>CSV로 저장</b>(다른 이름으로 저장 → CSV UTF-8) → ③ JS에서 읽기.
+      </p>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">4️⃣ CSV → JS 로딩 코드 (PapaParse)</h4>
+<pre class="code">// CDN 추가:
+// &lt;script src="https://cdn.jsdelivr.net/npm/papaparse@5"&gt;&lt;/script&gt;
+
+Promise.all([
+    fetch('nodes.csv').then(r =&gt; r.text()),
+    fetch('edges.csv').then(r =&gt; r.text())
+]).then(([nodeCsv, edgeCsv]) =&gt; {
+    const nodes = Papa.parse(nodeCsv, { header:true, dynamicTyping:true }).data;
+    const edges = Papa.parse(edgeCsv, { header:true, dynamicTyping:true }).data;
+    new vis.Network(div,
+        { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) },
+        options);
+});</pre>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">5️⃣ 데이터 형태 3가지 — 어떤 분석이 가능한가</h4>
+      <table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px">
+        <thead style="background:#eef2ff"><tr>
+          <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left">데이터 형태</th>
+          <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left">예시</th>
+          <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left">시각화 패턴</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px"><b>① 동질 네트워크</b><br><span style="color:#64748b">모든 노드가 같은 종류</span></td>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px">사람-사람 친구 관계, 키워드-키워드 동시출현</td>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px">Force-Directed (④), 의미연결망 (🗣️)</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px"><b>② 양분 네트워크</b><br><span style="color:#64748b">두 종류의 노드</span></td>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px">시도 ↔ 사고유형, 학생 ↔ 수강과목</td>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px">양분 (②), Sankey</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px"><b>③ 계층 네트워크</b><br><span style="color:#64748b">부모-자식, 위→아래</span></td>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px">전국→권역→시도, 회사 조직도, 분류체계</td>
+            <td style="border:1px solid #e2e8f0; padding:8px 12px">계층 Tree (③), Cytoscape Dagre (⑤)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">6️⃣ 원본 데이터 → 노드/엣지 표 만들기 (집계 패턴)</h4>
+      <p style="font-size:13px; color:#475569; margin-bottom:8px">
+        실제 사고 원본은 보통 "한 행 = 한 사고" 형태입니다. 이걸 어떻게 노드/엣지로 바꿀까요?
+      </p>
+      <pre class="code">📂 원본 (accidents.xlsx)        ← 한 행 = 한 사고
+   사고ID | 시도   | 유형     | 사망자 | ...
+   001    | 서울   | 차대차   | 0      |
+   002    | 서울   | 차대사람 | 1      |
+   003    | 경기   | 차대차   | 0      |
+   ...
+
+🔧 Excel 피벗테이블 또는 SUMIFS / COUNTIFS / 파이썬 groupby 로 집계:
+
+📂 edges.csv     ← 시도와 유형의 동시 발생 빈도
+   from  | to       | value
+   서울  | 차대차   | 25800
+   서울  | 차대사람 | 6800
+   경기  | 차대차   | 44100
+   ...
+
+📂 nodes.csv     ← 각 노드의 합계
+   id        | group | value
+   서울      | 시도  | =SUM(시도='서울' 행의 모든 사고)
+   차대차    | 유형  | =SUM(유형='차대차' 행의 모든 사고)
+   ...</pre>
+      <div class="tip">💡 Excel의 <b>피벗테이블</b>로 시도 × 유형 교차표를 만든 뒤, "수식 → 셀 → from/to/value 형태로 복사"하면 엣지 표가 됩니다. Python이면 <code>df.groupby(['시도','유형']).size().reset_index(name='value')</code> 한 줄.</div>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">7️⃣ 추가 옵션 컬럼 — 풍부하게 만들기</h4>
+      <table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px">
+        <thead style="background:#eef2ff"><tr>
+          <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left">컬럼명</th>
+          <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left">의미</th>
+          <th style="border:1px solid #e2e8f0; padding:8px 12px; text-align:left">예시 효과</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="border:1px solid #e2e8f0; padding:6px 12px"><code>color</code></td><td style="border:1px solid #e2e8f0; padding:6px 12px">노드/엣지 색상 직접 지정</td><td style="border:1px solid #e2e8f0; padding:6px 12px">"#3b82f6" → 파란색</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:6px 12px"><code>shape</code></td><td style="border:1px solid #e2e8f0; padding:6px 12px">노드 모양</td><td style="border:1px solid #e2e8f0; padding:6px 12px">dot · box · diamond · star</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:6px 12px"><code>title</code></td><td style="border:1px solid #e2e8f0; padding:6px 12px">마우스 hover 툴팁</td><td style="border:1px solid #e2e8f0; padding:6px 12px">"서울 사고 34,215건"</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:6px 12px"><code>arrows</code></td><td style="border:1px solid #e2e8f0; padding:6px 12px">방향 표시 (엣지)</td><td style="border:1px solid #e2e8f0; padding:6px 12px">"to" → 화살표</td></tr>
+          <tr><td style="border:1px solid #e2e8f0; padding:6px 12px"><code>dashes</code></td><td style="border:1px solid #e2e8f0; padding:6px 12px">점선 (엣지)</td><td style="border:1px solid #e2e8f0; padding:6px 12px">true → 점선</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box" style="margin-top:14px">⚠️ <b>흔한 실수 4가지</b>
+        <ul style="margin-top:6px; padding-left:22px; font-size:12.5px">
+          <li><b>id 중복</b> — 노드 표에 같은 id가 두 번 들어가면 에러</li>
+          <li><b>이름 불일치</b> — 엣지의 "서울" vs 노드의 "서울특별시" → 연결 안 됨</li>
+          <li><b>빈 값</b> — value 컬럼에 공백/빈 셀이 있으면 NaN 오류</li>
+          <li><b>인코딩</b> — CSV는 반드시 UTF-8로 저장(엑셀에서 "CSV UTF-8" 선택)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ① vis-network 기본 ═════════════════ -->
+<div class="panel" id="panel1">
+  <div class="card">
+    <div class="card-head">vis-network 기본 — 노드 + 엣지 + 물리엔진</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 네트워크 시각화란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · "무엇이 무엇과 연결돼 있는가?" — <b>관계 구조</b>를 점(노드)과 선(엣지)으로 표현. 표·차트로 안 보이는 패턴이 드러남.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · vis-network는 물리엔진을 내장 — 노드끼리 밀어내고 엣지가 잡아당겨 자동으로 균형 잡힘. 드래그로 이동도 가능.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"5건의 사망사고가 같은 운전자/차량/교차로와 연결?" 같은 <b>공통 인자 추적</b></li>
+            <li>차량 부품 결함 → 사고 연쇄 (제조사-부품-차종-사고)</li>
+            <li>음주운전 가해자-피해자 관계망</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 노드 50개 넘으면 "털뭉치(hairball)" 현상 → 필터링·계층 분리 필수.</div>
+      </div>
+<pre class="code">// CDN: vis-network/standalone/umd/vis-network.min.js
+const nodes = new vis.DataSet([
+    { id:1, label:'A' }, { id:2, label:'B' }, { id:3, label:'C' }
+]);
+const edges = new vis.DataSet([
+    { from:1, to:2 }, { from:2, to:3 }, { from:3, to:1 }
+]);
+const network = new vis.Network(
+    document.getElementById('net1'),
+    { nodes, edges },
+    { physics: { stabilization: true } }
+);</pre>
+      <div id="net1" class="net-box"></div>
+      <div class="tip">💡 <code>physics</code>가 기본 활성화 → 노드들이 자동으로 자리잡습니다. 드래그로 직접 옮길 수도 있어요.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ② 양분 ═════════════════ -->
+<div class="panel" id="panel2">
+  <div class="card">
+    <div class="card-head">⭐ 양분 네트워크 — 시도 ↔ 사고유형</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 양분(Bipartite) 네트워크란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 두 종류의 그룹(예: 시도 vs 사고유형) 사이에 <b>"어디가 어떤 유형이 많은지"</b>를 한눈에 보여줌. 표·히트맵보다 직관적.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 노드 크기 = 합계, 엣지 굵기 = 두 그룹 사이 빈도. 색을 그룹별로 다르게.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"경기-차대차" 엣지가 가장 굵음 → 경기도가 차대차 사고가 가장 많은 곳</li>
+            <li>차종(승용·승합·이륜) ↔ 사고유형 매칭 → 이륜차는 차대차 비중이 적고 단독 비중이 큼 등 패턴 발견</li>
+            <li>가해 연령대 ↔ 위반항목 → "20대-과속" "70대-신호위반" 같은 강한 연결 강조</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 양쪽 그룹 라벨이 헷갈리지 않도록 색 구분 필수. 엣지가 너무 많으면 곡선 옵션으로 겹침 완화.</div>
+      </div>
+<pre class="code">// 핵심: groups + scaling
+const nodes = new vis.DataSet([
+    { id:'서울', label:'서울', group:'시도', value:34215 },
+    { id:'차대차', label:'차대차', group:'유형', value:142350 },
+    // ...
+]);
+const edges = new vis.DataSet([
+    { from:'서울', to:'차대차', value:25800 }
+]);
+const options = {
+    nodes: { shape:'dot', scaling:{ min:20, max:55 } },
+    groups: {
+        시도: { color:{ background:'#3b82f6' }, font:{color:'white'} },
+        유형: { color:{ background:'#f59e0b' }, font:{color:'white'} }
+    },
+    edges:   { scaling:{ min:1, max:10 }, smooth:{ type:'curvedCW', roundness:0.2 } },
+    physics: { barnesHut:{ gravitationalConstant:-8000 } }
+};</pre>
+      <div class="legend-box">
+        <div class="legend-item"><span class="dot" style="background:#3b82f6"></span>시도</div>
+        <div class="legend-item"><span class="dot" style="background:#f59e0b"></span>사고유형</div>
+        <div style="font-size:12px;color:#64748b">노드 크기 = 합계 · 엣지 굵기 = 건수</div>
+      </div>
+      <div id="net2" class="net-box"></div>
+      <div id="info2" class="info">노드나 엣지를 클릭하면 정보가 표시됩니다</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ③ 계층 ═════════════════ -->
+<div class="panel" id="panel3">
+  <div class="card">
+    <div class="card-head">계층(Tree) 레이아웃 — 위계가 분명한 구조</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 계층 레이아웃이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 부모-자식, 상위-하위가 분명한 데이터(조직도·분류체계)를 <b>한 방향으로 정렬해 위계가 한눈에</b> 보이도록.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 물리엔진 끄고 알고리즘으로 깔끔하게 배치. 방향(상하·좌우)을 자유롭게 선택.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"전국 → 4개 권역(수도권·영남·호남·중부) → 17개 시도" 행정 위계</li>
+            <li>"사고 분류 체계: 인적요인 → 운전자/보행자 → 세부 위반항목"</li>
+            <li>"보험 청구 흐름: 신고 → 평가 → 합의/소송 → 종결"</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 사이클(순환)이 있는 그래프는 계층 표현 불가. 그땐 force-directed가 적합.</div>
+      </div>
+<pre class="code">options = {
+    layout: {
+        hierarchical: {
+            direction: 'UD',           // UD/DU/LR/RL
+            sortMethod: 'directed',
+            levelSeparation: 110,
+            nodeSpacing: 150
+        }
+    },
+    physics: false   // 계층에서는 끄는 것이 깔끔
+};</pre>
+      <div class="ctrl">
+        <label>방향:</label>
+        <select id="hier-dir">
+            <option value="UD">위→아래 (UD)</option>
+            <option value="LR">왼쪽→오른쪽 (LR)</option>
+            <option value="DU">아래→위 (DU)</option>
+            <option value="RL">오른쪽→왼쪽 (RL)</option>
+        </select>
+      </div>
+      <div id="net3" class="net-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ④ D3 Force ═════════════════ -->
+<div class="panel" id="panel4">
+  <div class="card">
+    <div class="card-head">D3 Force-Directed — 직접 시뮬레이션 구성</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 D3 Force-Directed란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 노드끼리 밀어내고(charge), 엣지로 잡아당기는(link) 물리 시뮬레이션을 <b>SVG로 직접</b> 구성. 커스터마이즈 자유도 최고.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · vis-network보다 코드가 길지만 디자인 100% 제어. 학술 논문급 시각화도 가능.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>3그룹(시도·유형·시간대) 다중 카테고리 관계망 — 비슷한 항목끼리 자연스럽게 군집</li>
+            <li>차량부품-제조사-결함 코드 네트워크</li>
+            <li>저자-인용 네트워크 같은 학술적 활용</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · D3는 학습 곡선이 가파름. 빠르게 결과만 필요하면 vis-network이 낫고, 디자인이 핵심이면 D3.</div>
+      </div>
+<pre class="code">const sim = d3.forceSimulation(nodes)
+    .force('link',   d3.forceLink(links).id(d => d.id).distance(80))
+    .force('charge', d3.forceManyBody().strength(-300))
+    .force('center', d3.forceCenter(W/2, H/2));
+
+sim.on('tick', () => {
+    link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    node.attr('transform', d => `translate(${d.x},${d.y})`);
+});</pre>
+      <div id="net4" class="net-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑤ Cytoscape ═════════════════ -->
+<div class="panel" id="panel5">
+  <div class="card">
+    <div class="card-head">Cytoscape.js — 그래프 분석 라이브러리 (Dagre 레이아웃)</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 Cytoscape란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 시각화 + <b>그래프 알고리즘(최단경로·중심성·커뮤니티 검출)</b>을 한 라이브러리에서. 분석이 핵심일 때.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 다양한 레이아웃(dagre·cose·circle·grid·concentric·breadthfirst) 즉시 전환. 셀렉터 문법으로 노드/엣지 조회·필터.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>도로 네트워크에서 사고지점 → 가장 가까운 병원까지 <b>최단경로 계산</b></li>
+            <li>교차로 노드 중심성 분석 → "어느 교차로가 가장 중요한 길목인가"</li>
+            <li>사고 데이터로 동시발생 패턴 군집 분석</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 시각화만 필요하면 vis-network가 더 가벼움. Cytoscape는 분석 기능을 위해 선택.</div>
+      </div>
+<pre class="code">cytoscape({
+    container: document.getElementById('net5'),
+    elements: [
+        { data:{ id:'a' } }, { data:{ id:'b' } },
+        { data:{ source:'a', target:'b' } },
+    ],
+    style: [
+        { selector:'node', style:{ 'background-color':'#4338ca', 'label':'data(id)' } },
+        { selector:'edge', style:{ 'curve-style':'bezier', 'target-arrow-shape':'triangle' } }
+    ],
+    layout: { name:'dagre' }
+});</pre>
+      <div class="ctrl">
+        <label>레이아웃:</label>
+        <select id="cy-layout">
+            <option value="dagre">dagre (계층)</option>
+            <option value="cose">cose (force)</option>
+            <option value="circle">circle</option>
+            <option value="grid">grid</option>
+            <option value="concentric">concentric</option>
+            <option value="breadthfirst">breadthfirst</option>
+        </select>
+      </div>
+      <div id="net5" class="net-box"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑥ 인터랙티브 ═════════════════ -->
+<div class="panel" id="panel6">
+  <div class="card">
+    <div class="card-head">⭐ 인터랙티브 조작 — 노드/엣지 추가·삭제·이웃 강조</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 인터랙티브 그래프 편집이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 정적 그림이 아니라 <b>독자가 그래프를 직접 수정·탐색</b>할 수 있게 만들기. 데이터 입력 도구로도 활용 가능.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · vis-network DataSet은 <code>add()/remove()/update()</code>만 호출하면 화면이 자동 갱신. <b>이웃 강조</b>는 <code>getConnectedNodes()</code>로.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>수사관이 "이 사람도 같은 사고에 연관됐다" 새 노드 추가하며 관계망 구성</li>
+            <li>특정 운전자 노드 클릭 → 그가 관여한 사고/차량/피해자만 강조</li>
+            <li>의심 노드를 삭제(필터)하며 패턴이 어떻게 변하는지 시뮬레이션</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 변경된 데이터는 화면에만 남음. 영구 저장하려면 서버 API 또는 <code>localStorage</code>를 함께 써야 함.</div>
+      </div>
+<pre class="code">// ── 핵심 API ──
+// 노드 추가
+nodes.add({ id, label, color });
+
+// 엣지 추가
+edges.add({ id:'e1', from:1, to:2 });
+
+// 선택된 항목 가져오기
+const sel = network.getSelection();   // { nodes:[...], edges:[...] }
+
+// 이웃 노드 가져오기 + 강조
+const neighbors = network.getConnectedNodes(nodeId);
+nodes.update(allNodes.map(n => ({
+    id: n.id,
+    opacity: (n.id===nodeId || neighbors.includes(n.id)) ? 1 : 0.25
+})));
+
+// 삭제
+nodes.remove(id);
+edges.remove(edgeId);
+
+// 화면 맞춤
+network.fit({ animation: true });</pre>
+      <div class="ctrl">
+        <button class="primary" onclick="addNode6()">+ 노드 추가</button>
+        <button onclick="addEdge6()">+ 엣지 추가</button>
+        <button onclick="removeSelected6()">선택 항목 삭제</button>
+        <button onclick="fit6()">화면 맞춤</button>
+        <button onclick="reset6()">초기화</button>
+      </div>
+      <div id="net6" class="net-box"></div>
+      <div id="info6" class="info">노드를 클릭하면 직접 연결된 이웃이 강조됩니다</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ 🗣️ 의미연결망 ═════════════════ -->
+<div class="panel" id="panel7">
+  <div class="card">
+    <div class="card-head">⭐ 의미연결망(Semantic Network) — 텍스트 속 단어 관계 그리기</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 의미연결망이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 워드클라우드가 "어떤 단어가 자주 나오는가"라면, 의미연결망은 한 걸음 더 나아가 <b>"어떤 단어들이 함께 나오는가"</b>를 보여줍니다. 키워드 사이의 <b>관계 구조</b>가 드러남.</div>
+        <div class="exp-row feature"><b>✨ 핵심 원리 — 동시출현(co-occurrence)</b>
+          <ul class="exp-list">
+            <li>같은 <b>문장(또는 단락·기사)</b> 안에 두 단어가 함께 등장하면 → 두 단어 사이에 엣지 +1</li>
+            <li>여러 문장에서 자주 같이 나올수록 엣지가 두꺼워짐</li>
+            <li>중심성이 높은 단어(연결이 많은 단어) = 담론의 핵심 키워드</li>
+          </ul>
+        </div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>경찰 조서 1,000건 → "음주" "야간" "신호위반"이 강하게 연결되면 야간 음주의 신호위반 패턴이 담론에 형성</li>
+            <li>국민 민원·SNS 분석 → "어린이" "보호구역" "과속" 군집 → 교육·정책 우선순위</li>
+            <li>뉴스 기사 키워드 → 사건 보도 프레임 분석</li>
+            <li>자유서술형 설문(사고 원인) → 응답자가 인식하는 원인 구조</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 동시출현 ≠ 인과. 또 불용어(은·는·이·가)와 너무 흔한 단어(예: "사고")는 모든 단어와 연결되어 의미가 흐려지므로 빈도 상위·하위 컷오프가 필요.</div>
+      </div>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">🛠️ 의미연결망 만드는 4단계</h4>
+      <ol style="font-size:13px; color:#334155; padding-left:22px; line-height:1.8">
+        <li><b>전처리</b>: 텍스트를 문장 단위로 쪼개고, 불용어(은·는·이·가) 제거, 명사·형용사만 추출</li>
+        <li><b>빈도 계산</b>: 단어별 등장 횟수 → 노드의 크기(=value)</li>
+        <li><b>동시출현 카운트</b>: 같은 문장에 함께 나온 단어 쌍의 빈도 → 엣지의 굵기(=value)</li>
+        <li><b>시각화</b>: 노드/엣지 표를 vis-network 같은 force-directed에 입력</li>
+      </ol>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">📊 데이터 형태</h4>
+      <pre class="code">📂 nodes.csv (단어 명단)
+   id        | label    | value(빈도)
+   음주      | 음주     | 42
+   야간      | 야간     | 38
+   신호위반  | 신호위반 | 33
+   ...
+
+📂 edges.csv (단어 쌍의 동시출현)
+   from      | to        | value(쌍의 빈도)
+   음주      | 야간      | 18
+   음주      | 신호위반  | 11
+   야간      | 횡단보도  | 9
+   ...</pre>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">💻 코드 — 텍스트 → 의미연결망 자동 생성</h4>
+<pre class="code">// 1) 문장 단위로 쪼갠 뒤 단어 추출
+const sentences = text.split(/[.!?\n]+/);
+const stopWords = new Set(['은','는','이','가','을','를','의','에','와','과','도']);
+function tokens(s) {
+    return s.split(/[\s,·\-—()【】\[\]"'?!]+/)
+            .filter(w =&gt; w.length &gt;= 2 &amp;&amp; !stopWords.has(w));
+}
+
+// 2) 단어 빈도 + 동시출현 카운트
+const freq = {}, pair = {};
+sentences.forEach(s =&gt; {
+    const ws = [...new Set(tokens(s))];        // 같은 문장 내 중복 제거
+    ws.forEach(w =&gt; { freq[w] = (freq[w]||0) + 1; });
+    for (let i=0; i&lt;ws.length; i++)
+        for (let j=i+1; j&lt;ws.length; j++) {
+            const key = [ws[i], ws[j]].sort().join('|');
+            pair[key] = (pair[key]||0) + 1;
+        }
+});
+
+// 3) 상위 N개 단어만 노드로 (희귀어 제거)
+const topWords = Object.entries(freq).sort((a,b)=&gt;b[1]-a[1]).slice(0, 30);
+const wordSet  = new Set(topWords.map(w =&gt; w[0]));
+const nodes = topWords.map(([w,c]) =&gt; ({ id:w, label:w, value:c }));
+
+// 4) 두 단어 모두 상위에 포함되고, 동시출현 ≥ 2 인 엣지만
+const edges = Object.entries(pair)
+    .filter(([k,v]) =&gt; v &gt;= 2 &amp;&amp; k.split('|').every(w =&gt; wordSet.has(w)))
+    .map(([k,v]) =&gt; { const [a,b] = k.split('|'); return { from:a, to:b, value:v }; });
+
+new vis.Network(div, { nodes:new vis.DataSet(nodes), edges:new vis.DataSet(edges) },
+    { nodes:{ shape:'dot', scaling:{min:10,max:50,label:{min:11,max:20}} },
+      edges:{ scaling:{min:1,max:8}, color:{color:'#cbd5e1'} },
+      physics:{ barnesHut:{ gravitationalConstant:-3000 } } });</pre>
+
+      <h4 style="margin-top:18px; font-size:15px; color:#1e293b">▶ 직접 해보기 — 텍스트 입력 → 즉시 의미연결망</h4>
+      <p style="font-size:13px; color:#475569; margin-bottom:8px">
+        아래 텍스트(가상의 사고 진술서 모음)를 자유롭게 수정하고 ▶ 분석을 누르면 의미연결망이 다시 그려집니다.
+        실제 기사·민원·인터뷰 텍스트를 붙여 넣어도 작동합니다.
+      </p>
+      <textarea id="sem-text" rows="7" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; font-family:inherit; line-height:1.6">야간 음주 운전자가 횡단보도에서 보행자를 충격했다.
+음주 운전 단속에서 신호위반 적발이 함께 보고되었다.
+어린이 보호구역에서 과속 차량이 어린이를 충격하는 사고가 발생했다.
+야간 시간대 음주 단속 강화가 신호위반 감소로 이어졌다.
+보행자 사망 사고는 야간 횡단보도 부근에 집중된다.
+노인 보행자가 횡단보도에서 차량 충격으로 중상을 입었다.
+어린이 보호구역 과속 단속이 강화되어야 한다는 의견이 많다.
+음주 운전과 신호위반은 동시 적발되는 경우가 빈번하다.
+야간 운전자의 졸음 운전과 과속이 결합된 사고가 많다.
+보행자 안전을 위한 횡단보도 신호 개선이 필요하다.
+어린이 사고는 주로 하교 시간대 보호구역 부근에서 발생한다.
+음주 야간 사고는 주말에 집중적으로 발생한다.
+신호위반 차량의 보행자 충격 사고가 야간에 두드러진다.
+과속 단속 카메라 설치 후 어린이 보호구역 사고가 감소했다.
+노인 보행자의 야간 사고 비율이 점점 증가하고 있다.</textarea>
+      <div class="ctrl">
+        <label>최소 동시출현:</label>
+        <select id="sem-min">
+          <option value="1">1회 이상</option>
+          <option value="2" selected>2회 이상</option>
+          <option value="3">3회 이상</option>
+        </select>
+        <label>표시할 단어 수:</label>
+        <select id="sem-top">
+          <option value="15">상위 15개</option>
+          <option value="25" selected>상위 25개</option>
+          <option value="40">상위 40개</option>
+        </select>
+        <button class="primary" onclick="renderSemNet()">▶ 분석 + 시각화</button>
+      </div>
+      <div id="net7" class="net-box"></div>
+      <div id="sem-stat" class="info">상단 텍스트를 수정하고 ▶ 분석 버튼을 누르세요. 큰 노드 = 빈도 높은 단어, 굵은 선 = 자주 함께 등장한 단어 쌍.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 탭 전환 — 지연 초기화
+// ═══════════════════════════════════════════════════════════
+const networks = {};
+const initFns = {};
+const initialized = {};
+function showTab(i) {
+    document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', i===j));
+    document.querySelectorAll('.panel').forEach((p,j) => p.classList.toggle('active', i===j));
+    requestAnimationFrame(() => {
+        if (!initialized[i]) { initFns[i]?.(); initialized[i] = true; }
+        setTimeout(() => {
+            try {
+                const n = networks[i];
+                if (n?.redraw) n.redraw();
+                if (n?.resize) n.resize();
+                if (n?.fit)    try { n.fit(); } catch(e){}
+            } catch(e){}
+        }, 100);
+    });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 0: 데이터 구성 가이드 — 시각화 없음 (정적 콘텐츠)
+// ═══════════════════════════════════════════════════════════
+initialized[0] = true;   // 별도 init 불필요
+
+// ═══════════════════════════════════════════════════════════
+// 1: vis-network 기본
+// ═══════════════════════════════════════════════════════════
+initFns[1] = () => {
+    const nodes = new vis.DataSet([
+        { id:1, label:'A', color:'#3b82f6' },
+        { id:2, label:'B', color:'#10b981' },
+        { id:3, label:'C', color:'#ef4444' },
+        { id:4, label:'D', color:'#f59e0b' },
+        { id:5, label:'E', color:'#8b5cf6' }
+    ]);
+    const edges = new vis.DataSet([
+        {from:1,to:2},{from:1,to:3},{from:2,to:4},{from:3,to:4},{from:4,to:5},{from:5,to:1}
+    ]);
+    networks[1] = new vis.Network(document.getElementById('net1'), {nodes,edges}, {
+        nodes:{ shape:'dot', size:24, font:{size:14, color:'white', strokeWidth:2, strokeColor:'rgba(0,0,0,0.4)'} },
+        edges:{ width:2, color:'#94a3b8' },
+        physics:{ stabilization:{ iterations:120 } }
+    });
+};
+
+// ═══════════════════════════════════════════════════════════
+// 2: 양분
+// ═══════════════════════════════════════════════════════════
+initFns[2] = () => {
+    const nodes = new vis.DataSet([
+        {id:'서울', label:'서울\n34,215', group:'시도', value:34215, title:'서울 교통사고 34,215건'},
+        {id:'경기', label:'경기\n58,432', group:'시도', value:58432, title:'경기 교통사고 58,432건'},
+        {id:'부산', label:'부산\n15,621', group:'시도', value:15621, title:'부산 교통사고 15,621건'},
+        {id:'대구', label:'대구\n9,843',  group:'시도', value:9843,  title:'대구 교통사고 9,843건'},
+        {id:'인천', label:'인천\n14,523', group:'시도', value:14523, title:'인천 교통사고 14,523건'},
+        {id:'차대차',   label:'차대차',   group:'유형', value:142350, title:'전국 차대차 142,350건'},
+        {id:'차대사람', label:'차대사람', group:'유형', value:42580,  title:'전국 차대사람 42,580건'},
+        {id:'차량단독', label:'차량단독', group:'유형', value:6380,   title:'전국 차량단독 6,380건'}
+    ]);
+    const edges = new vis.DataSet([
+        {from:'서울',to:'차대차',  value:25800,title:'서울 ↔ 차대차 25,800건'},
+        {from:'서울',to:'차대사람',value:6800, title:'서울 ↔ 차대사람 6,800건'},
+        {from:'서울',to:'차량단독',value:1615, title:'서울 ↔ 차량단독 1,615건'},
+        {from:'경기',to:'차대차',  value:44100,title:'경기 ↔ 차대차 44,100건'},
+        {from:'경기',to:'차대사람',value:10800,title:'경기 ↔ 차대사람 10,800건'},
+        {from:'경기',to:'차량단독',value:3532, title:'경기 ↔ 차량단독 3,532건'},
+        {from:'부산',to:'차대차',  value:11800,title:'부산 ↔ 차대차 11,800건'},
+        {from:'부산',to:'차대사람',value:2900, title:'부산 ↔ 차대사람 2,900건'},
+        {from:'부산',to:'차량단독',value:921,  title:'부산 ↔ 차량단독 921건'},
+        {from:'대구',to:'차대차',  value:7500, title:'대구 ↔ 차대차 7,500건'},
+        {from:'대구',to:'차대사람',value:2100, title:'대구 ↔ 차대사람 2,100건'},
+        {from:'인천',to:'차대차',  value:11000,title:'인천 ↔ 차대차 11,000건'},
+        {from:'인천',to:'차대사람',value:2900, title:'인천 ↔ 차대사람 2,900건'}
+    ]);
+    networks[2] = new vis.Network(document.getElementById('net2'), {nodes,edges}, {
+        nodes: { shape:'dot', scaling:{ min:22, max:60, label:{ min:12, max:18 } }, font:{size:13} },
+        groups: {
+            시도:  { color:{ background:'#3b82f6', border:'#1d4ed8' }, font:{color:'white', strokeWidth:2, strokeColor:'rgba(0,0,0,0.5)'} },
+            유형: { color:{ background:'#f59e0b', border:'#d97706' }, font:{color:'white', strokeWidth:2, strokeColor:'rgba(0,0,0,0.5)'} }
+        },
+        edges: { scaling:{ min:1, max:10 }, color:{ color:'#94a3b8', highlight:'#4338ca' },
+                 smooth:{ type:'curvedCW', roundness:0.2 } },
+        physics: { barnesHut:{ gravitationalConstant:-8000, springLength:160 }, stabilization:{ iterations:200 } }
+    });
+    networks[2].on('click', params => {
+        const info = document.getElementById('info2');
+        if (params.nodes.length > 0)      info.innerHTML = `<b>노드:</b> ${nodes.get(params.nodes[0]).title}`;
+        else if (params.edges.length > 0) info.innerHTML = `<b>연결:</b> ${edges.get(params.edges[0]).title}`;
+        else info.innerHTML = '노드나 엣지를 클릭하면 정보가 표시됩니다';
+    });
+};
+
+// ═══════════════════════════════════════════════════════════
+// 3: 계층
+// ═══════════════════════════════════════════════════════════
+const hierData = {
+    nodes: new vis.DataSet([
+        {id:'전국', label:'전국\n191,418', color:'#1e40af', font:{color:'white'}},
+        {id:'수도권', label:'수도권', color:'#3b82f6', font:{color:'white'}},
+        {id:'영남',   label:'영남',   color:'#3b82f6', font:{color:'white'}},
+        {id:'호남',   label:'호남',   color:'#3b82f6', font:{color:'white'}},
+        {id:'중부',   label:'중부',   color:'#3b82f6', font:{color:'white'}},
+        {id:'h_서울', label:'서울 34,215'},
+        {id:'h_경기', label:'경기 58,432'},
+        {id:'h_인천', label:'인천 14,523'},
+        {id:'h_부산', label:'부산 15,621'},
+        {id:'h_대구', label:'대구 9,843'},
+        {id:'h_울산', label:'울산 5,234'},
+        {id:'h_경남', label:'경남 17,234'},
+        {id:'h_광주', label:'광주 7,234'},
+        {id:'h_전남', label:'전남 10,234'},
+        {id:'h_전북', label:'전북 9,123'},
+        {id:'h_대전', label:'대전 8,123'},
+        {id:'h_충남', label:'충남 11,234'},
+        {id:'h_충북', label:'충북 8,234'}
+    ]),
+    edges: new vis.DataSet([
+        {from:'전국',to:'수도권'},{from:'전국',to:'영남'},{from:'전국',to:'호남'},{from:'전국',to:'중부'},
+        {from:'수도권',to:'h_서울'},{from:'수도권',to:'h_경기'},{from:'수도권',to:'h_인천'},
+        {from:'영남',to:'h_부산'},{from:'영남',to:'h_대구'},{from:'영남',to:'h_울산'},{from:'영남',to:'h_경남'},
+        {from:'호남',to:'h_광주'},{from:'호남',to:'h_전남'},{from:'호남',to:'h_전북'},
+        {from:'중부',to:'h_대전'},{from:'중부',to:'h_충남'},{from:'중부',to:'h_충북'}
+    ])
+};
+function buildHier(direction) {
+    if (networks[3]) networks[3].destroy();
+    networks[3] = new vis.Network(document.getElementById('net3'), hierData, {
+        layout: { hierarchical: { direction, sortMethod:'directed', levelSeparation:120, nodeSpacing:130 } },
+        nodes: { shape:'box', font:{size:12}, margin:8 },
+        edges: { arrows:'to', smooth:{type:'cubicBezier'} },
+        physics: false
+    });
+}
+initFns[3] = () => {
+    buildHier('UD');
+    document.getElementById('hier-dir').addEventListener('change', e => buildHier(e.target.value));
+};
+
+// ═══════════════════════════════════════════════════════════
+// 4: D3 Force-Directed
+// ═══════════════════════════════════════════════════════════
+initFns[4] = () => {
+    const host = document.getElementById('net4');
+    const W = host.clientWidth || 900;
+    const H = 480;
+    const svg = d3.select('#net4').append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const catColor = { 시도:'#3b82f6', 유형:'#f59e0b', 시간대:'#10b981' };
+    const nodesD = [
+        ...['서울','경기','부산','대구','인천'].map(n => ({id:n, group:'시도', size:14})),
+        ...['차대차','차대사람','차량단독'].map(n => ({id:n, group:'유형', size:12})),
+        ...['주중주간','주중야간','주말','심야'].map(n => ({id:n, group:'시간대', size:11}))
+    ];
+    const linksD = [
+        {source:'서울',target:'차대차',value:6},{source:'서울',target:'차대사람',value:3},{source:'서울',target:'주중주간',value:5},
+        {source:'경기',target:'차대차',value:8},{source:'경기',target:'차대사람',value:4},{source:'경기',target:'주중주간',value:7},
+        {source:'부산',target:'차대차',value:5},{source:'부산',target:'차량단독',value:2},{source:'부산',target:'주중야간',value:3},
+        {source:'대구',target:'차대차',value:4},{source:'대구',target:'주말',value:2},
+        {source:'인천',target:'차대사람',value:3},{source:'인천',target:'심야',value:2},
+        {source:'차대차',target:'주중주간',value:4},{source:'차대사람',target:'주말',value:3},{source:'차량단독',target:'심야',value:2}
+    ];
+    const sim = d3.forceSimulation(nodesD)
+        .force('link',   d3.forceLink(linksD).id(d => d.id).distance(80))
+        .force('charge', d3.forceManyBody().strength(-260))
+        .force('center', d3.forceCenter(W/2, H/2))
+        .force('collide',d3.forceCollide().radius(d => d.size + 6));
+    const link = svg.append('g').selectAll('line').data(linksD).enter()
+        .append('line').attr('class','d3-link').attr('stroke-width', d => Math.sqrt(d.value));
+    const node = svg.append('g').selectAll('g').data(nodesD).enter()
+        .append('g').attr('class','d3-node')
+        .call(d3.drag()
+            .on('start', (e,d) => { if(!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+            .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
+            .on('end',   (e,d) => { if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+    node.append('circle').attr('r', d => d.size).attr('fill', d => catColor[d.group]);
+    node.append('text').text(d => d.id).attr('x', d => d.size + 4).attr('y', 4).attr('fill', '#1e293b');
+    sim.on('tick', () => {
+        link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+    networks[4] = { resize: () => svg.attr('viewBox', `0 0 ${host.clientWidth} ${H}`) };
+};
+
+// ═══════════════════════════════════════════════════════════
+// 5: Cytoscape
+// ═══════════════════════════════════════════════════════════
+initFns[5] = () => {
+    cytoscape.use(cytoscapeDagre);
+    const cy = cytoscape({
+        container: document.getElementById('net5'),
+        elements: [
+            { data:{ id:'전국' } },
+            { data:{ id:'수도권' } },{ data:{ id:'영남' } },{ data:{ id:'호남' } },
+            { data:{ id:'서울' } },{ data:{ id:'경기' } },{ data:{ id:'인천' } },
+            { data:{ id:'부산' } },{ data:{ id:'대구' } },{ data:{ id:'경남' } },
+            { data:{ id:'광주' } },{ data:{ id:'전남' } },
+            { data:{ source:'전국', target:'수도권' } },
+            { data:{ source:'전국', target:'영남' } },
+            { data:{ source:'전국', target:'호남' } },
+            { data:{ source:'수도권', target:'서울' } },
+            { data:{ source:'수도권', target:'경기' } },
+            { data:{ source:'수도권', target:'인천' } },
+            { data:{ source:'영남', target:'부산' } },
+            { data:{ source:'영남', target:'대구' } },
+            { data:{ source:'영남', target:'경남' } },
+            { data:{ source:'호남', target:'광주' } },
+            { data:{ source:'호남', target:'전남' } }
+        ],
+        style: [
+            { selector:'node', style:{
+                'background-color':'#4338ca', 'label':'data(id)',
+                'color':'white', 'text-valign':'center', 'text-halign':'center',
+                'font-size':11, 'width':52, 'height':52
+            }},
+            { selector:'edge', style:{
+                'width':2, 'line-color':'#94a3b8',
+                'curve-style':'bezier',
+                'target-arrow-color':'#94a3b8', 'target-arrow-shape':'triangle'
+            }}
+        ],
+        layout: { name:'dagre', rankDir:'TB' }
+    });
+    networks[5] = cy;
+    document.getElementById('cy-layout').addEventListener('change', e => {
+        cy.layout({ name: e.target.value, animate: true }).run();
+    });
+};
+
+// ═══════════════════════════════════════════════════════════
+// 6: 인터랙티브 조작
+// ═══════════════════════════════════════════════════════════
+let net6Nodes, net6Edges, net6, nodeIdCounter = 6;
+function init6() {
+    net6Nodes = new vis.DataSet([
+        { id:1, label:'A', color:'#3b82f6' },
+        { id:2, label:'B', color:'#10b981' },
+        { id:3, label:'C', color:'#ef4444' },
+        { id:4, label:'D', color:'#f59e0b' },
+        { id:5, label:'E', color:'#8b5cf6' }
+    ]);
+    net6Edges = new vis.DataSet([
+        {id:'e1',from:1,to:2},{id:'e2',from:2,to:3},{id:'e3',from:3,to:4},
+        {id:'e4',from:4,to:5},{id:'e5',from:5,to:1},{id:'e6',from:1,to:3}
+    ]);
+    nodeIdCounter = 6;
+    if (net6) net6.destroy();
+    net6 = new vis.Network(document.getElementById('net6'), {nodes:net6Nodes, edges:net6Edges}, {
+        nodes:{ shape:'dot', size:24, font:{size:14, color:'white', strokeWidth:2, strokeColor:'rgba(0,0,0,0.4)'} },
+        edges:{ width:2, color:{ color:'#94a3b8', highlight:'#4338ca' } },
+        interaction:{ multiselect:true, selectConnectedEdges:true },
+        physics:{ stabilization:{ iterations:120 } }
+    });
+    networks[6] = net6;
+    net6.on('click', params => {
+        const info = document.getElementById('info6');
+        if (params.nodes.length > 0) {
+            const id = params.nodes[0];
+            const connected = net6.getConnectedNodes(id);
+            info.innerHTML = `<b>${net6Nodes.get(id).label}</b> 의 이웃: ${connected.map(c=>net6Nodes.get(c).label).join(', ') || '(없음)'}`;
+            net6Nodes.update(net6Nodes.get().map(n => ({ id:n.id, opacity: (n.id===id || connected.includes(n.id)) ? 1 : 0.25 })));
+        } else {
+            info.innerHTML = '노드를 클릭하면 직접 연결된 이웃이 강조됩니다';
+            net6Nodes.update(net6Nodes.get().map(n => ({ id:n.id, opacity: 1 })));
+        }
+    });
+}
+initFns[6] = () => init6();
+
+function addNode6() {
+    if (!net6Nodes) return;
+    const id = nodeIdCounter++;
+    const label = String.fromCharCode(64 + id);
+    const colors = ['#3b82f6','#10b981','#ef4444','#f59e0b','#8b5cf6','#ec4899','#06b6d4'];
+    net6Nodes.add({ id, label, color: colors[id % colors.length] });
+    const existing = net6Nodes.getIds().filter(x => x !== id);
+    if (existing.length > 0) {
+        const target = existing[Math.floor(Math.random() * existing.length)];
+        net6Edges.add({ id:'e'+Date.now(), from:id, to:target });
+    }
+}
+function addEdge6() {
+    if (!net6Nodes) return;
+    const ids = net6Nodes.getIds();
+    if (ids.length < 2) return;
+    const a = ids[Math.floor(Math.random()*ids.length)];
+    let b = ids[Math.floor(Math.random()*ids.length)];
+    while (b === a) b = ids[Math.floor(Math.random()*ids.length)];
+    net6Edges.add({ id:'e'+Date.now(), from:a, to:b });
+}
+function removeSelected6() {
+    if (!net6) return;
+    const sel = net6.getSelection();
+    sel.nodes.forEach(id => net6Nodes.remove(id));
+    sel.edges.forEach(id => net6Edges.remove(id));
+}
+function fit6()   { net6?.fit({ animation:true }); }
+function reset6() { init6(); }
+
+// ═══════════════════════════════════════════════════════════
+// 7: 의미연결망 (semantic network)
+// ═══════════════════════════════════════════════════════════
+const SEM_STOP = new Set([
+    '은','는','이','가','을','를','의','에','와','과','도','로','으로','에서','에게','한','한다','했다','된다','됐다',
+    '그리고','그러나','또한','이는','대한','관련','등','및','수','때문','경우','보다','따라','등이','등의'
+]);
+function semTokens(s) {
+    return s.split(/[\s,.\n\r·\-—()【】\[\]"'?!:;]+/)
+            .filter(w => w.length >= 2 && !SEM_STOP.has(w))
+            .map(w => w.replace(/[을를이가은는의에와과도로]+$/, ''))   // 흔한 조사 꼬리 제거
+            .filter(w => w.length >= 2);
+}
+function renderSemNet() {
+    const text = document.getElementById('sem-text').value;
+    const minPair = +document.getElementById('sem-min').value;
+    const topN = +document.getElementById('sem-top').value;
+
+    const sentences = text.split(/[.!?\n]+/).map(s => s.trim()).filter(Boolean);
+    const freq = {}, pair = {};
+    sentences.forEach(s => {
+        const ws = [...new Set(semTokens(s))];
+        ws.forEach(w => { freq[w] = (freq[w]||0) + 1; });
+        for (let i = 0; i < ws.length; i++)
+            for (let j = i+1; j < ws.length; j++) {
+                const k = [ws[i], ws[j]].sort().join('|');
+                pair[k] = (pair[k]||0) + 1;
+            }
+    });
+    const top = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0, topN);
+    const wordSet = new Set(top.map(w => w[0]));
+    const palette = ['#ec4899','#8b5cf6','#3b82f6','#10b981','#f59e0b','#ef4444','#06b6d4','#a855f7'];
+    const nodes = top.map(([w,c], i) => ({
+        id: w, label: w, value: c,
+        color: { background: palette[i % palette.length], border: '#1e293b' },
+        font: { color:'white', strokeWidth:2, strokeColor:'rgba(0,0,0,0.5)', size:14 },
+        title: `${w} — 등장 ${c}회`
+    }));
+    const edges = Object.entries(pair)
+        .filter(([k,v]) => v >= minPair && k.split('|').every(w => wordSet.has(w)))
+        .map(([k,v]) => { const [a,b] = k.split('|'); return { from:a, to:b, value:v, title:`${a} ↔ ${b}: ${v}회 함께 등장` }; });
+
+    if (networks[7]) networks[7].destroy();
+    networks[7] = new vis.Network(document.getElementById('net7'), {
+        nodes: new vis.DataSet(nodes),
+        edges: new vis.DataSet(edges)
+    }, {
+        nodes: { shape:'dot', scaling:{ min:12, max:50, label:{ min:11, max:20 } } },
+        edges: { scaling:{ min:1, max:8 }, color:{ color:'#cbd5e1', highlight:'#4338ca' }, smooth:{ enabled:true, type:'continuous' } },
+        physics: { barnesHut:{ gravitationalConstant:-3500, springLength:140, springConstant:0.04, avoidOverlap:0.2 }, stabilization:{ iterations:200 } },
+        interaction: { hover:true, tooltipDelay:120 }
+    });
+    document.getElementById('sem-stat').innerHTML =
+        `📊 분석된 문장 ${sentences.length}개 · 노드 <b>${nodes.length}</b>개 · 엣지 <b>${edges.length}</b>개 · 최다 빈도 단어: <b>${top[0]?.[0]||'-'}</b>(${top[0]?.[1]||0}회)`;
+}
+initFns[7] = () => {
+    document.getElementById('sem-min').addEventListener('change', renderSemNet);
+    document.getElementById('sem-top').addEventListener('change', renderSemNet);
+    renderSemNet();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Leaflet 지도 시각화 종합</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background: #f8fafc; color: #1e293b; }
+
+  header { background: linear-gradient(135deg, #065f46, #10b981); color: white; padding: 24px 32px; }
+  header h1 { font-size: 22px; font-weight: 600; }
+  header p  { font-size: 13px; opacity: .85; margin-top: 4px; }
+  header a  { color: #fde68a; text-decoration: none; margin-right: 12px; font-size: 12px; }
+
+  .tabs { display: flex; gap: 4px; padding: 14px 24px;
+    background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
+  .tab { padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0;
+    font-size: 13px; cursor: pointer; white-space: nowrap;
+    background: #f8fafc; color: #64748b; transition: all .15s; }
+  .tab.active { background: #10b981; color: white; border-color: #10b981; }
+  .tab:hover:not(.active) { background: #ecfdf5; border-color: #6ee7b7; }
+
+  .panel { display: none; padding: 24px; max-width: 980px; margin: 0 auto; }
+  .panel.active { display: block; }
+
+  .card { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 20px; }
+  .card-head { padding: 12px 20px; background: #f0fdf4; border-bottom: 1px solid #d1fae5; font-size: 14px; font-weight: 600; }
+  .card-body { padding: 20px; }
+
+  pre.code {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 8px; padding: 14px 16px;
+    font-size: 12px; line-height: 1.7;
+    overflow-x: auto; margin-bottom: 12px;
+    font-family: 'Consolas', 'Monaco', monospace; white-space: pre;
+  }
+
+  .map-box { height: 440px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+
+  .ctrl { display: flex; align-items: center; gap: 10px; padding: 10px 0; flex-wrap: wrap; }
+  .ctrl label { font-size: 13px; }
+  .ctrl input[type=checkbox] { width: 15px; height: 15px; cursor: pointer; }
+  .ctrl select, .ctrl input[type=range] { padding: 6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px; }
+
+  .legend-box {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    padding: 8px 12px; background: #f8fafc;
+    border-radius: 6px; font-size: 12px; margin-bottom: 10px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  /* 강의 설명 */
+  .explain { background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: 14px 18px; margin: 14px 0;
+    font-size: 13px; line-height: 1.65; color: #334155; }
+  .explain h5 { font-size: 14px; color: #0f172a; margin-bottom: 8px; }
+  .exp-row { padding: 4px 0; }
+  .exp-row b { color: #0f172a; }
+  .exp-row.purpose b { color: #047857; }
+  .exp-row.feature b { color: #0f766e; }
+  .exp-row.example b { color: #be185d; }
+  .exp-row.warn b    { color: #b45309; }
+  .exp-list { padding-left: 22px; margin-top: 4px; }
+  .exp-list li { padding: 2px 0; }
+
+  .tip { background: #ecfdf5; border-left: 3px solid #10b981;
+    padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 12px; color: #065f46; margin-top: 10px; }
+  .warn-box { background: #fffbeb; border-left: 3px solid #f59e0b;
+    padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 12px; color: #92400e; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗺️ Leaflet — 지도 시각화 종합</h1>
+  <p>마커 · 클러스터 · 정량 원형 · 히트맵 · 코로플레스 · 폴리라인 · 베이스맵</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(0)">① 기초 마커</div>
+  <div class="tab" onclick="showTab(1)">② 마커 클러스터</div>
+  <div class="tab" onclick="showTab(2)">③ 원형 마커 (정량)</div>
+  <div class="tab" onclick="showTab(3)">④ 히트맵</div>
+  <div class="tab" onclick="showTab(4)">⑤ 코로플레스</div>
+  <div class="tab" onclick="showTab(5)">⑥ 폴리라인 (경로)</div>
+  <div class="tab" onclick="showTab(6)">⑦ 타일 전환·레이어 컨트롤</div>
+</div>
+
+<!-- ═════════════════ ① ═════════════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <div class="card-head">Leaflet 기초 — 지도 + 마커 + 팝업</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 지도 시각화의 출발점</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 데이터에 <b>위도/경도</b>가 있다면 가장 먼저 떠올릴 것은 "지도에 점 찍기". <b>"어디서?"</b>라는 질문에 가장 직관적인 답.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · Leaflet은 무료 오픈소스이자 가장 가벼운 지도 라이브러리. <b>3단계(지도생성 → 타일 → 마커)</b>로 끝남.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>특정 사망사고 5건의 위치를 마커로 → "어느 교차로?"</li>
+            <li>학교 주변 어린이보호구역 위반 지점 표시</li>
+            <li>음주운전 단속 지점 + 시간대 팝업</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 점이 100개 넘어가면 가독성 폭락 → 클러스터(②) 또는 히트맵(④) 추천.</div>
+      </div>
+<pre class="code">// ── 3단계 패턴 ──
+const map = L.map('map').setView([37.5665, 126.978], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap' }).addTo(map);
+L.marker([37.5665, 126.978]).bindPopup('&lt;b&gt;서울시청&lt;/b&gt;&lt;br&gt;사고 45건').addTo(map);</pre>
+      <div class="map-box" id="map1"></div>
+      <div class="warn-box">⚠️ <code>&lt;div id="map"&gt;</code>에 반드시 <b>height</b>가 지정돼 있어야 합니다 (없으면 0px → 보이지 않음).</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ② ═════════════════ -->
+<div class="panel" id="panel1">
+  <div class="card">
+    <div class="card-head">마커 클러스터 — 다수 데이터를 자동 그룹화</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 마커 클러스터링이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 점이 수백~수천 개가 되면 화면이 까매짐 → 가까운 점들을 <b>"숫자가 적힌 동그라미 하나"</b>로 묶어 보여줌. 줌인하면 자동 분리.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 데이터 양과 무관하게 화면이 깔끔. 색·필터로 카테고리별 토글 가능.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>한 해 서울 사고 30,000건을 그대로 점찍기 → 클러스터로 자동 정리</li>
+            <li>유형(차대차/차대사람/차량단독)별 색상 + 체크박스로 켜고 끄기</li>
+            <li>112 신고 데이터 5,000건 시각화 (실시간 운영도 가능)</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 클러스터는 <b>밀도</b>를 보여주지만 <b>총량</b>은 직관적으로 안 보임 → 총량 비교는 코로플레스(⑤)가 적합.</div>
+      </div>
+<pre class="code">const cluster = L.markerClusterGroup();
+data.forEach(d => {
+    L.circleMarker([d.lat, d.lng], { radius:6, fillColor:색상[d.type], color:'#fff', fillOpacity:0.8 })
+     .bindPopup(d.type).addTo(cluster);
+});
+map.addLayer(cluster);  // 줌아웃 → 묶임, 줌인 → 펼침</pre>
+      <div class="legend-box">
+        <div class="legend-item"><span class="dot" style="background:#3b82f6"></span>차대차</div>
+        <div class="legend-item"><span class="dot" style="background:#ef4444"></span>차대사람</div>
+        <div class="legend-item"><span class="dot" style="background:#f59e0b"></span>차량단독</div>
+      </div>
+      <div class="ctrl">
+        <label><input type="checkbox" id="cb-차대차" checked onchange="toggleLayer('차대차')"> 차대차</label>
+        <label><input type="checkbox" id="cb-차대사람" checked onchange="toggleLayer('차대사람')"> 차대사람</label>
+        <label><input type="checkbox" id="cb-차량단독" checked onchange="toggleLayer('차량단독')"> 차량단독</label>
+      </div>
+      <div class="map-box" id="map2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ③ ═════════════════ -->
+<div class="panel" id="panel2">
+  <div class="card">
+    <div class="card-head">원형 마커(Proportional Symbol Map) — 반지름으로 정량 표현</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 정량 원형 마커란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 위치 + <b>"얼마나"</b>를 동시에. 원의 크기가 곧 값(사고 건수, 사망자 수 등).</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 대륙·도시 단위처럼 <b>지점 데이터의 양적 차이를 한눈에</b>. 위치-양 결합 시각화의 표준.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>주요 교차로 7곳의 사고건수: 강남역(850) > 잠실(680) > 서울역(520)…</li>
+            <li>지하철역별 보행 사고 빈도 (작은 원→큰 원)</li>
+            <li>시도 중심점에 인구 대비 사망률 원으로 표시</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · <b>면적이 값에 비례</b>해야 정확 → <code>radius = √(값)</code>로 변환. 직접 r=값으로 하면 큰 값이 4배·9배 과장됨.</div>
+      </div>
+<pre class="code">data.forEach(d => {
+    L.circleMarker([d.lat, d.lng], {
+        radius: Math.sqrt(d.건수) / 1.6,   // ← √ 변환이 핵심
+        fillColor: '#ef4444', color:'white', weight:2, fillOpacity:0.65
+    }).bindPopup(`${d.이름}: ${d.건수}건`).addTo(map);
+});</pre>
+      <div class="map-box" id="map3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ④ ═════════════════ -->
+<div class="panel" id="panel3">
+  <div class="card">
+    <div class="card-head">히트맵 — 사고 밀집 지역 시각화</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 히트맵이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 점들이 너무 많을 때, <b>"어디에 얼마나 모여 있는가"</b>를 색의 농도로 보여줌. 패턴(핫스팟)이 즉시 보임.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 개별 점은 안 보이지만 <b>전체적 밀도 분포</b>가 그림처럼 드러남. 색 그라디언트로 강도 표현.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>"서울 어디가 사고 핫스팟인가?" — 강남·잠실·광화문 일대가 빨갛게</li>
+            <li>야간/주말 한정 데이터로 만들면 시간대별 위험 구역 차이 발견</li>
+            <li>음주 사고만 필터해 시각화 → 유흥가 주변 빨강</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 정확한 수치 비교는 불가(시각적 인상). 보조로 마커·툴팁을 같이 쓰는 게 좋음.</div>
+      </div>
+<pre class="code">// 데이터 형식: [[위도, 경도, 강도(0~1)], ...]
+L.heatLayer(heatPoints, {
+    radius: 22, blur: 15, maxZoom: 14,
+    gradient: { 0.2:'blue', 0.5:'lime', 0.8:'yellow', 1:'red' }
+}).addTo(map);</pre>
+      <div class="ctrl">
+        <label>반지름:</label>
+        <input type="range" id="heat-radius" min="10" max="50" value="22" oninput="updateHeat()">
+        <span id="heat-radius-label" style="font-size:12px">22</span>
+        <label style="margin-left:14px">블러:</label>
+        <input type="range" id="heat-blur" min="0" max="40" value="15" oninput="updateHeat()">
+        <span id="heat-blur-label" style="font-size:12px">15</span>
+      </div>
+      <div class="map-box" id="map4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑤ ═════════════════ -->
+<div class="panel" id="panel4">
+  <div class="card">
+    <div class="card-head">코로플레스(Choropleth) — 행정구역 색상 단계구분</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 코로플레스란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · <b>행정구역(시도/시군구/동) 단위 통계</b>를 구역의 색 농도로 표현. "어느 지역이 가장 위험한지" 즉시 인식.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 마우스 hover로 강조, 클릭 팝업으로 정확 수치 확인. 인구 대비 같은 비율 지표와 잘 맞음.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>17개 시도별 사고건수: 경기·서울이 짙은 파랑</li>
+            <li>인구 10만명당 사망자율 → "절대 수치"가 아닌 "위험도" 비교</li>
+            <li>시군구 단위 어린이 보호구역 위반 분포</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 행정구역 면적이 클수록 시각적으로 강조됨 → 큰 지역(강원·경북)이 과대평가될 위험. 인구 가중 지표 사용 권장.</div>
+      </div>
+<pre class="code">function getColor(v) {
+    return v > 50000 ? '#084594' : v > 30000 ? '#2171b5' :
+           v > 15000 ? '#4292c6' : v > 10000 ? '#6baed6' :
+           v >  5000 ? '#9ecae1' : '#deebf7';
+}
+L.geoJSON(geojson, {
+    style: f => ({ fillColor:getColor(data[f.properties.name]||0), fillOpacity:0.7, color:'#fff', weight:1 }),
+    onEachFeature: (f, layer) => {
+        layer.bindPopup(f.properties.name);
+        layer.on('mouseover', () => layer.setStyle({ fillOpacity:0.95, weight:2 }));
+        layer.on('mouseout',  () => layer.setStyle({ fillOpacity:0.7, weight:1 }));
+    }
+}).addTo(map);</pre>
+      <div class="map-box" id="map5"></div>
+      <div class="tip">💡 실제 시도 GeoJSON(<code>cdn.jsdelivr.net/gh/southkorea/southkorea-maps</code>)을 받아와 17개 시도 경계 그대로 단계구분도를 그립니다. 인터넷이 차단된 환경에서는 자동으로 사각형 폴백이 동작합니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑥ ═════════════════ -->
+<div class="panel" id="panel5">
+  <div class="card">
+    <div class="card-head">폴리라인 / 폴리곤 / 원 — 경로와 영역</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 선·면 시각화란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 점이 아닌 <b>"길/구역/반경"</b>을 그리고 싶을 때. 폴리라인=선, 폴리곤=닫힌 면, 원=반경.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · GPS 트랙·관심 영역(AOI)·반경 원(영향 범위)을 표현 가능.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>운전자 사고 직전 GPS 경로 (폴리라인)</li>
+            <li>어린이 보호구역 다각형 영역 (폴리곤) + 위반 마커</li>
+            <li>학교 반경 300m 원 표시 → 안전 점검 대상 자동 추출</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 폴리곤은 좌표를 닫힌 순서로 줘야 함. 너무 복잡한 폴리곤은 성능 저하 → simplify 라이브러리 활용.</div>
+      </div>
+<pre class="code">// 폴리라인 (경로)
+L.polyline([[lat1,lng1], [lat2,lng2], ...], { color:'#ef4444', weight:4 }).addTo(map);
+// 폴리곤 (닫힌 영역)
+L.polygon([[lat,lng], [lat,lng], [lat,lng]], { color:'#3b82f6', fillOpacity:0.3 }).addTo(map);
+// 원 (반경, 단위: 미터)
+L.circle([37.55, 127.0], { radius:1500, color:'#10b981', fillOpacity:0.2 }).addTo(map);</pre>
+      <div class="map-box" id="map6"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════ ⑦ ═════════════════ -->
+<div class="panel" id="panel6">
+  <div class="card">
+    <div class="card-head">베이스 타일 전환 + 레이어 컨트롤</div>
+    <div class="card-body">
+      <div class="explain">
+        <h5>📚 레이어 컨트롤이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 독자가 직접 <b>지도 스타일</b>(밝은/어두운/위성)과 <b>표시 레이어</b>(마커·히트맵)를 켜고 끌 수 있게 만들기.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 우상단 컨트롤에서 베이스맵은 라디오, 오버레이는 체크박스로 자동 생성. 한 줄로 끝.</div>
+        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+          <ul class="exp-list">
+            <li>야간 사고 시각화엔 어두운 베이스맵이 더 돋보임</li>
+            <li>"마커만/히트맵만/둘 다" 자유 토글로 독자 탐색</li>
+            <li>위성 사진과 합쳐 도로·교차로 형태까지 확인</li>
+          </ul>
+        </div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 베이스맵은 각자 사용 약관 있음(위성은 보통 키 필요). 무료는 OSM·CartoDB 정도.</div>
+      </div>
+<pre class="code">const osm   = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+const dark  = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png');
+const light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png');
+L.control.layers(
+    { 'OSM': osm, 'Dark': dark, 'Light': light },           // 베이스 (라디오)
+    { '마커': markerLayer, '히트맵': heatLayer }            // 오버레이 (체크박스)
+).addTo(map);</pre>
+      <div class="map-box" id="map7"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// 핵심: 지연 초기화 패턴 — 탭이 처음 보일 때 지도 생성
+// (Leaflet은 display:none 안에서 만들면 0×0 으로 깨집니다)
+// ═══════════════════════════════════════════════════════════
+const TILE = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTR = '© OpenStreetMap';
+const tile = () => L.tileLayer(TILE, { attribution: ATTR });
+
+const initialized = {};   // 한 번만 초기화
+const maps = {};
+const initFns = {};
+
+function showTab(i) {
+    document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', i===j));
+    document.querySelectorAll('.panel').forEach((p,j) => p.classList.toggle('active', i===j));
+    requestAnimationFrame(() => {
+        if (!initialized[i]) {
+            initFns[i]?.();
+            initialized[i] = true;
+        }
+        setTimeout(() => maps[i]?.invalidateSize(), 50);
+        setTimeout(() => maps[i]?.invalidateSize(), 250);
+    });
+}
+
+// ① 기초 마커 (즉시 초기화 — 첫 탭이라 보임)
+const accidents = [
+    { lat:37.5665, lng:126.978,  name:'서울시청',  count:45 },
+    { lat:37.5172, lng:127.0473, name:'강남구청',  count:78 },
+    { lat:37.5796, lng:126.977,  name:'광화문',    count:32 },
+    { lat:37.5443, lng:127.0557, name:'잠실역',    count:61 },
+    { lat:37.5326, lng:126.9901, name:'한남대교',  count:53 },
+    { lat:37.5447, lng:126.9568, name:'홍대입구',  count:39 },
+    { lat:37.4848, lng:126.9295, name:'사당역',    count:42 },
+];
+initFns[0] = () => {
+    maps[0] = L.map('map1').setView([37.5665, 126.978], 11);
+    tile().addTo(maps[0]);
+    accidents.forEach(a => L.marker([a.lat, a.lng]).bindPopup(`<b>${a.name}</b><br>사고 ${a.count}건`).addTo(maps[0]));
+};
+initFns[0](); initialized[0] = true;
+
+// ② 마커 클러스터
+const clusterLayers = {};
+const typeColors = { 차대차:'#3b82f6', 차대사람:'#ef4444', 차량단독:'#f59e0b' };
+const types = ['차대차','차대사람','차량단독'];
+const hotspots = [[37.517,127.047],[37.544,127.055],[37.579,126.977],[37.533,126.99],[37.56,127.02],[37.495,127.025]];
+initFns[1] = () => {
+    maps[1] = L.map('map2').setView([37.55, 127.01], 11);
+    tile().addTo(maps[1]);
+    types.forEach(t => { clusterLayers[t] = L.markerClusterGroup(); });
+    for (let i = 0; i < 300; i++) {
+        const [cx, cy] = hotspots[i % hotspots.length];
+        const lat = cx + (Math.random() - 0.5) * 0.04;
+        const lng = cy + (Math.random() - 0.5) * 0.05;
+        const t = types[i % 3];
+        L.circleMarker([lat, lng], { radius:6, fillColor:typeColors[t], color:'#fff', weight:1, fillOpacity:0.85 })
+         .bindPopup(`${t} (id ${i})`).addTo(clusterLayers[t]);
+    }
+    types.forEach(t => maps[1].addLayer(clusterLayers[t]));
+};
+function toggleLayer(t) {
+    if (!maps[1]) return;
+    const on = document.getElementById('cb-' + t).checked;
+    if (on) maps[1].addLayer(clusterLayers[t]);
+    else    maps[1].removeLayer(clusterLayers[t]);
+}
+
+// ③ 정량 원형
+initFns[2] = () => {
+    maps[2] = L.map('map3').setView([37.55, 127.0], 11);
+    tile().addTo(maps[2]);
+    [
+        {name:'강남역',   lat:37.4979, lng:127.0276, count:850},
+        {name:'서울역',   lat:37.5547, lng:126.9706, count:520},
+        {name:'잠실역',   lat:37.5133, lng:127.1000, count:680},
+        {name:'홍대입구', lat:37.5572, lng:126.9244, count:430},
+        {name:'사당역',   lat:37.4769, lng:126.9817, count:380},
+        {name:'건대입구', lat:37.5403, lng:127.0698, count:290},
+        {name:'신촌',     lat:37.5559, lng:126.9369, count:340}
+    ].forEach(d => {
+        L.circleMarker([d.lat, d.lng], {
+            radius: Math.sqrt(d.count) / 1.6,
+            fillColor: '#ef4444', color: 'white', weight: 2, fillOpacity: 0.65
+        }).bindPopup(`<b>${d.name}</b><br>사고 ${d.count}건`).addTo(maps[2]);
+    });
+};
+
+// ④ 히트맵
+const heatPoints = [];
+[[37.517,127.047],[37.544,127.055],[37.579,126.977],[37.498,127.027],[37.555,126.97]].forEach(([cx,cy]) => {
+    for (let i = 0; i < 80; i++) {
+        heatPoints.push([
+            cx + (Math.random()-0.5)*0.03,
+            cy + (Math.random()-0.5)*0.04,
+            Math.random() * 0.8 + 0.2
+        ]);
+    }
+});
+let heatLayer = null;
+initFns[3] = () => {
+    maps[3] = L.map('map4').setView([37.55, 127.01], 12);
+    tile().addTo(maps[3]);
+    heatLayer = L.heatLayer(heatPoints, {
+        radius: 22, blur: 15, maxZoom: 14,
+        gradient: { 0.2:'blue', 0.5:'lime', 0.8:'yellow', 1:'red' }
+    }).addTo(maps[3]);
+};
+function updateHeat() {
+    if (!maps[3]) return;
+    const r = +document.getElementById('heat-radius').value;
+    const b = +document.getElementById('heat-blur').value;
+    document.getElementById('heat-radius-label').textContent = r;
+    document.getElementById('heat-blur-label').textContent   = b;
+    if (heatLayer) maps[3].removeLayer(heatLayer);
+    heatLayer = L.heatLayer(heatPoints, {
+        radius: r, blur: b, maxZoom: 14,
+        gradient: { 0.2:'blue', 0.5:'lime', 0.8:'yellow', 1:'red' }
+    }).addTo(maps[3]);
+}
+
+// ⑤ 코로플레스 — 실제 시도 GeoJSON 사용 (jsDelivr GitHub CDN)
+const regionData = {
+    '서울':34215, '부산':15621, '대구':9843, '인천':14523, '광주':7234,
+    '대전':8123, '울산':5234, '세종':1893, '경기':58432, '강원':7891,
+    '충북':8234, '충남':11234, '전북':9123, '전남':10234,
+    '경북':13234, '경남':17234, '제주':4823
+};
+// GeoJSON properties.name 의 정식 행정구역명 → 약칭 매핑
+const sidoNameMap = {
+    '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천',
+    '광주광역시':'광주','대전광역시':'대전','울산광역시':'울산',
+    '세종특별자치시':'세종','세종시':'세종',
+    '경기도':'경기',
+    '강원도':'강원','강원특별자치도':'강원',
+    '충청북도':'충북','충청남도':'충남',
+    '전라북도':'전북','전북특별자치도':'전북',
+    '전라남도':'전남','경상북도':'경북','경상남도':'경남',
+    '제주특별자치도':'제주','제주도':'제주'
+};
+function getColor(v) {
+    return v > 50000 ? '#084594' : v > 30000 ? '#2171b5' :
+           v > 15000 ? '#4292c6' : v > 10000 ? '#6baed6' :
+           v >  5000 ? '#9ecae1' : '#deebf7';
+}
+const ls = document.createElement('style');
+ls.textContent = '.sido-label{background:transparent;border:none;color:#1e293b;font-weight:700;font-size:11px;text-shadow:0 0 3px white,0 0 3px white,0 0 3px white;box-shadow:none}';
+document.head.appendChild(ls);
+
+const GEOJSON_URL = 'https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json';
+
+initFns[4] = () => {
+    maps[4] = L.map('map5').setView([36.3, 127.8], 7);
+    tile().addTo(maps[4]);
+
+    // 로딩 안내
+    const loadingMsg = L.control({ position:'topright' });
+    loadingMsg.onAdd = () => {
+        const div = L.DomUtil.create('div');
+        div.id = 'geo-loading';
+        div.style = 'background:white;padding:6px 10px;border-radius:6px;font-size:12px;color:#475569;box-shadow:0 2px 4px rgba(0,0,0,.1)';
+        div.innerHTML = '⏳ 시도 GeoJSON 로딩 중…';
+        return div;
+    };
+    loadingMsg.addTo(maps[4]);
+
+    fetch(GEOJSON_URL)
+        .then(r => { if (!r.ok) throw new Error('GeoJSON load failed'); return r.json(); })
+        .then(geo => {
+            const layer = L.geoJSON(geo, {
+                style: f => {
+                    const sido = sidoNameMap[f.properties.name] || f.properties.name;
+                    const v = regionData[sido] || 0;
+                    return { fillColor: getColor(v), fillOpacity: 0.75, color: 'white', weight: 1 };
+                },
+                onEachFeature: (f, lyr) => {
+                    const sido = sidoNameMap[f.properties.name] || f.properties.name;
+                    const v = regionData[sido] || 0;
+                    lyr.bindPopup(`<b>${sido}</b><br>사고 ${v.toLocaleString()}건`);
+                    lyr.bindTooltip(sido, { permanent:true, direction:'center', className:'sido-label' });
+                    lyr.on('mouseover', () => lyr.setStyle({ fillOpacity:0.95, weight:2.5 }));
+                    lyr.on('mouseout',  () => lyr.setStyle({ fillOpacity:0.75, weight:1 }));
+                }
+            }).addTo(maps[4]);
+            try { maps[4].fitBounds(layer.getBounds()); } catch(e) {}
+            const el = document.getElementById('geo-loading');
+            if (el) el.remove();
+        })
+        .catch(err => {
+            console.warn('GeoJSON 로드 실패, 사각형 폴백 사용:', err);
+            const el = document.getElementById('geo-loading');
+            if (el) el.innerHTML = '⚠️ GeoJSON 로드 실패 → 사각형 표시';
+            // 폴백: 사각형
+            const sidoBoxes = [
+                {name:'서울', center:[37.55,127.0],  size:0.20},{name:'경기', center:[37.40,127.4], size:0.55},
+                {name:'인천', center:[37.45,126.65], size:0.18},{name:'강원', center:[37.80,128.3], size:0.55},
+                {name:'충북', center:[36.80,127.7],  size:0.40},{name:'충남', center:[36.50,126.9], size:0.40},
+                {name:'대전', center:[36.35,127.39], size:0.13},{name:'세종', center:[36.55,127.27],size:0.10},
+                {name:'전북', center:[35.80,127.15], size:0.40},{name:'전남', center:[34.85,126.97],size:0.50},
+                {name:'광주', center:[35.16,126.85], size:0.13},{name:'경북', center:[36.30,128.7], size:0.60},
+                {name:'대구', center:[35.87,128.6],  size:0.18},{name:'경남', center:[35.30,128.3], size:0.55},
+                {name:'부산', center:[35.18,129.07], size:0.18},{name:'울산', center:[35.55,129.31],size:0.22},
+                {name:'제주', center:[33.42,126.55], size:0.40}
+            ];
+            sidoBoxes.forEach(s => {
+                const v = regionData[s.name] || 0;
+                const [la,lo] = s.center, h = s.size/2;
+                const poly = L.polygon([[la-h,lo-h],[la-h,lo+h],[la+h,lo+h],[la+h,lo-h]], {
+                    fillColor: getColor(v), fillOpacity:0.7, color:'#fff', weight:1.5
+                }).addTo(maps[4]);
+                poly.bindPopup(`<b>${s.name}</b><br>사고 ${v.toLocaleString()}건`);
+                poly.bindTooltip(s.name, { permanent:true, direction:'center', className:'sido-label' });
+            });
+        });
+
+    const legend5 = L.control({ position:'bottomright' });
+    legend5.onAdd = () => {
+        const div = L.DomUtil.create('div');
+        div.style = 'background:white;padding:8px 12px;border-radius:6px;font-size:12px;line-height:1.8;box-shadow:0 2px 4px rgba(0,0,0,.1)';
+        div.innerHTML = '<b>사고건수</b><br>';
+        [0,5000,10000,15000,30000,50000].forEach(g => {
+            div.innerHTML += `<span style="background:${getColor(g+1)};display:inline-block;width:14px;height:14px;margin-right:4px;vertical-align:middle"></span>${g.toLocaleString()}+<br>`;
+        });
+        return div;
+    };
+    legend5.addTo(maps[4]);
+};
+
+// ⑥ 폴리라인
+initFns[5] = () => {
+    maps[5] = L.map('map6').setView([37.535, 127.0], 12);
+    tile().addTo(maps[5]);
+    const route = [
+        [37.5665,126.978],[37.560,127.000],[37.553,127.018],[37.546,127.040],
+        [37.540,127.060],[37.535,127.082],[37.528,127.097]
+    ];
+    L.polyline(route, { color:'#ef4444', weight:5, opacity:0.85 }).addTo(maps[5]).bindPopup('한강 북단 시뮬레이션 경로');
+    L.polygon([[37.555,126.97],[37.555,127.00],[37.540,127.00],[37.540,126.97]], {
+        color:'#3b82f6', fillColor:'#3b82f6', fillOpacity:0.25
+    }).addTo(maps[5]).bindPopup('관심 폴리곤 영역');
+    L.circle([37.510,127.05], { radius:1500, color:'#10b981', fillColor:'#10b981', fillOpacity:0.18 })
+     .addTo(maps[5]).bindPopup('반경 1.5km 원');
+    L.marker(route[0]).addTo(maps[5]).bindPopup('출발');
+    L.marker(route[route.length-1]).addTo(maps[5]).bindPopup('도착');
+};
+
+// ⑦ 베이스 타일 전환
+initFns[6] = () => {
+    maps[6] = L.map('map7').setView([37.55, 127.0], 11);
+    const osm     = L.tileLayer(TILE, { attribution: ATTR });
+    const dark    = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',  { attribution:'© CartoDB' });
+    const light   = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution:'© CartoDB' });
+    const voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution:'© CartoDB' });
+    osm.addTo(maps[6]);
+    const markerLayer = L.layerGroup();
+    accidents.forEach(a => L.marker([a.lat,a.lng]).bindPopup(a.name).addTo(markerLayer));
+    markerLayer.addTo(maps[6]);
+    const heatOver = L.heatLayer(heatPoints.slice(0, 200), { radius:22, blur:15 });
+    L.control.layers(
+        { 'OSM (기본)': osm, 'Dark': dark, 'Light': light, 'Voyager': voyager },
+        { '주요 교차로 마커': markerLayer, '히트맵': heatOver }
+    ).addTo(maps[6]);
+};
+</script>
+</body>
+</html>
