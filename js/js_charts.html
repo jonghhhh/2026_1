@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>Chart.js — 인터랙티브 차트 종합 가이드</title>
+<title>Chart.js — 인터랙티브 차트 종합 가이드 (학습용)</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.3.1/dist/chartjs-chart-treemap.min.js"></script>
 <style>
@@ -15,7 +15,6 @@
   }
   header h1 { font-size: 22px; font-weight: 600; }
   header p  { font-size: 13px; opacity: .85; margin-top: 4px; }
-  header a  { color: #fde68a; text-decoration: none; margin-right: 12px; font-size: 12px; }
 
   .tabs {
     display: flex; gap: 4px; padding: 14px 24px;
@@ -50,6 +49,10 @@
     overflow-x: auto; margin-bottom: 12px;
     font-family: 'Consolas', 'Monaco', monospace; white-space: pre;
   }
+  pre.code .cmt   { color: #64748b; font-style: italic; }
+  pre.code .key   { color: #fbbf24; }
+  pre.code .str   { color: #86efac; }
+  pre.code .swap  { color: #fca5a5; font-weight: 600; }
 
   .chart-wrap { position: relative; height: 360px; margin-top: 12px; }
   .chart-wrap-sm { position: relative; height: 280px; margin-top: 12px; }
@@ -61,7 +64,6 @@
     border-radius: 6px; font-size: 13px; cursor: pointer;
   }
 
-  /* ── 강의용 설명 블록 ── */
   .explain {
     background: #f8fafc; border: 1px solid #e2e8f0;
     border-radius: 10px; padding: 14px 18px; margin: 14px 0;
@@ -82,15 +84,19 @@
     padding: 8px 12px; border-radius: 0 6px 6px 0;
     font-size: 12px; color: #1e40af; margin-top: 10px;
   }
-  .warn-box {
-    background: #fef2f2; border-left: 3px solid #ef4444;
+  .swap-note {
+    background: #fef9c3; border-left: 3px solid #eab308;
     padding: 8px 12px; border-radius: 0 6px 6px 0;
-    font-size: 12px; color: #991b1b; margin-top: 10px;
+    font-size: 12px; color: #713f12; margin-bottom: 10px;
   }
   .intro {
-    background: #eff6ff; border-radius: 8px; padding: 12px 16px;
-    font-size: 13px; color: #1e3a8a; margin-bottom: 14px;
+    background: #eff6ff; border-radius: 8px; padding: 14px 18px;
+    font-size: 13px; color: #1e3a8a; margin-bottom: 14px; line-height: 1.7;
   }
+  .intro b { color: #1e3a8a; }
+  .intro ol { padding-left: 22px; margin-top: 6px; }
+  .intro li { padding: 2px 0; }
+  .intro code { background: #dbeafe; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
@@ -100,118 +106,238 @@
 
 <header>
   <h1>📊 Chart.js — 인터랙티브 차트 종합 가이드</h1>
-  <p>교통사고 데이터(TAAS)로 배우는 9가지 차트 + ⭐인터랙티브 필터</p>
+  <p>교통사고 데이터(TAAS)로 배우는 9가지 차트 + ⭐인터랙티브 필터 · 코드 그대로 복사 → 데이터만 교체</p>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab(0)">① Bar</div>
-  <div class="tab" onclick="showTab(1)">② Line (이중축)</div>
-  <div class="tab" onclick="showTab(2)">③ Pie / Doughnut</div>
-  <div class="tab" onclick="showTab(3)">④ Radar</div>
-  <div class="tab" onclick="showTab(4)">⑤ Bubble</div>
-  <div class="tab" onclick="showTab(5)">⑥ Scatter</div>
-  <div class="tab" onclick="showTab(6)">⑦ Polar Area</div>
-  <div class="tab" onclick="showTab(7)">⑧ Mixed (Bar+Line)</div>
-  <div class="tab" onclick="showTab(8)">⑨ Treemap</div>
-  <div class="tab" onclick="showTab(9)">⑩ 인터랙티브 필터 ⭐</div>
+  <div class="tab active" onclick="showTab(0)">⓪ 시작하기</div>
+  <div class="tab" onclick="showTab(1)">① Bar</div>
+  <div class="tab" onclick="showTab(2)">② Line (이중축)</div>
+  <div class="tab" onclick="showTab(3)">③ Pie / Doughnut</div>
+  <div class="tab" onclick="showTab(4)">④ Radar</div>
+  <div class="tab" onclick="showTab(5)">⑤ Bubble</div>
+  <div class="tab" onclick="showTab(6)">⑥ Scatter</div>
+  <div class="tab" onclick="showTab(7)">⑦ Polar Area</div>
+  <div class="tab" onclick="showTab(8)">⑧ Mixed</div>
+  <div class="tab" onclick="showTab(9)">⑨ Treemap</div>
+  <div class="tab" onclick="showTab(10)">⑩ 인터랙티브 필터 ⭐</div>
+</div>
+
+<!-- ═════════════════ ⓪ 시작하기 ═════════════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <div class="card-head">⓪ Chart.js 4단계 워크플로우 — 모든 차트의 공통 패턴</div>
+    <div class="card-body">
+      <div class="intro">
+        <b>Chart.js로 차트를 그리는 과정은 항상 똑같은 4단계입니다.</b> 차트 종류만 다르지 흐름은 동일하므로,
+        이 패턴을 한 번 익히면 다른 차트는 <code>type</code>과 <code>data</code>만 바꿔 쓰면 됩니다.
+        <ol>
+          <li><b>① CDN 스크립트 로드</b> — HTML <code>&lt;head&gt;</code>에 한 번만</li>
+          <li><b>② 캔버스 만들기</b> — <code>&lt;canvas id="..."&gt;</code> 하나가 차트 한 개</li>
+          <li><b>③ 데이터 준비</b> — 배열로 직접 작성하거나 <code>fetch()</code>로 외부 파일 로드</li>
+          <li><b>④ Chart 인스턴스 생성</b> — <code>new Chart(canvas, { type, data, options })</code></li>
+        </ol>
+        💡 <b>학생 미션</b>: 아래 코드를 그대로 복사 → ③ 데이터 부분(<span style="color:#dc2626;font-weight:600">노란 표시</span>)만 자기 데이터로 교체.
+      </div>
+
+<pre class="code"><span class="cmt">&lt;!-- ① Chart.js CDN 로드 (HTML head에 한 번만) --&gt;</span>
+&lt;script src=<span class="str">"https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"</span>&gt;&lt;/script&gt;
+
+<span class="cmt">&lt;!-- ② 차트가 그려질 캔버스 (id는 자유) --&gt;</span>
+&lt;canvas id=<span class="str">"myChart"</span>&gt;&lt;/canvas&gt;
+
+&lt;script&gt;
+<span class="cmt">// ③ 데이터 준비 — A안: 배열로 직접 작성</span>
+<span class="key">const</span> labels = <span class="swap">['2020','2021','2022','2023']</span>;
+<span class="key">const</span> values = <span class="swap">[100, 120, 95, 140]</span>;
+
+<span class="cmt">// ③ 데이터 준비 — B안: 외부 JSON/CSV에서 fetch (실무 패턴)</span>
+<span class="cmt">// fetch('data.json')</span>
+<span class="cmt">//     .then(res =&gt; res.json())          // JSON 파싱</span>
+<span class="cmt">//     .then(rows =&gt; {                    // rows = [{year:2020,count:100}, ...]</span>
+<span class="cmt">//         const labels = rows.map(r =&gt; r.year);</span>
+<span class="cmt">//         const values = rows.map(r =&gt; r.count);</span>
+<span class="cmt">//         drawChart(labels, values);</span>
+<span class="cmt">//     });</span>
+
+<span class="cmt">// ④ Chart 인스턴스 생성</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'myChart'</span>), {
+    type: <span class="str">'bar'</span>,                        <span class="cmt">// 차트 종류만 바꾸면 다른 차트</span>
+    data: {
+        labels,                          <span class="cmt">// x축 라벨</span>
+        datasets: [{
+            label: <span class="str">'판매량'</span>,
+            data: values,                <span class="cmt">// 값 배열</span>
+            backgroundColor: <span class="str">'rgba(59,130,246,0.7)'</span>
+        }]
+    },
+    options: {
+        responsive: <span class="key">true</span>,              <span class="cmt">// 부모 너비에 자동 맞춤</span>
+        maintainAspectRatio: <span class="key">false</span>     <span class="cmt">// 부모 div 높이 사용 → 캔버스를 div로 감싸기</span>
+    }
+});
+&lt;/script&gt;</pre>
+
+      <div class="tip">💡 <b>차트 종류 바꾸기</b>: 위 코드에서 <code>type:'bar'</code>를 <code>'line'</code>, <code>'pie'</code>, <code>'radar'</code>, <code>'scatter'</code>, <code>'bubble'</code>, <code>'polarArea'</code>, <code>'doughnut'</code>로 바꾸면 그게 바로 그 차트입니다. 데이터 형식만 차트별로 살짝 다릅니다(아래 탭에서 하나씩).</div>
+      <div class="tip">💡 <b>데이터를 외부에서 불러오는 3가지 방법</b>: ⓐ JSON 파일을 <code>fetch().then(r=&gt;r.json())</code>, ⓑ CSV는 <code>fetch().then(r=&gt;r.text())</code> 후 직접 split 또는 PapaParse 라이브러리, ⓒ 구글 시트 발행 URL을 fetch. 어느 쪽이든 <b>최종적으로 labels 배열과 values 배열을 만든다</b>는 점은 동일합니다.</div>
+    </div>
+  </div>
 </div>
 
 <!-- ═════════════════ ① Bar ═════════════════ -->
-<div class="panel active" id="panel0">
+<div class="panel" id="panel1">
   <div class="card">
-    <div class="card-head">막대 그래프 (Bar) — 연도별 사고건수</div>
+    <div class="card-head">① 막대 그래프 (Bar) — 연도별 사고건수</div>
     <div class="card-body">
       <div class="explain">
         <h5>📚 막대 그래프란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · <b>여러 항목의 양(量)을 비교</b>하는 가장 기본적인 차트. 막대 길이가 곧 값.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 카테고리 간 차이를 한눈에 인식하기 쉬움. 숫자 정확도가 높음(시작점이 0이므로 비례 인식 직관적).</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · <b>여러 항목의 양(量)을 비교</b>. 막대 길이 = 값.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 시작점이 0이라 비례 인식이 직관적. 카테고리 간 차이가 한눈에 보임.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>연도별 사고건수처럼 <b>같은 단위·같은 측정값</b>의 시간 비교</li>
-            <li>시도별 사망자처럼 <b>지역 간 순위·격차</b> 비교</li>
-            <li>차종별·연령대별 빈도처럼 <b>범주별 카운트</b></li>
+            <li>연도별 사고건수 — <b>같은 단위</b>의 시간 비교</li>
+            <li>시도별 사망자 — <b>지역 간 순위·격차</b></li>
+            <li>차종별·연령대별 빈도 — <b>범주별 카운트</b></li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 항목이 너무 많으면(20개+) 가로 스크롤이 필요해 가독성 ↓ — 그땐 가로 막대(<code>indexAxis:'y'</code>)나 트리맵을 고려.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 항목이 20개 넘으면 가로 막대(<code>indexAxis:'y'</code>)나 트리맵을 고려.</div>
       </div>
-<pre class="code">// ── Chart.js 기본 3단계 ──
-// 1) canvas 요소 선택
-const ctx = document.getElementById('barChart');
 
-// 2) Chart 인스턴스 생성
-new Chart(ctx, {
-    type: 'bar',
+      <div class="swap-note">📝 <b>자기 데이터로 바꾸려면</b>: 아래 <code>labels</code> · <code>values</code> 두 배열만 자기 값으로 교체. 길이만 같으면 됩니다.</div>
+
+<pre class="code"><span class="cmt">// ─── ① CDN: Chart.js 한 줄 (head에 한 번) ───</span>
+<span class="cmt">// &lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"&gt;&lt;/script&gt;</span>
+<span class="cmt">// ─── ② 캔버스: &lt;canvas id="barChart"&gt;&lt;/canvas&gt; ───</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── 여기만 바꾸세요</span>
+<span class="key">const</span> labels = <span class="swap">[2016,2017,2018,2019,2020,2021,2022,2023]</span>;
+<span class="key">const</span> values = <span class="swap">[220917,216335,217148,229600,209654,203130,196836,191418]</span>;
+
+<span class="cmt">// ④ 차트 생성</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'barChart'</span>), {
+    type: <span class="str">'bar'</span>,
     data: {
-        labels: years,
-        datasets: [{ label:'교통사고 건수', data: 사고건수,
-            backgroundColor: 'rgba(59,130,246,0.7)' }]
+        labels,
+        datasets: [{
+            label: <span class="str">'교통사고 건수'</span>,
+            data: values,
+            backgroundColor: <span class="str">'rgba(59,130,246,0.7)'</span>,
+            borderColor: <span class="str">'rgb(59,130,246)'</span>,
+            borderWidth: 1
+        }]
     },
-    options: { responsive: true, maintainAspectRatio: false }
+    options: {
+        responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        plugins: { title: { display: <span class="key">true</span>, text: <span class="str">'연도별 교통사고 건수'</span> } },
+        scales:  { y: { ticks: { callback: v =&gt; v.toLocaleString() } } }
+    }
 });</pre>
       <div class="chart-wrap"><canvas id="barChart"></canvas></div>
-      <div class="tip">💡 <code>maintainAspectRatio:false</code>를 켜야 부모 div의 height에 맞춰 늘어납니다.</div>
+      <div class="tip">💡 <code>maintainAspectRatio:false</code> + <b>높이가 정해진 부모 div</b> 조합이 핵심. 안 쓰면 차트가 무한히 커집니다.</div>
     </div>
   </div>
 </div>
 
 <!-- ═════════════════ ② Line ═════════════════ -->
-<div class="panel" id="panel1">
+<div class="panel" id="panel2">
   <div class="card">
-    <div class="card-head">선 그래프 (Line) — 사고건수 + 사망자 (이중 축)</div>
+    <div class="card-head">② 선 그래프 (Line) — 사고건수 + 사망자 (이중축)</div>
     <div class="card-body">
       <div class="explain">
-        <h5>📚 선 그래프(특히 이중축)란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · <b>시간에 따른 변화 추세</b>를 보여주는 데 최적. 점들을 연결한 선이 "흐름"을 인식시킴.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 이중축(좌·우 다른 스케일)을 쓰면 <b>단위가 다른 두 시리즈</b>를 한 화면에서 비교 가능.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <h5>📚 선 그래프(이중축)란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · <b>시간에 따른 변화</b>를 보여줌. 점들을 잇는 선이 "흐름"을 인식시킴.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 좌·우 두 축을 따로 두면(<b>이중축</b>) <b>스케일이 다른 두 시리즈</b>를 한 화면에서 비교 가능.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>"사고건수(만 단위) ↔ 사망자(명 단위)"처럼 <b>스케일이 10000:1로 다른</b> 두 지표를 같이 보고 싶을 때</li>
-            <li>"통행량 ↔ 사고건수" 추세 비교, "강수량 ↔ 야간 사고" 동행성 확인</li>
-            <li>"코로나 전·후" 같은 시계열 변곡점 강조</li>
+            <li>사고건수(만 단위) ↔ 사망자(명 단위) — 스케일 1만:1</li>
+            <li>통행량 ↔ 사고건수, 강수량 ↔ 야간사고 — 동행성 확인</li>
+            <li>코로나 전·후 같은 시계열 변곡점 강조</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 이중축은 인과를 시사하지 않음 — 두 선이 "같이 움직이는 것"일 뿐. 또 양쪽 스케일 시작점을 임의로 잡으면 시각적 왜곡 가능.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 이중축은 <b>인과를 시사하지 않음</b>. "같이 움직인다"일 뿐. 양 축 시작점을 임의로 잡으면 시각적 왜곡.</div>
       </div>
-<pre class="code">// 단위가 다른 두 시리즈를 한 차트에 → yAxisID + scales 분리
-datasets: [
-    { label:'사고건수(만)', data:..., yAxisID:'y',  borderColor:'#3b82f6', fill:true },
-    { label:'사망자(명)',   data:..., yAxisID:'y2', borderColor:'#ef4444' }
-],
-scales: {
-    y:  { position:'left'  },
-    y2: { position:'right', grid:{ drawOnChartArea:false } }
-}</pre>
+
+      <div class="swap-note">📝 <b>핵심 패턴</b>: 시리즈마다 <code>yAxisID</code>를 다르게 주고, <code>scales</code>에서 두 축(<code>y</code>, <code>y2</code>)을 따로 정의.</div>
+
+<pre class="code"><span class="cmt">// ② 캔버스: &lt;canvas id="lineChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── 여기만 바꾸세요</span>
+<span class="key">const</span> years     = <span class="swap">[2016,2017,2018,2019,2020,2021,2022,2023]</span>;
+<span class="key">const</span> accidents = <span class="swap">[22.1,21.6,21.7,23.0,21.0,20.3,19.7,19.1]</span>;  <span class="cmt">// 만건</span>
+<span class="key">const</span> deaths    = <span class="swap">[4292,4185,3781,3349,3081,2916,2735,2551]</span>;       <span class="cmt">// 명</span>
+
+<span class="cmt">// ④ 차트 생성 ─── 단위 다른 두 시리즈는 yAxisID로 축 분리</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'lineChart'</span>), {
+    type: <span class="str">'line'</span>,
+    data: { labels: years, datasets: [
+        { label: <span class="str">'사고건수(만건)'</span>, data: accidents, yAxisID: <span class="str">'y'</span>,
+          borderColor: <span class="str">'#3b82f6'</span>, backgroundColor: <span class="str">'rgba(59,130,246,0.15)'</span>,
+          tension: 0.3, fill: <span class="key">true</span>, pointRadius: 4 },
+        { label: <span class="str">'사망자(명)'</span>,    data: deaths,    yAxisID: <span class="str">'y2'</span>,
+          borderColor: <span class="str">'#ef4444'</span>, backgroundColor: <span class="str">'rgba(239,68,68,0.15)'</span>,
+          tension: 0.3, fill: <span class="key">true</span>, pointRadius: 4 }
+    ]},
+    options: {
+        responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        interaction: { mode: <span class="str">'index'</span>, intersect: <span class="key">false</span> },  <span class="cmt">// 같은 x에서 두 점 동시 툴팁</span>
+        scales: {
+            y:  { position: <span class="str">'left'</span>,  title: { display: <span class="key">true</span>, text: <span class="str">'사고건수(만)'</span> } },
+            y2: { position: <span class="str">'right'</span>, title: { display: <span class="key">true</span>, text: <span class="str">'사망자(명)'</span> },
+                  grid: { drawOnChartArea: <span class="key">false</span> } }   <span class="cmt">// 오른쪽 축 격자 숨김</span>
+        }
+    }
+});</pre>
       <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
     </div>
   </div>
 </div>
 
 <!-- ═════════════════ ③ Pie + Doughnut ═════════════════ -->
-<div class="panel" id="panel2">
+<div class="panel" id="panel3">
   <div class="card">
-    <div class="card-head">파이 / 도넛 — 사고유형별 비율</div>
+    <div class="card-head">③ 파이 / 도넛 — 사고유형별 비율</div>
     <div class="card-body">
       <div class="explain">
-        <h5>📚 파이/도넛 차트란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · <b>전체 100% 중 부분 비율</b>을 직관적으로 표현. "차대차가 전체의 74%"처럼.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 파이는 꽉 찬 원, 도넛은 가운데가 비어 있어 합계·핵심 수치를 글자로 넣기 좋음.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <h5>📚 파이 / 도넛이란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · <b>전체 100% 중 부분 비율</b>을 한눈에. "차대차가 전체의 74%"처럼.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · <code>type</code>만 <code>'pie'</code> ↔ <code>'doughnut'</code>으로 바꾸면 끝. 도넛은 가운데에 합계 텍스트 넣기 좋음.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
             <li>사고유형별 비율(차대차·차대사람·차량단독)</li>
-            <li>월별 사고가 아닌 <b>월별 사망 비율</b>처럼 합이 의미 있는 항목</li>
-            <li>가해 차종 비율(승용·승합·화물·이륜)</li>
+            <li>월별 사망 비율, 가해 차종 비율</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 항목이 5개 넘으면 각도 차이가 안 보임 → 막대가 더 나음. 시계열 비교에도 부적합(파이를 여러 개 늘어놓는 건 비효율).</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 항목이 5개 넘으면 각도 차이가 안 보임 → 막대가 더 정확. 시계열 비교에도 부적합.</div>
       </div>
-<pre class="code">// type만 'pie' ↔ 'doughnut' 으로 바꾸면 됩니다
-new Chart(ctx, {
-    type: 'pie',  // 또는 'doughnut'
-    data: { labels:[...], datasets:[{ data:[...], backgroundColor:[...] }] },
-    options: { plugins:{ tooltip:{ callbacks:{
-        label: c => `${c.label}: ${(c.raw/total*100).toFixed(1)}%`
-    }}}}
-});</pre>
+
+      <div class="swap-note">📝 <b>자기 데이터로</b>: <code>labels</code>와 <code>values</code> 두 배열만 길이 맞춰 교체. 색은 자동 처리하거나 직접 지정.</div>
+
+<pre class="code"><span class="cmt">// ② 캔버스 2개: &lt;canvas id="pieChart"&gt;, &lt;canvas id="doughnutChart"&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비</span>
+<span class="key">const</span> labels = <span class="swap">['차대차','차대사람','차량단독','철길건널목']</span>;
+<span class="key">const</span> values = <span class="swap">[142350, 42580, 6380, 108]</span>;
+<span class="key">const</span> colors = [<span class="str">'#3b82f6'</span>,<span class="str">'#ef4444'</span>,<span class="str">'#f59e0b'</span>,<span class="str">'#10b981'</span>];
+<span class="key">const</span> total  = values.reduce((a,b) =&gt; a+b, 0);
+
+<span class="cmt">// ④ 차트 생성 ─── pie/doughnut은 type만 다르므로 함수로 묶음</span>
+<span class="key">function</span> drawPie(canvasId, type) {
+    <span class="key">new</span> Chart(document.getElementById(canvasId), {
+        type,                                     <span class="cmt">// 'pie' 또는 'doughnut'</span>
+        data: { labels, datasets: [{ data: values,
+            backgroundColor: colors, borderColor: <span class="str">'white'</span>, borderWidth: 2 }] },
+        options: {
+            responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+            plugins: { tooltip: { callbacks: {
+                label: c =&gt; ` ${c.label}: ${c.raw.toLocaleString()}건 ` +
+                            `(${(c.raw/total*100).toFixed(1)}%)`
+            }}}
+        }
+    });
+}
+drawPie(<span class="str">'pieChart'</span>,      <span class="str">'pie'</span>);
+drawPie(<span class="str">'doughnutChart'</span>, <span class="str">'doughnut'</span>);</pre>
+
       <div class="two-col">
         <div><div class="chart-wrap-sm"><canvas id="pieChart"></canvas></div></div>
         <div><div class="chart-wrap-sm"><canvas id="doughnutChart"></canvas></div></div>
@@ -221,93 +347,159 @@ new Chart(ctx, {
 </div>
 
 <!-- ═════════════════ ④ Radar ═════════════════ -->
-<div class="panel" id="panel3">
+<div class="panel" id="panel4">
   <div class="card">
-    <div class="card-head">레이더 (Radar) — 시도별 다차원 비교</div>
+    <div class="card-head">④ 레이더 (Radar) — 시도별 다차원 비교</div>
     <div class="card-body">
       <div class="explain">
         <h5>📚 레이더 차트란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 한 대상의 <b>여러 항목 점수를 동시에 보여주는 다각형 프로파일</b>. 모양 자체가 "특성"을 시각적 패턴으로 만듦.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 여러 다각형을 겹쳐 그려 <b>대상 간 패턴 차이</b>를 비교. 각 꼭짓점은 한 항목.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 여러 항목 점수를 동시에 보여주는 <b>다각형 프로파일</b>. 모양 자체가 "특성"의 시각 패턴이 됨.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 다각형을 겹쳐 그려 <b>대상 간 패턴 차이</b>를 비교. 꼭짓점 = 항목, 다각형 = 비교 대상.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>각 시도의 (사고건수·사망자·부상자·사망률·10만명당) 5개 지표 동시 비교</li>
-            <li>운전자 프로파일: (반응속도·시야·집중력·경험·피로도)</li>
-            <li>도로 안전도: (가로등·신호·횡단보도·과속단속·CCTV) 다항 점수</li>
+            <li>시도별 (사고건수·사망·부상·사망률·10만명당) 5지표 동시 비교</li>
+            <li>운전자 프로파일(반응속도·시야·집중력·경험·피로도)</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 항목 단위가 모두 달라서 그대로 그리면 큰 값 항목이 지배 → <b>0~1 정규화</b>가 필수. 다각형이 3개 넘으면 겹쳐서 안 보임.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 항목 단위가 다르면 큰 값이 지배 → <b>0~1 정규화</b> 필수. 다각형 3개 넘으면 겹쳐 안 보임.</div>
       </div>
-<pre class="code">// labels = 꼭짓점, datasets = 비교 대상 (여러 다각형)
-data: {
-    labels: ['서울','경기','부산','대구','인천','광주','대전'],
-    datasets: [
-        { label:'사고건수(백)', data:[342,584,156,98,145,72,81] },
-        { label:'사망자',       data:[252,681,178,98,141,67,83] }
-    ]
-}</pre>
+
+      <div class="swap-note">📝 <b>구조</b>: <code>labels</code> = 꼭짓점 항목, <code>datasets</code> = 비교할 대상들(다각형 N개).</div>
+
+<pre class="code"><span class="cmt">// ② &lt;canvas id="radarChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── labels는 항목, 각 dataset은 비교 대상</span>
+<span class="key">const</span> labels    = <span class="swap">['서울','경기','부산','대구','인천','광주','대전']</span>;
+<span class="key">const</span> accidents = <span class="swap">[342, 584, 156, 98, 145, 72, 81]</span>;   <span class="cmt">// 100건 단위</span>
+<span class="key">const</span> deaths    = <span class="swap">[252, 681, 178, 98, 141, 67, 83]</span>;   <span class="cmt">// 명</span>
+
+<span class="cmt">// ④ 차트 생성</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'radarChart'</span>), {
+    type: <span class="str">'radar'</span>,
+    data: { labels, datasets: [
+        { label: <span class="str">'사고건수(백건)'</span>, data: accidents,
+          borderColor: <span class="str">'#3b82f6'</span>, backgroundColor: <span class="str">'rgba(59,130,246,0.25)'</span>,
+          pointBackgroundColor: <span class="str">'#3b82f6'</span> },
+        { label: <span class="str">'사망자(명)'</span>,    data: deaths,
+          borderColor: <span class="str">'#ef4444'</span>, backgroundColor: <span class="str">'rgba(239,68,68,0.25)'</span>,
+          pointBackgroundColor: <span class="str">'#ef4444'</span> }
+    ]},
+    options: { responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span> }
+});</pre>
       <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
     </div>
   </div>
 </div>
 
 <!-- ═════════════════ ⑤ Bubble ═════════════════ -->
-<div class="panel" id="panel4">
+<div class="panel" id="panel5">
   <div class="card">
-    <div class="card-head">버블 차트 — 사고건수(x) × 사망자(y) × 인구(원 크기)</div>
+    <div class="card-head">⑤ 버블 차트 — 사고건수(x) × 사망자(y) × 인구(원 크기)</div>
     <div class="card-body">
       <div class="explain">
         <h5>📚 버블 차트란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 산점도에 <b>"세 번째 변수"를 원의 크기로 추가</b>. 한 차트에 3변수를 동시 표현.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 위치(x,y) + 크기(r). 색상까지 쓰면 4변수도 가능. <b>"고위험 지역"</b>을 큰 빨간 원처럼 강조 가능.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 산점도에 <b>"세 번째 변수"를 원의 크기</b>로 추가. 한 차트에 3변수 동시 표현.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 위치(x,y) + 크기(r). 색상까지 쓰면 4변수도 가능.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>x=사고건수, y=사망자, r=인구 → "<b>인구 대비 사고가 많은 지역</b>"이 한눈에</li>
-            <li>x=주행거리, y=사고율, r=차령(차량 나이) → 노후 차량 위험도</li>
-            <li>x=음주측정 횟수, y=적발률, r=면허 보유자 수</li>
+            <li>x=사고건수, y=사망자, r=인구 → "<b>인구 대비 위험 지역</b>"</li>
+            <li>x=주행거리, y=사고율, r=차령</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · r은 <b>면적</b>이 값에 비례하도록 √(값) 변환을 권장. 직접 r=값으로 하면 큰 값이 과장됨.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · r은 <b>면적이 값에 비례</b>하도록 <code>√값</code>으로 변환 권장. 직접 r=값으로 하면 큰 값이 과장됨.</div>
       </div>
-<pre class="code">// 각 점이 {x, y, r} 객체. r은 픽셀 단위 반지름
-datasets: [{
-    label:'서울',
-    data:[{ x:342, y:252, r:18 }],
-    backgroundColor:'rgba(59,130,246,0.7)'
-}]</pre>
+
+      <div class="swap-note">📝 <b>데이터 형식</b>: 각 점은 <code>{x, y, r}</code> 객체. 시도별로 색을 다르게 주려면 dataset을 시도별로 분리.</div>
+
+<pre class="code"><span class="cmt">// ② &lt;canvas id="bubbleChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── 시도별 (x: 사고건수, y: 사망자, r: 인구만)</span>
+<span class="key">const</span> sido       = <span class="swap">['서울','경기','부산','대구','인천','광주','대전']</span>;
+<span class="key">const</span> accidents  = <span class="swap">[34215,58432,15621,9843,14523,7234,8123]</span>;
+<span class="key">const</span> deaths     = <span class="swap">[252,681,178,98,141,67,83]</span>;
+<span class="key">const</span> population = <span class="swap">[950,1340,330,240,295,143,145]</span>;  <span class="cmt">// 만 명</span>
+
+<span class="cmt">// 시도별로 색을 분리하기 위해 dataset 7개 생성</span>
+<span class="key">const</span> datasets = sido.map((name, i) =&gt; ({
+    label: name,
+    data: [{
+        x: accidents[i],
+        y: deaths[i],
+        r: Math.sqrt(population[i]) * 0.8   <span class="cmt">// 면적이 인구에 비례</span>
+    }],
+    backgroundColor: `hsla(${i*45},70%,55%,0.65)`,
+    borderColor:    `hsla(${i*45},70%,40%,0.9)`,
+    borderWidth: 1
+}));
+
+<span class="cmt">// ④ 차트 생성</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'bubbleChart'</span>), {
+    type: <span class="str">'bubble'</span>,
+    data: { datasets },
+    options: {
+        responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        plugins: { tooltip: { callbacks: {
+            label: c =&gt; `${c.dataset.label}: 사고 ${c.raw.x.toLocaleString()}건, ` +
+                        `사망 ${c.raw.y}명`
+        }}},
+        scales: { x: { title: { display: <span class="key">true</span>, text: <span class="str">'사고건수'</span> } },
+                  y: { title: { display: <span class="key">true</span>, text: <span class="str">'사망자(명)'</span> } } }
+    }
+});</pre>
       <div class="chart-wrap"><canvas id="bubbleChart"></canvas></div>
     </div>
   </div>
 </div>
 
 <!-- ═════════════════ ⑥ Scatter ═════════════════ -->
-<div class="panel" id="panel5">
+<div class="panel" id="panel6">
   <div class="card">
-    <div class="card-head">산점도 (Scatter) — 사고건수와 사망률의 상관</div>
+    <div class="card-head">⑥ 산점도 (Scatter) — 사고건수와 사망률의 상관</div>
     <div class="card-body">
       <div class="explain">
         <h5>📚 산점도란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 두 변수의 <b>관계(상관·역상관·무관)</b>를 점들의 분포 패턴으로 확인. 통계 분석의 출발점.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 점이 우상향이면 양의 상관, 우하향이면 음의 상관, 흩어져 있으면 무관. 회귀선·이상치도 한눈에.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 두 변수의 <b>관계(상관·역상관·무관)</b>를 점 분포로 확인. 통계 분석의 출발점.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 우상향=양의 상관, 우하향=음의 상관, 흩어짐=무관. 회귀선·이상치도 한눈에.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>x=사고건수, y=사망률(%) → "사고가 많은 곳이 더 위험한가?"</li>
-            <li>x=차량 평균속도, y=중상 비율 → 속도-피해 정도의 비선형 관계</li>
-            <li>x=음주운전 단속 건수, y=음주 사고 → 단속 효과 분석</li>
+            <li>x=사고건수, y=사망률 → "사고 많은 곳이 더 위험한가?"</li>
+            <li>x=평균속도, y=중상 비율 → 속도-피해의 비선형 관계</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 산점도가 보여주는 건 <b>상관(correlation)</b>일 뿐 <b>인과(causation)</b>가 아닙니다. 해석 신중히.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 산점도는 <b>상관(correlation)</b>일 뿐 <b>인과(causation)</b>가 아님.</div>
       </div>
-<pre class="code">// type:'scatter', data는 {x, y} 배열
-new Chart(ctx, {
-    type: 'scatter',
+
+      <div class="swap-note">📝 <b>데이터 형식</b>: <code>{x, y}</code> 객체 배열. label을 추가하면 툴팁에서 점 이름 표시 가능.</div>
+
+<pre class="code"><span class="cmt">// ② &lt;canvas id="scatterChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── {x, y, label} 객체 배열</span>
+<span class="key">const</span> points = <span class="swap">[
+    { x: 34215, y: 0.74, label: '서울' },
+    { x: 58432, y: 1.17, label: '경기' },
+    { x: 15621, y: 1.14, label: '부산' },
+    { x:  9843, y: 1.00, label: '대구' },
+    { x: 14523, y: 0.97, label: '인천' },
+    { x:  7234, y: 0.93, label: '광주' },
+    { x:  8123, y: 1.02, label: '대전' }
+]</span>;
+
+<span class="cmt">// ④ 차트 생성</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'scatterChart'</span>), {
+    type: <span class="str">'scatter'</span>,
     data: { datasets: [{
-        label:'시도', data:[{x:34215,y:0.74},{x:58432,y:1.17},...],
-        backgroundColor:'rgba(99,102,241,0.7)'
+        label: <span class="str">'시도'</span>, data: points,
+        backgroundColor: <span class="str">'rgba(99,102,241,0.7)'</span>,
+        borderColor: <span class="str">'#4338ca'</span>,
+        pointRadius: 8, pointHoverRadius: 11
     }]},
     options: {
-        scales:{ x:{ title:{display:true,text:'사고건수'} },
-                 y:{ title:{display:true,text:'사망률(%)'} } }
+        responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        plugins: { tooltip: { callbacks: {
+            label: c =&gt; `${c.raw.label}: ${c.raw.x.toLocaleString()}건, ${c.raw.y}%`
+        }}},
+        scales: { x: { title: { display: <span class="key">true</span>, text: <span class="str">'사고건수'</span> } },
+                  y: { title: { display: <span class="key">true</span>, text: <span class="str">'사망률(%)'</span> } } }
     }
 });</pre>
       <div class="chart-wrap"><canvas id="scatterChart"></canvas></div>
@@ -316,29 +508,41 @@ new Chart(ctx, {
 </div>
 
 <!-- ═════════════════ ⑦ Polar Area ═════════════════ -->
-<div class="panel" id="panel6">
+<div class="panel" id="panel7">
   <div class="card">
-    <div class="card-head">Polar Area — 시간대별 사고 분포</div>
+    <div class="card-head">⑦ Polar Area — 시간대별 사고 분포</div>
     <div class="card-body">
       <div class="explain">
-        <h5>📚 Polar Area 차트란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 파이와 비슷하지만 <b>각도는 모두 같고 반지름이 값</b>을 표현 → 카테고리 수를 즉시 인식하면서 양도 비교.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 시각적으로 임팩트가 강함. 빈도가 큰 시간대가 멀리 뻗어나가는 형태로 보여 "어디가 위험한지" 즉각 인식.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <h5>📚 Polar Area란?</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 파이와 비슷하지만 <b>각도는 모두 같고 반지름이 값</b>. 카테고리 수와 양을 동시에 인식.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 시각적 임팩트가 강함. 큰 값일수록 멀리 뻗어나가는 형태로 "어디가 위험한지" 즉각 인식.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>시간대별 사고(주중주간·야간·주말·심야): 5~7개 카테고리에 적합</li>
+            <li>시간대별 사고(주중주간·야간·주말·심야): 5~7개 카테고리</li>
             <li>요일별 사고 분포(월~일 7개)</li>
-            <li>월별 강수일 vs 사고 빈도</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 반지름이 값이지만 <b>면적은 r²에 비례</b>해 시각적 과장이 일어남. 정밀 비교가 목적이면 막대가 더 정확.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · <b>면적은 r²에 비례</b>해 시각적 과장 발생. 정밀 비교는 막대가 정확.</div>
       </div>
-<pre class="code">// pie와 비슷하지만 각도는 균등하고 반지름이 값
-new Chart(ctx, {
-    type: 'polarArea',
-    data: {
-        labels: ['주중 주간','주중 야간','주말 주간','주말 야간','심야'],
-        datasets: [{ data:[78532,42180,38420,28910,9376], backgroundColor:[ ... ] }]
+
+      <div class="swap-note">📝 <b>핵심</b>: pie/doughnut과 데이터 구조 동일, <code>type</code>만 <code>'polarArea'</code>.</div>
+
+<pre class="code"><span class="cmt">// ② &lt;canvas id="polarChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비</span>
+<span class="key">const</span> labels = <span class="swap">['주중 주간','주중 야간','주말 주간','주말 야간','심야(0–6시)']</span>;
+<span class="key">const</span> values = <span class="swap">[78532, 42180, 38420, 28910, 9376]</span>;
+<span class="key">const</span> colors = [<span class="str">'rgba(59,130,246,0.6)'</span>, <span class="str">'rgba(239,68,68,0.6)'</span>,
+                <span class="str">'rgba(245,158,11,0.6)'</span>, <span class="str">'rgba(16,185,129,0.6)'</span>,
+                <span class="str">'rgba(139,92,246,0.6)'</span>];
+
+<span class="cmt">// ④ 차트 생성 ─── pie와 거의 동일</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'polarChart'</span>), {
+    type: <span class="str">'polarArea'</span>,
+    data: { labels, datasets: [{ data: values, backgroundColor: colors }] },
+    options: {
+        responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        plugins: { title: { display: <span class="key">true</span>, text: <span class="str">'시간대별 사고 분포'</span> } }
     }
 });</pre>
       <div class="chart-wrap"><canvas id="polarChart"></canvas></div>
@@ -347,63 +551,122 @@ new Chart(ctx, {
 </div>
 
 <!-- ═════════════════ ⑧ Mixed ═════════════════ -->
-<div class="panel" id="panel7">
+<div class="panel" id="panel8">
   <div class="card">
-    <div class="card-head">혼합 차트 (Mixed) — 막대(건수) + 선(사망률)</div>
+    <div class="card-head">⑧ 혼합 차트 (Mixed) — 막대(건수) + 선(사망률)</div>
     <div class="card-body">
       <div class="explain">
         <h5>📚 혼합(Mixed) 차트란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · <b>"양"과 "비율"</b>처럼 성격이 다른 두 지표를 한 차트에서 동시에 보여줌. 막대=양, 선=추세.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 데이터 시리즈마다 <code>type</code>을 다르게 줘서 자동으로 합쳐짐. 이중축과 결합하면 더욱 강력.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · <b>"양"과 "비율"</b>처럼 성격이 다른 두 지표를 한 차트에. 막대=양, 선=추세.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · dataset마다 <code>type</code>을 다르게 주면 자동으로 합쳐짐. 이중축과 결합하면 강력.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>막대=사고건수, 선=사망률(%) → "건수는 줄지만 치사율은 그대로"가 보임</li>
+            <li>막대=사고건수, 선=사망률(%) → "건수는 줄지만 치사율은 그대로"</li>
             <li>막대=월별 단속 건수, 선=음주 사고 비율</li>
-            <li>막대=신호 위반, 선=평균 벌금</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 시리즈가 3개 넘으면 색·축이 헷갈림. 핵심 2개만 강조.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 시리즈 3개 넘으면 헷갈림. 핵심 2개만.</div>
       </div>
-<pre class="code">// dataset마다 type을 다르게 → 자동으로 mixed
-type: 'bar',
-data: { datasets: [
-    { type:'bar',  label:'건수', data:[...], yAxisID:'y' },
-    { type:'line', label:'사망률(%)', data:[...], yAxisID:'y2',
-      borderColor:'#ef4444', tension:0.3 }
-]}</pre>
+
+      <div class="swap-note">📝 <b>패턴</b>: 최상위 <code>type</code>은 기본값(보통 <code>'bar'</code>), 각 dataset에서 <code>type</code>을 덮어써서 섞기.</div>
+
+<pre class="code"><span class="cmt">// ② &lt;canvas id="mixedChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비</span>
+<span class="key">const</span> years    = <span class="swap">[2016,2017,2018,2019,2020,2021,2022,2023]</span>;
+<span class="key">const</span> counts   = <span class="swap">[220917,216335,217148,229600,209654,203130,196836,191418]</span>;
+<span class="key">const</span> deaths   = <span class="swap">[4292,4185,3781,3349,3081,2916,2735,2551]</span>;
+<span class="key">const</span> fatality = counts.map((c,i) =&gt; +(deaths[i]/c*100).toFixed(2));  <span class="cmt">// 사망률(%)</span>
+
+<span class="cmt">// ④ 차트 생성 ─── dataset마다 type을 따로 지정</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'mixedChart'</span>), {
+    type: <span class="str">'bar'</span>,                   <span class="cmt">// 기본값(아래에서 덮어쓸 수 있음)</span>
+    data: { labels: years, datasets: [
+        { type: <span class="str">'bar'</span>,  label: <span class="str">'사고건수'</span>, data: counts,   yAxisID: <span class="str">'y'</span>,
+          backgroundColor: <span class="str">'rgba(59,130,246,0.6)'</span> },
+        { type: <span class="str">'line'</span>, label: <span class="str">'사망률(%)'</span>, data: fatality, yAxisID: <span class="str">'y2'</span>,
+          borderColor: <span class="str">'#ef4444'</span>, tension: 0.3, pointRadius: 5, fill: <span class="key">false</span> }
+    ]},
+    options: {
+        responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        interaction: { mode: <span class="str">'index'</span>, intersect: <span class="key">false</span> },
+        scales: {
+            y:  { position: <span class="str">'left'</span>,  title: { display: <span class="key">true</span>, text: <span class="str">'건수'</span> },
+                  ticks: { callback: v =&gt; v.toLocaleString() } },
+            y2: { position: <span class="str">'right'</span>, title: { display: <span class="key">true</span>, text: <span class="str">'사망률(%)'</span> },
+                  grid: { drawOnChartArea: <span class="key">false</span> } }
+        }
+    }
+});</pre>
       <div class="chart-wrap"><canvas id="mixedChart"></canvas></div>
     </div>
   </div>
 </div>
 
 <!-- ═════════════════ ⑨ Treemap ═════════════════ -->
-<div class="panel" id="panel8">
+<div class="panel" id="panel9">
   <div class="card">
-    <div class="card-head">트리맵 (Treemap) — 시도 × 사고유형 계층</div>
+    <div class="card-head">⑨ 트리맵 (Treemap) — 시도 × 사고유형 계층</div>
     <div class="card-body">
       <div class="explain">
         <h5>📚 트리맵이란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · <b>"부분/전체 비율"을 사각형 면적으로</b> + <b>"계층 구조"를 그룹 박스로</b> 표현. 한 화면에 수십~수백 항목 표시 가능.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 면적이 곧 양. 색상으로 카테고리 구분. 항목이 많아도 일관되게 표현 가능.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · <b>"부분/전체 비율을 사각형 면적으로"</b> + <b>"계층 구조를 그룹 박스로"</b>. 한 화면에 수십~수백 항목 표시 가능.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 면적이 곧 양. 색으로 카테고리 구분. 항목이 많아도 일관된 표현.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
             <li>"권역 → 시도 → 사고유형" 3계층 비율</li>
-            <li>"차종 → 연식 → 사고 빈도"</li>
-            <li>"가해 연령대 → 면허 종류 → 사고 비율"</li>
+            <li>"차종 → 연식 → 빈도"</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 사각형 비교는 면적 인식이 길이 인식보다 약함. 정확한 순위 비교는 막대가 우수.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 사각형 면적은 길이보다 인식이 약함. 정확한 순위는 막대가 우수. <b>플러그인 별도 로드 필수</b>.</div>
       </div>
-<pre class="code">// 별도 플러그인 CDN 필요
-new Chart(ctx, {
-    type: 'treemap',
+
+      <div class="swap-note">📝 <b>데이터 형식이 다른 차트들과 다름</b>: 객체 배열(rows). <code>key</code>=면적 기준 컬럼, <code>groups</code>=계층 컬럼들.</div>
+
+<pre class="code"><span class="cmt">// ① 트리맵은 별도 플러그인 CDN을 추가로 로드</span>
+<span class="cmt">// &lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"&gt;&lt;/script&gt;</span>
+<span class="cmt">// &lt;script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.3.1/dist/chartjs-chart-treemap.min.js"&gt;&lt;/script&gt;</span>
+<span class="cmt">// ② &lt;canvas id="treemapChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── 객체 배열(rows). 각 row가 한 박스</span>
+<span class="key">const</span> tree = <span class="swap">[
+    { 시도:'서울', 유형:'차대차',   건수:25800 },
+    { 시도:'서울', 유형:'차대사람', 건수: 6800 },
+    { 시도:'경기', 유형:'차대차',   건수:44100 },
+    { 시도:'경기', 유형:'차대사람', 건수:10800 },
+    { 시도:'부산', 유형:'차대차',   건수:11800 },
+    { 시도:'인천', 유형:'차대차',   건수:11000 }
+    <span class="cmt">// ... 자기 데이터로 교체</span>
+]</span>;
+<span class="key">const</span> color = { 서울:<span class="str">'#3b82f6'</span>, 경기:<span class="str">'#10b981'</span>, 부산:<span class="str">'#f59e0b'</span>,
+                대구:<span class="str">'#a855f7'</span>, 인천:<span class="str">'#ef4444'</span> };
+
+<span class="cmt">// ④ 차트 생성</span>
+<span class="key">new</span> Chart(document.getElementById(<span class="str">'treemapChart'</span>), {
+    type: <span class="str">'treemap'</span>,
     data: { datasets: [{
-        tree: rawTree,             // [{ 시도, 유형, 건수 }, ...]
-        key: '건수',                // 면적 기준
-        groups: ['시도','유형'],    // 계층 순서
-        backgroundColor: c => c.type==='data' ? colorByGroup(c.raw._data.시도) : 'transparent',
-        labels: { display:true, color:'white' }
-    }]}
+        tree,                              <span class="cmt">// 위 객체 배열</span>
+        key: <span class="str">'건수'</span>,                       <span class="cmt">// 면적 기준 컬럼</span>
+        groups: [<span class="str">'시도'</span>, <span class="str">'유형'</span>],            <span class="cmt">// 계층 (큰 그룹 → 작은 그룹)</span>
+        spacing: 1, borderWidth: 1,
+        borderColor: <span class="str">'rgba(255,255,255,0.6)'</span>,
+        backgroundColor(c) {
+            <span class="key">if</span> (c.type !== <span class="str">'data'</span>) <span class="key">return</span> <span class="str">'transparent'</span>;
+            <span class="key">const</span> sido = c.raw._data.시도 || c.raw.g;
+            <span class="key">return</span> (color[sido] || <span class="str">'#94a3b8'</span>) + (c.raw.l === 0 ? <span class="str">'cc'</span> : <span class="str">'88'</span>);
+        },
+        labels: { display: <span class="key">true</span>, color: <span class="str">'white'</span>,
+            font: { size: 11, weight: <span class="str">'600'</span> },
+            formatter: c =&gt; c.raw ? [c.raw.g, c.raw.v.toLocaleString()] : <span class="str">''</span>
+        }
+    }]},
+    options: { responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+        plugins: { legend: { display: <span class="key">false</span> },
+            tooltip: { callbacks: {
+                title: items =&gt; items[0].raw.g,
+                label: c =&gt; `건수: ${c.raw.v.toLocaleString()}`
+            }} }
+    }
 });</pre>
       <div class="chart-wrap"><canvas id="treemapChart"></canvas></div>
     </div>
@@ -411,43 +674,79 @@ new Chart(ctx, {
 </div>
 
 <!-- ═════════════════ ⑩ 인터랙티브 필터 ═════════════════ -->
-<div class="panel" id="panel9">
+<div class="panel" id="panel10">
   <div class="card">
-    <div class="card-head">⭐ 인터랙티브 필터 — 드롭다운 → 차트 실시간 업데이트</div>
+    <div class="card-head">⑩ ⭐ 인터랙티브 필터 — 드롭다운 → 차트 실시간 업데이트</div>
     <div class="card-body">
       <div class="explain">
-        <h5>📚 인터랙티브 차트의 가치</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 독자가 직접 <b>지표·차트유형·기간</b>을 바꿔가며 데이터를 "탐색"할 수 있게 만들기. 정적 차트와의 결정적 차이.</div>
-        <div class="exp-row feature"><b>✨ 핵심 패턴 2가지</b>
+        <h5>📚 인터랙티브 차트의 핵심 패턴 2가지</h5>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 독자가 직접 <b>지표·차트유형·기간</b>을 바꾸며 데이터를 "탐색". 정적 차트와의 결정적 차이.</div>
+        <div class="exp-row feature"><b>✨ 패턴</b>
           <ul class="exp-list">
-            <li><b>데이터·색만 변경:</b> <code>chart.data... = ...; chart.update();</code> (애니메이션 자연스러움)</li>
-            <li><b>차트 종류 변경:</b> <code>chart.destroy()</code> → 새 <code>new Chart()</code> 생성 (Chart.js 4의 정석)</li>
+            <li><b>패턴 A — 데이터만 갱신</b>: <code>chart.data.datasets[0].data = newData; chart.update();</code> (애니메이션 자연스러움)</li>
+            <li><b>패턴 B — 차트 종류 변경</b>: <code>chart.destroy()</code> → <code>new Chart()</code> 재생성 (Chart.js v4의 정석)</li>
           </ul>
         </div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>독자: "사망자 추이만 보고 싶다" → 지표 드롭다운으로 즉시 전환</li>
-            <li>"막대보다 선이 더 직관적" → 차트유형 토글</li>
-            <li>"최근 3년만 보고 싶다" → 슬라이더로 범위 조정</li>
+            <li>"사망자 추이만 보고 싶다" → 지표 드롭다운으로 전환</li>
+            <li>"막대보다 선이 직관적" → 차트유형 토글</li>
+            <li>"최근 3년만" → 슬라이더로 범위 조정</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · UI 옵션을 너무 많이 두면 오히려 길을 잃음. 핵심 변수 2~3개만.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · UI 옵션 너무 많으면 길을 잃음. 핵심 변수 2~3개만.</div>
       </div>
-<pre class="code">// ── 핵심 패턴 ──
-// (1) 데이터·색만 바뀌면 → chart.data 변경 후 chart.update()
-// (2) 차트 type이 바뀌면 → destroy() 후 새 Chart() 재생성
 
-let chart = makeChart(currentType, currentData);
+      <div class="swap-note">📝 <b>실전 팁</b>: type이 바뀔 가능성이 있으면 그냥 항상 <code>destroy()</code> + 재생성이 안전. 두 패턴을 섞지 말고 통일.</div>
 
-select.addEventListener('change', () => {
-    if (typeChanged) {
-        chart.destroy();                 // ← 핵심
-        chart = makeChart(newType, newData);
-    } else {
-        chart.data.datasets[0].data = newData;
-        chart.update();
-    }
-});</pre>
+<pre class="code"><span class="cmt">// ② 캔버스 + 컨트롤 UI</span>
+<span class="cmt">// &lt;select id="metric-select"&gt;...&lt;/select&gt;</span>
+<span class="cmt">// &lt;select id="type-select"&gt;...&lt;/select&gt;</span>
+<span class="cmt">// &lt;input  id="range-input" type="range" min="2" max="8" value="8"&gt;</span>
+<span class="cmt">// &lt;canvas id="filterChart"&gt;&lt;/canvas&gt;</span>
+
+<span class="cmt">// ③ 데이터 준비 ─── 지표를 객체로 묶어 두면 select 값으로 바로 꺼냄</span>
+<span class="key">const</span> years = <span class="swap">[2016,2017,2018,2019,2020,2021,2022,2023]</span>;
+<span class="key">const</span> dataMap = <span class="swap">{
+    사고건수: [220917,216335,217148,229600,209654,203130,196836,191418],
+    사망자수: [4292,4185,3781,3349,3081,2916,2735,2551],
+    부상자수: [331720,322780,323037,341712,304237,291608,273363,260296]
+}</span>;
+<span class="key">const</span> color = { 사고건수: <span class="str">'rgba(59,130,246,0.7)'</span>,
+                사망자수: <span class="str">'rgba(239,68,68,0.7)'</span>,
+                부상자수: <span class="str">'rgba(245,158,11,0.7)'</span> };
+
+<span class="cmt">// ④ 차트 생성 ─── render() 함수로 묶어 컨트롤 변경 시마다 호출</span>
+<span class="key">let</span> chart = <span class="key">null</span>;
+
+<span class="key">function</span> render() {
+    <span class="cmt">// 4-1. 컨트롤에서 현재 값 읽기</span>
+    <span class="key">const</span> metric = document.getElementById(<span class="str">'metric-select'</span>).value;
+    <span class="key">const</span> type   = document.getElementById(<span class="str">'type-select'</span>).value;
+    <span class="key">const</span> count  = +document.getElementById(<span class="str">'range-input'</span>).value;
+
+    <span class="cmt">// 4-2. 데이터를 잘라서 준비</span>
+    <span class="key">const</span> labels = years.slice(-count);
+    <span class="key">const</span> values = dataMap[metric].slice(-count);
+
+    <span class="cmt">// 4-3. type이 바뀔 수 있으니 항상 destroy → 재생성 (패턴 B)</span>
+    <span class="key">if</span> (chart) chart.destroy();
+    chart = <span class="key">new</span> Chart(document.getElementById(<span class="str">'filterChart'</span>), {
+        type,
+        data: { labels, datasets: [{ label: metric, data: values,
+            backgroundColor: color[metric], borderColor: color[metric],
+            borderWidth: 2, fill: type==<span class="str">'line'</span>||type==<span class="str">'radar'</span>, tension: 0.3 }] },
+        options: { responsive: <span class="key">true</span>, maintainAspectRatio: <span class="key">false</span>,
+            plugins: { title: { display: <span class="key">true</span>, text: `최근 ${count}년 ${metric}` } } }
+    });
+}
+
+<span class="cmt">// 4-4. 모든 컨트롤에 이벤트 연결</span>
+[<span class="str">'metric-select'</span>, <span class="str">'type-select'</span>, <span class="str">'range-input'</span>].forEach(id =&gt;
+    document.getElementById(id).addEventListener(<span class="str">'change'</span>, render));
+document.getElementById(<span class="str">'range-input'</span>).addEventListener(<span class="str">'input'</span>, render);
+render();   <span class="cmt">// 첫 진입 시 1회 호출</span></pre>
+
       <div class="controls">
         <label>지표:</label>
         <select id="metric-select">
@@ -473,7 +772,7 @@ select.addEventListener('change', () => {
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// 공통 데이터
+// 실제 렌더링 스크립트 (위 코드 블록은 학습용 예시, 아래는 실행본)
 // ═══════════════════════════════════════════════════════════
 const years     = [2016,2017,2018,2019,2020,2021,2022,2023];
 const 사고건수  = [220917,216335,217148,229600,209654,203130,196836,191418];
@@ -647,7 +946,7 @@ new Chart(document.getElementById('treemapChart'), {
 });
 
 // ⑩ 인터랙티브 필터
-const filterData = { 사고건수, 사망자수, 부상자수 };
+const filterData  = { 사고건수, 사망자수, 부상자수 };
 const filterColor = { 사고건수:'rgba(59,130,246,0.7)', 사망자수:'rgba(239,68,68,0.7)', 부상자수:'rgba(245,158,11,0.7)' };
 const filterBorder= { 사고건수:'rgb(59,130,246)',     사망자수:'rgb(239,68,68)',     부상자수:'rgb(245,158,11)' };
 let filterChart = null;
