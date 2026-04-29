@@ -126,13 +126,13 @@
 
 ---
 
-### 7주차 (4/16): Transformer, BERT, GPT & 추론 활용
+### 7주차 (4/16): Transformer, BERT 활용
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [Transformer와_BERT](https://jonghhhh.github.io/2026_1/Transformer_BERT_041026.pdf)   
-- (강의) [GPT와 LLM](https://jonghhhh.github.io/2026_1/GPT_LLM_agent_041526.pdf)   
+
 
 **📄 논문 발표**
 - 조원정, & 이종혁. (2023). 장애인 시위 관련 뉴스 댓글의 비윤리성 측정과 정치 성향에 따른 차이 비교: BERT 기반 딥러닝 분류기 개발과 적용. 한국방송학보, 37(2), 232-269.  
@@ -147,19 +147,12 @@
 
 ---
 
-### 8주차 (4/23): LLM API 활용 내용분석 — 텍스트
+### 8주차 (4/23): GPT, LLM 활용 
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- LLM API 구조: 시스템 프롬프트, Few-shot, JSON mode, 배치 처리
-- 뉴스 텍스트 자동 코딩: 프레임, 감성, 논조, 인용 패턴
-- LLM 코딩의 신뢰도 평가: 인간 코더 vs LLM 일치도
-
-**실습**
-- Gemini API로 뉴스 기사 100건 자동 코딩 (프레임, 감성, 논조)
-- 코딩 결과의 일관성 검증
+- (강의) [GPT와 LLM](https://jonghhhh.github.io/2026_1/GPT_LLM_agent_041526.pdf)   
 
 **📄 논문 발표**
 - 이종혁. (2025). 12· 3 내란과 저널리즘 원칙: 오픈소스 생성형 LLM 을 활용한 언론보도 분석. 한국방송학보, 39(3), 123-166.   
@@ -170,20 +163,12 @@
 
 ---
 
-### 9주차 (4/30): LLM API 활용 내용분석 — 이미지, 영상, 음성
+### 9주차 (4/30): LLM API 활용 내용분석 — 텍스트, 이미지
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- 멀티모달 LLM: 이미지 분석 (인물 표현, 감정, 구도, 맥락 해석)
-- 영상 분석: 키프레임 → 멀티모달 LLM 분석 → 시계열 요약
-- 음성 분석: Whisper STT → LLM 텍스트 분석 파이프라인
-- 멀티모달 내용분석의 코딩 스키마 설계
-
-**실습**
-- 멀티모달 LLM으로 정치인 뉴스 사진 분석 (표정, 제스처, 앵글)
-- 유튜브 뉴스 영상 → 키프레임 + 자막 → 통합 분석
+- (강의) [LLM 활용 데이터 분석](https://jonghhhh.github.io/2026_1/ipynb/llm_content_analysis.ipynb): API, 텍스트, 이미지, json, pandas  
 
 **📄 논문 발표**
 - 박영균, & 이종혁. (2026). 언론 시스템과 정치적 성향에 따른 김정은 보도사진의 시각적 프레이밍 연구: Multimodal LLM 을 활용한 국제 언론 비교 분석. 언론정보연구, 63(1), 157-198.  
