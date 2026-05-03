@@ -129,13 +129,14 @@
 
 ---
 
-### 10주차 (5/6, 5/11): LLM API — 텍스트·멀티모달 내용분석
+### 10주차 (5/6, 5/11): LLM API 활용 텍스트·멀티모달 내용분석
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [Gemini 멀티모달 LLM 활용 분석: 설명](https://jonghhhh.github.io/2026_1/Gemini_멀티모달_분석.md)     
-- (실습) [Gemini 멀티모달 LLM 활용 분석: 실습코드](https://jonghhhh.github.io/2026_1/py/gemini_multmodal_analysis_050126.py)
+- (실습) [Gemini 멀티모달 LLM 활용 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_analysis_050126.py)
+- (실습 자료) [Gemini 멀티모달 LLM 활용 분석: 실습 자료](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_src)  
   
 </details>
 
