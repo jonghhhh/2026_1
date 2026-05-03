@@ -1,0 +1,522 @@
+<!DOCTYPE html><html><head>
+      <title>js_프롬프트5_교통사고</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="프롬프트로-js-시각화-가이드-교통사고-데이터-활용">프롬프트로 JS 시각화 가이드: 교통사고 데이터 활용 </h1>
+<p>이 가이드는 도로교통공단(TAAS) 표준데이터(<code>전국교통사고다발지역표준데이터-20260301.xls</code>, 12,780행)를 가지고 5개 학습 가이드 HTML(<code>js\_charts.html</code>, <code>js\_more\_charts.html</code>, <code>js\_network.html</code>, <code>js\_map.html</code>, <code>js\_scrollytelling.html</code>)에 나오는 모든 시각화를 그대로 만들어 본다.</p>
+<h2 id="가이드의-사용법--자연어-프롬프트-원칙">가이드의 사용법 — 자연어 프롬프트 원칙 </h2>
+<p>초보자를 위해 모든 프롬프트는 <strong>짧은 자연어 한두 문장</strong>으로 작성했다. 색상·크기·세부 옵션을 처음부터 다 적지 않는다. 첫 결과를 받은 뒤 마음에 안 드는 부분이 있으면 다음과 같이 자연어로 수정 요청하면 된다.</p>
+<ul>
+<li>"막대 더 두껍게"</li>
+<li>"색 빨간색으로"</li>
+<li>"y축 숫자에 천 단위 콤마"</li>
+<li>"2020년만 다른 색으로 강조"</li>
+<li>"글자 크게"</li>
+<li>"두 개 차트 나란히"</li>
+</ul>
+<p>좋은 시각화는 <strong>첫 프롬프트로 끝나지 않는다</strong>. Gemini와 4~5번 주고받으며 다듬는 게 정상이다. 이 과정 자체가 데이터저널리즘 실습의 핵심이다.</p>
+<p>---</p>
+<h2 id="데이터-구조-요약">데이터 구조 요약 </h2>
+<table>
+<thead>
+<tr>
+<th>축</th>
+<th>컬럼</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>시간</td>
+<td><code>사고연도</code></td>
+<td>2012~2024 (13개년)</td>
+</tr>
+<tr>
+<td>분류</td>
+<td><code>사고유형구분</code></td>
+<td>보행노인 / 자전거 / 보행어린이 / 스쿨존어린이 (4종)</td>
+</tr>
+<tr>
+<td>지역</td>
+<td><code>사고다발지역시도시군구</code>, <code>사고지역위치명</code></td>
+<td>17개 시도</td>
+</tr>
+<tr>
+<td>공간</td>
+<td><code>위도</code>, <code>경도</code></td>
+<td>WGS84 좌표</td>
+</tr>
+<tr>
+<td>지표</td>
+<td><code>사고건수</code>, <code>사상자수</code>, <code>사망자수</code>, <code>중상자수</code>, <code>경상자수</code>, <code>부상신고자수</code></td>
+<td>정수</td>
+</tr>
+<tr>
+<td>메타</td>
+<td><code>사고지역관리번호</code>, <code>위치코드</code>, <code>데이터기준일자</code>, <code>제공기관명</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="데이터의-한계와-시각화-변형">데이터의 한계와 시각화 변형 </h2>
+<p>이 데이터에는 <strong>시간대·요일·월·차종·연령·위반항목 정보가 없다</strong>. 따라서 가이드 HTML의 일부 원전형 사례(시간대 Polar Area, 시간×요일 Matrix Heatmap 등)는 그대로 적용 불가이며, 같은 차트형을 가용한 축으로 재구성해야 한다. 데이터의 한계를 인식하고 가용한 축으로 질문을 재구성하는 것 자체가 학습 과정이 될 수 있다.</p>
+<table>
+<thead>
+<tr>
+<th>시각화 원본 사례</th>
+<th>본 데이터 적용 시</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>시간대 Polar Area</td>
+<td>→ 사고유형 4종 분포</td>
+</tr>
+<tr>
+<td>일자별 Calendar Heatmap</td>
+<td>→ 시도 × 연도 매트릭스</td>
+</tr>
+<tr>
+<td>시간×요일 Matrix Heatmap</td>
+<td>→ 사고유형 × 시도</td>
+</tr>
+<tr>
+<td>차종 기반 Sankey</td>
+<td>→ 사고유형 → 시도 → 상해등급</td>
+</tr>
+<tr>
+<td>시간대 워드클라우드</td>
+<td>→ 사고지역위치명 키워드</td>
+</tr>
+</tbody>
+</table>
+<p>---</p>
+<h1 id="part-0-데이터-변환--excel--단일-json">Part 0. 데이터 변환 — Excel → 단일 JSON </h1>
+<h2 id="01-왜-json으로-바꾸는가">0.1 왜 JSON으로 바꾸는가 </h2>
+<p><code>.xls</code>는 JS에서 직접 못 읽고, CSV는 한글 인코딩과 따옴표 문제가 있다. <strong>JSON은 <code>fetch().then(r =&gt; r.json())</code> 한 줄로 객체 배열이 된다</strong>. 그리고 Chart.js·Leaflet·D3·vis-network 등 본 강의에서 쓰는 모든 라이브러리가 객체 배열을 그대로 받아들인다.</p>
+<p>초보자가 헷갈리지 않도록 <strong>모든 시각화가 단 하나의 <code>data.json</code> 파일을 참조</strong>한다. 12,780행이 그대로 들어가지만 1~2MB 수준이라 충분히 가볍다. 시각화별로 필요한 부분(연도별 합계, 시도별 합계, 위경도 점 등)은 <strong>JS 안에서 그때그때 집계</strong>하면 된다. 학생이 차트 만들면서 "이번엔 시도별로 묶어서 사고건수 합계만 필요하다"는 걸 자연스럽게 익히게 된다.</p>
+<h2 id="02-변환-스크립트-python">0.2 변환 스크립트 (Python) </h2>
+<p><code>convert\_to\_json.py</code>로 저장 후 한 번만 실행한다. 결과로 <code>data.json</code> 하나가 생긴다.</p>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token keyword keyword-import">import</span> pandas <span class="token keyword keyword-as">as</span> pd
+
+<span class="token comment"># 원본 로드 (xls는 xlrd 엔진 필요: pip install xlrd)</span>
+df <span class="token operator">=</span> pd<span class="token punctuation">.</span>read\_excel<span class="token punctuation">(</span>
+    <span class="token string">"전국교통사고다발지역표준데이터-20260301.xls"</span><span class="token punctuation">,</span>
+    engine<span class="token operator">=</span><span class="token string">"xlrd"</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment"># 시도 컬럼 파생: "서울특별시 강남구1" → "서울특별시"</span>
+df\<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span> <span class="token operator">=</span> df\<span class="token punctuation">[</span><span class="token string">'사고다발지역시도시군구'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">str</span>\<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+
+<span class="token comment"># 끝에 붙은 숫자 제거 (예: "세종특별자치시1" → "세종특별자치시")</span>
+df\<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span> <span class="token operator">=</span> df\<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">r'\\d+$'</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">,</span> regex<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 한 줄짜리 폴리곤 컬럼은 너무 무거우니 제거 (시각화에 안 씀)</span>
+df <span class="token operator">=</span> df<span class="token punctuation">.</span>drop<span class="token punctuation">(</span>columns<span class="token operator">=</span>\<span class="token punctuation">[</span><span class="token string">'사고다발지역폴리곤정보'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment"># JSON으로 저장 (한글 그대로 유지)</span>
+df<span class="token punctuation">.</span>to\_json<span class="token punctuation">(</span><span class="token string">"data.json"</span><span class="token punctuation">,</span> orient<span class="token operator">=</span><span class="token string">"records"</span><span class="token punctuation">,</span> force\_ascii<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> indent<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span>
+
+<span class="token keyword keyword-print">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"data.json 생성 완료: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">len</span><span class="token punctuation">(</span>df<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token format-spec">,</span><span class="token punctuation">}</span></span><span class="token string">행"</span></span><span class="token punctuation">)</span>
+</code></pre><h2 id="03-gemini용-변환-프롬프트">0.3 Gemini용 변환 프롬프트 </h2>
+<p>위 스크립트를 직접 짜지 않고 Gemini에게 맡길 때:</p>
+<blockquote>
+<p>첨부한 교통사고 다발지역 xls 파일을 data.json 하나로 변환하는 Python 스크립트 만들어줘. 사고다발지역시도시군구 컬럼에서 시도(서울특별시, 경기도 등)를 따로 뽑아서 시도 컬럼을 추가해줘. 폴리곤 컬럼은 빼고. 한글 그대로 유지되게.</p>
+</blockquote>
+<h2 id="04-datajson-구조-미리보기">0.4 data.json 구조 미리보기 </h2>
+<p>생성된 파일은 객체 배열이고 한 행은 다음과 같다.</p>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"사고지역관리번호"</span><span class="token operator">:</span> <span class="token number">2025108</span><span class="token punctuation">,</span>
+  <span class="token property">"사고연도"</span><span class="token operator">:</span> <span class="token number">2024</span><span class="token punctuation">,</span>
+  <span class="token property">"사고유형구분"</span><span class="token operator">:</span> <span class="token string">"보행어린이"</span><span class="token punctuation">,</span>
+  <span class="token property">"사고다발지역시도시군구"</span><span class="token operator">:</span> <span class="token string">"전북특별자치도 정읍시1"</span><span class="token punctuation">,</span>
+  <span class="token property">"사고지역위치명"</span><span class="token operator">:</span> <span class="token string">"전북특별자치도 정읍시 상동(한솔초등학교 부근)"</span><span class="token punctuation">,</span>
+  <span class="token property">"사고건수"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"사상자수"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"사망자수"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token property">"중상자수"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token property">"경상자수"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"부상신고자수"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token property">"위도"</span><span class="token operator">:</span> <span class="token number">35.560543</span><span class="token punctuation">,</span>
+  <span class="token property">"경도"</span><span class="token operator">:</span> <span class="token number">126.873488</span><span class="token punctuation">,</span>
+  <span class="token property">"데이터기준일자"</span><span class="token operator">:</span> <span class="token string">"2025-09-24"</span><span class="token punctuation">,</span>
+  <span class="token property">"시도"</span><span class="token operator">:</span> <span class="token string">"전북특별자치도"</span>
+<span class="token punctuation">}</span>
+</code></pre><p>JS에서는 이렇게 쓴다.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript javascript"><code><span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">'./data.json'</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token method function property-access">then</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token arrow operator">=&gt;</span> r<span class="token punctuation">.</span><span class="token method function property-access">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token method function property-access">then</span><span class="token punctuation">(</span><span class="token parameter">data</span> <span class="token arrow operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// data는 12,780개 객체의 배열</span>
+    <span class="token comment">// 예: 연도별 사고건수 합계 만들기</span>
+    <span class="token keyword keyword-const">const</span> byYear <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    data<span class="token punctuation">.</span><span class="token method function property-access">forEach</span><span class="token punctuation">(</span><span class="token parameter">d</span> <span class="token arrow operator">=&gt;</span> <span class="token punctuation">{</span>
+      byYear\<span class="token punctuation">[</span>d<span class="token punctuation">.</span><span class="token property-access">사고연도</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>byYear\<span class="token punctuation">[</span>d<span class="token punctuation">.</span><span class="token property-access">사고연도</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> d<span class="token punctuation">.</span><span class="token property-access">사고건수</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token console class-name">console</span><span class="token punctuation">.</span><span class="token method function property-access">log</span><span class="token punctuation">(</span>byYear<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><p>위 패턴(<code>fetch → forEach → 누적</code>)만 익히면 어떤 시각화든 만들 수 있다.</p>
+<p>---</p>
+<h1 id="part-1-기본-차트-10종-js_chartshtml">Part 1. 기본 차트 10종 (<code>js\_charts.html</code>) </h1>
+<h2 id="a1-bar--연도별-사고건수">A1. Bar — 연도별 사고건수 </h2>
+<ul>
+<li>보여주는 것: 13년치 사고건수 흐름</li>
+<li>사례 포인트: 2020년 코로나로 줄어든 변곡점</li>
+</ul>
+<blockquote>
+<p>data.json에서 연도별 사고건수 합계를 막대 그래프로 그려줘. Chart.js로. 파란색 계열. 2020년 떨어진 게 잘 보이게.</p>
+</blockquote>
+<p>다듬을 때: "2020년만 빨간색으로 강조" / "y축 숫자에 천 단위 콤마" / "막대 좀 더 두껍게"</p>
+<h2 id="a2-line-이중축--사고건수-vs-사망자">A2. Line 이중축 — 사고건수 vs 사망자 </h2>
+<ul>
+<li>보여주는 것: 두 지표가 같이 움직이는지 / 따로 움직이는지</li>
+<li>사례 포인트: 단위가 다른 두 지표(만 단위 vs 명 단위)를 한 화면에 비교</li>
+</ul>
+<blockquote>
+<p>data.json에서 연도별 사고건수와 사망자수를 두 줄로 그려줘. Chart.js 라인차트. 단위가 다르니까 왼쪽 오른쪽 축 따로 써줘. 사고건수는 파란색, 사망자는 빨간색.</p>
+</blockquote>
+<p>다듬을 때: "마우스 올리면 두 값 동시에 보이게" / "선 아래 영역도 색칠해줘"</p>
+<h2 id="a3-pie와-doughnut--사고유형-비율">A3. Pie와 Doughnut — 사고유형 비율 </h2>
+<ul>
+<li>보여주는 것: 4가지 사고유형 중 어느 것이 가장 많은가</li>
+<li>사례 포인트: 보행노인이 절반 이상 — 한눈에</li>
+</ul>
+<blockquote>
+<p>data.json의 사고유형구분 4가지(보행노인, 자전거, 보행어린이, 스쿨존어린이) 비율을 파이차트와 도넛차트 두 개로 나란히 그려줘. Chart.js. 마우스 올리면 % 같이 보이게.</p>
+</blockquote>
+<p>다듬을 때: "범례 위치를 오른쪽으로" / "도넛 가운데에 합계 숫자 넣어줘"</p>
+<h2 id="a4-radar--시도별-다차원-비교">A4. Radar — 시도별 다차원 비교 </h2>
+<ul>
+<li>보여주는 것: 여러 시도의 사고건수·사망자 패턴 비교</li>
+<li>사례 포인트: 단위 다른 두 지표를 함께 그릴 때는 0~100 정규화 필수</li>
+</ul>
+<blockquote>
+<p>data.json에서 사고건수 상위 7개 시도를 골라서 사고건수와 사망자수를 레이더차트로 그려줘. Chart.js. 두 지표 단위가 너무 다르니까 둘 다 0~100 사이로 정규화해서. 사고건수는 파란색, 사망자는 빨간색 면.</p>
+</blockquote>
+<p>다듬을 때: "도형 더 진하게" / "꼭짓점에 점 표시"</p>
+<h2 id="a5-bubble--시도별-3변수">A5. Bubble — 시도별 3변수 </h2>
+<ul>
+<li>보여주는 것: 한 차트에 세 변수 동시 (x, y, 원 크기)</li>
+<li>사례 포인트: 원 크기는 √변환해야 면적이 값에 비례</li>
+</ul>
+<blockquote>
+<p>data.json으로 17개 시도를 버블차트로 그려줘. Chart.js. x는 사고건수, y는 사망자수, 원 크기는 사상자수에 비례. 시도마다 다른 색. 큰 값이 너무 부풀려지지 않게 원 크기는 제곱근으로.</p>
+</blockquote>
+<p>다듬을 때: "버블 크기 차별화 잘 안 되니 더 크게 차이내" / "각 점에 시도명 라벨 붙여"</p>
+<h2 id="a6-scatter--사고건수-vs-사망률">A6. Scatter — 사고건수 vs 사망률 </h2>
+<ul>
+<li>보여주는 것: 사고가 많은 곳이 더 위험한가? (양의 상관 / 음의 상관 / 무관)</li>
+<li>사례 포인트: 산점도는 상관일 뿐 인과 아님</li>
+</ul>
+<blockquote>
+<p>data.json에서 시도별로 사고건수(x축)와 사망률(y축, 사망자÷사상자×100) 산점도를 그려줘. Chart.js. 점에 시도 이름 붙여서 마우스 올리면 보이게. 보라색 점.</p>
+</blockquote>
+<p>다듬을 때: "추세선 그어줘" / "점 더 크게"</p>
+<h2 id="a7-polar-area--사고유형-분포-변형">A7. Polar Area — 사고유형 분포 [변형] </h2>
+<ul>
+<li>보여주는 것: 4가지 사고유형의 상대 크기를 부채꼴로</li>
+<li>변형 사실: 원전 사례는 시간대별이지만 본 데이터에 시간 정보가 없어 사고유형으로 대체</li>
+</ul>
+<blockquote>
+<p>data.json의 사고유형 4가지를 Chart.js polarArea로 그려줘. 색은 4가지 다른 색. 차트 아래에 작게 "원래는 시간대 분포가 표준이지만, 이 데이터에 시간 정보가 없어 사고유형으로 대체"라고 적어줘.</p>
+</blockquote>
+<h2 id="a8-mixed--막대사고건수--선사망률">A8. Mixed — 막대(사고건수) + 선(사망률) </h2>
+<ul>
+<li>보여주는 것: 양과 비율을 한 차트에서</li>
+<li>사례 포인트: "건수는 줄어도 사망률은 그대로"라는 메시지가 잡힘</li>
+</ul>
+<blockquote>
+<p>data.json으로 연도별 사고건수는 막대(파란색), 사망률(사망자÷사상자×100)은 빨간 선으로 그려줘. Chart.js mixed 차트. 두 지표 단위가 달라서 좌우 축 따로.</p>
+</blockquote>
+<p>다듬을 때: "막대 좀 투명하게" / "선 끝에 점 표시"</p>
+<h2 id="a9-treemap--시도사고유형">A9. Treemap — 시도×사고유형 </h2>
+<ul>
+<li>보여주는 것: 시도 안에 사고유형이 어떻게 분포하는지</li>
+<li>사례 포인트: 면적이 곧 양 — 항목 많아도 일관된 표현</li>
+</ul>
+<blockquote>
+<p>data.json으로 시도×사고유형 트리맵 만들어줘. Chart.js 트리맵 플러그인 써서. 시도가 큰 박스, 그 안에 사고유형이 작은 박스. 시도마다 다른 색.</p>
+</blockquote>
+<p>다듬을 때: "박스 안에 숫자 보이게" / "테두리 흰색으로 명확히"</p>
+<h2 id="a10-인터랙티브-필터--드롭다운">A10. 인터랙티브 필터 — 드롭다운 </h2>
+<ul>
+<li>보여주는 것: 학생/독자가 직접 지표·차트 종류·기간을 바꿔가며 탐색</li>
+<li>사례 포인트: 인터랙티브 차트의 핵심 패턴</li>
+</ul>
+<blockquote>
+<p>data.json으로 인터랙티브 차트 만들어줘. Chart.js. 위에 드롭다운 세 개: 지표(사고건수/사망자/사상자/중상/경상), 차트 종류(막대/선/레이더/폴라), 표시 기간(2~13년). 드롭다운 바꿀 때마다 차트 다시 그려지게.</p>
+</blockquote>
+<p>다듬을 때: "차트 바뀔 때 부드럽게 애니메이션" / "드롭다운 라벨 한국어로 명확히"</p>
+<p>---</p>
+<h1 id="part-2-특수-시각화-9종-js_more_chartshtml">Part 2. 특수 시각화 9종 (<code>js\_more\_charts.html</code>) </h1>
+<h2 id="b1-워드클라우드--위치명-키워드">B1. 워드클라우드 — 위치명 키워드 </h2>
+<ul>
+<li>보여주는 것: 다발지역 이름에 자주 등장하는 단어</li>
+<li>사례 포인트: "사거리, 교차로, 부근, 초등학교" 같은 공간 키워드 발견</li>
+</ul>
+<blockquote>
+<p>data.json의 사고지역위치명 12,780개를 합쳐서 워드클라우드 만들어줘. D3 + d3-cloud 라이브러리. 한국어 불용어(은/는/이/가 등) 제외하고 빈도 상위 80개. 색은 알록달록하게.</p>
+</blockquote>
+<p>다듬을 때: "'부근' 단어가 너무 커서 빼줘" / "회전 0도만"</p>
+<h2 id="b2-sankey--사고유형--시도--상해등급">B2. Sankey — 사고유형 → 시도 → 상해등급 </h2>
+<ul>
+<li>보여주는 것: 단계별 흐름의 양 (어느 유형이 어느 시도에 몰리고 어떤 결과로 이어지는지)</li>
+<li>사례 포인트: 합계 보존 — 들어온 만큼 나간다</li>
+</ul>
+<blockquote>
+<p>data.json으로 Sankey 다이어그램 만들어줘. 1단계는 사고유형 4가지, 2단계는 사고건수 상위 5개 시도, 3단계는 상해등급(경상·중상·사망). Chart.js sankey 플러그인. 흐름 두께가 건수.</p>
+</blockquote>
+<p>다듬을 때: "사망 흐름만 빨간색으로" / "라벨 글자 크기 키워"</p>
+<h2 id="b3-calendar-heatmap--시도연도-변형">B3. Calendar Heatmap — 시도×연도 [변형] </h2>
+<ul>
+<li>보여주는 것: 시도와 연도 교차로 사고가 어떻게 분포했는지</li>
+<li>변형 사실: 원전 사례는 일자별이지만 본 데이터에 일자가 없어 연도로 대체</li>
+</ul>
+<blockquote>
+<p>data.json으로 시도(세로) × 연도(가로) 히트맵 그려줘. ApexCharts. 칸 색은 사고건수에 따라 분홍 그라디언트. 진할수록 사고 많은 칸. 차트 아래에 "원래 캘린더 히트맵은 일자별이지만 이 데이터에 일자가 없어 연도로 변형"이라고 적어줘.</p>
+</blockquote>
+<h2 id="b4-sunburst--권역시도사고유형">B4. Sunburst — 권역→시도→사고유형 </h2>
+<ul>
+<li>보여주는 것: 3단계 계층 비율을 방사형으로</li>
+<li>사례 포인트: 클릭하면 그 영역만 줌인 가능</li>
+</ul>
+<blockquote>
+<p>data.json으로 3단계 sunburst 만들어줘. 시도를 5개 권역(수도권: 서울·경기·인천 / 영남: 부산·대구·울산·경남·경북 / 호남: 광주·전남·전북 / 충청: 대전·세종·충남·충북 / 강원·제주)으로 묶고, 권역→시도→사고유형 3계층. Plotly로. 핑크 계열 색.</p>
+</blockquote>
+<p>다듬을 때: "각 조각에 % 같이 표시" / "가운데 색 더 진하게"</p>
+<h2 id="b5-parallel-coordinates--17시도-다변수">B5. Parallel Coordinates — 17시도 다변수 </h2>
+<ul>
+<li>보여주는 것: 17개 시도의 4개 지표(사고건수·사망자·사망률·사상자)를 한 화면에서</li>
+<li>사례 포인트: 축을 드래그하면 그 범위만 필터됨</li>
+</ul>
+<blockquote>
+<p>data.json으로 17개 시도를 평행좌표로 그려줘. Plotly parcoords. 4개 축: 사고건수, 사망자, 사망률(%), 사상자. 선 색은 사망률에 따라 그라디언트.</p>
+</blockquote>
+<p>다듬을 때: "축 라벨 잘려서 안 보이니 위쪽 여백 늘려" / "특정 시도 강조해줘"</p>
+<h2 id="b6-matrix-heatmap--사고유형시도-변형">B6. Matrix Heatmap — 사고유형×시도 [변형] </h2>
+<ul>
+<li>보여주는 것: 두 분류의 교차를 색 농도로</li>
+<li>변형 사실: 원전 사례는 시간×요일이지만 본 데이터에 시간/요일 없어 유형×시도로 대체</li>
+</ul>
+<blockquote>
+<p>data.json으로 사고유형(세로 4개) × 시도(가로 17개) 매트릭스 히트맵을 그려줘. Chart.js matrix 플러그인. 사고건수가 많을수록 진한 분홍. 마우스 올리면 칸 정보 보이게.</p>
+</blockquote>
+<h2 id="b7-box-plot--시도별-다발지역-분포">B7. Box Plot — 시도별 다발지역 분포 </h2>
+<ul>
+<li>보여주는 것: 평균뿐 아니라 분산·이상치까지</li>
+<li>사례 포인트: "경기도는 평균도 높고 변동도 큼" 같은 패턴</li>
+</ul>
+<blockquote>
+<p>data.json에서 다발지역이 많은 상위 7개 시도를 골라, 각 시도의 다발지역별 사고건수 분포를 박스플롯으로 그려줘. Plotly. 이상치는 점으로 표시.</p>
+</blockquote>
+<p>다듬을 때: "박스 너비 더 넓게" / "각 박스 아래에 시도 이름과 평균값 표시"</p>
+<h2 id="b8-gauge--kpi--4개-핵심지표-카드">B8. Gauge / KPI — 4개 핵심지표 카드 </h2>
+<ul>
+<li>보여주는 것: 단일 핵심 수치를 부각 (전년 대비 변화 포함)</li>
+<li>사례 포인트: 대시보드 상단에 자주 쓰는 형태</li>
+</ul>
+<blockquote>
+<p>data.json에서 2024년과 2023년 비교해서 4개 KPI 카드(사고건수, 사망자, 사상자, 사망률) 만들어줘. Plotly indicator. 게이지 + 숫자 + 전년 대비 화살표. 2x2 격자로.</p>
+</blockquote>
+<p>다듬을 때: "악화한 건 빨간 화살표 개선한 건 초록 화살표" / "카드 제목 더 크게"</p>
+<h2 id="b9-funnel--사고에서-사망까지-단계별-감소">B9. Funnel — 사고에서 사망까지 단계별 감소 </h2>
+<ul>
+<li>보여주는 것: 단계가 진행될수록 줄어드는 양</li>
+<li>사례 포인트: 절대값 + 첫 단계 대비 비율 동시 표시</li>
+</ul>
+<blockquote>
+<p>data.json의 2024년 합계로 깔때기 차트 그려줘. 단계: 사고 → 사상자 → 경상 → 중상 → 사망. Plotly funnel. 단계마다 절대값과 첫 단계 대비 비율도 표시.</p>
+</blockquote>
+<p>---</p>
+<h1 id="part-3-네트워크-시각화-7종-js_networkhtml">Part 3. 네트워크 시각화 7종 (<code>js\_network.html</code>) </h1>
+<h2 id="n1-vis-network-기본--노드엣지-데모">N1. vis-network 기본 — 노드+엣지 데모 </h2>
+<ul>
+<li>보여주는 것: 네트워크 시각화의 기본 구조</li>
+<li>사례 포인트: 학습용 작은 데모</li>
+</ul>
+<blockquote>
+<p>data.json에서 사망자 2명 이상인 다발지역 5~10개를 노드로 만들어 vis-network로 기초 그래프 그려줘. 같은 시도면 선 연결. 점은 둥글게.</p>
+</blockquote>
+<h2 id="n2-양분-네트워크---시도--사고유형">N2. 양분 네트워크 ⭐ — 시도 × 사고유형 </h2>
+<ul>
+<li>보여주는 것: 두 그룹(시도 17개 / 유형 4개) 사이의 연결 강도</li>
+<li>사례 포인트: 가장 강력한 네트워크 시각화</li>
+</ul>
+<blockquote>
+<p>data.json으로 양분 네트워크 만들어줘. vis-network. 한쪽 그룹은 17개 시도(파란색), 다른 그룹은 사고유형 4개(주황색). 두 그룹 사이 선 두께가 사고건수. 노드 크기도 합계에 따라 다르게.</p>
+</blockquote>
+<p>다듬을 때: "선 너무 많아서 헷갈려 — 상위 30개만" / "범례 추가"</p>
+<h2 id="n3-계층-tree--전국권역시도유형">N3. 계층 Tree — 전국→권역→시도→유형 </h2>
+<ul>
+<li>보여주는 것: 4계층 위계 구조</li>
+<li>사례 포인트: 위→아래로 정렬된 깔끔한 트리</li>
+</ul>
+<blockquote>
+<p>data.json으로 4계층 트리 그려줘. vis-network 계층 레이아웃. 전국 → 5권역 (수도권/영남/호남/충청/강원·제주) → 시도 → 사고유형. 위에서 아래로. 권역은 진한 파란색.</p>
+</blockquote>
+<p>다듬을 때: "방향 좌→우로" / "각 노드에 합계 숫자 같이"</p>
+<h2 id="n4-d3-force-directed--3그룹-다중-카테고리">N4. D3 Force-Directed — 3그룹 다중 카테고리 </h2>
+<ul>
+<li>보여주는 것: 시도·유형·연도구간 세 그룹의 관계망</li>
+<li>사례 포인트: 학술 논문급 시각화 가능, 자유도 높음</li>
+</ul>
+<blockquote>
+<p>data.json으로 3그룹 force-directed 네트워크 만들어줘. D3 v7. 그룹은 ① 시도 상위 7개 ② 사고유형 4개 ③ 연도구간 3개(2012-2015, 2016-2019, 2020-2024). 그룹마다 다른 색. 자기들끼리 자동 배치.</p>
+</blockquote>
+<h2 id="n5-cytoscape-dagre--권역-계층--레이아웃-전환">N5. Cytoscape Dagre — 권역 계층 + 레이아웃 전환 </h2>
+<ul>
+<li>보여주는 것: 같은 데이터를 여러 레이아웃으로 즉시 전환</li>
+<li>사례 포인트: 그래프 분석 라이브러리의 강점</li>
+</ul>
+<blockquote>
+<p>data.json으로 23개 노드 트리(전국 + 5권역 + 17시도)를 Cytoscape + dagre로 그려줘. 위에 드롭다운 두고 dagre / cose / circle / grid / concentric 레이아웃 즉시 전환되게.</p>
+</blockquote>
+<h2 id="n6-인터랙티브-조작---노드-추가삭제이웃-강조">N6. 인터랙티브 조작 ⭐ — 노드 추가·삭제·이웃 강조 </h2>
+<ul>
+<li>보여주는 것: 학생이 직접 그래프를 편집하며 가설 구성</li>
+<li>사례 포인트: 학생 미션용</li>
+</ul>
+<blockquote>
+<p>data.json의 시도 5개 + 사고유형 4개를 베이스로, vis-network 인터랙티브 편집기 만들어줘. 버튼으로 노드 추가, 엣지 추가, 선택 삭제, 화면 맞춤, 초기화 가능하게. 노드 클릭하면 그 노드와 직접 연결된 이웃만 진하고 나머지는 흐리게.</p>
+</blockquote>
+<h2 id="n7-의미연결망---위치명-단어-동시출현">N7. 의미연결망 ⭐ — 위치명 단어 동시출현 </h2>
+<ul>
+<li>보여주는 것: 사고지역위치명에서 어떤 단어들이 함께 나타나는가</li>
+<li>사례 포인트: 본 데이터의 강점이 가장 잘 살아나는 시각화</li>
+</ul>
+<blockquote>
+<p>data.json의 사고지역위치명을 모두 합쳐서 의미연결망 만들어줘. vis-network. 한 위치명 안에 두 단어가 같이 나오면 선 연결. 상위 25개 단어가 노드, 동시출현 2회 이상이 엣지. 한국어 불용어 제거. 위에 단어 수랑 최소 동시출현 횟수 조절하는 컨트롤도.</p>
+</blockquote>
+<p>다듬을 때: "'부근' 단어가 거의 모든 단어와 연결돼서 의미 흐려져 — 빼줘" / "노드 크기 차이 더 크게"</p>
+<p>---</p>
+<h1 id="part-4-지도-시각화-7종-js_maphtml">Part 4. 지도 시각화 7종 (<code>js\_map.html</code>) </h1>
+<p>본 데이터의 위경도가 가장 빛나는 영역. 모두 변형 없이 적용 가능.</p>
+<h2 id="m1-기초-마커--사망사고-발생-지역">M1. 기초 마커 — 사망사고 발생 지역 </h2>
+<ul>
+<li>보여주는 것: 사망사고가 발생한 다발지역의 위치</li>
+<li>사례 포인트: "어느 교차로?" 라는 질문의 출발점</li>
+</ul>
+<blockquote>
+<p>data.json에서 사망자 1명 이상인 다발지역 중 사망자 많은 상위 10개를 Leaflet 지도에 마커로 찍어줘. 마커 클릭하면 위치명, 연도, 사고유형, 사망자수 보이는 팝업.</p>
+</blockquote>
+<h2 id="m2-마커-클러스터---12780개-전체">M2. 마커 클러스터 ⭐ — 12,780개 전체 </h2>
+<ul>
+<li>보여주는 것: 모든 다발지역을 한 지도에. 줌인하면 자동 분리</li>
+<li>사례 포인트: 데이터 양과 무관하게 화면이 깔끔</li>
+</ul>
+<blockquote>
+<p>data.json 12,780개 전부를 사고유형별로 색 구분해서 Leaflet markercluster로 클러스터 지도 그려줘. 보행노인 파란색, 자전거 빨간색, 보행어린이 주황색, 스쿨존어린이 녹색. 위에 4개 유형 켜고 끄는 체크박스도.</p>
+</blockquote>
+<p>다듬을 때: "처음 줌 레벨 좀 더 가깝게" / "마커 좀 더 작게"</p>
+<h2 id="m3-원형-마커--상위-30-다발지역">M3. 원형 마커 — 상위 30 다발지역 </h2>
+<ul>
+<li>보여주는 것: 위치 + 양 동시에 (반지름 = 사고건수)</li>
+<li>사례 포인트: 면적이 값에 비례하도록 √변환</li>
+</ul>
+<blockquote>
+<p>data.json에서 사고건수 상위 30개 다발지역을 Leaflet에 원형 마커로 그려줘. 원 크기는 사고건수에 비례하되 너무 차이 안 나게 제곱근 변환. 빨간 반투명. 클릭하면 위치명·시도·사고건수·사망자수.</p>
+</blockquote>
+<p>다듬을 때: "원이 너무 커서 겹쳐 — 다 줄여" / "사망자 있는 곳만 다른 색"</p>
+<h2 id="m4-히트맵--전국-사고-밀집도">M4. 히트맵 — 전국 사고 밀집도 </h2>
+<ul>
+<li>보여주는 것: 어디에 사고가 모여 있는가 (밀집도)</li>
+<li>사례 포인트: 서울·부산·대구 일대 핫스팟이 두드러질 것</li>
+</ul>
+<blockquote>
+<p>data.json 12,780개 전부로 Leaflet 히트맵 만들어줘. leaflet.heat 라이브러리. 강도는 사고건수에 비례. 위에 슬라이더 두 개로 반지름과 흐림 정도 조절.</p>
+</blockquote>
+<p>다듬을 때: "기본 반지름 더 크게" / "색 변화 더 강렬하게"</p>
+<h2 id="m5-코로플레스--시도별-사고건수">M5. 코로플레스 — 시도별 사고건수 </h2>
+<ul>
+<li>보여주는 것: 시도 행정구역을 색 농도로</li>
+<li>사례 포인트: GeoJSON과 시도명 매핑(특별자치도 통합)이 핵심</li>
+</ul>
+<blockquote>
+<p>data.json으로 시도별 사고건수 합계를 Leaflet 코로플레스로 그려줘. 행정구역 GeoJSON은 <a href="https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json">https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json</a> 에서 fetch. 시도명 매핑(서울특별시→서울 등)도 같이. 색은 파랑 농도. 마우스 올리면 강조되고 클릭하면 합계 팝업. 범례도 추가.</p>
+</blockquote>
+<p>다듬을 때: "강원특별자치도/전북특별자치도가 매칭 안 돼서 흰색 — 매핑 추가" / "색 단계 5단계 → 7단계로"</p>
+<h2 id="m6-폴리라인폴리곤원--경로영역반경">M6. 폴리라인/폴리곤/원 — 경로·영역·반경 </h2>
+<ul>
+<li>보여주는 것: 점이 아닌 선/면/원 시각화</li>
+<li>사례 포인트: GPS 트랙·관심영역·반경원 표현 도구</li>
+</ul>
+<blockquote>
+<p>data.json으로 한 지도에 세 가지 도형 그려줘. ① 사고건수 상위 7개 시도 중심점을 잇는 빨간 선(폴리라인) ② 수도권 4개(서울·경기·인천·세종) 중심점으로 만든 파란 다각형 ③ 사망자 상위 5개 다발지역 각각에 반경 2km짜리 녹색 원. Leaflet으로.</p>
+</blockquote>
+<h2 id="m7-레이어-컨트롤---종합-인터랙티브-지도">M7. 레이어 컨트롤 ⭐ — 종합 인터랙티브 지도 </h2>
+<ul>
+<li>보여주는 것: 베이스맵과 데이터 레이어를 학생이 자유 조합</li>
+<li>사례 포인트: 한 지도에 점·원형·히트맵·코로플레스 4가지가 모두</li>
+</ul>
+<blockquote>
+<p>Leaflet 종합 지도 만들어줘. 베이스맵 3개(OSM, 어두움, 밝음) 라디오 전환. 그 위에 토글 가능한 레이어 4개: 주요 사망사고 마커 / 상위 30 원형 마커 / 전체 히트맵 / 시도 코로플레스. 다 data.json에서. 처음엔 OSM + 사망사고 + 코로플레스만 켜져 있게.</p>
+</blockquote>
+<p>---</p>
+<h1 id="part-5-스크롤리텔링-4패턴-js_scrollytellinghtml">Part 5. 스크롤리텔링 4패턴 (<code>js\_scrollytelling.html</code>) </h1>
+<h2 id="s1-datatables--시도-17개-통계-표">S1. DataTables — 시도 17개 통계 표 </h2>
+<ul>
+<li>보여주는 것: 정렬·검색·페이지 이동 가능한 인터랙티브 표</li>
+<li>사례 포인트: 차트로 보기엔 항목이 많은 17개 시도 데이터</li>
+</ul>
+<blockquote>
+<p>data.json으로 시도 17개 통계 표를 DataTables.js로 만들어줘. 컬럼은 시도, 다발지역수, 사고건수, 사망자, 사상자, 사망률(%), 인구10만명당. 헤더 클릭으로 정렬, 검색창, 페이지 이동. 한국어 UI. 처음 정렬은 사고건수 내림차순.</p>
+</blockquote>
+<h2 id="s2-intersection-observer--스크롤-감지-데모">S2. Intersection Observer — 스크롤 감지 데모 </h2>
+<ul>
+<li>보여주는 것: 스크롤리텔링의 기반 기술 학습</li>
+<li>사례 포인트: 라이브러리 없이 브라우저 기본 API</li>
+</ul>
+<blockquote>
+<p>data.json의 13개년 연도별 사고건수를 박스 13개로 세로로 나열한 학습 데모 만들어줘. 브라우저 기본 Intersection Observer API 써서, 박스가 화면에 들어오면 보라색으로 활성. 아래에 "현재 보이는 연도" 실시간 표시.</p>
+</blockquote>
+<h2 id="s3-scrollama-인라인---5단계-사고-추세-서사">S3. Scrollama 인라인 ⭐ — 5단계 사고 추세 서사 </h2>
+<ul>
+<li>보여주는 것: 스크롤하면 차트가 단계마다 바뀌는 핵심 패턴</li>
+<li>사례 포인트: NYT·워싱턴포스트 같은 데이터 저널리즘 표준 형식</li>
+</ul>
+<blockquote>
+<p>Scrollama + Chart.js로 5단계 인라인 스크롤리텔링 만들어줘. data.json 사용. 왼쪽에 차트 영역 화면에 고정(sticky), 오른쪽에 5개 텍스트 단계. 단계마다 차트 바뀌게:</p>
+<ol>
+<li>13년 사고건수 라인차트</li>
+<li>같은 데이터 막대로, 2020년만 빨간색 강조</li>
+<li>사고유형 도넛</li>
+<li>시도별 가로막대 상위 10</li>
+<li>차트 대신 거대한 숫자 — 13년 누적 사망자 합계와 "다발지역에서만 X명, 하루 평균 Y명"</li>
+</ol>
+</blockquote>
+<p>다듬을 때: "각 단계 글자 더 크게" / "차트 바뀔 때 부드럽게"</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
