@@ -134,15 +134,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) GPT: 자기회귀 디코더, Instruction Tuning, RLHF
-- (강의) LLM API 구조: 시스템 프롬프트, Few-shot, JSON mode
-- (강의) 텍스트 자동 코딩: 프레임, 감성, 논조, 인용 패턴
-- (강의) 멀티모달 LLM: 뉴스 사진 분석 (인물 표현, 감정, 구도)
-- (강의) 영상 분석: 키프레임 → 멀티모달 LLM / 음성: Whisper STT → LLM
-- (실습) Gemini API로 뉴스 기사 100건 자동 코딩 (배치 처리)
-- (실습) 멀티모달 LLM으로 뉴스 사진 분석
-- (실습) LLM 코딩 신뢰도 평가: 인간 코더 vs LLM 일치도
-
+- (강의) [Gemini 멀티모달 LLM 활용 분석: 설명](https://jonghhhh.github.io/2026_1/Gemini_멀티모달_분석.md)     
+- (실습) [Gemini 멀티모달 LLM 활용 분석: 실습코드](https://jonghhhh.github.io/2026_1/py/gemini_multmodal_analysis_050126.py)
+  
 </details>
 
 ---
