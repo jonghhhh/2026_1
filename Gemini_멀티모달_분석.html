@@ -1,0 +1,451 @@
+<!DOCTYPE html><html><head>
+      <title>Gemini_멀티모달_분석 (1)</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\jh.jonghhhh\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.24\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="gemini-멀티모달-분석-실습">Gemini 멀티모달 분석 실습 </h1>
+<blockquote>
+<p>**AI미디어코딩 강의용** · 모델: <code>gemini-2.5-flash-lite</code> (무료)<br>
+텍스트 → 이미지 → PDF → 오디오 → 비디오 → YouTube 까지 한 번에</p>
+</blockquote>
+<p>---</p>
+<h2 id="목차">목차 </h2>
+<ol>
+<li><a href="#1-%ED%95%99%EC%8A%B5-%EB%AA%A9%ED%91%9C%EC%99%80-%ED%95%B5%EC%8B%AC-%EC%95%84%EC%9D%B4%EB%94%94%EC%96%B4">학습 목표와 핵심 아이디어</a></li>
+<li><a href="#2-api-%ED%82%A4-%EB%B0%9C%EA%B8%89%EA%B3%BC-%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95">API 키 발급과 환경 설정</a></li>
+<li><a href="#3-gemini-api%EC%9D%98-%EC%9E%91%EB%8F%99-%EC%9B%90%EB%A6%AC-%ED%95%9C-%EB%88%88%EC%97%90-%EB%B3%B4%EB%8A%94-%EC%9A%94%EC%B2%AD-%EA%B5%AC%EC%A1%B0">Gemini API의 작동 원리</a></li>
+<li><a href="#4-%EB%AA%A8%EB%8B%AC%EB%A6%AC%ED%8B%B0%EB%B3%84-%EC%82%AC%EC%9A%A9%EB%B2%95">모달리티별 사용법</a></li>
+<li><a href="#5-%EB%AC%B4%EB%A3%8C-%EC%BF%BC%ED%84%B0%EC%99%80-%EB%AA%A8%EB%B2%94-%EC%82%AC%EB%A1%80">무료 쿼터와 모범 사례</a></li>
+<li><a href="#6-%EC%9E%90%EC%A3%BC-%EB%A7%8C%EB%82%98%EB%8A%94-%EC%98%A4%EB%A5%98%EC%99%80-%ED%95%B4%EA%B2%B0%EB%B2%95">자주 만나는 오류와 해결법</a></li>
+<li><a href="#7-%ED%95%99%EC%83%9D-%EC%8B%A4%EC%8A%B5-%EA%B3%BC%EC%A0%9C">학생 실습 과제</a></li>
+</ol>
+<p>---</p>
+<h2 id="1-학습-목표와-핵심-아이디어">1. 학습 목표와 핵심 아이디어 </h2>
+<h3 id="핵심-목표">핵심 목표 </h3>
+<p>LLM API 호출은 <strong>"특정 URL에 JSON을 POST하는 일"</strong> 그 이상도 이하도 아닙니다. 화려한 SDK가 있긴 하지만, 내부적으로는 똑같은 HTTP 요청을 보낼 뿐입니다. 여기에서는 SDK를 거치지 않고 <code>requests</code> 라이브러리만으로 직접 요청을 만들어, <strong>"무엇이 어디로 어떻게 보내지는가"</strong> 를 눈으로 확인합니다.</p>
+<h3 id="멀티모달의-본질">멀티모달의 본질 </h3>
+<p>복잡해 보이지만 패턴은 단 하나입니다.</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>contents = \[ { "parts": \[ &lt;part1&gt;, &lt;part2&gt;, ... ] } ]
+</code></pre><p><code>parts</code> 배열 안에 텍스트·이미지·PDF·오디오·비디오·YouTube URL을 자유롭게 섞어 넣을 수 있습니다. 모달리티가 무엇이든 <strong>part 한 조각의 형식만 다를 뿐, 구조는 동일</strong>합니다. 이것이 이 코드를 관통하는 핵심 통찰입니다.</p>
+<table>
+<thead>
+<tr>
+<th>Part 종류</th>
+<th>형식</th>
+<th>사용 예</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>텍스트</td>
+<td><code>{"text": "..."}</code></td>
+<td>프롬프트, 본문</td>
+</tr>
+<tr>
+<td>인라인 파일</td>
+<td><code>{"inline\_data": {"mime\_type": "...", "data": "&lt;base64&gt;"}}</code></td>
+<td>이미지·PDF·오디오·짧은 영상</td>
+</tr>
+<tr>
+<td>원격 파일</td>
+<td><code>{"file\_data": {"file\_uri": "..."}}</code></td>
+<td>YouTube URL, File API 업로드</td>
+</tr>
+</tbody>
+</table>
+<p>---</p>
+<h2 id="2-api-키-발급과-환경-설정">2. API 키 발급과 환경 설정 </h2>
+<h3 id="21-api-키-발급-3분-소요">2.1 API 키 발급 (3분 소요) </h3>
+<ol>
+<li><a href="https://aistudio.google.com/apikey">https://aistudio.google.com/apikey</a> 접속</li>
+<li>Google 계정으로 로그인</li>
+<li><strong>Create API key</strong> 클릭 → 새 프로젝트 생성 또는 기존 프로젝트 선택</li>
+<li>발급된 키(예: <code>AIzaSy...</code>)를 안전한 곳에 복사</li>
+<li>신용카드 등록 <strong>불필요</strong></li>
+</ol>
+<h3 id="22-환경변수에-키-저장">2.2 환경변수에 키 저장 </h3>
+<p>코드에 키를 직접 적으면 GitHub 등에 실수로 노출될 위험이 있습니다. <strong>환경변수</strong>로 관리하세요.</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Windows PowerShell (현재 세션만)</span>
+<span class="token variable">$env</span>:GEMINI<span class="token punctuation">\</span>_API<span class="token punctuation">\</span>_KEY <span class="token operator">=</span> <span class="token string">"AIzaSy..."</span>
+
+<span class="token comment"># Windows PowerShell (영구 저장)</span>
+<span class="token punctuation">\</span><span class="token punctuation">[</span>Environment<span class="token punctuation">]</span>::SetEnvironmentVariable<span class="token punctuation">(</span><span class="token string">"GEMINI\_API\_KEY"</span>, <span class="token string">"AIzaSy..."</span>, <span class="token string">"User"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># macOS / Linux Bash</span>
+<span class="token builtin class-name">export</span> GEMINI<span class="token punctuation">\</span>_API<span class="token punctuation">\</span>_KEY<span class="token operator">=</span><span class="token string">"AIzaSy..."</span>
+<span class="token comment"># 영구 저장은 \~/.bashrc 또는 \~/.zshrc 끝에 위 줄 추가</span>
+</code></pre><h3 id="23-패키지-설치">2.3 패키지 설치 </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>pip <span class="token function">install</span> requests
+</code></pre><p>끝입니다. <strong><code>PyPDF2</code>, <code>pydub</code>, <code>opencv</code>, <code>Pillow</code> 같은 멀티미디어 라이브러리는 일절 필요 없습니다.</strong> Gemini가 PDF·오디오·영상을 모두 네이티브로 이해하기 때문입니다.</p>
+<p>---</p>
+<h2 id="3-gemini-api의-작동-원리">3. Gemini API의 작동 원리 </h2>
+<h3 id="31-우리가-보내는-것-request">3.1 우리가 보내는 것 (Request) </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent
+Headers:
+    Content-Type: application/json
+    x-goog-api-key: &lt;YOUR\_KEY&gt;
+Body (JSON):
+{
+  "contents": \[
+    {
+      "parts": \[
+        { "text": "이 이미지를 분석해 주세요." },
+        { "inline\_data": { "mime\_type": "image/jpeg", "data": "&lt;base64...&gt;" } }
+      ]
+    }
+  ],
+  "generationConfig": {
+    "maxOutputTokens": 4096,
+    "temperature": 0.7,
+    "candidateCount": 1,  
+  }
+}
+</code></pre><h3 id="32-받는-것-response">3.2 받는 것 (Response) </h3>
+<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"candidates"</span><span class="token operator">:</span> \<span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"content"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"parts"</span><span class="token operator">:</span> \<span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token property">"text"</span><span class="token operator">:</span> <span class="token string">"이 이미지는 ..."</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"finishReason"</span><span class="token operator">:</span> <span class="token string">"STOP"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"usageMetadata"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"promptTokenCount"</span><span class="token operator">:</span> <span class="token number">1023</span><span class="token punctuation">,</span>
+    <span class="token property">"candidatesTokenCount"</span><span class="token operator">:</span> <span class="token number">412</span><span class="token punctuation">,</span>
+    <span class="token property">"totalTokenCount"</span><span class="token operator">:</span> <span class="token number">1435</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h3 id="33-핵심-함수-call_gemini-한-줄씩-읽기">3.3 핵심 함수 <code>call\_gemini()</code> 한 줄씩 읽기 </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token keyword keyword-def">def</span> call\_gemini<span class="token punctuation">(</span>parts<span class="token punctuation">,</span> <span class="token builtin">max</span>\_tokens<span class="token operator">=</span><span class="token number">4096</span><span class="token punctuation">,</span> temperature<span class="token operator">=</span><span class="token number">0.7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    payload <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token string">"contents"</span><span class="token punctuation">:</span> \<span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"parts"</span><span class="token punctuation">:</span> parts<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>          <span class="token comment"># ① 입력 조각들을 turn에 담음</span>
+        <span class="token string">"generationConfig"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>                     <span class="token comment"># ② 생성 옵션</span>
+            <span class="token string">"maxOutputTokens"</span><span class="token punctuation">:</span> <span class="token builtin">max</span>\_tokens<span class="token punctuation">,</span>
+            <span class="token string">"temperature"</span><span class="token punctuation">:</span> temperature<span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+    headers <span class="token operator">=</span> <span class="token punctuation">{</span>                                   <span class="token comment"># ③ API 키는 헤더로</span>
+        <span class="token string">"Content-Type"</span><span class="token punctuation">:</span> <span class="token string">"application/json"</span><span class="token punctuation">,</span>
+        <span class="token string">"x-goog-api-key"</span><span class="token punctuation">:</span> GEMINI\_API\_KEY<span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+    response <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>API\_URL<span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> json<span class="token operator">=</span>payload<span class="token punctuation">,</span> timeout<span class="token operator">=</span><span class="token number">180</span><span class="token punctuation">)</span>
+    response<span class="token punctuation">.</span><span class="token keyword keyword-raise">raise</span>\_for\_status<span class="token punctuation">(</span><span class="token punctuation">)</span>                   <span class="token comment"># ④ 에러면 즉시 예외</span>
+    result <span class="token operator">=</span> response<span class="token punctuation">.</span>json<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword keyword-return">return</span> result\<span class="token punctuation">[</span><span class="token string">"candidates"</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token string">"content"</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token string">"parts"</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token string">"text"</span><span class="token punctuation">]</span>   <span class="token comment"># ⑤ 응답 텍스트만 추출</span>
+</code></pre><p>이 함수만 이해하면 나머지 분석 함수들은 <strong>"parts 리스트를 어떻게 만드는가"</strong> 의 차이일 뿐입니다.</p>
+<p>---</p>
+<h2 id="4-모달리티별-사용법">4. 모달리티별 사용법 </h2>
+<h3 id="41-텍스트-분석--analyze_text">4.1 텍스트 분석 — <code>analyze\_text()</code> </h3>
+<p>가장 단순한 케이스. parts에 텍스트 하나만 들어갑니다.</p>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>result <span class="token operator">=</span> analyze\_text<span class="token punctuation">(</span><span class="token string">"분석할 본문..."</span><span class="token punctuation">)</span>
+<span class="token keyword keyword-print">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+</code></pre><p><strong>프롬프트 설계 5원칙</strong> (코드의 분석 프롬프트가 따르는 패턴)</p>
+<ol>
+<li><strong>역할 부여</strong> — "당신은 ~ 전문가입니다"</li>
+<li><strong>작업 명시</strong> — "다음 9가지 항목으로 분석"</li>
+<li><strong>형식 고정</strong> — 항목마다 번호와 제목을 명시</li>
+<li><strong>언어 지정</strong> — "한국어로 작성하세요"</li>
+<li><strong>입력 분리</strong> — 분석 대상은 <code>"""..."""</code> 로 감싸 지시문과 구분</li>
+</ol>
+<h3 id="42-이미지-분석--analyze_image_file-analyze_image_url">4.2 이미지 분석 — <code>analyze\_image\_file()</code>, <code>analyze\_image\_url()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token comment"># 로컬 파일</span>
+analyze\_image\_file<span class="token punctuation">(</span><span class="token string">"photo.jpg"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># 인터넷 이미지 URL</span>
+analyze\_image\_url<span class="token punctuation">(</span><span class="token string">"https://...jpg"</span><span class="token punctuation">)</span>
+</code></pre><p><strong>왜 URL 분석 함수도 다운로드를 직접 할까?</strong><br>
+Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지만, 일반 이미지 URL은 서버 권한·핫링크 차단 등으로 실패가 잦습니다. 우리가 <code>requests.get()</code>으로 받아 base64로 인코딩해 <code>inline\_data</code>로 넣는 편이 안정적입니다.</p>
+<p><strong>지원 형식</strong>: <code>.png</code>, <code>.jpg/.jpeg</code>, <code>.webp</code>, <code>.gif</code>, <code>.heic</code></p>
+<h3 id="43-pdf-분석--analyze_pdf">4.3 PDF 분석 — <code>analyze\_pdf()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_pdf<span class="token punctuation">(</span><span class="token string">"report.pdf"</span><span class="token punctuation">)</span>    <span class="token comment"># 텍스트 추출 라이브러리 없이 그대로!</span>
+</code></pre><p><strong>왜 PyPDF2가 필요 없는가?</strong></p>
+<ul>
+<li>Gemini는 PDF를 받으면 페이지마다 <strong>이미지(비전) + 임베디드 텍스트</strong> 둘 다를 봅니다.</li>
+<li>즉 PyPDF2가 못 잡는 표·차트·도표·레이아웃까지 그대로 이해합니다.</li>
+<li>한 페이지 ≈ 258 토큰. 최대 1,000 페이지까지 처리 가능.</li>
+</ul>
+<p><strong>한도</strong>:</p>
+<ul>
+<li>인라인(base64 본문 첨부) 권장: <strong>20 MB 이하</strong></li>
+<li>그보다 큰 PDF는 별도 File API 업로드가 필요 (이번 강의 범위 밖)</li>
+</ul>
+<h3 id="44-오디오-분석--analyze_audio_file">4.4 오디오 분석 — <code>analyze\_audio\_file()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_audio\_file<span class="token punctuation">(</span><span class="token string">"interview.mp3"</span><span class="token punctuation">)</span>
+</code></pre><p><strong>Gemini가 오디오에서 뽑아내는 것</strong>:</p>
+<ul>
+<li>음성 → 텍스트 전사 (Whisper 같은 별도 STT 모델 불필요)</li>
+<li>화자 수, 추정 성별/연령, 톤·감정</li>
+<li>배경음·BGM·효과음의 의미</li>
+<li>발화의 수사적 전략</li>
+</ul>
+<p><strong>지원 형식</strong>: <code>.mp3</code>, <code>.wav</code>, <code>.m4a</code>, <code>.aac</code>, <code>.flac</code>, <code>.ogg</code></p>
+<p><strong>권장 길이</strong>: 1~5분 (인라인 20 MB 한도 안에서 충분)</p>
+<h3 id="45-로컬-비디오-분석--analyze_video_file">4.5 로컬 비디오 분석 — <code>analyze\_video\_file()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_video\_file<span class="token punctuation">(</span><span class="token string">"clip.mp4"</span><span class="token punctuation">)</span>
+</code></pre><p><strong>Gemini가 비디오를 보는 방식</strong>:</p>
+<ul>
+<li>1초당 1프레임을 샘플링하면서 <strong>동시에</strong> 오디오 트랙도 분석</li>
+<li>시각 변화 + 음성·BGM을 종합적으로 이해</li>
+<li>타임스탬프(<code>\[MM:SS]</code>)로 특정 시점을 지목 가능</li>
+</ul>
+<p><strong>⚠️ 인라인 한도</strong>:</p>
+<ul>
+<li><strong>20 MB 이하 + 약 1분 이내</strong></li>
+<li>더 긴 영상은 다음 항목(YouTube)을 사용하세요.</li>
+</ul>
+<p><strong>지원 형식</strong>: <code>.mp4</code>, <code>.mov</code>, <code>.avi</code>, <code>.webm</code>, <code>.mkv</code></p>
+<h3 id="46-youtube-url-분석--analyze_youtube">4.6 YouTube URL 분석 — <code>analyze\_youtube()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_youtube<span class="token punctuation">(</span><span class="token string">"https://www.youtube.com/watch?v=XXXXXXXX"</span><span class="token punctuation">)</span>
+</code></pre><p><strong>한 줄로 끝!</strong> 다운로드도, 인코딩도 필요 없습니다.</p>
+<p><strong>이 기능이 다른 모달리티와 다른 점</strong>:</p>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token comment"># 다른 모달리티: inline\_data 사용</span>
+<span class="token punctuation">{</span><span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"&lt;base64&gt;"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+
+<span class="token comment"># YouTube: file\_data 사용 (mime\_type도 불필요!)</span>
+<span class="token punctuation">{</span><span class="token string">"file\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"file\_uri"</span><span class="token punctuation">:</span> <span class="token string">"https://www.youtube.com/watch?v=..."</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+</code></pre><p><strong>제약사항</strong>:</p>
+<ul>
+<li>공개(public) 영상만 가능. <strong>비공개·미등록 영상 안됨</strong></li>
+<li>무료 티어: <strong>하루 총 8시간</strong> (영상 누적 길이 기준)</li>
+<li>한 요청에 한 영상 권장 (Gemini 2.5부터 최대 10개까지 가능하지만 품질 저하)</li>
+</ul>
+<p><strong>강의·실습용 권장 길이: 5~10분</strong></p>
+<table>
+<thead>
+<tr>
+<th>영상 길이</th>
+<th>하루 가능 횟수</th>
+<th>추천 용도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3분</td>
+<td>~160회</td>
+<td>광고, 짧은 뉴스, TikTok 형식</td>
+</tr>
+<tr>
+<td>5분</td>
+<td>~96회</td>
+<td>뉴스 클립, 토픽 영상</td>
+</tr>
+<tr>
+<td>10분</td>
+<td>~48회</td>
+<td>TED 강연 일부, 다큐 발췌</td>
+</tr>
+<tr>
+<td>30분</td>
+<td>~16회</td>
+<td>풀 인터뷰, 연설 (개인 연구용)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>**권장**: 학생 실습은 **5분 영상**으로 시작하세요. 응답이 빠르고 토큰 소모가 적어 시행착오를 많이 거칠 수 있습니다.</p>
+</blockquote>
+<p>---</p>
+<h2 id="5-무료-쿼터와-모범-사례">5. 무료 쿼터와 모범 사례 </h2>
+<h3 id="51-gemini-25-flash-lite-무료-한도-2026년-기준">5.1 Gemini 2.5 Flash-Lite 무료 한도 (2026년 기준) </h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>한도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RPM (분당 요청 수)</td>
+<td>15</td>
+</tr>
+<tr>
+<td>RPD (일일 요청 수)</td>
+<td>1,000</td>
+</tr>
+<tr>
+<td>TPM (분당 토큰 수)</td>
+<td>250,000</td>
+</tr>
+<tr>
+<td>YouTube 영상 누적 길이</td>
+<td>8 시간/일</td>
+</tr>
+<tr>
+<td>Context window</td>
+<td>1,000,000 토큰</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>무료 티어 입력 데이터는 **Google 모델 학습에 사용될 수 있습니다.** 민감 정보·연구 윤리상 보호되어야 할 데이터는 절대 무료 티어로 보내지 마세요. 유료 티어로 전환하면 학습 사용을 거부할 수 있습니다.</p>
+</blockquote>
+<h3 id="52-토큰-절약-팁">5.2 토큰 절약 팁 </h3>
+<ul>
+<li><strong>PDF</strong>: 한 페이지 ≈ 258 토큰. 100 페이지면 약 25,800 토큰. 필요한 페이지만 추리면 비용이 1/10로.</li>
+<li><strong>오디오</strong>: 초당 약 32 토큰. 5분이면 9,600 토큰.</li>
+<li><strong>비디오</strong>: 초당 약 300 토큰(영상 258 + 오디오 32 + 메타데이터). 5분이면 90,000 토큰. <strong>가장 비싼 모달리티!</strong></li>
+<li><strong>이미지</strong>: 장당 약 258 토큰. 매우 저렴.</li>
+</ul>
+<h3 id="53-빠른-실험을-위한-팁">5.3 빠른 실험을 위한 팁 </h3>
+<ol>
+<li><strong><code>temperature=0.0</code></strong> 으로 시작 → 같은 입력에 같은 출력이 나와 디버깅 쉬움</li>
+<li><strong><code>max\_tokens=1024</code></strong> 로 짧게 응답받아 빠른 반복 후, 만족스러우면 늘리기</li>
+<li>같은 PDF·영상을 여러 번 분석할 거면 <strong>Context Caching</strong> 사용 (이번 강의 범위 밖)</li>
+</ol>
+<p>---</p>
+<h2 id="6-자주-만나는-오류와-해결법">6. 자주 만나는 오류와 해결법 </h2>
+<h3 id="api-오류-400--bad-request"><code>\[API 오류 400]</code> — Bad Request </h3>
+<p>요청 JSON 형식이 잘못된 경우. 흔한 원인:</p>
+<ul>
+<li><code>inline\_data</code>의 <code>data</code> 값이 base64가 아니거나 <code>b''</code> 같은 Python 바이트 표기 그대로</li>
+<li><code>mime\_type</code> 누락</li>
+<li>YouTube 분석에서 <code>inline\_data</code>를 사용 (<code>file\_data</code> 가 맞음)</li>
+</ul>
+<h3 id="api-오류-401--403--인증-실패"><code>\[API 오류 401 / 403]</code> — 인증 실패 </h3>
+<ul>
+<li>API 키 오타 / 환경변수 미설정</li>
+<li>키가 비활성화됨 → AI Studio에서 새로 발급</li>
+<li><code>x-goog-api-key</code> 헤더 이름 오타</li>
+</ul>
+<h3 id="api-오류-429--rate-limit-초과"><code>\[API 오류 429]</code> — Rate Limit 초과 </h3>
+<ul>
+<li>분당 15회 / 일일 1,000회 초과</li>
+<li>해결: 1~2분 기다렸다가 재시도. 배치 처리 시 <code>time.sleep(5)</code> 권장</li>
+</ul>
+<h3 id="api-오류-413--payload-too-large"><code>\[API 오류 413]</code> — Payload Too Large </h3>
+<ul>
+<li>인라인 데이터가 20 MB 초과</li>
+<li>해결: 파일 압축, 더 짧은 클립 사용, 또는 File API 업로드</li>
+</ul>
+<h3 id="응답-파싱-실패-candidates가-빔"><code>\[응답 파싱 실패]</code> (candidates가 빔) </h3>
+<ul>
+<li>안전 필터에 걸린 경우(폭력·성·증오 등)</li>
+<li>응답 본문에 <code>promptFeedback.blockReason</code>이 표시됨</li>
+<li>해결: 다른 콘텐츠로 시도, 프롬프트 표현 완화</li>
+</ul>
+<h3 id="youtube-영상-분석이-안-됨">YouTube 영상 분석이 안 됨 </h3>
+<ul>
+<li>비공개·미등록 영상은 불가</li>
+<li>일부 지역 차단된 영상 불가</li>
+<li>8시간 일일 한도 초과 시 다음 날 자정(태평양 시간) 리셋</li>
+</ul>
+<p>---</p>
+<h2 id="7-학생-실습-과제">7. 학생 실습 과제 </h2>
+<h3 id="단계-1-기본-동작-확인">단계 1: 기본 동작 확인 </h3>
+<ol>
+<li>환경변수에 API 키 등록</li>
+<li><code>if \_\_name\_\_ == "\_\_main\_\_":</code> 블록의 텍스트 분석 예시 주석 해제 → 실행</li>
+<li>출력에서 9개 항목이 모두 나오는지 확인</li>
+</ol>
+<h3 id="단계-2-모달리티-한-바퀴-돌기-각자">단계 2: 모달리티 한 바퀴 돌기 (각자) </h3>
+<table>
+<thead>
+<tr>
+<th>과제</th>
+<th>입력 예시</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이미지 분석</td>
+<td>본인이 찍은 사진 1장</td>
+</tr>
+<tr>
+<td>PDF 분석</td>
+<td>정부 보도자료 PDF (10페이지 내외)</td>
+</tr>
+<tr>
+<td>오디오 분석</td>
+<td>라디오 뉴스 1~2분 클립 (mp3)</td>
+</tr>
+<tr>
+<td>비디오 분석</td>
+<td>30초~1분 짜리 광고 영상 (mp4)</td>
+</tr>
+<tr>
+<td>YouTube 분석</td>
+<td>2분짜리 뉴스 클립 URL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="단계-3-비교-분석-응용">단계 3: 비교 분석 응용 </h3>
+<p>같은 사건을 다룬 <strong>두 개의 다른 매체</strong>를 각각 분석한 뒤, 어떤 차이가 있었는지 직접 글로 정리해 보기.</p>
+<h3 id="단계-4-프롬프트-커스터마이징">단계 4: 프롬프트 커스터마이징 </h3>
+<p><code>VIDEO\_PROMPT</code> 등의 분석 프롬프트를 자기 연구 주제에 맞게 수정해 보기. 예:</p>
+<ul>
+<li>광고 분석 전공: "광고가 사용한 설득 기법 분류" 항목 추가</li>
+<li>정치 보도 분석: "프레이밍 유형(전략 프레임 vs 이슈 프레임)" 항목 추가</li>
+<li>영화 분석: "감독의 화면 구성 스타일" 항목 추가</li>
+</ul>
+<h3 id="단계-5-자동화-파이프라인-구축">단계 5: 자동화 파이프라인 구축 </h3>
+<ul>
+<li>폴더에 들어 있는 모든 영상을 차례로 분석해 결과를 CSV/JSON으로 저장</li>
+<li>같은 YouTube 영상을 5번 분석해 응답 안정성(consistency) 측정</li>
+<li>무료 쿼터 안에서 안전하게 동작하도록 <code>time.sleep(5)</code> 와 재시도 로직 추가</li>
+</ul>
+<p>---</p>
+<h2 id="부록-모달리티별-part-형식-한눈에-보기">부록: 모달리티별 part 형식 한눈에 보기 </h2>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token comment"># 텍스트</span>
+<span class="token punctuation">{</span><span class="token string">"text"</span><span class="token punctuation">:</span> <span class="token string">"분석해 주세요"</span><span class="token punctuation">}</span>
+
+<span class="token comment"># 이미지/PDF/오디오/짧은 영상 (인라인)</span>
+<span class="token punctuation">{</span>
+    <span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"image/jpeg"</span><span class="token punctuation">,</span>          <span class="token comment"># 모달리티에 맞춰 변경</span>
+        <span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"&lt;base64 인코딩된 바이트&gt;"</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment"># YouTube URL (또는 File API URI)</span>
+<span class="token punctuation">{</span>
+    <span class="token string">"file\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"file\_uri"</span><span class="token punctuation">:</span> <span class="token string">"https://www.youtube.com/watch?v=..."</span>
+        <span class="token comment"># YouTube는 mime\_type 불필요</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><p><strong>한 turn에 여러 part를 함께 넣어 멀티모달 분석</strong>도 가능합니다:</p>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>parts <span class="token operator">=</span> \<span class="token punctuation">[</span>
+    <span class="token punctuation">{</span><span class="token string">"text"</span><span class="token punctuation">:</span> <span class="token string">"이 텍스트와 이미지를 비교 분석하세요."</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"text/plain"</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> text\_b64<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"image/jpeg"</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> image\_b64<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span>
+</code></pre><p>이 패턴이 바로 멀티모달 LLM의 본질입니다.</p>
+<p>---</p>
+<p><em>작성일: 2026</em> · <em>모델 정보는 시간이 지나면서 변할 수 있습니다. 최신 정보는</em> <a href="https://ai.google.dev/gemini-api/docs"><em>Google AI 공식 문서</em></a><em>를 확인하세요.</em></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
