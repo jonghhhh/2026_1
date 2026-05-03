@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>DataTables + Scrollytelling 종합</title>
+<title>DataTables + Scrollytelling 종합 (학습용)</title>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"/>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -16,7 +16,6 @@
     color: white; padding: 24px 32px; }
   header h1 { font-size: 22px; font-weight: 600; }
   header p  { font-size: 13px; opacity: .85; margin-top: 4px; }
-  header a  { color: #fde68a; text-decoration: none; margin-right: 12px; font-size: 12px; }
 
   .tabs { display: flex; gap: 4px; padding: 14px 24px;
     background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; }
@@ -38,6 +37,10 @@
     font-size: 12px; line-height: 1.7; overflow-x: auto; margin-bottom: 12px;
     font-family: 'Consolas', 'Monaco', monospace; white-space: pre;
   }
+  pre.code .cmt   { color: #64748b; font-style: italic; }
+  pre.code .key   { color: #fbbf24; }
+  pre.code .str   { color: #86efac; }
+  pre.code .swap  { color: #fca5a5; font-weight: 600; }
 
   .explain { background: #f8fafc; border: 1px solid #e2e8f0;
     border-radius: 10px; padding: 14px 18px; margin: 14px 0;
@@ -66,6 +69,24 @@
   .warn-box { background: #fff7ed; border-left: 3px solid #f59e0b;
     padding: 8px 12px; border-radius: 0 6px 6px 0;
     font-size: 12px; color: #9a3412; margin-top: 10px; }
+  .swap-note {
+    background: #fef9c3; border-left: 3px solid #eab308;
+    padding: 8px 12px; border-radius: 0 6px 6px 0;
+    font-size: 12px; color: #713f12; margin-bottom: 10px;
+  }
+  .intro {
+    background: #faf5ff; border-radius: 8px; padding: 14px 18px;
+    font-size: 13px; color: #4c1d95; margin-bottom: 14px; line-height: 1.7;
+  }
+  .intro b { color: #4c1d95; }
+  .intro ol { padding-left: 22px; margin-top: 6px; }
+  .intro li { padding: 2px 0; }
+  .intro code { background: #e9d5ff; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+  .lib-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 11px; font-weight: 600; margin-left: 8px;
+    background: #e9d5ff; color: #4c1d95;
+  }
 
   /* DataTables */
   #accident-table thead { background: #7c3aed; color: white; }
@@ -86,7 +107,7 @@
   .io-item.visible { opacity: 1; transform: translateX(0); background: #7c3aed; color: white; }
   .io-status { margin-top: 8px; padding: 8px 12px; background: #f8fafc; border-radius: 6px; font-size: 12px; color: #475569; }
 
-  /* ── Scrollama 인라인 데모 ── */
+  /* Scrollama 인라인 데모 */
   .scroll-demo { position: relative; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
   .scroll-demo .sticky-stage {
     position: sticky; top: 0;
@@ -138,20 +159,64 @@
 
 <header>
   <h1>📰 DataTables + Scrollytelling</h1>
-  <p>인터랙티브 테이블 + 스크롤 기반 데이터 기사 만들기</p>
+  <p>인터랙티브 테이블 + 스크롤 기반 데이터 기사 · 코드 그대로 복사 → 데이터만 교체</p>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab(0)">① DataTables</div>
-  <div class="tab" onclick="showTab(1)">② Intersection Observer</div>
-  <div class="tab" onclick="showTab(2)">③ Scrollama 인라인 데모 ⭐</div>
-  <div class="tab" onclick="showTab(3)">④ 완성 기사 (새 창)</div>
+  <div class="tab active" onclick="showTab(0)">⓪ 시작하기</div>
+  <div class="tab" onclick="showTab(1)">① DataTables</div>
+  <div class="tab" onclick="showTab(2)">② Intersection Observer</div>
+  <div class="tab" onclick="showTab(3)">③ Scrollama 인라인 ⭐</div>
+  <div class="tab" onclick="showTab(4)">④ 완성 기사 (새 창)</div>
+</div>
+
+<!-- ═════════════════ ⓪ 시작하기 ═════════════════ -->
+<div class="panel active" id="panel0">
+  <div class="card">
+    <div class="card-head">⓪ 데이터 저널리즘 4가지 도구 — 어떤 기능을 어디에 쓰나?</div>
+    <div class="card-body">
+      <div class="intro">
+        <b>이 페이지는 데이터 기사·인터랙티브 콘텐츠를 만드는 데 자주 쓰이는 4가지 패턴을 모았습니다.</b>
+        스크롤리텔링은 ②→③→④ 순서로 발전합니다. ②가 원리, ③이 라이브러리, ④가 완성 기사.
+        <ol>
+          <li><b>① DataTables</b> — 정렬·검색·페이지네이션 테이블 (jQuery)</li>
+          <li><b>② Intersection Observer</b> — 스크롤 감지 브라우저 기본 API</li>
+          <li><b>③ Scrollama</b> — IO를 한 줄로 감싼 스크롤리텔링 라이브러리</li>
+          <li><b>④ 완성 기사</b> — 모두 합쳐 만드는 풀스크린 데이터 기사</li>
+        </ol>
+      </div>
+
+      <div class="explain">
+        <h5>🧰 4가지 도구 — 라이브러리와 사용법</h5>
+        <div class="exp-row"><b>jQuery + DataTables</b> · ① <span class="lib-tag">jQuery</span> &nbsp;<code>$('#table').DataTable({...})</code></div>
+        <div class="exp-row"><b>Intersection Observer</b> · ② <span class="lib-tag">브라우저 기본</span> &nbsp;<code>new IntersectionObserver(callback, options)</code></div>
+        <div class="exp-row"><b>Scrollama + Chart.js</b> · ③④ <span class="lib-tag">Scrollama</span> &nbsp;<code>scrollama().setup({step}).onStepEnter(...)</code></div>
+      </div>
+
+      <div class="tip">💡 <b>학생 미션</b>: ① 표 → 자기 데이터로 행만 교체. ③ 단계 → 자기 분석 5단계로 텍스트와 차트 교체. ④ → 새 창 코드를 통째로 복사해 별도 .html 저장 후 자기 기사로 변환.</div>
+
+<pre class="code"><span class="cmt">// ── 스크롤리텔링의 핵심 패턴 ──</span>
+<span class="cmt">// 1) 차트 영역(왼쪽)을 sticky로 화면에 고정</span>
+<span class="cmt">// 2) 텍스트(오른쪽)를 스크롤하며 단계 진입 시 차트만 갱신</span>
+
+<span class="key">const</span> scroller = scrollama();
+scroller
+    .setup({ step: <span class="str">'.scroll-step'</span>, offset: 0.5 })   <span class="cmt">// step이 화면 50% 지점에 오면 발동</span>
+    .onStepEnter(({ element, index }) =&gt; {
+        document.querySelectorAll(<span class="str">'.scroll-step'</span>)
+                .forEach(s =&gt; s.classList.remove(<span class="str">'is-active'</span>));
+        element.classList.add(<span class="str">'is-active'</span>);
+        showStage(index);                              <span class="cmt">// 차트 전환 함수</span>
+    });
+window.addEventListener(<span class="str">'resize'</span>, scroller.resize);</pre>
+    </div>
+  </div>
 </div>
 
 <!-- ═════════════════ ① DataTables ═════════════════ -->
-<div class="panel active" id="panel0">
+<div class="panel" id="panel1">
   <div class="card">
-    <div class="card-head">DataTables.js — 정렬·검색·페이지네이션이 되는 표</div>
+    <div class="card-head">① DataTables.js — 정렬·검색·페이지 표 <span class="lib-tag">jQuery + DataTables</span></div>
     <div class="card-body">
       <div class="goal-box">
         <h4>🎯 이 탭에서 배우는 것</h4>
@@ -160,29 +225,57 @@
       </div>
       <div class="explain">
         <h5>📚 DataTables란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 차트로 보여주기엔 항목이 너무 많을 때(시도 17개·차종 30개 등) <b>"독자가 직접 탐색하는 표"</b>로 풀어내는 도구.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · 헤더 클릭 → 정렬, 검색창 → 즉시 필터, 하단 → 페이지 이동. 서버 없이도 완전 동작.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 차트로 보기엔 항목이 너무 많을 때(시도 17개·차종 30개) <b>"독자가 직접 탐색하는 표"</b>로.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · 헤더 클릭 → 정렬, 검색창 → 즉시 필터, 하단 → 페이지 이동.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>17개 시도 사고 통계 표 — 사망률 기준 정렬해 위험 지역 찾기</li>
-            <li>1000건짜리 사망사고 원본 데이터 → 검색으로 특정 운전자/차량 추적</li>
-            <li>월별·차종별 누적 표 — 페이지로 분할해 가독성 유지</li>
+            <li>17개 시도 사고 통계 — 사망률 정렬로 위험 지역 찾기</li>
+            <li>1000건 사망사고 원본 → 검색으로 특정 운전자 추적</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 데이터가 만 행 넘으면 클라이언트 처리 느려짐 → <b>서버 사이드 처리</b>로 전환.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 만 행 넘으면 클라이언트 처리 느려짐 → <b>서버 사이드 처리</b>로 전환.</div>
       </div>
-<pre class="code">// ── DataTables (jQuery 필요) ──
-$('#테이블id').DataTable({
-    language: {
-        search:'검색:', lengthMenu:'_MENU_ 개씩 보기',
-        info:'_START_–_END_ / _TOTAL_ 개',
-        paginate: { previous:'이전', next:'다음' }
-    },
-    order: [[1, 'desc']],   // [열 인덱스, 'asc'|'desc']
-    pageLength: 7
-});</pre>
+
+      <div class="swap-note">📝 <b>핵심</b>: HTML <code>&lt;table id="..."&gt;</code> 그대로 두고 <code>$('#id').DataTable(...)</code> 한 줄. 행은 <code>&lt;tbody&gt;</code>에 평범하게.</div>
+
+<pre class="code"><span class="cmt">// ① CDN: jQuery + DataTables (CSS도 추가)</span>
+<span class="cmt">// &lt;link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"/&gt;</span>
+<span class="cmt">// &lt;script src="https://code.jquery.com/jquery-3.7.0.min.js"&gt;&lt;/script&gt;</span>
+<span class="cmt">// &lt;script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"&gt;&lt;/script&gt;</span>
+
+<span class="cmt">// ② 일반 HTML 테이블 — 행만 자기 데이터로 교체</span>
+<span class="cmt">// &lt;table id="myTable"&gt;</span>
+<span class="cmt">//     &lt;thead&gt;&lt;tr&gt;&lt;th&gt;시도&lt;/th&gt;&lt;th&gt;사고건수&lt;/th&gt;&lt;th&gt;사망률&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</span>
+<span class="cmt">//     &lt;tbody&gt;</span>
+<span class="cmt">//         &lt;tr&gt;&lt;td&gt;서울&lt;/td&gt;&lt;td&gt;34215&lt;/td&gt;&lt;td&gt;0.74&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="cmt">//         ...</span>
+<span class="cmt">//     &lt;/tbody&gt;</span>
+<span class="cmt">// &lt;/table&gt;</span>
+
+<span class="cmt">// ③ JS 한 줄로 활성화</span>
+$(document).ready(<span class="key">function</span>() {
+    $(<span class="str">'#myTable'</span>).DataTable({
+        language: {                            <span class="cmt">// 한글화</span>
+            search: <span class="str">'검색:'</span>,
+            lengthMenu: <span class="str">'_MENU_ 개씩 보기'</span>,
+            info: <span class="str">'_START_–_END_ / _TOTAL_ 개'</span>,
+            paginate: { previous: <span class="str">'이전'</span>, next: <span class="str">'다음'</span> }
+        },
+        order: [[1, <span class="str">'desc'</span>]],                  <span class="cmt">// 초기 정렬: 1번 열, 내림차순</span>
+        pageLength: 7                          <span class="cmt">// 페이지당 행 수</span>
+    });
+});
+
+<span class="cmt">// ── fetch로 데이터 동적 로드 (실무) ──</span>
+<span class="cmt">// fetch('data.json').then(r =&gt; r.json()).then(rows =&gt; {</span>
+<span class="cmt">//     const tbody = document.querySelector('#myTable tbody');</span>
+<span class="cmt">//     tbody.innerHTML = rows.map(r =&gt;</span>
+<span class="cmt">//         `&lt;tr&gt;&lt;td&gt;${r.시도}&lt;/td&gt;&lt;td&gt;${r.사고건수}&lt;/td&gt;&lt;td&gt;${r.사망률}&lt;/td&gt;&lt;/tr&gt;`).join('');</span>
+<span class="cmt">//     $('#myTable').DataTable({...});</span>
+<span class="cmt">// });</span></pre>
+
       <p style="font-size:13px;color:#475569;margin-bottom:12px">
-        🔍 <b>해보기:</b> 헤더 클릭으로 정렬, 검색창에 시도명을 입력해 보세요.
+        🔍 <b>해보기:</b> 헤더 클릭으로 정렬, 검색창에 시도명 입력.
       </p>
       <table id="accident-table" class="display" style="width:100%">
         <thead>
@@ -213,37 +306,53 @@ $('#테이블id').DataTable({
 </div>
 
 <!-- ═════════════════ ② Intersection Observer ═════════════════ -->
-<div class="panel" id="panel1">
+<div class="panel" id="panel2">
   <div class="card">
-    <div class="card-head">Intersection Observer — "스크롤 감지"의 원리 익히기</div>
+    <div class="card-head">② Intersection Observer — "스크롤 감지"의 원리 <span class="lib-tag">브라우저 기본 API</span></div>
     <div class="card-body">
       <div class="goal-box">
         <h4>🎯 이 탭에서 배우는 것</h4>
-        <p><b>스크롤 기반 시각화의 기초 원리</b>를 직접 눈으로 확인합니다. 어떤 요소가
-          화면(또는 컨테이너)에 들어왔다 나갔다 하는지를 브라우저가 어떻게 감지하는지를 보여주는 데모입니다.
-          이 기술 위에 ③ Scrollama가 만들어졌고, ④ 완성 기사가 동작합니다.</p>
+        <p><b>스크롤 기반 시각화의 기초 원리</b>를 직접 눈으로 확인. 이 기술 위에 ③ Scrollama가 만들어졌고, ④ 완성 기사가 동작합니다.</p>
       </div>
       <div class="explain">
         <h5>📚 Intersection Observer란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 화면 어딘가에 어떤 요소가 들어왔는지 감지하는 <b>브라우저 기본 API</b>. 옛날엔 <code>scroll</code> 이벤트로 처리했지만 성능이 나빴고, 이걸로 표준화됐습니다.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · "이 요소가 50% 이상 보이면 콜백 실행" 같은 식. 무한 스크롤·이미지 지연 로드·스크롤 애니메이션·스크롤리텔링의 기반.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 화면 어딘가에 어떤 요소가 들어왔는지 감지하는 <b>브라우저 기본 API</b>. 옛날 <code>scroll</code> 이벤트보다 성능이 좋아 표준화됨.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · "이 요소가 50% 이상 보이면 콜백" 같은 식. 무한 스크롤·이미지 지연로드·스크롤 애니메이션의 기반.</div>
+        <div class="exp-row example"><b>🚦 사례</b>
           <ul class="exp-list">
-            <li>아래 7개 박스를 스크롤하면 화면에 들어오는 박스가 보라색으로 활성 → "이 단계에 도달했다"를 감지하는 원리 그대로</li>
-            <li>독자가 사고 통계 섹션에 도달하면 차트 자동 그려넣기</li>
+            <li>아래 7개 박스를 스크롤하면 보이는 박스가 보라색으로 활성</li>
+            <li>독자가 통계 섹션에 도달하면 차트 자동 그리기</li>
             <li>긴 인포그래픽의 어느 위치인지 우측 진행바에 표시</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 컨테이너(<code>root</code>)가 자체 스크롤되는 경우엔 <code>root: containerEl</code>을 명시. 안 그러면 페이지 스크롤 기준이 됨.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 컨테이너(<code>root</code>)가 자체 스크롤되면 <code>root: containerEl</code> 명시 필요.</div>
       </div>
-<pre class="code">const obs = new IntersectionObserver(
-    entries => entries.forEach(e => e.target.classList.toggle('visible', e.isIntersecting)),
+
+      <div class="swap-note">📝 <b>3요소</b>: ① <code>root</code> (감지 기준 컨테이너, null=뷰포트) ② <code>threshold</code> (몇 % 보일 때 발동) ③ 콜백.</div>
+
+<pre class="code"><span class="cmt">// ① CDN 불필요 ─── 브라우저 기본 API</span>
+<span class="cmt">// ② 감시할 요소들과 컨테이너 준비</span>
+<span class="cmt">// &lt;div id="container"&gt;</span>
+<span class="cmt">//     &lt;div class="item"&gt;...&lt;/div&gt; (여러 개)</span>
+<span class="cmt">// &lt;/div&gt;</span>
+
+<span class="cmt">// ③ Observer 생성</span>
+<span class="key">const</span> observer = <span class="key">new</span> IntersectionObserver(
+    entries =&gt; {                                 <span class="cmt">// 콜백: entries는 변화 있는 요소들</span>
+        entries.forEach(e =&gt; {
+            e.target.classList.toggle(<span class="str">'visible'</span>, e.isIntersecting);
+            <span class="cmt">// e.isIntersecting === true → 화면에 들어옴</span>
+        });
+    },
     {
-        root: containerEl,   // null이면 브라우저 뷰포트
-        threshold: 0.5       // 50% 이상 보일 때 발동
+        root: document.getElementById(<span class="str">'container'</span>),  <span class="cmt">// null이면 브라우저 뷰포트</span>
+        threshold: 0.5                            <span class="cmt">// 50% 이상 보일 때 발동</span>
     }
 );
-document.querySelectorAll('.io-item').forEach(el => obs.observe(el));</pre>
+
+<span class="cmt">// ④ 감시할 요소들 등록</span>
+document.querySelectorAll(<span class="str">'.item'</span>).forEach(el =&gt; observer.observe(el));</pre>
+
       <p style="font-size:13px;color:#475569;margin-bottom:10px">▼ 아래 박스를 <b>스크롤</b>해 보세요. 화면 안에 들어오면 보라색으로 변합니다.</p>
       <div class="io-demo" id="io-container">
         <div class="io-item" data-n="1">① 첫 섹션 — 스크롤하면 활성화</div>
@@ -260,40 +369,85 @@ document.querySelectorAll('.io-item').forEach(el => obs.observe(el));</pre>
 </div>
 
 <!-- ═════════════════ ③ Scrollama 인라인 데모 ═════════════════ -->
-<div class="panel" id="panel2">
+<div class="panel" id="panel3">
   <div class="card">
-    <div class="card-head">⭐ Scrollama 인라인 데모 — 스크롤로 차트가 바뀐다</div>
+    <div class="card-head">③ ⭐ Scrollama 인라인 — 스크롤로 차트가 바뀐다 <span class="lib-tag">Scrollama + Chart.js</span></div>
     <div class="card-body">
       <div class="goal-box">
         <h4>🎯 이 탭에서 배우는 것</h4>
         <p>NYT·워싱턴포스트·SBS·한겨레 등이 쓰는 <b>"스크롤리텔링"</b>의 핵심 패턴.<br>
-          왼쪽 차트를 <b>화면에 고정(sticky)</b>해 두고, 오른쪽 텍스트를 스크롤하면 단계마다 차트가 바뀌는 구조입니다. 이 한 패턴만 익히면 데이터 기사·내러티브 시각화를 만들 수 있습니다.</p>
+          왼쪽 차트를 <b>화면에 고정(sticky)</b>해 두고, 오른쪽 텍스트를 스크롤하면 단계마다 차트가 바뀝니다.</p>
       </div>
       <div class="explain">
         <h5>📚 Scrollama 패턴이란?</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · "독자가 스크롤할수록 이야기와 시각화가 함께 진행되는" 데이터 저널리즘 표준 형식. 텍스트와 차트를 <b>같이</b> 따라가게 만듦.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · IntersectionObserver를 한 줄로 감싼 라이브러리. <code>onStepEnter</code> 콜백에서 차트만 바꿔주면 끝.</div>
-        <div class="exp-row example"><b>🚦 교통사고 사례 — 5단계 시나리오</b>
+        <div class="exp-row purpose"><b>🎯 목적</b> · "독자 스크롤 = 이야기 + 시각화 동시 진행". 데이터 저널리즘 표준 형식.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · IntersectionObserver를 한 줄로 감싼 라이브러리. <code>onStepEnter</code> 콜백에서 차트만 바꿈.</div>
+        <div class="exp-row example"><b>🚦 사례 — 5단계 시나리오</b>
           <ul class="exp-list">
-            <li>SECTION 01: 8년 추세 선그래프 → 감소세 보여주기</li>
-            <li>SECTION 02: 특정 한 해만 빨간 막대로 강조 → 외부 충격(예: 코로나)</li>
-            <li>SECTION 03: 도넛으로 사고유형 비율 전환</li>
-            <li>SECTION 04: 시도별 가로막대로 지역 격차 강조</li>
-            <li>SECTION 05: "2,551명" 숫자 하나만 거대하게 → 핵심 메시지</li>
+            <li>SECTION 01: 8년 추세 선그래프</li>
+            <li>SECTION 02: 특정 한 해만 빨간 막대로 강조</li>
+            <li>SECTION 03: 도넛으로 사고유형 비율</li>
+            <li>SECTION 04: 시도별 가로막대로 지역 격차</li>
+            <li>SECTION 05: 거대한 숫자 한 개로 핵심 메시지</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 작은 컨테이너 안에서 동작시키면 IntersectionObserver가 어색해짐 → <b>페이지 자체를 스크롤</b>하는 게 가장 안정적(이 데모도 그 방식).</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 작은 컨테이너 안에서 동작시키면 IO가 어색해짐 → <b>페이지 자체를 스크롤</b>하는 게 가장 안정적.</div>
       </div>
-<pre class="code">// 핵심: 페이지 자체를 스크롤 → IO 가장 안정적
-const scroller = scrollama();
+
+      <div class="swap-note">📝 <b>패턴</b>: HTML에 sticky 차트 영역 + 여러 step div 만들고, JS에서 <code>scrollama().setup({step})</code> + <code>onStepEnter</code>에서 차트 갱신 함수 호출.</div>
+
+<pre class="code"><span class="cmt">// ① CDN: Scrollama + Chart.js</span>
+<span class="cmt">// &lt;script src="https://cdn.jsdelivr.net/npm/scrollama@3.2.0/build/scrollama.min.js"&gt;&lt;/script&gt;</span>
+<span class="cmt">// &lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"&gt;&lt;/script&gt;</span>
+
+<span class="cmt">// ② HTML 구조 ─── sticky 차트 + 텍스트 step들</span>
+<span class="cmt">// &lt;div class="scroll-demo"&gt;</span>
+<span class="cmt">//     &lt;div class="sticky-stage"&gt;&lt;canvas id="stage-canvas"&gt;&lt;/canvas&gt;&lt;/div&gt;</span>
+<span class="cmt">//     &lt;div class="scroll-steps"&gt;</span>
+<span class="cmt">//         &lt;div class="scroll-step"&gt;...텍스트 1...&lt;/div&gt;</span>
+<span class="cmt">//         &lt;div class="scroll-step"&gt;...텍스트 2...&lt;/div&gt;</span>
+<span class="cmt">//     &lt;/div&gt;</span>
+<span class="cmt">// &lt;/div&gt;</span>
+
+<span class="cmt">// ③ 데이터 + 단계별 차트 빌더 함수</span>
+<span class="key">const</span> years    = <span class="swap">[2016,2017,2018,2019,2020,2021,2022,2023]</span>;
+<span class="key">const</span> 사고건수 = <span class="swap">[220917,216335,217148,229600,209654,203130,196836,191418]</span>;
+<span class="key">const</span> 유형     = <span class="swap">['차대차','차대사람','차량단독','기타']</span>;
+<span class="key">const</span> 유형건수 = <span class="swap">[142350, 42580, 6380, 108]</span>;
+
+<span class="key">let</span> chart = <span class="key">null</span>;
+<span class="key">function</span> showStage(idx) {
+    <span class="key">if</span> (chart) chart.destroy();                  <span class="cmt">// 매번 destroy → 재생성</span>
+    <span class="key">const</span> canvas = document.getElementById(<span class="str">'stage-canvas'</span>);
+
+    <span class="key">if</span> (idx === 0) {                              <span class="cmt">// 단계별로 다른 차트</span>
+        chart = <span class="key">new</span> Chart(canvas, { type:<span class="str">'line'</span>, data:{ labels: years,
+            datasets:[{ label:<span class="str">'사고건수'</span>, data: 사고건수, borderColor:<span class="str">'#7c3aed'</span> }] } });
+    } <span class="key">else if</span> (idx === 1) {
+        <span class="key">const</span> minIdx = 사고건수.indexOf(Math.min(...사고건수.slice(3,6)));
+        <span class="key">const</span> colors = 사고건수.map((_,i) =&gt; i===minIdx ? <span class="str">'#ef4444'</span> : <span class="str">'rgba(124,58,237,0.35)'</span>);
+        chart = <span class="key">new</span> Chart(canvas, { type:<span class="str">'bar'</span>,
+            data:{ labels: years, datasets:[{ data: 사고건수, backgroundColor: colors }] } });
+    } <span class="key">else if</span> (idx === 2) {
+        chart = <span class="key">new</span> Chart(canvas, { type:<span class="str">'doughnut'</span>,
+            data:{ labels: 유형, datasets:[{ data: 유형건수 }] } });
+    }
+    <span class="cmt">// ... 단계만큼 추가</span>
+}
+showStage(0);                                     <span class="cmt">// 첫 진입 시</span>
+
+<span class="cmt">// ④ Scrollama 연결 ─── step이 화면 50% 지점에 오면 발동</span>
+<span class="key">const</span> scroller = scrollama();
 scroller
-    .setup({ step: '.scroll-step', offset: 0.5 })   // step이 화면 50% 지점에 오면 발동
-    .onStepEnter(({ element, index }) => {
-        document.querySelectorAll('.scroll-step').forEach(s => s.classList.remove('is-active'));
-        element.classList.add('is-active');
-        showStage(index);   // 차트/숫자 전환
+    .setup({ step: <span class="str">'.scroll-step'</span>, offset: 0.5 })
+    .onStepEnter(({ element, index }) =&gt; {
+        document.querySelectorAll(<span class="str">'.scroll-step'</span>)
+                .forEach(s =&gt; s.classList.remove(<span class="str">'is-active'</span>));
+        element.classList.add(<span class="str">'is-active'</span>);
+        showStage(index);                          <span class="cmt">// 차트 전환</span>
     });
-window.addEventListener('resize', scroller.resize);</pre>
+window.addEventListener(<span class="str">'resize'</span>, scroller.resize);</pre>
+
       <div class="warn-box">📌 아래 영역을 <b>천천히 위/아래로 스크롤</b>해 보세요. 왼쪽 차트가 단계마다 바뀝니다.</div>
 
       <div class="scroll-demo">
@@ -350,38 +504,71 @@ window.addEventListener('resize', scroller.resize);</pre>
 </div>
 
 <!-- ═════════════════ ④ 완성 기사 ═════════════════ -->
-<div class="panel" id="panel3">
+<div class="panel" id="panel4">
   <div class="card">
-    <div class="card-head">⭐ 완성 기사 — 풀스크린 데이터 저널리즘 결과물</div>
+    <div class="card-head">④ ⭐ 완성 기사 — 풀스크린 데이터 저널리즘 결과물</div>
     <div class="card-body">
       <div class="goal-box">
         <h4>🎯 이 탭에서 배우는 것</h4>
         <p>지금까지 배운 모든 것(차트 + 스크롤 감지 + sticky 레이아웃)을 합쳐 만든
-          <b>실제 신문 기사 형태의 5섹션 인터랙티브 기사</b>입니다.<br>
-          탭이 아닌 <b>전체 화면</b>으로 봐야 sticky·스크롤이 자연스럽게 동작하므로 새 창으로 엽니다.</p>
+          <b>실제 신문 기사 형태의 5섹션 인터랙티브 기사</b>.<br>
+          탭이 아닌 <b>전체 화면</b>에서 sticky·스크롤이 자연스럽게 동작하므로 새 창으로 엽니다.</p>
       </div>
       <div class="explain">
         <h5>📚 완성 기사의 구조</h5>
-        <div class="exp-row purpose"><b>🎯 목적</b> · 데이터 저널리즘의 표준 양식 — <b>"히어로 → 도입글 → 5섹션 시각화 → 풋터"</b>. 독자는 스크롤만 하면 자연스럽게 1년 데이터 분석을 따라가게 됨.</div>
-        <div class="exp-row feature"><b>✨ 특징</b> · <code>position:sticky</code>로 차트 영역이 화면 절반을 고정. 오른쪽 텍스트가 흐르며 차트가 단계 전환. 모바일에서는 차트가 위, 텍스트가 아래로 자동 재배치 가능.</div>
+        <div class="exp-row purpose"><b>🎯 목적</b> · 데이터 저널리즘의 표준 — <b>"히어로 → 도입글 → 5섹션 시각화 → 풋터"</b>.</div>
+        <div class="exp-row feature"><b>✨ 특징</b> · <code>position:sticky</code>로 차트 영역이 화면 절반을 고정. 오른쪽 텍스트가 흐르며 차트가 단계 전환.</div>
         <div class="exp-row example"><b>🚦 5섹션 구성</b>
           <ul class="exp-list">
             <li>① 8년 연속 감소 추세 (이중축 선그래프)</li>
             <li>② 외부 충격 한 해 강조 (강조 막대)</li>
             <li>③ 차대차 74% 비중 (도넛)</li>
             <li>④ 수도권 집중 65% (가로 막대)</li>
-            <li>⑤ "하루 7명" 핵심 수치 (큰 숫자 한 줄)</li>
+            <li>⑤ "하루 7명" 핵심 수치</li>
           </ul>
         </div>
-        <div class="exp-row warn"><b>⚠️ 주의</b> · 일부 브라우저는 새 창에서 <code>document.write</code>를 막을 수 있음 → 그땐 별도 .html 파일로 저장 후 직접 여세요.</div>
+        <div class="exp-row warn"><b>⚠️ 주의</b> · 일부 브라우저는 새 창에서 <code>document.write</code>를 막을 수 있음 → 그땐 별도 .html로 저장 후 직접 여세요.</div>
       </div>
-<pre class="code">// 새 창에 HTML 통째로 작성하는 패턴
-function openArticle() {
-    const html = `&lt;!DOCTYPE html&gt;...&lt;script&gt;scrollama().setup(...).onStepEnter(...);&lt;/script&gt;...`;
-    const w = window.open('', '_blank');
+
+      <div class="swap-note">📝 <b>실무 권장</b>: 새 창 코드를 통째로 복사 → <code>article.html</code>로 저장 → Live Server에서 열기. ③ Scrollama 패턴이 실제 페이지에서 작동하는 환경이 됨.</div>
+
+<pre class="code"><span class="cmt">// ── 새 창에 HTML 통째로 작성하는 패턴 (개발용) ──</span>
+<span class="key">function</span> openArticle() {
+    <span class="key">const</span> html = <span class="str">`&lt;!DOCTYPE html&gt;
+&lt;html&gt;&lt;head&gt;
+  &lt;title&gt;교통사고 — 데이터로 보는 1년&lt;/title&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/scrollama@3.2.0/build/scrollama.min.js"&gt;&lt;\/script&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"&gt;&lt;\/script&gt;
+  &lt;style&gt;
+    .sticky-stage { position: sticky; top: 0; height: 100vh; ... }
+    .step { min-height: 90vh; ... }
+  &lt;/style&gt;
+&lt;/head&gt;&lt;body&gt;
+  &lt;div class="hero"&gt;...&lt;/div&gt;
+  &lt;div class="scroll-section"&gt;
+    &lt;div class="sticky-stage"&gt;&lt;canvas id="art-canvas"&gt;&lt;/canvas&gt;&lt;/div&gt;
+    &lt;div class="steps"&gt;
+      &lt;div class="step" data-step="0"&gt;...&lt;/div&gt;
+      ... 5단계 ...
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    function showStep(s) { ... 차트 갱신 ... }
+    showStep(0);
+    scrollama().setup({step:'.step',offset:0.5})
+               .onStepEnter(({index}) =&gt; showStep(index));
+  &lt;\/script&gt;
+&lt;/body&gt;&lt;/html&gt;`</span>;
+
+    <span class="key">const</span> w = window.open(<span class="str">''</span>, <span class="str">'_blank'</span>);
     w.document.write(html);
     w.document.close();
-}</pre>
+}
+
+<span class="cmt">// ── 실무 권장 ──</span>
+<span class="cmt">// article.html 파일로 저장하고 Live Server 등으로 직접 열기.</span>
+<span class="cmt">// 그 쪽이 디버깅·캐싱·SEO 모두 유리.</span></pre>
+
       <button class="btn-open" onclick="openArticle()">📰 5섹션 완성 기사 새 창으로 열기</button>
       <div class="tip" style="margin-top:16px">
         💡 직접 만들 때는 같은 폴더에 <code>article.html</code>로 저장하고 Live Server에서 열면 됩니다.
@@ -392,7 +579,7 @@ function openArticle() {
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// 탭 전환
+// 실제 렌더링 스크립트 (위 코드 블록은 학습용 예시, 아래는 실행본)
 // ═══════════════════════════════════════════════════════════
 function showTab(i) {
     document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', i===j));
@@ -403,9 +590,7 @@ function showTab(i) {
     }, 80);
 }
 
-// ═══════════════════════════════════════════════════════════
 // ① DataTables
-// ═══════════════════════════════════════════════════════════
 $(document).ready(function() {
     $('#accident-table').DataTable({
         language: {
@@ -420,9 +605,7 @@ $(document).ready(function() {
     });
 });
 
-// ═══════════════════════════════════════════════════════════
 // ② Intersection Observer
-// ═══════════════════════════════════════════════════════════
 const ioObs = new IntersectionObserver(
     entries => {
         entries.forEach(e => e.target.classList.toggle('visible', e.isIntersecting));
@@ -435,9 +618,7 @@ const ioObs = new IntersectionObserver(
 );
 document.querySelectorAll('.io-item').forEach(el => ioObs.observe(el));
 
-// ═══════════════════════════════════════════════════════════
 // ③ Scrollama
-// ═══════════════════════════════════════════════════════════
 const years     = [2016,2017,2018,2019,2020,2021,2022,2023];
 const 사고건수  = [220917,216335,217148,229600,209654,203130,196836,191418];
 const 유형      = ['차대차','차대사람','차량단독','기타'];
@@ -499,9 +680,7 @@ window.__scroller
     });
 window.addEventListener('resize', () => window.__scroller.resize());
 
-// ═══════════════════════════════════════════════════════════
 // ④ 완성 기사
-// ═══════════════════════════════════════════════════════════
 function openArticle() {
     const html = `<!DOCTYPE html>
 <html lang="ko"><head>
