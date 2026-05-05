@@ -509,6 +509,94 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 </blockquote>
 <p>다듬을 때: "각 단계 글자 더 크게" / "차트 바뀔 때 부드럽게"</p>
 
+<hr>
+
+<h1 id="appendix-라이브러리-전체-목록">부록. 사용된 라이브러리 전체 목록</h1>
+
+<p>이 가이드의 5개 HTML 파일에서 사용하는 모든 라이브러리·플러그인·외부 데이터를 정리한 참고 목록입니다.</p>
+
+<h2 id="appendix-basic">1. 기본 차트 — <code>js_charts.html</code></h2>
+
+<table>
+<thead><tr><th>라이브러리</th><th>역할</th><th>CDN</th></tr></thead>
+<tbody>
+<tr><td><strong>Chart.js</strong></td><td>Bar, Line, Pie, Doughnut, Radar, Bubble, Scatter, Polar Area, Mixed, Treemap 등 기본 차트 전반</td><td><code>https://cdn.jsdelivr.net/npm/chart.js</code></td></tr>
+</tbody>
+</table>
+
+<h2 id="appendix-special">2. 특수 시각화 — <code>js_more_charts.html</code></h2>
+
+<table>
+<thead><tr><th>라이브러리</th><th>역할</th><th>CDN</th></tr></thead>
+<tbody>
+<tr><td><strong>D3.js v7</strong></td><td>Calendar Heatmap, Sunburst, Parallel Coordinates 등 커스텀 SVG 시각화</td><td><code>https://cdn.jsdelivr.net/npm/d3@7</code></td></tr>
+<tr><td><strong>d3-cloud</strong></td><td>워드클라우드 레이아웃 (D3 확장 플러그인)</td><td><code>https://cdn.jsdelivr.net/npm/d3-cloud/build/d3.layout.cloud.js</code></td></tr>
+<tr><td><strong>chartjs-chart-sankey</strong></td><td>Sankey 다이어그램 (Chart.js 플러그인 — Chart.js 로드 후 삽입)</td><td><code>https://cdn.jsdelivr.net/npm/chartjs-chart-sankey</code></td></tr>
+<tr><td><strong>Plotly.js</strong></td><td>Parallel Coordinates (대안 라이브러리)</td><td><code>https://cdn.plot.ly/plotly-latest.min.js</code></td></tr>
+<tr><td><strong>ApexCharts</strong></td><td>Matrix Heatmap, Gauge·KPI 카드 (대안 라이브러리)</td><td><code>https://cdn.jsdelivr.net/npm/apexcharts</code></td></tr>
+</tbody>
+</table>
+
+<h2 id="appendix-network">3. 네트워크·연결망 시각화 — <code>js_network.html</code></h2>
+
+<table>
+<thead><tr><th>라이브러리</th><th>역할</th><th>CDN</th></tr></thead>
+<tbody>
+<tr><td><strong>vis-network</strong></td><td>노드+엣지 기본 그래프, 양분 네트워크, 인터랙티브 조작, 의미연결망</td><td><code>https://cdn.jsdelivr.net/npm/vis-network/standalone/umd/vis-network.min.js</code></td></tr>
+<tr><td><strong>D3.js v7</strong> + <strong>d3-force</strong></td><td>Force-Directed 물리 시뮬레이션 그래프</td><td><code>https://cdn.jsdelivr.net/npm/d3@7</code> (d3-force 내장)</td></tr>
+<tr><td><strong>Cytoscape.js</strong></td><td>계층 Tree, 레이아웃 전환, 권역 계층 그래프</td><td><code>https://cdn.jsdelivr.net/npm/cytoscape/dist/cytoscape.min.js</code></td></tr>
+<tr><td><strong>dagre</strong></td><td>방향성 비순환 그래프(DAG) 레이아웃 엔진 (cytoscape-dagre의 의존 라이브러리)</td><td><code>https://cdn.jsdelivr.net/npm/dagre/dist/dagre.min.js</code></td></tr>
+<tr><td><strong>cytoscape-dagre</strong></td><td>Cytoscape.js용 Dagre 레이아웃 플러그인 (Cytoscape + dagre 로드 후 삽입)</td><td><code>https://cdn.jsdelivr.net/npm/cytoscape-dagre/cytoscape-dagre.js</code></td></tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>⚠️ <strong>로드 순서 주의</strong>: <code>cytoscape.min.js</code> → <code>dagre.min.js</code> → <code>cytoscape-dagre.js</code> 순서를 반드시 지켜야 합니다.</p>
+</blockquote>
+
+<h2 id="appendix-map">4. 지도 시각화 — <code>js_map.html</code></h2>
+
+<table>
+<thead><tr><th>라이브러리</th><th>역할</th><th>CDN</th></tr></thead>
+<tbody>
+<tr><td><strong>Leaflet.js</strong></td><td>인터랙티브 지도 기반 (기본 마커, 원형 마커, 코로플레스, 레이어 컨트롤)</td><td><code>https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.js</code></td></tr>
+<tr><td><strong>Leaflet CSS</strong></td><td>Leaflet 기본 스타일 (JS와 함께 반드시 로드)</td><td><code>https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.css</code></td></tr>
+<tr><td><strong>Leaflet.markercluster</strong></td><td>12,780개 마커 자동 클러스터링 플러그인</td><td><code>https://cdn.jsdelivr.net/npm/leaflet.markercluster/dist/leaflet.markercluster.js</code></td></tr>
+<tr><td><strong>MarkerCluster CSS</strong></td><td>클러스터 아이콘 스타일 (2개 파일 모두 필요)</td><td><code>MarkerCluster.css</code> + <code>MarkerCluster.Default.css</code></td></tr>
+<tr><td><strong>leaflet.heat</strong></td><td>사고 밀집도 히트맵 레이어 플러그인</td><td><code>https://cdn.jsdelivr.net/npm/leaflet.heat/dist/leaflet-heat.js</code></td></tr>
+<tr><td><strong>skorea-provinces GeoJSON</strong></td><td>한국 시도 경계 폴리곤 데이터 (코로플레스용 외부 지리 데이터)</td><td><code>https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json</code></td></tr>
+</tbody>
+</table>
+
+<h2 id="appendix-scroll">5. 스크롤리텔링·인터랙션 — <code>js_scrollytelling.html</code></h2>
+
+<table>
+<thead><tr><th>라이브러리</th><th>역할</th><th>CDN</th></tr></thead>
+<tbody>
+<tr><td><strong>Chart.js</strong></td><td>스크롤 단계마다 업데이트되는 차트</td><td><code>https://cdn.jsdelivr.net/npm/chart.js</code></td></tr>
+<tr><td><strong>Scrollama</strong></td><td>스크롤 단계 감지·트리거 (데이터 저널리즘 표준 스크롤리텔링 라이브러리)</td><td><code>https://cdn.jsdelivr.net/npm/scrollama</code></td></tr>
+<tr><td><strong>Intersection Observer API</strong></td><td>스크롤 뷰포트 감지 — 별도 설치 불필요한 브라우저 내장 Web API</td><td>내장 (CDN 불필요)</td></tr>
+<tr><td><strong>jQuery</strong></td><td>DataTables.js의 의존 라이브러리</td><td><code>https://code.jquery.com/jquery-3.7.0.min.js</code></td></tr>
+<tr><td><strong>DataTables.js</strong></td><td>정렬·검색·페이징 가능한 인터랙티브 표</td><td><code>https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js</code></td></tr>
+<tr><td><strong>DataTables CSS</strong></td><td>DataTables 기본 스타일</td><td><code>https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css</code></td></tr>
+</tbody>
+</table>
+
+<h2 id="appendix-summary">6. 전체 요약 — 난이도·용도별 분류</h2>
+
+<table>
+<thead><tr><th>난이도</th><th>라이브러리</th><th>주요 용도</th></tr></thead>
+<tbody>
+<tr><td>★☆☆ 쉬움</td><td>Chart.js, ApexCharts, vis-network, Leaflet.js, DataTables.js</td><td>기본 차트·지도·표</td></tr>
+<tr><td>★★☆ 보통</td><td>Plotly.js, Cytoscape.js, Scrollama, d3-cloud, chartjs-chart-sankey, Leaflet 플러그인들</td><td>특수 시각화·네트워크·스크롤 서사</td></tr>
+<tr><td>★★★ 어려움</td><td>D3.js (d3-force 포함)</td><td>완전 커스텀 시각화</td></tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>💡 <strong>초보자 학습 순서 추천</strong>: Chart.js → Leaflet → vis-network → D3.js 기초 → 플러그인 조합 → D3 심화</p>
+</blockquote>
+
       </div>
       
       
