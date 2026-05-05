@@ -27,7 +27,7 @@
       <div class="crossnote markdown-preview  ">
       
 <h1 id="프롬프트로-js-시각화-가이드-교통사고-데이터-활용">프롬프트로 JS 시각화 가이드: 교통사고 데이터 활용 </h1>
-<p>이 가이드는 도로교통공단(TAAS) 표준데이터(<code>전국교통사고다발지역표준데이터-20260301.xls</code>, 12,780행)를 가지고 5개 학습 가이드 HTML(<code>js\_charts.html</code>, <code>js\_more\_charts.html</code>, <code>js\_network.html</code>, <code>js\_map.html</code>, <code>js\_scrollytelling.html</code>)에 나오는 모든 시각화를 그대로 만들어 본다.</p>
+<p>이 가이드는 도로교통공단(TAAS) 표준데이터(<code>전국교통사고다발지역표준데이터-20260301.xls</code>, 12,780행)를 가지고 5개 학습 가이드 HTML(<code>js_charts.html</code>, <code>js_more_charts.html</code>, <code>js_network.html</code>, <code>js_map.html</code>, <code>js_scrollytelling.html</code>)에 나오는 모든 시각화를 그대로 만들어 본다.</p>
 <h2 id="가이드의-사용법--자연어-프롬프트-원칙">가이드의 사용법 — 자연어 프롬프트 원칙 </h2>
 <p>초보자를 위해 모든 프롬프트는 <strong>짧은 자연어 한두 문장</strong>으로 작성했다. 색상·크기·세부 옵션을 처음부터 다 적지 않는다. 첫 결과를 받은 뒤 마음에 안 드는 부분이 있으면 다음과 같이 자연어로 수정 요청하면 된다.</p>
 <ul>
@@ -120,26 +120,26 @@
 <p><code>.xls</code>는 JS에서 직접 못 읽고, CSV는 한글 인코딩과 따옴표 문제가 있다. <strong>JSON은 <code>fetch().then(r =&gt; r.json())</code> 한 줄로 객체 배열이 된다</strong>. 그리고 Chart.js·Leaflet·D3·vis-network 등 본 강의에서 쓰는 모든 라이브러리가 객체 배열을 그대로 받아들인다.</p>
 <p>초보자가 헷갈리지 않도록 <strong>모든 시각화가 단 하나의 <code>data.json</code> 파일을 참조</strong>한다. 12,780행이 그대로 들어가지만 1~2MB 수준이라 충분히 가볍다. 시각화별로 필요한 부분(연도별 합계, 시도별 합계, 위경도 점 등)은 <strong>JS 안에서 그때그때 집계</strong>하면 된다. 학생이 차트 만들면서 "이번엔 시도별로 묶어서 사고건수 합계만 필요하다"는 걸 자연스럽게 익히게 된다.</p>
 <h2 id="02-변환-스크립트-python">0.2 변환 스크립트 (Python) </h2>
-<p><code>convert\_to\_json.py</code>로 저장 후 한 번만 실행한다. 결과로 <code>data.json</code> 하나가 생긴다.</p>
+<p><code>convert_to_json.py</code>로 저장 후 한 번만 실행한다. 결과로 <code>data.json</code> 하나가 생긴다.</p>
 <pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token keyword keyword-import">import</span> pandas <span class="token keyword keyword-as">as</span> pd
 
 <span class="token comment"># 원본 로드 (xls는 xlrd 엔진 필요: pip install xlrd)</span>
-df <span class="token operator">=</span> pd<span class="token punctuation">.</span>read\_excel<span class="token punctuation">(</span>
+df <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_excel<span class="token punctuation">(</span>
     <span class="token string">"전국교통사고다발지역표준데이터-20260301.xls"</span><span class="token punctuation">,</span>
     engine<span class="token operator">=</span><span class="token string">"xlrd"</span>
 <span class="token punctuation">)</span>
 
 <span class="token comment"># 시도 컬럼 파생: "서울특별시 강남구1" → "서울특별시"</span>
-df\<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span> <span class="token operator">=</span> df\<span class="token punctuation">[</span><span class="token string">'사고다발지역시도시군구'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">str</span>\<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+df<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span> <span class="token operator">=</span> df<span class="token punctuation">[</span><span class="token string">'사고다발지역시도시군구'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
 
 <span class="token comment"># 끝에 붙은 숫자 제거 (예: "세종특별자치시1" → "세종특별자치시")</span>
-df\<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span> <span class="token operator">=</span> df\<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">r'\\d+$'</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">,</span> regex<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+df<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span> <span class="token operator">=</span> df<span class="token punctuation">[</span><span class="token string">'시도'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">str</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">r'\\d+$'</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">,</span> regex<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
 
 <span class="token comment"># 한 줄짜리 폴리곤 컬럼은 너무 무거우니 제거 (시각화에 안 씀)</span>
-df <span class="token operator">=</span> df<span class="token punctuation">.</span>drop<span class="token punctuation">(</span>columns<span class="token operator">=</span>\<span class="token punctuation">[</span><span class="token string">'사고다발지역폴리곤정보'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+df <span class="token operator">=</span> df<span class="token punctuation">.</span>drop<span class="token punctuation">(</span>columns<span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'사고다발지역폴리곤정보'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
 
 <span class="token comment"># JSON으로 저장 (한글 그대로 유지)</span>
-df<span class="token punctuation">.</span>to\_json<span class="token punctuation">(</span><span class="token string">"data.json"</span><span class="token punctuation">,</span> orient<span class="token operator">=</span><span class="token string">"records"</span><span class="token punctuation">,</span> force\_ascii<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> indent<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span>
+df<span class="token punctuation">.</span>to_json<span class="token punctuation">(</span><span class="token string">"data.json"</span><span class="token punctuation">,</span> orient<span class="token operator">=</span><span class="token string">"records"</span><span class="token punctuation">,</span> force_ascii<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> indent<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span>
 
 <span class="token keyword keyword-print">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"data.json 생성 완료: </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token builtin">len</span><span class="token punctuation">(</span>df<span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token format-spec">,</span><span class="token punctuation">}</span></span><span class="token string">행"</span></span><span class="token punctuation">)</span>
 </code></pre><h2 id="03-gemini용-변환-프롬프트">0.3 Gemini용 변환 프롬프트 </h2>
@@ -174,13 +174,13 @@ df<span class="token punctuation">.</span>to\_json<span class="token punctuation
     <span class="token comment">// 예: 연도별 사고건수 합계 만들기</span>
     <span class="token keyword keyword-const">const</span> byYear <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
     data<span class="token punctuation">.</span><span class="token method function property-access">forEach</span><span class="token punctuation">(</span><span class="token parameter">d</span> <span class="token arrow operator">=&gt;</span> <span class="token punctuation">{</span>
-      byYear\<span class="token punctuation">[</span>d<span class="token punctuation">.</span><span class="token property-access">사고연도</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>byYear\<span class="token punctuation">[</span>d<span class="token punctuation">.</span><span class="token property-access">사고연도</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> d<span class="token punctuation">.</span><span class="token property-access">사고건수</span><span class="token punctuation">;</span>
+      byYear<span class="token punctuation">[</span>d<span class="token punctuation">.</span><span class="token property-access">사고연도</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>byYear<span class="token punctuation">[</span>d<span class="token punctuation">.</span><span class="token property-access">사고연도</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> d<span class="token punctuation">.</span><span class="token property-access">사고건수</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token console class-name">console</span><span class="token punctuation">.</span><span class="token method function property-access">log</span><span class="token punctuation">(</span>byYear<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre><p>위 패턴(<code>fetch → forEach → 누적</code>)만 익히면 어떤 시각화든 만들 수 있다.</p>
 <p>---</p>
-<h1 id="part-1-기본-차트-10종-js_chartshtml">Part 1. 기본 차트 10종 (<code>js\_charts.html</code>) </h1>
+<h1 id="part-1-기본-차트-10종-js_chartshtml">Part 1. 기본 차트 10종 (<code>js_charts.html</code>) </h1>
 <h2 id="a1-bar--연도별-사고건수">A1. Bar — 연도별 사고건수 </h2>
 <ul>
 <li>보여주는 것: 13년치 사고건수 흐름</li>
@@ -271,7 +271,7 @@ df<span class="token punctuation">.</span>to\_json<span class="token punctuation
 </blockquote>
 <p>다듬을 때: "차트 바뀔 때 부드럽게 애니메이션" / "드롭다운 라벨 한국어로 명확히"</p>
 <p>---</p>
-<h1 id="part-2-특수-시각화-9종-js_more_chartshtml">Part 2. 특수 시각화 9종 (<code>js\_more\_charts.html</code>) </h1>
+<h1 id="part-2-특수-시각화-9종-js_more_chartshtml">Part 2. 특수 시각화 9종 (<code>js_more_charts.html</code>) </h1>
 <h2 id="b1-워드클라우드--위치명-키워드">B1. 워드클라우드 — 위치명 키워드 </h2>
 <ul>
 <li>보여주는 것: 다발지역 이름에 자주 등장하는 단어</li>
@@ -351,7 +351,7 @@ df<span class="token punctuation">.</span>to\_json<span class="token punctuation
 <p>data.json의 2024년 합계로 깔때기 차트 그려줘. 단계: 사고 → 사상자 → 경상 → 중상 → 사망. Plotly funnel. 단계마다 절대값과 첫 단계 대비 비율도 표시.</p>
 </blockquote>
 <p>---</p>
-<h1 id="part-3-네트워크-시각화-7종-js_networkhtml">Part 3. 네트워크 시각화 7종 (<code>js\_network.html</code>) </h1>
+<h1 id="part-3-네트워크-시각화-7종-js_networkhtml">Part 3. 네트워크 시각화 7종 (<code>js_network.html</code>) </h1>
 <h2 id="n1-vis-network-기본--노드엣지-데모">N1. vis-network 기본 — 노드+엣지 데모 </h2>
 <ul>
 <li>보여주는 것: 네트워크 시각화의 기본 구조</li>
@@ -412,7 +412,7 @@ df<span class="token punctuation">.</span>to\_json<span class="token punctuation
 </blockquote>
 <p>다듬을 때: "'부근' 단어가 거의 모든 단어와 연결돼서 의미 흐려져 — 빼줘" / "노드 크기 차이 더 크게"</p>
 <p>---</p>
-<h1 id="part-4-지도-시각화-7종-js_maphtml">Part 4. 지도 시각화 7종 (<code>js\_map.html</code>) </h1>
+<h1 id="part-4-지도-시각화-7종-js_maphtml">Part 4. 지도 시각화 7종 (<code>js_map.html</code>) </h1>
 <p>본 데이터의 위경도가 가장 빛나는 영역. 모두 변형 없이 적용 가능.</p>
 <h2 id="m1-기초-마커--사망사고-발생-지역">M1. 기초 마커 — 사망사고 발생 지역 </h2>
 <ul>
@@ -475,7 +475,7 @@ df<span class="token punctuation">.</span>to\_json<span class="token punctuation
 <p>Leaflet 종합 지도 만들어줘. 베이스맵 3개(OSM, 어두움, 밝음) 라디오 전환. 그 위에 토글 가능한 레이어 4개: 주요 사망사고 마커 / 상위 30 원형 마커 / 전체 히트맵 / 시도 코로플레스. 다 data.json에서. 처음엔 OSM + 사망사고 + 코로플레스만 켜져 있게.</p>
 </blockquote>
 <p>---</p>
-<h1 id="part-5-스크롤리텔링-4패턴-js_scrollytellinghtml">Part 5. 스크롤리텔링 4패턴 (<code>js\_scrollytelling.html</code>) </h1>
+<h1 id="part-5-스크롤리텔링-4패턴-js_scrollytellinghtml">Part 5. 스크롤리텔링 4패턴 (<code>js_scrollytelling.html</code>) </h1>
 <h2 id="s1-datatables--시도-17개-통계-표">S1. DataTables — 시도 17개 통계 표 </h2>
 <ul>
 <li>보여주는 것: 정렬·검색·페이지 이동 가능한 인터랙티브 표</li>
