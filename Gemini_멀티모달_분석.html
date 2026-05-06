@@ -48,7 +48,7 @@
 <p>LLM API 호출은 <strong>"특정 URL에 JSON을 POST하는 일"</strong> 그 이상도 이하도 아닙니다. 화려한 SDK가 있긴 하지만, 내부적으로는 똑같은 HTTP 요청을 보낼 뿐입니다. 여기에서는 SDK를 거치지 않고 <code>requests</code> 라이브러리만으로 직접 요청을 만들어, <strong>"무엇이 어디로 어떻게 보내지는가"</strong> 를 눈으로 확인합니다.</p>
 <h3 id="멀티모달의-본질">멀티모달의 본질 </h3>
 <p>복잡해 보이지만 패턴은 단 하나입니다.</p>
-<pre data-role="codeBlock" data-info="" class="language-text"><code>contents = \[ { "parts": \[ &lt;part1&gt;, &lt;part2&gt;, ... ] } ]
+<pre data-role="codeBlock" data-info="" class="language-text"><code>contents = [ { "parts": [ &lt;part1&gt;, &lt;part2&gt;, ... ] } ]
 </code></pre><p><code>parts</code> 배열 안에 텍스트·이미지·PDF·오디오·비디오·YouTube URL을 자유롭게 섞어 넣을 수 있습니다. 모달리티가 무엇이든 <strong>part 한 조각의 형식만 다를 뿐, 구조는 동일</strong>합니다. 이것이 이 코드를 관통하는 핵심 통찰입니다.</p>
 <table>
 <thead>
@@ -66,12 +66,12 @@
 </tr>
 <tr>
 <td>인라인 파일</td>
-<td><code>{"inline\_data": {"mime\_type": "...", "data": "&lt;base64&gt;"}}</code></td>
+<td><code>{"inline_data": {"mime_type": "...", "data": "&lt;base64&gt;"}}</code></td>
 <td>이미지·PDF·오디오·짧은 영상</td>
 </tr>
 <tr>
 <td>원격 파일</td>
-<td><code>{"file\_data": {"file\_uri": "..."}}</code></td>
+<td><code>{"file_data": {"file_uri": "..."}}</code></td>
 <td>YouTube URL, File API 업로드</td>
 </tr>
 </tbody>
@@ -89,14 +89,14 @@
 <h3 id="22-환경변수에-키-저장">2.2 환경변수에 키 저장 </h3>
 <p>코드에 키를 직접 적으면 GitHub 등에 실수로 노출될 위험이 있습니다. <strong>환경변수</strong>로 관리하세요.</p>
 <pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Windows PowerShell (현재 세션만)</span>
-<span class="token variable">$env</span>:GEMINI<span class="token punctuation">\</span>_API<span class="token punctuation">\</span>_KEY <span class="token operator">=</span> <span class="token string">"AIzaSy..."</span>
+<span class="token variable">$env</span>:GEMINI_API_KEY <span class="token operator">=</span> <span class="token string">"AIzaSy..."</span>
 
 <span class="token comment"># Windows PowerShell (영구 저장)</span>
-<span class="token punctuation">\</span><span class="token punctuation">[</span>Environment<span class="token punctuation">]</span>::SetEnvironmentVariable<span class="token punctuation">(</span><span class="token string">"GEMINI\_API\_KEY"</span>, <span class="token string">"AIzaSy..."</span>, <span class="token string">"User"</span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span>Environment<span class="token punctuation">]</span>::SetEnvironmentVariable<span class="token punctuation">(</span><span class="token string">"GEMINI_API_KEY"</span>, <span class="token string">"AIzaSy..."</span>, <span class="token string">"User"</span><span class="token punctuation">)</span>
 
 <span class="token comment"># macOS / Linux Bash</span>
-<span class="token builtin class-name">export</span> GEMINI<span class="token punctuation">\</span>_API<span class="token punctuation">\</span>_KEY<span class="token operator">=</span><span class="token string">"AIzaSy..."</span>
-<span class="token comment"># 영구 저장은 \~/.bashrc 또는 \~/.zshrc 끝에 위 줄 추가</span>
+<span class="token builtin class-name">export</span> GEMINI_API_KEY<span class="token operator">=</span><span class="token string">"AIzaSy..."</span>
+<span class="token comment"># 영구 저장은 ~/.bashrc 또는 ~/.zshrc 끝에 위 줄 추가</span>
 </code></pre><h3 id="23-패키지-설치">2.3 패키지 설치 </h3>
 <pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>pip <span class="token function">install</span> requests
 </code></pre><p>끝입니다. <strong><code>PyPDF2</code>, <code>pydub</code>, <code>opencv</code>, <code>Pillow</code> 같은 멀티미디어 라이브러리는 일절 필요 없습니다.</strong> Gemini가 PDF·오디오·영상을 모두 네이티브로 이해하기 때문입니다.</p>
@@ -106,14 +106,14 @@
 <pre data-role="codeBlock" data-info="" class="language-text"><code>POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent
 Headers:
     Content-Type: application/json
-    x-goog-api-key: &lt;YOUR\_KEY&gt;
+    x-goog-api-key: &lt;YOUR_KEY&gt;
 Body (JSON):
 {
-  "contents": \[
+  "contents": [
     {
-      "parts": \[
+      "parts": [
         { "text": "이 이미지를 분석해 주세요." },
-        { "inline\_data": { "mime\_type": "image/jpeg", "data": "&lt;base64...&gt;" } }
+        { "inline_data": { "mime_type": "image/jpeg", "data": "&lt;base64...&gt;" } }
       ]
     }
   ],
@@ -125,10 +125,10 @@ Body (JSON):
 }
 </code></pre><h3 id="32-받는-것-response">3.2 받는 것 (Response) </h3>
 <pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
-  <span class="token property">"candidates"</span><span class="token operator">:</span> \<span class="token punctuation">[</span>
+  <span class="token property">"candidates"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token punctuation">{</span>
       <span class="token property">"content"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
-        <span class="token property">"parts"</span><span class="token operator">:</span> \<span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token property">"text"</span><span class="token operator">:</span> <span class="token string">"이 이미지는 ..."</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+        <span class="token property">"parts"</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token property">"text"</span><span class="token operator">:</span> <span class="token string">"이 이미지는 ..."</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
       <span class="token punctuation">}</span><span class="token punctuation">,</span>
       <span class="token property">"finishReason"</span><span class="token operator">:</span> <span class="token string">"STOP"</span>
     <span class="token punctuation">}</span>
@@ -139,29 +139,29 @@ Body (JSON):
     <span class="token property">"totalTokenCount"</span><span class="token operator">:</span> <span class="token number">1435</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-</code></pre><h3 id="33-핵심-함수-call_gemini-한-줄씩-읽기">3.3 핵심 함수 <code>call\_gemini()</code> 한 줄씩 읽기 </h3>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token keyword keyword-def">def</span> call\_gemini<span class="token punctuation">(</span>parts<span class="token punctuation">,</span> <span class="token builtin">max</span>\_tokens<span class="token operator">=</span><span class="token number">4096</span><span class="token punctuation">,</span> temperature<span class="token operator">=</span><span class="token number">0.7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+</code></pre><h3 id="33-핵심-함수-call_gemini-한-줄씩-읽기">3.3 핵심 함수 <code>call_gemini()</code> 한 줄씩 읽기 </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token keyword keyword-def">def</span> call_gemini<span class="token punctuation">(</span>parts<span class="token punctuation">,</span> <span class="token builtin">max</span>_tokens<span class="token operator">=</span><span class="token number">4096</span><span class="token punctuation">,</span> temperature<span class="token operator">=</span><span class="token number">0.7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
     payload <span class="token operator">=</span> <span class="token punctuation">{</span>
-        <span class="token string">"contents"</span><span class="token punctuation">:</span> \<span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"parts"</span><span class="token punctuation">:</span> parts<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>          <span class="token comment"># ① 입력 조각들을 turn에 담음</span>
+        <span class="token string">"contents"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"parts"</span><span class="token punctuation">:</span> parts<span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">,</span>          <span class="token comment"># ① 입력 조각들을 turn에 담음</span>
         <span class="token string">"generationConfig"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>                     <span class="token comment"># ② 생성 옵션</span>
-            <span class="token string">"maxOutputTokens"</span><span class="token punctuation">:</span> <span class="token builtin">max</span>\_tokens<span class="token punctuation">,</span>
+            <span class="token string">"maxOutputTokens"</span><span class="token punctuation">:</span> <span class="token builtin">max</span>_tokens<span class="token punctuation">,</span>
             <span class="token string">"temperature"</span><span class="token punctuation">:</span> temperature<span class="token punctuation">,</span>
         <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span>
     headers <span class="token operator">=</span> <span class="token punctuation">{</span>                                   <span class="token comment"># ③ API 키는 헤더로</span>
         <span class="token string">"Content-Type"</span><span class="token punctuation">:</span> <span class="token string">"application/json"</span><span class="token punctuation">,</span>
-        <span class="token string">"x-goog-api-key"</span><span class="token punctuation">:</span> GEMINI\_API\_KEY<span class="token punctuation">,</span>
+        <span class="token string">"x-goog-api-key"</span><span class="token punctuation">:</span> GEMINI_API_KEY<span class="token punctuation">,</span>
     <span class="token punctuation">}</span>
-    response <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>API\_URL<span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> json<span class="token operator">=</span>payload<span class="token punctuation">,</span> timeout<span class="token operator">=</span><span class="token number">180</span><span class="token punctuation">)</span>
-    response<span class="token punctuation">.</span><span class="token keyword keyword-raise">raise</span>\_for\_status<span class="token punctuation">(</span><span class="token punctuation">)</span>                   <span class="token comment"># ④ 에러면 즉시 예외</span>
+    response <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>API_URL<span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> json<span class="token operator">=</span>payload<span class="token punctuation">,</span> timeout<span class="token operator">=</span><span class="token number">180</span><span class="token punctuation">)</span>
+    response<span class="token punctuation">.</span><span class="token keyword keyword-raise">raise</span>_for_status<span class="token punctuation">(</span><span class="token punctuation">)</span>                   <span class="token comment"># ④ 에러면 즉시 예외</span>
     result <span class="token operator">=</span> response<span class="token punctuation">.</span>json<span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token keyword keyword-return">return</span> result\<span class="token punctuation">[</span><span class="token string">"candidates"</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token string">"content"</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token string">"parts"</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>\<span class="token punctuation">[</span><span class="token string">"text"</span><span class="token punctuation">]</span>   <span class="token comment"># ⑤ 응답 텍스트만 추출</span>
+    <span class="token keyword keyword-return">return</span> result<span class="token punctuation">[</span><span class="token string">"candidates"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"content"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"parts"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">"text"</span><span class="token punctuation">]</span>   <span class="token comment"># ⑤ 응답 텍스트만 추출</span>
 </code></pre><p>이 함수만 이해하면 나머지 분석 함수들은 <strong>"parts 리스트를 어떻게 만드는가"</strong> 의 차이일 뿐입니다.</p>
 <p>---</p>
 <h2 id="4-모달리티별-사용법">4. 모달리티별 사용법 </h2>
-<h3 id="41-텍스트-분석--analyze_text">4.1 텍스트 분석 — <code>analyze\_text()</code> </h3>
+<h3 id="41-텍스트-분석--analyze_text">4.1 텍스트 분석 — <code>analyze_text()</code> </h3>
 <p>가장 단순한 케이스. parts에 텍스트 하나만 들어갑니다.</p>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code>result <span class="token operator">=</span> analyze\_text<span class="token punctuation">(</span><span class="token string">"분석할 본문..."</span><span class="token punctuation">)</span>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>result <span class="token operator">=</span> analyze_text<span class="token punctuation">(</span><span class="token string">"분석할 본문..."</span><span class="token punctuation">)</span>
 <span class="token keyword keyword-print">print</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
 </code></pre><p><strong>프롬프트 설계 5원칙</strong> (코드의 분석 프롬프트가 따르는 패턴)</p>
 <ol>
@@ -171,17 +171,17 @@ Body (JSON):
 <li><strong>언어 지정</strong> — "한국어로 작성하세요"</li>
 <li><strong>입력 분리</strong> — 분석 대상은 <code>"""..."""</code> 로 감싸 지시문과 구분</li>
 </ol>
-<h3 id="42-이미지-분석--analyze_image_file-analyze_image_url">4.2 이미지 분석 — <code>analyze\_image\_file()</code>, <code>analyze\_image\_url()</code> </h3>
+<h3 id="42-이미지-분석--analyze_image_file-analyze_image_url">4.2 이미지 분석 — <code>analyze_image_file()</code>, <code>analyze_image_url()</code> </h3>
 <pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token comment"># 로컬 파일</span>
-analyze\_image\_file<span class="token punctuation">(</span><span class="token string">"photo.jpg"</span><span class="token punctuation">)</span>
+analyze_image_file<span class="token punctuation">(</span><span class="token string">"photo.jpg"</span><span class="token punctuation">)</span>
 
 <span class="token comment"># 인터넷 이미지 URL</span>
-analyze\_image\_url<span class="token punctuation">(</span><span class="token string">"https://...jpg"</span><span class="token punctuation">)</span>
+analyze_image_url<span class="token punctuation">(</span><span class="token string">"https://...jpg"</span><span class="token punctuation">)</span>
 </code></pre><p><strong>왜 URL 분석 함수도 다운로드를 직접 할까?</strong><br>
-Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지만, 일반 이미지 URL은 서버 권한·핫링크 차단 등으로 실패가 잦습니다. 우리가 <code>requests.get()</code>으로 받아 base64로 인코딩해 <code>inline\_data</code>로 넣는 편이 안정적입니다.</p>
+Gemini의 <code>file_data</code> 방식은 PDF·YouTube에는 잘 동작하지만, 일반 이미지 URL은 서버 권한·핫링크 차단 등으로 실패가 잦습니다. 우리가 <code>requests.get()</code>으로 받아 base64로 인코딩해 <code>inline_data</code>로 넣는 편이 안정적입니다.</p>
 <p><strong>지원 형식</strong>: <code>.png</code>, <code>.jpg/.jpeg</code>, <code>.webp</code>, <code>.gif</code>, <code>.heic</code></p>
-<h3 id="43-pdf-분석--analyze_pdf">4.3 PDF 분석 — <code>analyze\_pdf()</code> </h3>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_pdf<span class="token punctuation">(</span><span class="token string">"report.pdf"</span><span class="token punctuation">)</span>    <span class="token comment"># 텍스트 추출 라이브러리 없이 그대로!</span>
+<h3 id="43-pdf-분석--analyze_pdf">4.3 PDF 분석 — <code>analyze_pdf()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze_pdf<span class="token punctuation">(</span><span class="token string">"report.pdf"</span><span class="token punctuation">)</span>    <span class="token comment"># 텍스트 추출 라이브러리 없이 그대로!</span>
 </code></pre><p><strong>왜 PyPDF2가 필요 없는가?</strong></p>
 <ul>
 <li>Gemini는 PDF를 받으면 페이지마다 <strong>이미지(비전) + 임베디드 텍스트</strong> 둘 다를 봅니다.</li>
@@ -193,8 +193,8 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 <li>인라인(base64 본문 첨부) 권장: <strong>20 MB 이하</strong></li>
 <li>그보다 큰 PDF는 별도 File API 업로드가 필요 (이번 강의 범위 밖)</li>
 </ul>
-<h3 id="44-오디오-분석--analyze_audio_file">4.4 오디오 분석 — <code>analyze\_audio\_file()</code> </h3>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_audio\_file<span class="token punctuation">(</span><span class="token string">"interview.mp3"</span><span class="token punctuation">)</span>
+<h3 id="44-오디오-분석--analyze_audio_file">4.4 오디오 분석 — <code>analyze_audio_file()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze_audio_file<span class="token punctuation">(</span><span class="token string">"interview.mp3"</span><span class="token punctuation">)</span>
 </code></pre><p><strong>Gemini가 오디오에서 뽑아내는 것</strong>:</p>
 <ul>
 <li>음성 → 텍스트 전사 (Whisper 같은 별도 STT 모델 불필요)</li>
@@ -204,13 +204,13 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 </ul>
 <p><strong>지원 형식</strong>: <code>.mp3</code>, <code>.wav</code>, <code>.m4a</code>, <code>.aac</code>, <code>.flac</code>, <code>.ogg</code></p>
 <p><strong>권장 길이</strong>: 1~5분 (인라인 20 MB 한도 안에서 충분)</p>
-<h3 id="45-로컬-비디오-분석--analyze_video_file">4.5 로컬 비디오 분석 — <code>analyze\_video\_file()</code> </h3>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_video\_file<span class="token punctuation">(</span><span class="token string">"clip.mp4"</span><span class="token punctuation">)</span>
+<h3 id="45-로컬-비디오-분석--analyze_video_file">4.5 로컬 비디오 분석 — <code>analyze_video_file()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze_video_file<span class="token punctuation">(</span><span class="token string">"clip.mp4"</span><span class="token punctuation">)</span>
 </code></pre><p><strong>Gemini가 비디오를 보는 방식</strong>:</p>
 <ul>
 <li>1초당 1프레임을 샘플링하면서 <strong>동시에</strong> 오디오 트랙도 분석</li>
 <li>시각 변화 + 음성·BGM을 종합적으로 이해</li>
-<li>타임스탬프(<code>\[MM:SS]</code>)로 특정 시점을 지목 가능</li>
+<li>타임스탬프(<code>[MM:SS]</code>)로 특정 시점을 지목 가능</li>
 </ul>
 <p><strong>⚠️ 인라인 한도</strong>:</p>
 <ul>
@@ -218,15 +218,15 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 <li>더 긴 영상은 다음 항목(YouTube)을 사용하세요.</li>
 </ul>
 <p><strong>지원 형식</strong>: <code>.mp4</code>, <code>.mov</code>, <code>.avi</code>, <code>.webm</code>, <code>.mkv</code></p>
-<h3 id="46-youtube-url-분석--analyze_youtube">4.6 YouTube URL 분석 — <code>analyze\_youtube()</code> </h3>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze\_youtube<span class="token punctuation">(</span><span class="token string">"https://www.youtube.com/watch?v=XXXXXXXX"</span><span class="token punctuation">)</span>
+<h3 id="46-youtube-url-분석--analyze_youtube">4.6 YouTube URL 분석 — <code>analyze_youtube()</code> </h3>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>analyze_youtube<span class="token punctuation">(</span><span class="token string">"https://www.youtube.com/watch?v=XXXXXXXX"</span><span class="token punctuation">)</span>
 </code></pre><p><strong>한 줄로 끝!</strong> 다운로드도, 인코딩도 필요 없습니다.</p>
 <p><strong>이 기능이 다른 모달리티와 다른 점</strong>:</p>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token comment"># 다른 모달리티: inline\_data 사용</span>
-<span class="token punctuation">{</span><span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"&lt;base64&gt;"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token comment"># 다른 모달리티: inline_data 사용</span>
+<span class="token punctuation">{</span><span class="token string">"inline_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime_type"</span><span class="token punctuation">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"&lt;base64&gt;"</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
 
-<span class="token comment"># YouTube: file\_data 사용 (mime\_type도 불필요!)</span>
-<span class="token punctuation">{</span><span class="token string">"file\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"file\_uri"</span><span class="token punctuation">:</span> <span class="token string">"https://www.youtube.com/watch?v=..."</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+<span class="token comment"># YouTube: file_data 사용 (mime_type도 불필요!)</span>
+<span class="token punctuation">{</span><span class="token string">"file_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"file_uri"</span><span class="token punctuation">:</span> <span class="token string">"https://www.youtube.com/watch?v=..."</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
 </code></pre><p><strong>제약사항</strong>:</p>
 <ul>
 <li>공개(public) 영상만 가능. <strong>비공개·미등록 영상 안됨</strong></li>
@@ -314,35 +314,35 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 <h3 id="53-빠른-실험을-위한-팁">5.3 빠른 실험을 위한 팁 </h3>
 <ol>
 <li><strong><code>temperature=0.0</code></strong> 으로 시작 → 같은 입력에 같은 출력이 나와 디버깅 쉬움</li>
-<li><strong><code>max\_tokens=1024</code></strong> 로 짧게 응답받아 빠른 반복 후, 만족스러우면 늘리기</li>
+<li><strong><code>max_tokens=1024</code></strong> 로 짧게 응답받아 빠른 반복 후, 만족스러우면 늘리기</li>
 <li>같은 PDF·영상을 여러 번 분석할 거면 <strong>Context Caching</strong> 사용 (이번 강의 범위 밖)</li>
 </ol>
 <p>---</p>
 <h2 id="6-자주-만나는-오류와-해결법">6. 자주 만나는 오류와 해결법 </h2>
-<h3 id="api-오류-400--bad-request"><code>\[API 오류 400]</code> — Bad Request </h3>
+<h3 id="api-오류-400--bad-request"><code>[API 오류 400]</code> — Bad Request </h3>
 <p>요청 JSON 형식이 잘못된 경우. 흔한 원인:</p>
 <ul>
-<li><code>inline\_data</code>의 <code>data</code> 값이 base64가 아니거나 <code>b''</code> 같은 Python 바이트 표기 그대로</li>
-<li><code>mime\_type</code> 누락</li>
-<li>YouTube 분석에서 <code>inline\_data</code>를 사용 (<code>file\_data</code> 가 맞음)</li>
+<li><code>inline_data</code>의 <code>data</code> 값이 base64가 아니거나 <code>b''</code> 같은 Python 바이트 표기 그대로</li>
+<li><code>mime_type</code> 누락</li>
+<li>YouTube 분석에서 <code>inline_data</code>를 사용 (<code>file_data</code> 가 맞음)</li>
 </ul>
-<h3 id="api-오류-401--403--인증-실패"><code>\[API 오류 401 / 403]</code> — 인증 실패 </h3>
+<h3 id="api-오류-401--403--인증-실패"><code>[API 오류 401 / 403]</code> — 인증 실패 </h3>
 <ul>
 <li>API 키 오타 / 환경변수 미설정</li>
 <li>키가 비활성화됨 → AI Studio에서 새로 발급</li>
 <li><code>x-goog-api-key</code> 헤더 이름 오타</li>
 </ul>
-<h3 id="api-오류-429--rate-limit-초과"><code>\[API 오류 429]</code> — Rate Limit 초과 </h3>
+<h3 id="api-오류-429--rate-limit-초과"><code>[API 오류 429]</code> — Rate Limit 초과 </h3>
 <ul>
 <li>분당 15회 / 일일 1,000회 초과</li>
 <li>해결: 1~2분 기다렸다가 재시도. 배치 처리 시 <code>time.sleep(5)</code> 권장</li>
 </ul>
-<h3 id="api-오류-413--payload-too-large"><code>\[API 오류 413]</code> — Payload Too Large </h3>
+<h3 id="api-오류-413--payload-too-large"><code>[API 오류 413]</code> — Payload Too Large </h3>
 <ul>
 <li>인라인 데이터가 20 MB 초과</li>
 <li>해결: 파일 압축, 더 짧은 클립 사용, 또는 File API 업로드</li>
 </ul>
-<h3 id="응답-파싱-실패-candidates가-빔"><code>\[응답 파싱 실패]</code> (candidates가 빔) </h3>
+<h3 id="응답-파싱-실패-candidates가-빔"><code>[응답 파싱 실패]</code> (candidates가 빔) </h3>
 <ul>
 <li>안전 필터에 걸린 경우(폭력·성·증오 등)</li>
 <li>응답 본문에 <code>promptFeedback.blockReason</code>이 표시됨</li>
@@ -359,7 +359,7 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 <h3 id="단계-1-기본-동작-확인">단계 1: 기본 동작 확인 </h3>
 <ol>
 <li>환경변수에 API 키 등록</li>
-<li><code>if \_\_name\_\_ == "\_\_main\_\_":</code> 블록의 텍스트 분석 예시 주석 해제 → 실행</li>
+<li><code>if __name__ == "__main__":</code> 블록의 텍스트 분석 예시 주석 해제 → 실행</li>
 <li>출력에서 9개 항목이 모두 나오는지 확인</li>
 </ol>
 <h3 id="단계-2-모달리티-한-바퀴-돌기-각자">단계 2: 모달리티 한 바퀴 돌기 (각자) </h3>
@@ -396,7 +396,7 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 <h3 id="단계-3-비교-분석-응용">단계 3: 비교 분석 응용 </h3>
 <p>같은 사건을 다룬 <strong>두 개의 다른 매체</strong>를 각각 분석한 뒤, 어떤 차이가 있었는지 직접 글로 정리해 보기.</p>
 <h3 id="단계-4-프롬프트-커스터마이징">단계 4: 프롬프트 커스터마이징 </h3>
-<p><code>VIDEO\_PROMPT</code> 등의 분석 프롬프트를 자기 연구 주제에 맞게 수정해 보기. 예:</p>
+<p><code>VIDEO_PROMPT</code> 등의 분석 프롬프트를 자기 연구 주제에 맞게 수정해 보기. 예:</p>
 <ul>
 <li>광고 분석 전공: "광고가 사용한 설득 기법 분류" 항목 추가</li>
 <li>정치 보도 분석: "프레이밍 유형(전략 프레임 vs 이슈 프레임)" 항목 추가</li>
@@ -415,24 +415,24 @@ Gemini의 <code>file\_data</code> 방식은 PDF·YouTube에는 잘 동작하지�
 
 <span class="token comment"># 이미지/PDF/오디오/짧은 영상 (인라인)</span>
 <span class="token punctuation">{</span>
-    <span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        <span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"image/jpeg"</span><span class="token punctuation">,</span>          <span class="token comment"># 모달리티에 맞춰 변경</span>
+    <span class="token string">"inline_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"mime_type"</span><span class="token punctuation">:</span> <span class="token string">"image/jpeg"</span><span class="token punctuation">,</span>          <span class="token comment"># 모달리티에 맞춰 변경</span>
         <span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"&lt;base64 인코딩된 바이트&gt;"</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
 <span class="token comment"># YouTube URL (또는 File API URI)</span>
 <span class="token punctuation">{</span>
-    <span class="token string">"file\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        <span class="token string">"file\_uri"</span><span class="token punctuation">:</span> <span class="token string">"https://www.youtube.com/watch?v=..."</span>
-        <span class="token comment"># YouTube는 mime\_type 불필요</span>
+    <span class="token string">"file_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"file_uri"</span><span class="token punctuation">:</span> <span class="token string">"https://www.youtube.com/watch?v=..."</span>
+        <span class="token comment"># YouTube는 mime_type 불필요</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre><p><strong>한 turn에 여러 part를 함께 넣어 멀티모달 분석</strong>도 가능합니다:</p>
-<pre data-role="codeBlock" data-info="python" class="language-python python"><code>parts <span class="token operator">=</span> \<span class="token punctuation">[</span>
+<pre data-role="codeBlock" data-info="python" class="language-python python"><code>parts <span class="token operator">=</span> <span class="token punctuation">[</span>
     <span class="token punctuation">{</span><span class="token string">"text"</span><span class="token punctuation">:</span> <span class="token string">"이 텍스트와 이미지를 비교 분석하세요."</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">{</span><span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"text/plain"</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> text\_b64<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">{</span><span class="token string">"inline\_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime\_type"</span><span class="token punctuation">:</span> <span class="token string">"image/jpeg"</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> image\_b64<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"inline_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime_type"</span><span class="token punctuation">:</span> <span class="token string">"text/plain"</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> text_b64<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span><span class="token string">"inline_data"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token string">"mime_type"</span><span class="token punctuation">:</span> <span class="token string">"image/jpeg"</span><span class="token punctuation">,</span> <span class="token string">"data"</span><span class="token punctuation">:</span> image_b64<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span>
 </code></pre><p>이 패턴이 바로 멀티모달 LLM의 본질입니다.</p>
 <p>---</p>
