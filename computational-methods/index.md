@@ -163,12 +163,14 @@
 
 ---
 
-### 9주차 (4/30): LLM API 활용 내용분석 — 텍스트, 이미지
+### 9주차 (4/30): LLM API 활용 내용분석 — 텍스트, 이미지, PDF, 음성, 영상
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [LLM 활용 데이터 분석](https://jonghhhh.github.io/2026_1/ipynb/llm_content_analysis.ipynb): API, 텍스트, 이미지, json, pandas  
+- (강의) [Gemini 멀티모달 LLM 활용 분석: 설명](https://jonghhhh.github.io/2026_1/Gemini_멀티모달_분석.html)     
+- (실습) [Gemini 멀티모달 LLM 활용 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_analysis_050126.py)   
+- (실습 자료) [Gemini 멀티모달 LLM 활용 분석: 실습 자료](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_src.zip)         
 
 **📄 논문 발표**
 - 박영균, & 이종혁. (2026). 언론 시스템과 정치적 성향에 따른 김정은 보도사진의 시각적 프레이밍 연구: Multimodal LLM 을 활용한 국제 언론 비교 분석. 언론정보연구, 63(1), 157-198.  
