@@ -118,7 +118,7 @@
 <h1 id="part-0-데이터-변환--excel--단일-json">Part 0. 데이터 변환 — Excel → 단일 JSON </h1>
 <h2 id="01-왜-json으로-바꾸는가">0.1 왜 JSON으로 바꾸는가 </h2>
 <p><code>.xls</code>는 JS에서 직접 못 읽고, CSV는 한글 인코딩과 따옴표 문제가 있다. <strong>JSON은 <code>fetch().then(r =&gt; r.json())</code> 한 줄로 객체 배열이 된다</strong>. 그리고 Chart.js·Leaflet·D3·vis-network 등 본 강의에서 쓰는 모든 라이브러리가 객체 배열을 그대로 받아들인다.</p>
-<p>초보자가 헷갈리지 않도록 <strong>모든 시각화가 단 하나의 <code>data.json</code> 파일을 참조</strong>한다. 12,780행이 그대로 들어가지만 1~2MB 수준이라 충분히 가볍다. 시각화별로 필요한 부분(연도별 합계, 시도별 합계, 위경도 점 등)은 <strong>JS 안에서 그때그때 집계</strong>하면 된다. 학생이 차트 만들면서 "이번엔 시도별로 묶어서 사고건수 합계만 필요하다"는 걸 자연스럽게 익히게 된다.</p>
+<p>초보자가 헷갈리지 않도록 <strong>모든 시각화가 단 하나의 <code>data.json</code> 파일을 참조</strong>한다. 다만 브라우저에서 <code>fetch</code>로 8MB JSON을 매번 받게 두면 <code>file://</code> 차단·로딩 지연 문제가 생긴다. 그래서 본 가이드는 한 발 더 나가, <strong>필요한 집계(연도별 합계, 시도별 합계, 상위 N개 행 등)를 LLM에게 미리 시킨 뒤 결과 데이터만 HTML <code>&lt;script&gt;</code> 안에 박아 넣어 단일 파일로 산출</strong>한다. 산출물은 인터넷·서버 없이 더블클릭만으로 즉시 보이고, 카카오톡·메일 첨부 한 방으로 공유 가능하다.</p>
 <h2 id="02-변환-스크립트-python">0.2 변환 스크립트 (Python) </h2>
 <p><code>convert_to_json.py</code>로 저장 후 한 번만 실행한다. 결과로 <code>data.json</code> 하나가 생긴다.</p>
 <pre data-role="codeBlock" data-info="python" class="language-python python"><code><span class="token keyword keyword-import">import</span> pandas <span class="token keyword keyword-as">as</span> pd
@@ -187,7 +187,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 2020년 코로나로 줄어든 변곡점</li>
 </ul>
 <blockquote>
-<p>data.json에서 연도별 사고건수 합계를 막대 그래프로 그려줘. Chart.js로. 파란색 계열. 2020년 떨어진 게 잘 보이게.</p>
+<p>data.json에서 연도별 사고건수 합계를 막대 그래프로 그려줘. 연도별 합계를 미리 집계해서 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Bar 패턴을 참조할 것. 파란색 계열, 2020년 떨어진 게 잘 보이게.</p>
 </blockquote>
 <p>다듬을 때: "2020년만 빨간색으로 강조" / "y축 숫자에 천 단위 콤마" / "막대 좀 더 두껍게"</p>
 <h2 id="a2-line-이중축--사고건수-vs-사망자">A2. Line 이중축 — 사고건수 vs 사망자 </h2>
@@ -196,7 +196,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 단위가 다른 두 지표(만 단위 vs 명 단위)를 한 화면에 비교</li>
 </ul>
 <blockquote>
-<p>data.json에서 연도별 사고건수와 사망자수를 두 줄로 그려줘. Chart.js 라인차트. 단위가 다르니까 왼쪽 오른쪽 축 따로 써줘. 사고건수는 파란색, 사망자는 빨간색.</p>
+<p>data.json에서 연도별 사고건수와 사망자수를 두 줄의 라인차트로 그려줘. 두 합계를 연도별로 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Line 이중축 패턴을 참조할 것. 단위가 다르니 좌우 축 따로, 사고건수는 파란색·사망자는 빨간색.</p>
 </blockquote>
 <p>다듬을 때: "마우스 올리면 두 값 동시에 보이게" / "선 아래 영역도 색칠해줘"</p>
 <h2 id="a3-pie와-doughnut--사고유형-비율">A3. Pie와 Doughnut — 사고유형 비율 </h2>
@@ -205,7 +205,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 보행노인이 절반 이상 — 한눈에</li>
 </ul>
 <blockquote>
-<p>data.json의 사고유형구분 4가지(보행노인, 자전거, 보행어린이, 스쿨존어린이) 비율을 파이차트와 도넛차트 두 개로 나란히 그려줘. Chart.js. 마우스 올리면 % 같이 보이게.</p>
+<p>data.json의 사고유형구분 4가지(보행노인·자전거·보행어린이·스쿨존어린이) 비율을 파이차트와 도넛차트 두 개로 나란히 그려줘. 4유형 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Pie/Doughnut 패턴을 참조할 것. 마우스 올리면 % 같이 보이게.</p>
 </blockquote>
 <p>다듬을 때: "범례 위치를 오른쪽으로" / "도넛 가운데에 합계 숫자 넣어줘"</p>
 <h2 id="a4-radar--시도별-다차원-비교">A4. Radar — 시도별 다차원 비교 </h2>
@@ -214,7 +214,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 단위 다른 두 지표를 함께 그릴 때는 0~100 정규화 필수</li>
 </ul>
 <blockquote>
-<p>data.json에서 사고건수 상위 7개 시도를 골라서 사고건수와 사망자수를 레이더차트로 그려줘. Chart.js. 두 지표 단위가 너무 다르니까 둘 다 0~100 사이로 정규화해서. 사고건수는 파란색, 사망자는 빨간색 면.</p>
+<p>data.json에서 사고건수 상위 7개 시도의 사고건수와 사망자수를 레이더차트로 그려줘. 시도별 두 합계 + 0~100 정규화 결과까지 미리 계산해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Radar 패턴을 참조할 것. 사고건수는 파란색·사망자는 빨간 면.</p>
 </blockquote>
 <p>다듬을 때: "도형 더 진하게" / "꼭짓점에 점 표시"</p>
 <h2 id="a5-bubble--시도별-3변수">A5. Bubble — 시도별 3변수 </h2>
@@ -223,7 +223,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 원 크기는 √변환해야 면적이 값에 비례</li>
 </ul>
 <blockquote>
-<p>data.json으로 17개 시도를 버블차트로 그려줘. Chart.js. x는 사고건수, y는 사망자수, 원 크기는 사상자수에 비례. 시도마다 다른 색. 큰 값이 너무 부풀려지지 않게 원 크기는 제곱근으로.</p>
+<p>data.json으로 17개 시도를 버블차트로 그려줘 (x=사고건수, y=사망자수, 원 크기=사상자수). 시도별 세 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Bubble 패턴을 참조할 것. 시도마다 다른 색, 원 크기는 제곱근 변환.</p>
 </blockquote>
 <p>다듬을 때: "버블 크기 차별화 잘 안 되니 더 크게 차이내" / "각 점에 시도명 라벨 붙여"</p>
 <h2 id="a6-scatter--사고건수-vs-사망률">A6. Scatter — 사고건수 vs 사망률 </h2>
@@ -232,7 +232,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 산점도는 상관일 뿐 인과 아님</li>
 </ul>
 <blockquote>
-<p>data.json에서 시도별로 사고건수(x축)와 사망률(y축, 사망자÷사상자×100) 산점도를 그려줘. Chart.js. 점에 시도 이름 붙여서 마우스 올리면 보이게. 보라색 점.</p>
+<p>data.json에서 시도별 사고건수(x)와 사망률(y, 사망자÷사상자×100) 산점도를 그려줘. 시도별 합계와 사망률을 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Scatter 패턴을 참조할 것. 점에 시도 이름 붙여 마우스 올리면 보이게, 보라색 점.</p>
 </blockquote>
 <p>다듬을 때: "추세선 그어줘" / "점 더 크게"</p>
 <h2 id="a7-polar-area--사고유형-분포-변형">A7. Polar Area — 사고유형 분포 [변형] </h2>
@@ -241,7 +241,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>변형 사실: 원전 사례는 시간대별이지만 본 데이터에 시간 정보가 없어 사고유형으로 대체</li>
 </ul>
 <blockquote>
-<p>data.json의 사고유형 4가지를 Chart.js polarArea로 그려줘. 색은 4가지 다른 색. 차트 아래에 작게 "원래는 시간대 분포가 표준이지만, 이 데이터에 시간 정보가 없어 사고유형으로 대체"라고 적어줘.</p>
+<p>data.json의 사고유형 4가지를 polarArea로 그려줘. 4유형 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 Polar Area 패턴을 참조할 것. 4가지 다른 색, 차트 아래에 작게 "원래는 시간대 분포가 표준이지만, 이 데이터에 시간 정보가 없어 사고유형으로 대체"라고 적어줘.</p>
 </blockquote>
 <h2 id="a8-mixed--막대사고건수--선사망률">A8. Mixed — 막대(사고건수) + 선(사망률) </h2>
 <ul>
@@ -249,7 +249,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: "건수는 줄어도 사망률은 그대로"라는 메시지가 잡힘</li>
 </ul>
 <blockquote>
-<p>data.json으로 연도별 사고건수는 막대(파란색), 사망률(사망자÷사상자×100)은 빨간 선으로 그려줘. Chart.js mixed 차트. 두 지표 단위가 달라서 좌우 축 따로.</p>
+<p>data.json으로 연도별 사고건수는 막대(파란색), 사망률(사망자÷사상자×100)은 빨간 선으로 그려줘. 연도별 합계와 사망률을 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js mixed 사용 — 같은 폴더 js_charts.html의 Mixed 패턴을 참조할 것. 두 지표 단위가 달라 좌우 축 따로.</p>
 </blockquote>
 <p>다듬을 때: "막대 좀 투명하게" / "선 끝에 점 표시"</p>
 <h2 id="a9-treemap--시도사고유형">A9. Treemap — 시도×사고유형 </h2>
@@ -258,7 +258,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 면적이 곧 양 — 항목 많아도 일관된 표현</li>
 </ul>
 <blockquote>
-<p>data.json으로 시도×사고유형 트리맵 만들어줘. Chart.js 트리맵 플러그인 써서. 시도가 큰 박스, 그 안에 사고유형이 작은 박스. 시도마다 다른 색.</p>
+<p>data.json으로 시도×사고유형 트리맵 만들어줘. 17×4 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 트리맵 플러그인 사용 — 같은 폴더 js_charts.html의 Treemap 패턴을 참조할 것. 시도가 큰 박스·그 안에 사고유형이 작은 박스, 시도마다 다른 색.</p>
 </blockquote>
 <p>다듬을 때: "박스 안에 숫자 보이게" / "테두리 흰색으로 명확히"</p>
 <h2 id="a10-인터랙티브-필터--드롭다운">A10. 인터랙티브 필터 — 드롭다운 </h2>
@@ -267,7 +267,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 인터랙티브 차트의 핵심 패턴</li>
 </ul>
 <blockquote>
-<p>data.json으로 인터랙티브 차트 만들어줘. Chart.js. 위에 드롭다운 세 개: 지표(사고건수/사망자/사상자/중상/경상), 차트 종류(막대/선/레이더/폴라), 표시 기간(2~13년). 드롭다운 바꿀 때마다 차트 다시 그려지게.</p>
+<p>data.json으로 인터랙티브 차트 만들어줘 (위에 드롭다운 세 개: 지표·차트 종류·표시 기간). 5개 지표(사고건수/사망자/사상자/중상/경상)의 연도별 합계 13개년을 모두 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js 사용 — 같은 폴더 js_charts.html의 인터랙티브 필터 패턴을 참조할 것. 차트 종류는 막대/선/레이더/폴라, 기간은 2~13년, 드롭다운 바꿀 때마다 다시 그려지게.</p>
 </blockquote>
 <p>다듬을 때: "차트 바뀔 때 부드럽게 애니메이션" / "드롭다운 라벨 한국어로 명확히"</p>
 <p>---</p>
@@ -278,7 +278,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: "사거리, 교차로, 부근, 초등학교" 같은 공간 키워드 발견</li>
 </ul>
 <blockquote>
-<p>data.json의 사고지역위치명 12,780개를 합쳐서 워드클라우드 만들어줘. D3 + d3-cloud 라이브러리. 한국어 불용어(은/는/이/가 등) 제외하고 빈도 상위 80개. 색은 알록달록하게.</p>
+<p>data.json의 사고지역위치명 12,780개로 워드클라우드 만들어줘. 한국어 불용어(은/는/이/가 등) 제외 후 단어 빈도 상위 80개를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). D3 + d3-cloud 사용 — 같은 폴더 js_more_charts.html의 워드클라우드 패턴을 참조할 것. 색은 알록달록하게.</p>
 </blockquote>
 <p>다듬을 때: "'부근' 단어가 너무 커서 빼줘" / "회전 0도만"</p>
 <h2 id="b2-sankey--사고유형--시도--상해등급">B2. Sankey — 사고유형 → 시도 → 상해등급 </h2>
@@ -287,7 +287,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 합계 보존 — 들어온 만큼 나간다</li>
 </ul>
 <blockquote>
-<p>data.json으로 Sankey 다이어그램 만들어줘. 1단계는 사고유형 4가지, 2단계는 사고건수 상위 5개 시도, 3단계는 상해등급(경상·중상·사망). Chart.js sankey 플러그인. 흐름 두께가 건수.</p>
+<p>data.json으로 Sankey 다이어그램 만들어줘 (사고유형 4가지 → 상위 5개 시도 → 상해등급 3단계). 3단계 흐름 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js sankey 플러그인 사용 — 같은 폴더 js_more_charts.html의 Sankey 패턴을 참조할 것. 상해등급은 경상·중상·사망, 흐름 두께가 사고건수.</p>
 </blockquote>
 <p>다듬을 때: "사망 흐름만 빨간색으로" / "라벨 글자 크기 키워"</p>
 <h2 id="b3-calendar-heatmap--시도연도-변형">B3. Calendar Heatmap — 시도×연도 [변형] </h2>
@@ -296,7 +296,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>변형 사실: 원전 사례는 일자별이지만 본 데이터에 일자가 없어 연도로 대체</li>
 </ul>
 <blockquote>
-<p>data.json으로 시도(세로) × 연도(가로) 히트맵 그려줘. ApexCharts. 칸 색은 사고건수에 따라 분홍 그라디언트. 진할수록 사고 많은 칸. 차트 아래에 "원래 캘린더 히트맵은 일자별이지만 이 데이터에 일자가 없어 연도로 변형"이라고 적어줘.</p>
+<p>data.json으로 시도(세로) × 연도(가로) 히트맵 그려줘. 17×13 사고건수 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). ApexCharts 사용 — 같은 폴더 js_more_charts.html의 Calendar Heatmap 패턴을 참조할 것. 칸 색은 분홍 그라디언트(진할수록 사고 많은 칸), 차트 아래에 "원래 캘린더 히트맵은 일자별이지만 이 데이터에 일자가 없어 연도로 변형"이라고 적어줘.</p>
 </blockquote>
 <h2 id="b4-sunburst--권역시도사고유형">B4. Sunburst — 권역→시도→사고유형 </h2>
 <ul>
@@ -304,7 +304,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 클릭하면 그 영역만 줌인 가능</li>
 </ul>
 <blockquote>
-<p>data.json으로 3단계 sunburst 만들어줘. 시도를 5개 권역(수도권: 서울·경기·인천 / 영남: 부산·대구·울산·경남·경북 / 호남: 광주·전남·전북 / 충청: 대전·세종·충남·충북 / 강원·제주)으로 묶고, 권역→시도→사고유형 3계층. Plotly로. 핑크 계열 색.</p>
+<p>data.json으로 권역→시도→사고유형 3단계 sunburst 만들어줘 (5권역: 수도권/영남/호남/충청/강원·제주). 3단계 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Plotly 사용 — 같은 폴더 js_more_charts.html의 Sunburst 패턴을 참조할 것. 권역 매핑: 수도권(서울·경기·인천)/영남(부산·대구·울산·경남·경북)/호남(광주·전남·전북)/충청(대전·세종·충남·충북)/강원·제주, 핑크 계열 색.</p>
 </blockquote>
 <p>다듬을 때: "각 조각에 % 같이 표시" / "가운데 색 더 진하게"</p>
 <h2 id="b5-parallel-coordinates--17시도-다변수">B5. Parallel Coordinates — 17시도 다변수 </h2>
@@ -313,7 +313,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 축을 드래그하면 그 범위만 필터됨</li>
 </ul>
 <blockquote>
-<p>data.json으로 17개 시도를 평행좌표로 그려줘. Plotly parcoords. 4개 축: 사고건수, 사망자, 사망률(%), 사상자. 선 색은 사망률에 따라 그라디언트.</p>
+<p>data.json으로 17개 시도를 평행좌표로 그려줘 (4개 축: 사고건수·사망자·사망률·사상자). 시도별 4개 값을 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Plotly parcoords 사용 — 같은 폴더 js_more_charts.html의 Parallel Coordinates 패턴을 참조할 것. 선 색은 사망률에 따라 그라디언트.</p>
 </blockquote>
 <p>다듬을 때: "축 라벨 잘려서 안 보이니 위쪽 여백 늘려" / "특정 시도 강조해줘"</p>
 <h2 id="b6-matrix-heatmap--사고유형시도-변형">B6. Matrix Heatmap — 사고유형×시도 [변형] </h2>
@@ -322,7 +322,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>변형 사실: 원전 사례는 시간×요일이지만 본 데이터에 시간/요일 없어 유형×시도로 대체</li>
 </ul>
 <blockquote>
-<p>data.json으로 사고유형(세로 4개) × 시도(가로 17개) 매트릭스 히트맵을 그려줘. Chart.js matrix 플러그인. 사고건수가 많을수록 진한 분홍. 마우스 올리면 칸 정보 보이게.</p>
+<p>data.json으로 사고유형 4개 × 시도 17개 매트릭스 히트맵 만들어줘. 사고건수 합계를 미리 집계해서 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Chart.js matrix 플러그인 사용 — 같은 폴더 js_more_charts.html의 ⑥ Matrix 섹션 패턴을 참조할 것. 사고건수가 많을수록 진한 분홍, 마우스 올리면 칸 정보 보이게.</p>
 </blockquote>
 <h2 id="b7-box-plot--시도별-다발지역-분포">B7. Box Plot — 시도별 다발지역 분포 </h2>
 <ul>
@@ -330,7 +330,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: "경기도는 평균도 높고 변동도 큼" 같은 패턴</li>
 </ul>
 <blockquote>
-<p>data.json에서 다발지역이 많은 상위 7개 시도를 골라, 각 시도의 다발지역별 사고건수 분포를 박스플롯으로 그려줘. Plotly. 이상치는 점으로 표시.</p>
+<p>data.json에서 다발지역이 많은 상위 7개 시도의 다발지역별 사고건수 분포를 박스플롯으로 그려줘. 시도별 사고건수 배열(상위 7개)만 미리 추려 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Plotly 사용 — 같은 폴더 js_more_charts.html의 Box Plot 패턴을 참조할 것. 이상치는 점으로 표시.</p>
 </blockquote>
 <p>다듬을 때: "박스 너비 더 넓게" / "각 박스 아래에 시도 이름과 평균값 표시"</p>
 <h2 id="b8-gauge--kpi--4개-핵심지표-카드">B8. Gauge / KPI — 4개 핵심지표 카드 </h2>
@@ -339,7 +339,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 대시보드 상단에 자주 쓰는 형태</li>
 </ul>
 <blockquote>
-<p>data.json에서 2024년과 2023년 비교해서 4개 KPI 카드(사고건수, 사망자, 사상자, 사망률) 만들어줘. Plotly indicator. 게이지 + 숫자 + 전년 대비 화살표. 2x2 격자로.</p>
+<p>data.json에서 2024 vs 2023 비교 4개 KPI 카드 만들어줘 (사고건수·사망자·사상자·사망률). 연도별 4개 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Plotly indicator 사용 — 같은 폴더 js_more_charts.html의 Gauge/KPI 패턴을 참조할 것. 게이지+숫자+전년 대비 화살표, 2×2 격자, 악화는 빨강·개선은 초록.</p>
 </blockquote>
 <p>다듬을 때: "악화한 건 빨간 화살표 개선한 건 초록 화살표" / "카드 제목 더 크게"</p>
 <h2 id="b9-funnel--사고에서-사망까지-단계별-감소">B9. Funnel — 사고에서 사망까지 단계별 감소 </h2>
@@ -348,7 +348,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 절대값 + 첫 단계 대비 비율 동시 표시</li>
 </ul>
 <blockquote>
-<p>data.json의 2024년 합계로 깔때기 차트 그려줘. 단계: 사고 → 사상자 → 경상 → 중상 → 사망. Plotly funnel. 단계마다 절대값과 첫 단계 대비 비율도 표시.</p>
+<p>data.json의 2024년 합계로 깔때기 차트 그려줘 (사고→사상자→경상→중상→사망). 2024년 5개 단계 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Plotly funnel 사용 — 같은 폴더 js_more_charts.html의 Funnel 패턴을 참조할 것. 단계마다 절대값과 첫 단계 대비 비율도 표시.</p>
 </blockquote>
 <p>---</p>
 <h1 id="part-3-네트워크-시각화-7종-js_networkhtml">Part 3. 네트워크 시각화 7종 (<code>js_network.html</code>) </h1>
@@ -358,7 +358,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 학습용 작은 데모</li>
 </ul>
 <blockquote>
-<p>data.json에서 사망자 2명 이상인 다발지역 5~10개를 노드로 만들어 vis-network로 기초 그래프 그려줘. 같은 시도면 선 연결. 점은 둥글게.</p>
+<p>data.json에서 사망자 2명 이상 다발지역 5~10개를 노드로 만들어 vis-network로 기초 그래프 그려줘. 노드와 엣지 목록을 미리 추려 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). vis-network 사용 — 같은 폴더 js_network.html의 N1 기본 패턴을 참조할 것. 같은 시도면 선 연결, 점은 둥글게.</p>
 </blockquote>
 <h2 id="n2-양분-네트워크---시도--사고유형">N2. 양분 네트워크 ⭐ — 시도 × 사고유형 </h2>
 <ul>
@@ -366,7 +366,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 가장 강력한 네트워크 시각화</li>
 </ul>
 <blockquote>
-<p>data.json으로 양분 네트워크 만들어줘. vis-network. 한쪽 그룹은 17개 시도(파란색), 다른 그룹은 사고유형 4개(주황색). 두 그룹 사이 선 두께가 사고건수. 노드 크기도 합계에 따라 다르게.</p>
+<p>data.json으로 17개 시도(파란) × 사고유형 4개(주황) 양분 네트워크 만들어줘. 17×4=68개 엣지의 사고건수 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). vis-network 사용 — 같은 폴더 js_network.html의 양분 네트워크 패턴을 참조할 것. 선 두께가 사고건수, 노드 크기도 합계에 따라 다르게.</p>
 </blockquote>
 <p>다듬을 때: "선 너무 많아서 헷갈려 — 상위 30개만" / "범례 추가"</p>
 <h2 id="n3-계층-tree--전국권역시도유형">N3. 계층 Tree — 전국→권역→시도→유형 </h2>
@@ -375,7 +375,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 위→아래로 정렬된 깔끔한 트리</li>
 </ul>
 <blockquote>
-<p>data.json으로 4계층 트리 그려줘. vis-network 계층 레이아웃. 전국 → 5권역 (수도권/영남/호남/충청/강원·제주) → 시도 → 사고유형. 위에서 아래로. 권역은 진한 파란색.</p>
+<p>data.json으로 4계층 트리 그려줘 (전국→5권역→17시도→사고유형). 권역·시도·유형 3단계 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). vis-network 계층 레이아웃 사용 — 같은 폴더 js_network.html의 계층 Tree 패턴을 참조할 것. 5권역=수도권/영남/호남/충청/강원·제주, 위에서 아래로, 권역은 진한 파란색.</p>
 </blockquote>
 <p>다듬을 때: "방향 좌→우로" / "각 노드에 합계 숫자 같이"</p>
 <h2 id="n4-d3-force-directed--3그룹-다중-카테고리">N4. D3 Force-Directed — 3그룹 다중 카테고리 </h2>
@@ -384,7 +384,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 학술 논문급 시각화 가능, 자유도 높음</li>
 </ul>
 <blockquote>
-<p>data.json으로 3그룹 force-directed 네트워크 만들어줘. D3 v7. 그룹은 ① 시도 상위 7개 ② 사고유형 4개 ③ 연도구간 3개(2012-2015, 2016-2019, 2020-2024). 그룹마다 다른 색. 자기들끼리 자동 배치.</p>
+<p>data.json으로 3그룹 force-directed 네트워크 만들어줘 (시도 상위 7개·사고유형 4개·연도구간 3개). 노드 목록과 엣지 가중치를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). D3 v7 사용 — 같은 폴더 js_network.html의 Force-Directed 패턴을 참조할 것. 연도구간=2012-2015/2016-2019/2020-2024, 그룹마다 다른 색, 자기들끼리 자동 배치.</p>
 </blockquote>
 <h2 id="n5-cytoscape-dagre--권역-계층--레이아웃-전환">N5. Cytoscape Dagre — 권역 계층 + 레이아웃 전환 </h2>
 <ul>
@@ -392,7 +392,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 그래프 분석 라이브러리의 강점</li>
 </ul>
 <blockquote>
-<p>data.json으로 23개 노드 트리(전국 + 5권역 + 17시도)를 Cytoscape + dagre로 그려줘. 위에 드롭다운 두고 dagre / cose / circle / grid / concentric 레이아웃 즉시 전환되게.</p>
+<p>data.json으로 23개 노드 트리(전국+5권역+17시도)를 그려줘. 시도 합계만 미리 계산해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Cytoscape + dagre 사용 — 같은 폴더 js_network.html의 Cytoscape Dagre 패턴을 참조할 것. 위에 드롭다운으로 dagre/cose/circle/grid/concentric 즉시 전환.</p>
 </blockquote>
 <h2 id="n6-인터랙티브-조작---노드-추가삭제이웃-강조">N6. 인터랙티브 조작 ⭐ — 노드 추가·삭제·이웃 강조 </h2>
 <ul>
@@ -400,7 +400,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 학생 미션용</li>
 </ul>
 <blockquote>
-<p>data.json의 시도 5개 + 사고유형 4개를 베이스로, vis-network 인터랙티브 편집기 만들어줘. 버튼으로 노드 추가, 엣지 추가, 선택 삭제, 화면 맞춤, 초기화 가능하게. 노드 클릭하면 그 노드와 직접 연결된 이웃만 진하고 나머지는 흐리게.</p>
+<p>data.json의 시도 5개 + 사고유형 4개를 베이스로 vis-network 인터랙티브 편집기 만들어줘. 초기 노드와 엣지 목록을 미리 만들어 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). vis-network 사용 — 같은 폴더 js_network.html의 인터랙티브 조작 패턴을 참조할 것. 버튼: 노드 추가/엣지 추가/선택 삭제/화면 맞춤/초기화. 노드 클릭 시 직접 연결된 이웃만 진하고 나머지는 흐리게.</p>
 </blockquote>
 <h2 id="n7-의미연결망---위치명-단어-동시출현">N7. 의미연결망 ⭐ — 위치명 단어 동시출현 </h2>
 <ul>
@@ -408,7 +408,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 본 데이터의 강점이 가장 잘 살아나는 시각화</li>
 </ul>
 <blockquote>
-<p>data.json의 사고지역위치명을 모두 합쳐서 의미연결망 만들어줘. vis-network. 한 위치명 안에 두 단어가 같이 나오면 선 연결. 상위 25개 단어가 노드, 동시출현 2회 이상이 엣지. 한국어 불용어 제거. 위에 단어 수랑 최소 동시출현 횟수 조절하는 컨트롤도.</p>
+<p>data.json의 사고지역위치명 전체로 의미연결망 만들어줘. 한국어 불용어 제거 후 단어 빈도와 동시출현 행렬을 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). vis-network 사용 — 같은 폴더 js_network.html의 의미연결망 패턴을 참조할 것. 상위 25개 단어=노드, 동시출현 2회 이상=엣지, 상단에 단어 수와 최소 동시출현 컨트롤.</p>
 </blockquote>
 <p>다듬을 때: "'부근' 단어가 거의 모든 단어와 연결돼서 의미 흐려져 — 빼줘" / "노드 크기 차이 더 크게"</p>
 <p>---</p>
@@ -420,7 +420,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: "어느 교차로?" 라는 질문의 출발점</li>
 </ul>
 <blockquote>
-<p>data.json에서 사망자 1명 이상인 다발지역 중 사망자 많은 상위 10개를 Leaflet 지도에 마커로 찍어줘. 마커 클릭하면 위치명, 연도, 사고유형, 사망자수 보이는 팝업.</p>
+<p>data.json에서 사망자 1명 이상 중 상위 10개 다발지역을 Leaflet 지도에 마커로 찍어줘. 상위 10개 행만 필터해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Leaflet 사용 — 같은 폴더 js_map.html의 기초 마커 패턴을 참조할 것. 마커 클릭 시 위치명·연도·사고유형·사망자수 팝업.</p>
 </blockquote>
 <h2 id="m2-마커-클러스터---12780개-전체">M2. 마커 클러스터 ⭐ — 12,780개 전체 </h2>
 <ul>
@@ -428,7 +428,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 데이터 양과 무관하게 화면이 깔끔</li>
 </ul>
 <blockquote>
-<p>data.json 12,780개 전부를 사고유형별로 색 구분해서 Leaflet markercluster로 클러스터 지도 그려줘. 보행노인 파란색, 자전거 빨간색, 보행어린이 주황색, 스쿨존어린이 녹색. 위에 4개 유형 켜고 끄는 체크박스도.</p>
+<p>data.json 12,780개 전부를 Leaflet markercluster로 클러스터 지도 만들어줘. 필요한 컬럼만(위경도·사고유형·위치명) 추려 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게 — 임베드 시 약 1MB). Leaflet + markercluster 사용 — 같은 폴더 js_map.html의 마커 클러스터 패턴을 참조할 것. 사고유형별 색(보행노인 파랑/자전거 빨강/보행어린이 주황/스쿨존어린이 녹색), 상단에 4개 유형 켜고 끄는 체크박스.</p>
 </blockquote>
 <p>다듬을 때: "처음 줌 레벨 좀 더 가깝게" / "마커 좀 더 작게"</p>
 <h2 id="m3-원형-마커--상위-30-다발지역">M3. 원형 마커 — 상위 30 다발지역 </h2>
@@ -437,7 +437,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 면적이 값에 비례하도록 √변환</li>
 </ul>
 <blockquote>
-<p>data.json에서 사고건수 상위 30개 다발지역을 Leaflet에 원형 마커로 그려줘. 원 크기는 사고건수에 비례하되 너무 차이 안 나게 제곱근 변환. 빨간 반투명. 클릭하면 위치명·시도·사고건수·사망자수.</p>
+<p>data.json에서 사고건수 상위 30개 다발지역을 Leaflet에 원형 마커로 그려줘. 상위 30개 행만 필터해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Leaflet 사용 — 같은 폴더 js_map.html의 원형 마커 패턴을 참조할 것. 원 크기는 사고건수에 √ 비례, 빨간 반투명, 클릭 시 위치명·시도·사고건수·사망자수.</p>
 </blockquote>
 <p>다듬을 때: "원이 너무 커서 겹쳐 — 다 줄여" / "사망자 있는 곳만 다른 색"</p>
 <h2 id="m4-히트맵--전국-사고-밀집도">M4. 히트맵 — 전국 사고 밀집도 </h2>
@@ -446,7 +446,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 서울·부산·대구 일대 핫스팟이 두드러질 것</li>
 </ul>
 <blockquote>
-<p>data.json 12,780개 전부로 Leaflet 히트맵 만들어줘. leaflet.heat 라이브러리. 강도는 사고건수에 비례. 위에 슬라이더 두 개로 반지름과 흐림 정도 조절.</p>
+<p>data.json 12,780개 전부로 Leaflet 히트맵 만들어줘. 필요한 컬럼만(위경도·사고건수) 추려 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게 — 임베드 시 약 0.5MB). leaflet.heat 사용 — 같은 폴더 js_map.html의 히트맵 패턴을 참조할 것. 강도는 사고건수에 비례, 상단에 슬라이더 두 개로 반지름·흐림 정도 조절.</p>
 </blockquote>
 <p>다듬을 때: "기본 반지름 더 크게" / "색 변화 더 강렬하게"</p>
 <h2 id="m5-코로플레스--시도별-사고건수">M5. 코로플레스 — 시도별 사고건수 </h2>
@@ -455,7 +455,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: GeoJSON과 시도명 매핑(특별자치도 통합)이 핵심</li>
 </ul>
 <blockquote>
-<p>data.json으로 시도별 사고건수 합계를 Leaflet 코로플레스로 그려줘. 행정구역 GeoJSON은 <a href="https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json">https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json</a> 에서 fetch. 시도명 매핑(서울특별시→서울 등)도 같이. 색은 파랑 농도. 마우스 올리면 강조되고 클릭하면 합계 팝업. 범례도 추가.</p>
+<p>data.json으로 시도별 사고건수 합계를 Leaflet 코로플레스로 그려줘. 17개 시도 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). 단, 시도 경계 GeoJSON만 외부에서 fetch (<a href="https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-geo.json">cdn.jsdelivr.net/gh/southkorea/southkorea-maps</a>). Leaflet 사용 — 같은 폴더 js_map.html의 코로플레스 패턴을 참조할 것. 시도명 매핑(서울특별시→서울 등) 포함, 색은 파랑 농도, 마우스 강조·클릭 팝업·범례 추가.</p>
 </blockquote>
 <p>다듬을 때: "강원특별자치도/전북특별자치도가 매칭 안 돼서 흰색 — 매핑 추가" / "색 단계 5단계 → 7단계로"</p>
 <h2 id="m6-폴리라인폴리곤원--경로영역반경">M6. 폴리라인/폴리곤/원 — 경로·영역·반경 </h2>
@@ -464,7 +464,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: GPS 트랙·관심영역·반경원 표현 도구</li>
 </ul>
 <blockquote>
-<p>data.json으로 한 지도에 세 가지 도형 그려줘. ① 사고건수 상위 7개 시도 중심점을 잇는 빨간 선(폴리라인) ② 수도권 4개(서울·경기·인천·세종) 중심점으로 만든 파란 다각형 ③ 사망자 상위 5개 다발지역 각각에 반경 2km짜리 녹색 원. Leaflet으로.</p>
+<p>data.json으로 한 지도에 세 가지 도형 그려줘 (상위 7개 시도 잇는 빨간 폴리라인·수도권 4개 파란 폴리곤·사망자 상위 5개 녹색 원). 시도 중심점·다발지역 상위 5개 좌표를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Leaflet 사용 — 같은 폴더 js_map.html의 폴리라인/폴리곤/원 패턴을 참조할 것. 수도권=서울·경기·인천·세종, 원 반경 2km.</p>
 </blockquote>
 <h2 id="m7-레이어-컨트롤---종합-인터랙티브-지도">M7. 레이어 컨트롤 ⭐ — 종합 인터랙티브 지도 </h2>
 <ul>
@@ -472,7 +472,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 한 지도에 점·원형·히트맵·코로플레스 4가지가 모두</li>
 </ul>
 <blockquote>
-<p>Leaflet 종합 지도 만들어줘. 베이스맵 3개(OSM, 어두움, 밝음) 라디오 전환. 그 위에 토글 가능한 레이어 4개: 주요 사망사고 마커 / 상위 30 원형 마커 / 전체 히트맵 / 시도 코로플레스. 다 data.json에서. 처음엔 OSM + 사망사고 + 코로플레스만 켜져 있게.</p>
+<p>Leaflet 종합 지도 만들어줘 (베이스맵 3개 라디오 + 데이터 레이어 4개 토글). M1·M3·M4·M5에서 만든 사전 집계 데이터를 모두 합쳐 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게 — 단, 시도 GeoJSON만 외부 fetch). Leaflet 사용 — 같은 폴더 js_map.html의 레이어 컨트롤 패턴을 참조할 것. 베이스맵=OSM/어두움/밝음, 레이어=주요 사망사고/상위 30 원형/전체 히트맵/시도 코로플레스, 처음엔 OSM+사망사고+코로플레스만 켜져 있게.</p>
 </blockquote>
 <p>---</p>
 <h1 id="part-5-스크롤리텔링-4패턴-js_scrollytellinghtml">Part 5. 스크롤리텔링 4패턴 (<code>js_scrollytelling.html</code>) </h1>
@@ -482,7 +482,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 차트로 보기엔 항목이 많은 17개 시도 데이터</li>
 </ul>
 <blockquote>
-<p>data.json으로 시도 17개 통계 표를 DataTables.js로 만들어줘. 컬럼은 시도, 다발지역수, 사고건수, 사망자, 사상자, 사망률(%), 인구10만명당. 헤더 클릭으로 정렬, 검색창, 페이지 이동. 한국어 UI. 처음 정렬은 사고건수 내림차순.</p>
+<p>data.json으로 시도 17개 통계 표 만들어줘. 17개 시도의 7개 컬럼(다발지역수·사고건수·사망자·사상자·사망률·인구10만명당)을 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). DataTables.js 사용 — 같은 폴더 js_scrollytelling.html의 DataTables 패턴을 참조할 것. 헤더 클릭 정렬·검색창·페이지 이동, 한국어 UI, 처음 정렬은 사고건수 내림차순.</p>
 </blockquote>
 <h2 id="s2-intersection-observer--스크롤-감지-데모">S2. Intersection Observer — 스크롤 감지 데모 </h2>
 <ul>
@@ -490,7 +490,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: 라이브러리 없이 브라우저 기본 API</li>
 </ul>
 <blockquote>
-<p>data.json의 13개년 연도별 사고건수를 박스 13개로 세로로 나열한 학습 데모 만들어줘. 브라우저 기본 Intersection Observer API 써서, 박스가 화면에 들어오면 보라색으로 활성. 아래에 "현재 보이는 연도" 실시간 표시.</p>
+<p>data.json의 13개년 연도별 사고건수를 박스 13개로 세로 나열한 학습 데모 만들어줘. 연도별 합계를 미리 집계해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). 브라우저 기본 Intersection Observer API 사용 — 같은 폴더 js_scrollytelling.html의 Intersection Observer 패턴을 참조할 것. 박스가 화면에 들어오면 보라색으로 활성, 아래에 "현재 보이는 연도" 실시간 표시.</p>
 </blockquote>
 <h2 id="s3-scrollama-인라인---5단계-사고-추세-서사">S3. Scrollama 인라인 ⭐ — 5단계 사고 추세 서사 </h2>
 <ul>
@@ -498,7 +498,7 @@ df<span class="token punctuation">.</span>to_json<span class="token punctuation"
 <li>사례 포인트: NYT·워싱턴포스트 같은 데이터 저널리즘 표준 형식</li>
 </ul>
 <blockquote>
-<p>Scrollama + Chart.js로 5단계 인라인 스크롤리텔링 만들어줘. data.json 사용. 왼쪽에 차트 영역 화면에 고정(sticky), 오른쪽에 5개 텍스트 단계. 단계마다 차트 바뀌게:</p>
+<p>data.json으로 5단계 인라인 스크롤리텔링 만들어줘 (왼쪽 sticky 차트 + 오른쪽 5개 텍스트). 각 단계에 필요한 사전 집계(연도별 사고/사망, 사고유형 합계, 시도별 합계, 13년 누적 사망자 등)를 모두 미리 해 HTML 안에 데이터로 박아 넣은 단일 파일로 줘 (fetch 없이 더블클릭하면 바로 보이게). Scrollama + Chart.js 사용 — 같은 폴더 js_scrollytelling.html의 Scrollama 패턴을 참조할 것. 단계마다 차트 바뀌게:</p>
 <ol>
 <li>13년 사고건수 라인차트</li>
 <li>같은 데이터 막대로, 2020년만 빨간색 강조</li>
