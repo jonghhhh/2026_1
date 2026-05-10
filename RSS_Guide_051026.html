@@ -1,0 +1,2270 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h1 id="뉴스-중심-rss-가이드-2026">뉴스 중심 RSS 가이드 (2026)</h1>
+<blockquote>
+<p><strong>RSS (Really Simple Syndication)</strong>: 웹사이트의 업데이트된 정보를 사용자에게 자동으로 실시간으로 전달해 주는 '콘텐츠 배달 서비스'의 규격. 가장 널리 쓰이는 표준으로, 웹사이트를 직접 방문하지 않아도 제목, 요약, 날짜 등의 정보를 기계가 읽을 수 있는 형식으로 제공.<br><strong>Atom (Atom Syndication Format)</strong>: RSS의 파편화(버전 혼선)와 한계를 보완하기 위해 나중에 등장한 차세대 표준. RSS보다 엄격한 표준을 따르며, 메타데이터(저자 정보, 카테고리 등)를 더 상세하게 담을 수 있음. IETF(국제 인터넷 표준화 기구)에서 공식 표준으로 정의했으며, 구글(Blogger, YouTube) 서비스에서 주로 사용.</p>
+</blockquote>
+<h2 id="rss-작동-여부-표기">RSS 작동 여부 표기</h2>
+<blockquote>
+<ul>
+<li>✅ <strong>직접 fetch 성공 또는 Feedspot 2026 디렉터리 확인</strong> — 작동 보장</li>
+<li>⚠️ <strong>미검증</strong> — 사이트 패턴상 작동 가능성 높음. 사용 전 직접 확인 필요</li>
+<li>❌ <strong>폐지·도메인 마이그레이션 확인됨</strong> → 대안 RSSHub 라우트 제시</li>
+</ul>
+<p>한국 뉴스 사이트는 자주 RSS를 변경/폐지하므로 일상적 점검 필요</p>
+</blockquote>
+<hr>
+<h2 id="rss-수집-3단계-fallback-전략">RSS 수집 3단계 Fallback 전략 ⭐</h2>
+<blockquote>
+<p>한국 언론사·정부기관의 RSS는 사이트 개편·도메인 변경·운영 정책 변경으로 자주 폐지되거나 작동을 중단한다. <strong>본 가이드 전반에서 권장하는 표준 패턴은 3단계 Fallback</strong>이다 — 우선 공식 RSS를 시도하고, 실패하면 RSSHub로 우회, 그것도 실패하면 Google News RSS 검색으로 대체하는 흐름. 이후 §3 (한국 뉴스), §4 (정부·공공), §5 (기술 블로그), §6 (글로벌)의 모든 표에서 이 흐름을 가정한다.</p>
+</blockquote>
+<p><strong>흐름도</strong>:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│ [1차] 공식 RSS                                          │
+│   https://site.com/rss                                  │
+│        │                                                │
+│        │ ❌ 응답 없음 / 200 OK 이지만 빈 entries / 404   │
+│        ▼                                                │
+│ [2차] RSSHub 라우트                                     │
+│   https://rsshub.app/site/rss   (자체 호스팅 권장)      │
+│        │                                                │
+│        │ ❌ 라우트 없음 / 404                           │
+│        ▼                                                │
+│ [3차] Google News RSS 검색                              │
+│   https://news.google.com/rss/search?q=키워드           │
+│        │                                                │
+│        │ ✅ 항상 응답 (커버리지·품질은 단계가 내려갈수록 │
+│        │     떨어지지만 마지막 안전망 역할)             │
+│        ▼                                                │
+│   → feedparser 파싱 → 후처리 필터링 → DB 적재           │
+└─────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>각 단계의 특성과 트레이드오프</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>출처</th>
+<th>장점</th>
+<th>한계 / 주의</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1차</strong></td>
+<td>매체 자체 공식 RSS</td>
+<td>가장 정확·빠름. 매체가 의도한 분류·제목·요약을 그대로 받을 수 있음. 발행 5~30분 내 갱신</td>
+<td>한국 매체는 사이트 개편·도메인 변경 빈번 (예: 중앙일보 <code>joins.com</code> → <code>joongang.co.kr</code>, 헤럴드경제 <code>biz.heraldcorp.com</code> → <code>news.heraldcorp.com</code>). 200 OK 응답이지만 <code>entries</code>가 비어있는 경우 흔함</td>
+</tr>
+<tr>
+<td><strong>2차</strong></td>
+<td><a href="https://docs.rsshub.app">RSSHub</a> (자체 호스팅 권장)</td>
+<td>900+ 사이트 라우트 보유. 한국 매체 대부분 커버. 공식 RSS가 없는 사이트(JTBC 등)나 폐지된 사이트도 RSS화 가능. 카테고리·필터 파라미터 풍부</td>
+<td>라우트가 없는 사이트는 불가. <strong>공식 인스턴스 <code>rsshub.app</code>은 rate-limit이 잦음</strong> → DigitalOcean·Cloudflare 등에 자체 호스팅 강력 권장 (§7-3)</td>
+</tr>
+<tr>
+<td><strong>3차</strong></td>
+<td><a href="https://news.google.com/rss/search">Google News RSS 검색</a></td>
+<td>모든 사이트 커버. <code>site:</code> 필터, <code>OR</code>·<code>AND</code> 연산자, <code>when:7d</code> 시간 윈도, <code>intitle:</code>, <code>-키워드</code>(제외) 모두 지원. 무인증·무제한·무료</td>
+<td>Google이 제공하는 메타만 노출 → 매체별 고유 분류·태그·요약은 부족. 30일 이내 결과만 반환. 매체 분류가 부정확할 수 있음. URL이 Google 리다이렉트로 감싸져 있어 후처리 필요</td>
+</tr>
+</tbody></table>
+<p><strong>Python 구현 — 한 함수로 3단계 자동 fallback</strong>:</p>
+<pre><code>import feedparser, httpx, urllib.parse
+
+UA = {"User-Agent": "Mozilla/5.0 DataJournLab/1.0"}
+RSSHUB_BASE = "https://rsshub.app"  # 자체 호스팅 시 본인 도메인으로 교체
+
+def fetch_with_fallback(name: str,
+                        official_url: str = None,
+                        rsshub_route: str = None,
+                        search_query: str = None,
+                        verbose: bool = True):
+    """3단계 fallback으로 RSS 수집.
+
+    Args:
+        name: 로그용 매체명
+        official_url: 1차 공식 RSS URL
+        rsshub_route: 2차 RSSHub 경로 (예: "/joongang/news/all")
+        search_query: 3차 Google News 검색어 (예: "site:joongang.co.kr")
+    Returns:
+        feedparser.FeedParserDict (entries 보장) 또는 None (전부 실패)
+    """
+    # ─── 1차: 공식 RSS ───
+    if official_url:
+        try:
+            r = httpx.get(official_url, timeout=10, headers=UA, follow_redirects=True)
+            if r.status_code == 200:
+                d = feedparser.parse(r.content)
+                if len(d.entries) &gt; 0:
+                    if verbose: print(f"[{name}] ✅ 1차 성공 ({len(d.entries)}건)")
+                    return d
+                if verbose: print(f"[{name}] ⚠️  1차: 200 OK이지만 빈 피드")
+            else:
+                if verbose: print(f"[{name}] ❌ 1차 실패 (status={r.status_code})")
+        except Exception as e:
+            if verbose: print(f"[{name}] ❌ 1차 예외: {e}")
+
+    # ─── 2차: RSSHub ───
+    if rsshub_route:
+        rsshub_url = f"{RSSHUB_BASE}{rsshub_route}"
+        try:
+            r = httpx.get(rsshub_url, timeout=15, headers=UA)
+            if r.status_code == 200:
+                d = feedparser.parse(r.content)
+                if len(d.entries) &gt; 0:
+                    if verbose: print(f"[{name}] ✅ 2차 RSSHub 성공 ({len(d.entries)}건)")
+                    return d
+            if verbose: print(f"[{name}] ❌ 2차 RSSHub 실패 (status={r.status_code})")
+        except Exception as e:
+            if verbose: print(f"[{name}] ❌ 2차 예외: {e}")
+
+    # ─── 3차: Google News RSS 검색 ───
+    if search_query:
+        q = urllib.parse.quote(search_query)
+        gnews_url = f"https://news.google.com/rss/search?q={q}&amp;hl=ko&amp;gl=KR&amp;ceid=KR:ko"
+        try:
+            r = httpx.get(gnews_url, timeout=10, headers=UA)
+            d = feedparser.parse(r.content)
+            if len(d.entries) &gt; 0:
+                if verbose: print(f"[{name}] ✅ 3차 Google News 성공 ({len(d.entries)}건)")
+                return d
+            if verbose: print(f"[{name}] ❌ 3차도 빈 결과")
+        except Exception as e:
+            if verbose: print(f"[{name}] ❌ 3차 예외: {e}")
+
+    return None  # 전부 실패
+
+# ─── 사용 예 ───────────────────────────────────────────
+# 케이스 1: 1차에서 보통 성공하는 매체
+d = fetch_with_fallback(
+    name="경향신문",
+    official_url="https://www.khan.co.kr/rss/rssdata/total_news.xml",
+    rsshub_route="/khan/news",
+    search_query="site:khan.co.kr",
+)
+
+# 케이스 2: ❌로 표시된 매체 — 1차는 항상 실패, 2차에서 잡힘
+d = fetch_with_fallback(
+    name="중앙일보",
+    official_url="https://rss.joins.com/joins_news_list.xml",  # 폐지됨
+    rsshub_route="/joongang/news/all",
+    search_query="site:joongang.co.kr OR site:joins.com",
+)
+
+# 케이스 3: 작은 매체·전문지 — RSSHub 라우트 없으면 3차로 직행
+d = fetch_with_fallback(
+    name="사례_매체",
+    official_url=None,   # 공식 RSS 없음
+    rsshub_route=None,   # RSSHub 라우트 없음
+    search_query="site:example.co.kr 정치 OR 경제",
+)
+</code></pre>
+<hr>
+<h2 id="0-왜-rss인가">0. 왜 RSS인가</h2>
+<p><strong>API의 보완재이자 기본기</strong>. 한국 250+ 언론사·정부부처·기술블로그가 여전히 RSS/Atom을 무료·무인증으로 제공한다. RSS의 가치:</p>
+<table>
+<thead>
+<tr>
+<th>강점</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>무료·무인증</strong></td>
+<td>API 키 발급 불필요, 대부분 IP 제한도 없음</td>
+</tr>
+<tr>
+<td><strong>즉시성</strong></td>
+<td>발행 5~30분 내 갱신, 폴링 1~6시간이면 충분</td>
+</tr>
+<tr>
+<td><strong>표준 포맷</strong></td>
+<td>RSS 2.0 / Atom 1.0 / JSON Feed — 단일 파서로 처리</td>
+</tr>
+<tr>
+<td><strong>저작권 안전</strong></td>
+<td>제목·요약·링크만 받음 (전문은 별도 fetch + 인용 규정 준수)</td>
+</tr>
+<tr>
+<td><strong>구조화 데이터</strong></td>
+<td>title / link / pubDate / author / category — 필터링·DB 적재 용이</td>
+</tr>
+<tr>
+<td><strong>LLM 친화적</strong></td>
+<td>큐레이션된 텍스트 입력으로 grounding 비용 최소화</td>
+</tr>
+</tbody></table>
+<p><strong>한 줄 워크플로</strong>:</p>
+<pre><code>RSS 확인 → feedparser (파이썬) → Gemini 필터링·요약 → SQLite/Chroma → 알림(Slack/Telegram)
+</code></pre>
+<hr>
+<h2 id="1-rss-기초">1. RSS 기초</h2>
+<ul>
+<li><strong>RSS</strong>: Really Simple Syndication. 사이트 콘텐츠 갱신을 XML로 노출하는 표준</li>
+<li><strong>Atom</strong>: RSS의 IETF 표준 후속. 거의 모든 RSS 라이브러리가 둘 다 지원</li>
+<li><strong>JSON(JavaScript Object Notation) Feed</strong>: 모던 대안 (<a href="https://www.jsonfeed.org/">jsonfeed.org</a>). RSS와 Atom은 XML 사용.</li>
+<li><strong>OPML(Outline Processor Markup Language)</strong>: RSS 피드들의 주소록. 여러 RSS URL을 묶어 한 번에 import/export하는 XML 포맷.</li>
+<li><strong>주요 항목</strong>: <code>title</code>, <code>link</code>, <code>description</code>/<code>summary</code>, <code>pubDate</code>/<code>updated</code>, <code>author</code>, <code>category</code>, <code>enclosure</code> (미디어), <code>guid</code>/<code>id</code> (고유 ID)</li>
+<li><strong>RSS 리더</strong>: <a href="https://feedly.com">Feedly</a>, <a href="https://www.inoreader.com">Inoreader</a>, <a href="https://netnewswire.com">NetNewsWire</a>, <a href="https://freshrss.org">FreshRSS</a>(self-host), <a href="https://tt-rss.org">Tiny Tiny RSS</a>, <a href="https://follow.is">Folo</a>, <a href="https://plenary.app">Plenary</a></li>
+</ul>
+<blockquote>
+<p><strong>핵심 팁</strong>: 사이트 footer에서 RSS 아이콘을 찾거나, URL 끝에 <code>/rss</code>, <code>/feed</code>, <code>/rss.xml</code>, <code>/atom.xml</code>을 시험해본다. View Source에서 <code>&lt;link rel="alternate" type="application/rss+xml"&gt;</code> 검색도 효과적.</p>
+</blockquote>
+<hr>
+<h2 id="2-rss-피드-모음-github-저장소-큐레이션">2. RSS 피드 모음 GitHub 저장소 (큐레이션)</h2>
+<h3 id="2-1-글로벌-학술기술">2-1. 글로벌 학술·기술</h3>
+<table>
+<thead>
+<tr>
+<th>저장소</th>
+<th>규모</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/sg-s/science-journal-feeds">sg-s/science-journal-feeds</a></td>
+<td><strong>4,700+</strong></td>
+<td>학술/과학 저널 RSS — 현존 최대</td>
+</tr>
+<tr>
+<td><a href="https://github.com/plenaryapp/awesome-rss-feeds">plenaryapp/awesome-rss-feeds</a></td>
+<td>500+</td>
+<td>OPML 파일 포함, 카테고리·국가별</td>
+</tr>
+<tr>
+<td><a href="https://github.com/FuVaVa/FT50-Journal-RSS-Feeds">FuVaVa/FT50-Journal-RSS-Feeds</a></td>
+<td>50</td>
+<td>FT50 경영·경제 저널</td>
+</tr>
+<tr>
+<td><a href="https://github.com/AndyGreenPhD/journal-rss-feeds">AndyGreenPhD/journal-rss-feeds</a></td>
+<td>~50</td>
+<td>정보시스템·정보보안 (Basket of 8)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/yexner/rss-feeds-academic-journals">yexner/rss-feeds-academic-journals</a></td>
+<td>~40</td>
+<td>마케팅·과학</td>
+</tr>
+<tr>
+<td><a href="https://github.com/focyte/Journal_RSS">focyte/Journal_RSS</a></td>
+<td>~30</td>
+<td>자연과학 (진행 중)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/alexander-winkler/degruyter_rss">alexander-winkler/degruyter_rss</a></td>
+<td>~150</td>
+<td>De Gruyter 저널 (RSS 폐지 후 librarian 큐레이션)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tuan3w/awesome-tech-rss">tuan3w/awesome-tech-rss</a></td>
+<td>100+</td>
+<td>스타트업·기술·과학, OPML 제공</td>
+</tr>
+<tr>
+<td><a href="https://github.com/DongjunLee/awesome-feeds">DongjunLee/awesome-feeds</a></td>
+<td>~150</td>
+<td>AI/ML 연구소·블로그 (DeepMind, BAIR, OpenAI 등)</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-한국-언론기술">2-2. 한국 언론·기술</h3>
+<table>
+<thead>
+<tr>
+<th>저장소</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/akngs/knews-rss">akngs/knews-rss</a></td>
+<td>한국 언론사 RSS 모음</td>
+</tr>
+<tr>
+<td><a href="https://gist.github.com/koorukuroo/330a644fcc3c9ffdc7b6d537efd939c3">koorukuroo/news_rss.py (gist)</a></td>
+<td>MBC·조선·중앙·동아·세계·매경·경향·한국·한경·파이낸셜·헤럴드·노컷 등 카테고리별 (2026-02 갱신)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/maczniak/awesome-korean-techblog">maczniak/awesome-korean-techblog</a></td>
+<td>가장 방대한 한국 기술블로그 인덱스 (50+)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/elky84/awesome-blogs">elky84/awesome-blogs</a></td>
+<td>한국 개발자 블로그 통합 RSS feed 제공</td>
+</tr>
+<tr>
+<td><a href="https://github.com/seongkyu-lim/TechBlogs">seongkyu-lim/TechBlogs</a></td>
+<td>카카오·우아한·네이버·당근·쿠팡 등</td>
+</tr>
+<tr>
+<td><a href="https://github.com/currenjin/site-for-developers">currenjin/site-for-developers</a></td>
+<td>한국 개발 사이트·블로그 통합</td>
+</tr>
+</tbody></table>
+<p><strong>검증된 외부 RSS 디렉터리</strong> (URL 작동 여부 교차 확인용):</p>
+<ul>
+<li><a href="https://rss.feedspot.com/south_korea_news_rss_feeds/">Feedspot — Top 30 South Korea News RSS</a> — <strong>2026-04 갱신</strong>, 이 가이드의 ✅ 마크 근거 중 하나</li>
+<li><a href="https://rss.feedspot.com/korean_tech_rss_feeds/">Feedspot — Top 25 Korean Tech RSS</a></li>
+<li><a href="https://rss.feedspot.com/seoul_rss_feeds/">Feedspot — Top 60 Seoul RSS</a></li>
+</ul>
+<h3 id="2-3-github-검색-키워드-직접-탐색">2-3. GitHub 검색 키워드 (직접 탐색)</h3>
+<ul>
+<li><code>topic:rss-list</code></li>
+<li><code>topic:rss-feeds</code></li>
+<li><code>korean news rss</code></li>
+<li><code>korea government rss</code></li>
+<li><code>academic journal rss opml</code></li>
+<li><code>awesome opml</code></li>
+<li><code>rss aggregator (분야명)</code></li>
+</ul>
+<hr>
+<h2 id="3-한국-뉴스-rss-피드-2026-05-검증">3. 한국 뉴스 RSS 피드 (2026-05 검증)</h2>
+<h3 id="3-1-종합-일간지">3-1. 종합 일간지</h3>
+<table>
+<thead>
+<tr>
+<th>매체</th>
+<th>전체/대표 RSS</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://www.chosun.com"><strong>조선일보</strong></a></td>
+<td><a href="https://www.chosun.com/arc/outboundfeeds/rss/">https://www.chosun.com/arc/outboundfeeds/rss/</a></td>
+<td>Arc Publishing outbound feed. 카테고리는 outboundfeeds 파라미터 분기</td>
+</tr>
+<tr>
+<td>❌ <a href="https://www.joongang.co.kr"><strong>중앙일보</strong></a></td>
+<td><code>rss.joins.com/joins_news_list.xml</code> <strong>폐지</strong> — 도메인이 <code>joongang.co.kr</code>로 마이그레이션되며 통합 RSS 폐지 → <strong>RSSHub</strong> <a href="https://docs.rsshub.app/routes/traditional-media#zhong-yang-ri-bao"><code>/joongang/news/:category</code></a> 사용 권장</td>
+<td></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.donga.com"><strong>동아일보</strong></a></td>
+<td><a href="https://rss.donga.com/total.xml">https://rss.donga.com/total.xml</a></td>
+<td>카테고리: <a href="https://rss.donga.com/politics.xml"><code>politics.xml</code></a>, <a href="https://rss.donga.com/economy.xml"><code>economy.xml</code></a>, <a href="https://rss.donga.com/national.xml"><code>national.xml</code></a>, <a href="https://rss.donga.com/international.xml"><code>international.xml</code></a>, <a href="https://rss.donga.com/editorials.xml"><code>editorials.xml</code></a>, <a href="https://rss.donga.com/science.xml"><code>science.xml</code></a>, <a href="https://rss.donga.com/culture.xml"><code>culture.xml</code></a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.hani.co.kr"><strong>한겨레</strong></a></td>
+<td><a href="https://www.hani.co.kr/rss/">https://www.hani.co.kr/rss/</a></td>
+<td>카테고리 분기: <a href="https://www.hani.co.kr/rss/politics/"><code>/rss/politics/</code></a>, <a href="https://www.hani.co.kr/rss/economy/"><code>/rss/economy/</code></a>, <a href="https://www.hani.co.kr/rss/society/"><code>/rss/society/</code></a>, <a href="https://www.hani.co.kr/rss/international/"><code>/rss/international/</code></a>, <a href="https://www.hani.co.kr/rss/culture/"><code>/rss/culture/</code></a>, <a href="https://www.hani.co.kr/rss/opinion/"><code>/rss/opinion/</code></a>, <a href="https://www.hani.co.kr/rss/science/"><code>/rss/science/</code></a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.khan.co.kr"><strong>경향신문</strong></a></td>
+<td><a href="https://www.khan.co.kr/rss/rssdata/total_news.xml">https://www.khan.co.kr/rss/rssdata/total_news.xml</a></td>
+<td>직접 fetch 검증. 카테고리: <a href="https://www.khan.co.kr/rss/rssdata/politic.xml"><code>politic.xml</code></a>, <a href="https://www.khan.co.kr/rss/rssdata/economy.xml"><code>economy.xml</code></a>, <a href="https://www.khan.co.kr/rss/rssdata/society.xml"><code>society.xml</code></a>, <a href="https://www.khan.co.kr/rss/rssdata/world.xml"><code>world.xml</code></a>, <a href="https://www.khan.co.kr/rss/rssdata/culture.xml"><code>culture.xml</code></a>, <a href="https://www.khan.co.kr/rss/rssdata/itnews.xml"><code>itnews.xml</code></a>, <a href="https://www.khan.co.kr/rss/rssdata/opinion.xml"><code>opinion.xml</code></a></td>
+</tr>
+<tr>
+<td>❌ <a href="https://www.hankookilbo.com"><strong>한국일보</strong></a></td>
+<td><code>rss.hankooki.com/news/hk_main.xml</code> <strong>사이트 재편 후 작동 불확실</strong> → <strong>RSSHub</strong> <a href="https://docs.rsshub.app/"><code>/hankookilbo/:category</code></a> 또는 <a href="#3-5-%EB%8B%A4%EC%9D%8C%EA%B5%AC%EA%B8%80-%EB%89%B4%EC%8A%A4-%EC%96%B4%EA%B7%B8%EB%A6%AC%EA%B2%8C%EC%9D%B4%ED%84%B0">Google News 검색 RSS</a> 사용 권장</td>
+<td></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.segye.com"><strong>세계일보</strong></a></td>
+<td><a href="https://rss.segye.com/segye_total.xml">https://rss.segye.com/segye_total.xml</a></td>
+<td>Feedspot에는 <code>segye.com/Articles/RSSList</code>로 등록. 둘 다 시도 권장</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kmib.co.kr"><strong>국민일보</strong></a></td>
+<td><a href="https://www.kmib.co.kr/rss/data/kmibRssAll.xml">https://www.kmib.co.kr/rss/data/kmibRssAll.xml</a></td>
+<td>분야별 별도 페이지 확인</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.seoul.co.kr"><strong>서울신문</strong></a></td>
+<td><a href="https://www.seoul.co.kr/xml/rss/rss_top.xml">https://www.seoul.co.kr/xml/rss/rss_top.xml</a></td>
+<td><strong>주의</strong>: 종합은 <code>rss_top.xml</code> (이전 버전 가이드의 <code>rss_politics.xml</code>은 카테고리별일 뿐). 분야별: <a href="https://www.seoul.co.kr/xml/rss/rss_economy.xml"><code>rss_economy.xml</code></a>, <a href="https://www.seoul.co.kr/xml/rss/rss_society.xml"><code>rss_society.xml</code></a>, <a href="https://www.seoul.co.kr/xml/rss/rss_international.xml"><code>rss_international.xml</code></a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.hankyung.com"><strong>한국경제</strong></a></td>
+<td><a href="https://rss.hankyung.com/economy.xml">https://rss.hankyung.com/economy.xml</a></td>
+<td>카테고리: <code>stock</code>, <code>estate</code>, <code>industry</code>, <code>intl</code>, <code>politics</code>, <code>column</code></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.mk.co.kr"><strong>매일경제</strong></a></td>
+<td><a href="https://www.mk.co.kr/rss/30000001/">https://www.mk.co.kr/rss/30000001/</a></td>
+<td>헤드라인. <a href="https://www.mk.co.kr/rss/40300001/"><code>40300001</code>(속보)</a>, <a href="https://www.mk.co.kr/rss/30100041/"><code>30100041</code>(경제)</a>, <a href="https://www.mk.co.kr/rss/50200011/"><code>50200011</code>(증권)</a>, <a href="https://www.mk.co.kr/rss/30200030/"><code>30200030</code>(정치)</a>, <a href="https://www.mk.co.kr/rss/30300018/"><code>30300018</code>(국제)</a>, <a href="https://www.mk.co.kr/rss/50100032/"><code>50100032</code>(기업)</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.fnnews.com"><strong>파이낸셜뉴스</strong></a></td>
+<td><a href="https://www.fnnews.com/rss/fn_realnews_all.xml">https://www.fnnews.com/rss/fn_realnews_all.xml</a></td>
+<td>카테고리 접미사: <code>_stock</code>, <code>_finance</code>, <code>_realestate</code>, <code>_industry</code>, <code>_economy</code>, <code>_it</code>, <code>_politics</code>, <code>_society</code></td>
+</tr>
+<tr>
+<td>❌ <a href="https://www.heraldcorp.com"><strong>헤럴드경제</strong></a></td>
+<td><code>biz.heraldcorp.com/rss/...</code> <strong>도메인 변경됨</strong>(<code>biz.heraldcorp.com</code> → <code>news.heraldcorp.com</code>) → <strong>RSSHub</strong> <a href="https://docs.rsshub.app/"><code>/heraldcorp/:category</code></a> 사용 권장</td>
+<td></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>권장</strong>: ✅ 마크된 URL을 우선 사용. ❌는 RSSHub 라우트로 대체. ⚠️는 fetch 후 <code>feed.entries</code>가 비어있으면 RSSHub 라우트나 Google News 검색 RSS로 우회.</p>
+</blockquote>
+<h3 id="3-2-방송통신사">3-2. 방송·통신사</h3>
+<table>
+<thead>
+<tr>
+<th>매체</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://news.kbs.co.kr"><strong>KBS 뉴스</strong></a></td>
+<td><a href="https://news.kbs.co.kr/rss/news.xml">https://news.kbs.co.kr/rss/news.xml</a>, <a href="https://news.kbs.co.kr/rss/headline.xml">https://news.kbs.co.kr/rss/headline.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://imnews.imbc.com"><strong>MBC 뉴스</strong></a></td>
+<td><a href="https://imnews.imbc.com/rss/news/news_00.xml">https://imnews.imbc.com/rss/news/news_00.xml</a> (전체) — 카테고리: <a href="https://imnews.imbc.com/rss/news/news_01.xml"><code>_01</code>(정치)</a>, <a href="https://imnews.imbc.com/rss/news/news_02.xml"><code>_02</code>(통일외교)</a>, <a href="https://imnews.imbc.com/rss/news/news_03.xml"><code>_03</code>(국제)</a>, <a href="https://imnews.imbc.com/rss/news/news_04.xml"><code>_04</code>(경제)</a>, <a href="https://imnews.imbc.com/rss/news/news_05.xml"><code>_05</code>(사회)</a>, <a href="https://imnews.imbc.com/rss/news/news_06.xml"><code>_06</code>(문화/연예)</a>, <a href="https://imnews.imbc.com/rss/news/news_07.xml"><code>_07</code>(스포츠)</a>, <a href="https://imnews.imbc.com/rss/news/news_08.xml"><code>_08</code>(건강/과학)</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://news.sbs.co.kr"><strong>SBS 뉴스</strong></a></td>
+<td><a href="https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=01">https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=01</a> (정치) — <code>02</code>(경제), <code>03</code>(사회), <code>04</code>(국제), <code>05</code>(문화), <code>07</code>(스포츠), <code>08</code>(연예)</td>
+</tr>
+<tr>
+<td>❌ <a href="https://news.jtbc.co.kr"><strong>JTBC 뉴스</strong></a></td>
+<td>RSS 미공식 — <strong>RSSHub</strong> <a href="https://docs.rsshub.app/"><code>/jtbc/news/:category</code></a> 사용</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.ytn.co.kr"><strong>YTN</strong></a></td>
+<td><a href="https://www.ytn.co.kr/_comm/rss.php">https://www.ytn.co.kr/_comm/rss.php</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.yna.co.kr"><strong>연합뉴스</strong></a></td>
+<td><a href="https://www.yna.co.kr/rss/news.xml">https://www.yna.co.kr/rss/news.xml</a> (전체) — 카테고리: <a href="https://www.yna.co.kr/rss/politics.xml"><code>politics.xml</code></a>, <a href="https://www.yna.co.kr/rss/economy.xml"><code>economy.xml</code></a>, <a href="https://www.yna.co.kr/rss/local.xml"><code>local.xml</code></a>, <a href="https://www.yna.co.kr/rss/international.xml"><code>international.xml</code></a>, <a href="https://www.yna.co.kr/rss/culture.xml"><code>culture.xml</code></a>, <a href="https://www.yna.co.kr/rss/sports.xml"><code>sports.xml</code></a>, <a href="https://www.yna.co.kr/rss/entertainment.xml"><code>entertainment.xml</code></a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.newsis.com"><strong>뉴시스</strong></a></td>
+<td><a href="https://www.newsis.com/RSS/sokbo.xml">https://www.newsis.com/RSS/sokbo.xml</a> (속보, 직접 fetch 검증). <strong>주의</strong>: 이전 가이드의 <code>total.xml</code>은 부정확 — <code>sokbo.xml</code>이 정식</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.nocutnews.co.kr"><strong>노컷뉴스 (CBS)</strong></a></td>
+<td><a href="https://rss.nocutnews.co.kr/nocutnews.xml">https://rss.nocutnews.co.kr/nocutnews.xml</a> (전체) — 카테고리: <a href="https://rss.nocutnews.co.kr/NocutPolitics.xml"><code>NocutPolitics.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutSocial.xml"><code>NocutSocial.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutEconomy.xml"><code>NocutEconomy.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutIndustry.xml"><code>NocutIndustry.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutLocal.xml"><code>NocutLocal.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutGlobal.xml"><code>NocutGlobal.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutIT.xml"><code>NocutIT.xml</code></a>, <a href="https://rss.nocutnews.co.kr/NocutCulture.xml"><code>NocutCulture.xml</code></a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.ohmynews.com"><strong>오마이뉴스</strong></a></td>
+<td><a href="http://rss.ohmynews.com/rss/ohmynews.xml">http://rss.ohmynews.com/rss/ohmynews.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.pressian.com"><strong>프레시안</strong></a></td>
+<td><a href="https://www.pressian.com/api/rss">https://www.pressian.com/api/rss</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.news1.kr"><strong>News1</strong></a></td>
+<td>(Feedspot 2026 등록 매체 — 사이트 footer에서 RSS 확인)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.mediatoday.co.kr"><strong>Media Today</strong></a></td>
+<td><a href="https://www.mediatoday.co.kr/rss/allArticle.xml">https://www.mediatoday.co.kr/rss/allArticle.xml</a> — Feedspot 2026 등록</td>
+</tr>
+</tbody></table>
+<h3 id="3-3-영문-한국-매체">3-3. 영문 한국 매체</h3>
+<table>
+<thead>
+<tr>
+<th>매체</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://www.koreaherald.com"><strong>Korea Herald</strong></a></td>
+<td><a href="http://www.koreaherald.com/rss/rss_news.php">http://www.koreaherald.com/rss/rss_news.php</a> — Feedspot 2026 확인</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.koreatimes.co.kr"><strong>Korea Times</strong></a></td>
+<td><a href="https://www.koreatimes.co.kr/www2/common/rss.asp">https://www.koreatimes.co.kr/www2/common/rss.asp</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://koreajoongangdaily.joins.com"><strong>Korea JoongAng Daily</strong></a></td>
+<td><a href="https://koreajoongangdaily.joins.com/Services/Xml/Rss.xml">https://koreajoongangdaily.joins.com/Services/Xml/Rss.xml</a> — 영문판은 <code>joins.com</code> 도메인 유지</td>
+</tr>
+<tr>
+<td>✅ <a href="https://en.yna.co.kr"><strong>Yonhap (English)</strong></a></td>
+<td><a href="https://en.yna.co.kr/RSS/news.xml">https://en.yna.co.kr/RSS/news.xml</a> — Feedspot 1순위 등록</td>
+</tr>
+<tr>
+<td>✅ <a href="https://english.hani.co.kr"><strong>Hankyoreh English</strong></a></td>
+<td><a href="https://english.hani.co.kr/rss/english_edition/">https://english.hani.co.kr/rss/english_edition/</a> — Feedspot 등록</td>
+</tr>
+<tr>
+<td>⚠️ <a href="http://english.chosun.com"><strong>Chosun English</strong></a></td>
+<td><a href="http://english.chosun.com/site/data/rss/news.xml">http://english.chosun.com/site/data/rss/news.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.dailynk.com"><strong>Daily NK</strong> (북한 소식)</a></td>
+<td><a href="https://www.dailynk.com/english/feed/">https://www.dailynk.com/english/feed/</a> — Feedspot 3순위</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.businesskorea.co.kr"><strong>Business Korea</strong></a></td>
+<td><a href="https://www.businesskorea.co.kr/rss/allEnglishArticle.xml">https://www.businesskorea.co.kr/rss/allEnglishArticle.xml</a> — Feedspot 등록</td>
+</tr>
+</tbody></table>
+<h3 id="3-4-전문지매거진">3-4. 전문지·매거진</h3>
+<table>
+<thead>
+<tr>
+<th>매체</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://www.sisain.co.kr"><strong>시사IN</strong></a></td>
+<td><a href="https://www.sisain.co.kr/rss/allArticle.xml">https://www.sisain.co.kr/rss/allArticle.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://h21.hani.co.kr"><strong>한겨레21</strong></a></td>
+<td><a href="https://h21.hani.co.kr/rss/">https://h21.hani.co.kr/rss/</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://weekly.chosun.com"><strong>주간조선</strong></a></td>
+<td><a href="https://weekly.chosun.com/site/data/rss/rss.xml">https://weekly.chosun.com/site/data/rss/rss.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.edaily.co.kr"><strong>이데일리</strong></a></td>
+<td><a href="https://www.edaily.co.kr/rss/edaily_news.xml">https://www.edaily.co.kr/rss/edaily_news.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://news.mt.co.kr"><strong>머니투데이</strong></a></td>
+<td><a href="https://news.mt.co.kr/rss/news_total.xml">https://news.mt.co.kr/rss/news_total.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.bloter.net"><strong>블로터</strong></a></td>
+<td><a href="http://www.bloter.net/rss">http://www.bloter.net/rss</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="http://www.dt.co.kr"><strong>디지털타임스</strong></a></td>
+<td><a href="http://www.dt.co.kr/rss/news.xml">http://www.dt.co.kr/rss/news.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.etnews.com"><strong>전자신문</strong></a></td>
+<td><a href="https://www.etnews.com/rss/section.xml">https://www.etnews.com/rss/section.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://zdnet.co.kr"><strong>ZDNet Korea</strong></a></td>
+<td><a href="https://feeds.feedburner.com/zdkorea">https://feeds.feedburner.com/zdkorea</a></td>
+</tr>
+</tbody></table>
+<h3 id="3-5-다음구글-뉴스-어그리게이터">3-5. 다음·구글 뉴스 어그리게이터</h3>
+<table>
+<thead>
+<tr>
+<th>출처</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>❌ <a href="https://media.daum.net"><strong>다음 종합</strong></a></td>
+<td><code>media.daum.net/rss/today/primary/all/rss2.xml</code> <strong>다음 뉴스 RSS는 사이트 개편 후 작동 불안정</strong> → Google News 검색 RSS 또는 RSSHub 사용 권장</td>
+</tr>
+<tr>
+<td>✅ <a href="https://news.google.com/?hl=ko&amp;gl=KR&amp;ceid=KR:ko"><strong>Google News (한국 주요)</strong></a></td>
+<td><a href="https://news.google.com/rss?hl=ko&amp;gl=KR&amp;ceid=KR:ko">https://news.google.com/rss?hl=ko&amp;gl=KR&amp;ceid=KR:ko</a></td>
+</tr>
+<tr>
+<td>✅ <strong>Google News (검색쿼리)</strong></td>
+<td><a href="https://news.google.com/rss/search?q=%25ED%2595%25A9%25EA%25B3%2584%25EC%25B6%259C%25EC%2582%25B0%25EC%259C%25A8&amp;hl=ko&amp;gl=KR&amp;ceid=KR:ko">https://news.google.com/rss/search?q=합계출산율&amp;hl=ko&amp;gl=KR&amp;ceid=KR:ko</a></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Google News 검색 RSS는 데이터저널리즘에서 매우 강력</strong>. URL의 <code>q=</code> 파라미터에 키워드 OR 연산자 사용 가능 (예: <code>q=합계출산율 OR 출생률</code>). 로그인·키 불필요. <code>site:n.news.naver.com</code> 등 사이트 필터 가능. <code>when:7d</code> 시간 윈도도 적용됨.</p>
+</blockquote>
+<h3 id="3-6-네이버-뉴스-rss-비공식">3-6. 네이버 뉴스 (RSS 비공식)</h3>
+<p><a href="https://news.naver.com"><strong>네이버</strong></a>는 공식 RSS를 종료. 대안:</p>
+<ol>
+<li>RSSHub 라우트 <a href="https://docs.rsshub.app/"><code>/naver/news/:category</code></a></li>
+<li>네이버 검색 API (자매 문서 — API + LLM 가이드)</li>
+<li>Google News에서 <code>q=site:n.news.naver.com 키워드</code> 검색 RSS 사용</li>
+</ol>
+<hr>
+<h2 id="4-한국-정부공공기관-rss">4. 한국 정부·공공기관 RSS</h2>
+<h3 id="4-1-통합-게이트웨이-가장-강력">4-1. 통합 게이트웨이 (가장 강력)</h3>
+<table>
+<thead>
+<tr>
+<th>출처</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://www.korea.kr"><strong>대한민국 정책브리핑 (korea.kr)</strong></a></td>
+<td><a href="https://www.korea.kr/etc/rss.do">https://www.korea.kr/etc/rss.do</a> — 부처별·분야별 통합 RSS 디렉터리. 보도자료·연설문·정책자료·브리핑 통합</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.gov.kr"><strong>정부24</strong></a></td>
+<td><a href="https://www.gov.kr/portal/rss">https://www.gov.kr/portal/rss</a> — 공지·민원·정책</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.data.go.kr"><strong>공공데이터포털</strong></a></td>
+<td><a href="https://www.data.go.kr/bbs/ntc/selectNoticeBbs.do">https://www.data.go.kr/bbs/ntc/selectNoticeBbs.do</a> — 보도자료, 데이터셋 갱신 RSS 일부 제공</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-부처별-rss-패턴">4-2. 부처별 RSS 패턴</h3>
+<p>대부분의 정부 사이트는 <strong>공통 게시판 솔루션</strong>을 사용 → URL 패턴이 비슷함:</p>
+<pre><code>https://[부처도메인].go.kr/.../board/rss.do?menuId={M}&amp;boardMasterId={B}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>부처</th>
+<th>공지·공고 / 보도자료</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://www.me.go.kr"><strong>환경부</strong></a></td>
+<td>공지: <a href="https://www.me.go.kr/home/web/board/rss.do?menuId=290&amp;boardMasterId=39">https://www.me.go.kr/home/web/board/rss.do?menuId=290&amp;boardMasterId=39</a> &lt;br&gt; 보도: <a href="https://www.me.go.kr/home/web/board/rss.do?menuId=286&amp;boardMasterId=1"><code>?menuId=286&amp;boardMasterId=1</code></a> &lt;br&gt; e환경뉴스: <a href="https://www.me.go.kr/home/web/board/rss.do?menuId=284&amp;boardMasterId=108"><code>?menuId=284&amp;boardMasterId=108</code></a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.molit.go.kr"><strong>국토교통부</strong></a></td>
+<td><a href="https://www.molit.go.kr/USR/p_etc_rsssvc/m_123/ers.jsp">https://www.molit.go.kr/USR/p_etc_rsssvc/m_123/ers.jsp</a> — 페이지에서 보도/공지 분야별 URL 확보</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.mofa.go.kr"><strong>외교부</strong></a></td>
+<td><a href="https://www.mofa.go.kr/www/wpge/m_20347/contents.do">https://www.mofa.go.kr/www/wpge/m_20347/contents.do</a> — RSS 안내 페이지</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.msit.go.kr"><strong>과학기술정보통신부</strong></a></td>
+<td><a href="https://www.msit.go.kr/SYNAP/rss/board.do">https://www.msit.go.kr/SYNAP/rss/board.do</a> — 보도자료</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.motie.go.kr"><strong>산업통상자원부</strong></a></td>
+<td><a href="https://www.motie.go.kr/kor/rss/rssAllSrvc.do">https://www.motie.go.kr/kor/rss/rssAllSrvc.do</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.mohw.go.kr"><strong>보건복지부</strong></a></td>
+<td><a href="https://www.mohw.go.kr/menu.es?mid=a10503000000">https://www.mohw.go.kr/menu.es?mid=a10503000000</a> (안내 페이지)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.moe.go.kr"><strong>교육부</strong></a></td>
+<td><a href="https://www.moe.go.kr">https://www.moe.go.kr</a> footer "RSS" 메뉴</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.moef.go.kr"><strong>기획재정부</strong></a></td>
+<td><a href="https://www.moef.go.kr/com/sym/com/rssListSelect.do">https://www.moef.go.kr/com/sym/com/rssListSelect.do</a></td>
+</tr>
+<tr>
+<td>⚠️ <strong>법무부 / 통일부 / 국방부 / 여성가족부 / 고용노동부 / 농림축산식품부</strong></td>
+<td><a href="https://www.moj.go.kr">법무부</a> · <a href="https://www.unikorea.go.kr">통일부</a> · <a href="https://www.mnd.go.kr">국방부</a> · <a href="https://www.mogef.go.kr">여성가족부</a> · <a href="https://www.moel.go.kr">고용노동부</a> · <a href="https://www.mafra.go.kr">농림축산식품부</a> — 모두 사이트 footer "RSS"</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kdca.go.kr"><strong>질병관리청</strong></a></td>
+<td><a href="https://www.kdca.go.kr/board.es">https://www.kdca.go.kr/board.es</a> 게시판별 RSS (감염병 발생 등)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kma.go.kr"><strong>기상청</strong></a></td>
+<td><a href="https://www.kma.go.kr/rss/">https://www.kma.go.kr/rss/</a> — 일기예보, 기후정보</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.mfds.go.kr"><strong>식품의약품안전처</strong></a></td>
+<td><a href="https://www.mfds.go.kr/brd/rss.do">https://www.mfds.go.kr/brd/rss.do</a> (게시판 ID 별)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.fss.or.kr"><strong>금융감독원</strong></a></td>
+<td><a href="https://www.fss.or.kr/fss/bbs/B0000188/rss.do?menuNo=200218">https://www.fss.or.kr/fss/bbs/B0000188/rss.do?menuNo=200218</a> (보도자료)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.fsc.go.kr"><strong>금융위원회</strong></a></td>
+<td><a href="https://www.fsc.go.kr/po010101/rss">https://www.fsc.go.kr/po010101/rss</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.ftc.go.kr"><strong>공정거래위원회</strong></a></td>
+<td><a href="https://www.ftc.go.kr/www/cop/bbs/selectBoardListNew.do">https://www.ftc.go.kr/www/cop/bbs/selectBoardListNew.do</a> (안내)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.nts.go.kr"><strong>국세청</strong></a></td>
+<td><a href="https://www.nts.go.kr/nts/bd/cm/dc/AB.do">https://www.nts.go.kr/nts/bd/cm/dc/AB.do</a> 게시판별</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://kostat.go.kr"><strong>통계청</strong></a></td>
+<td><a href="https://kostat.go.kr/portal/korea/kor_nw/1/1/index.board?bmode=rss">https://kostat.go.kr/portal/korea/kor_nw/1/1/index.board?bmode=rss</a> (보도자료)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>권장 전략</strong>: <a href="https://www.korea.kr">korea.kr</a> 통합 디렉터리를 기준점으로 삼고, 부처 RSS가 누락되면 <strong>RSSHub <code>/gov/:dept/:board</code></strong> 라우트 또는 \*\<em>RSS-Bridge <code>CssSelectorBridge</code>\</em>\*로 보완.</p>
+</blockquote>
+<h3 id="4-3-국회법원중앙은행">4-3. 국회·법원·중앙은행</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>방법</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://open.assembly.go.kr"><strong>열린국회정보</strong></a></td>
+<td>API 우선 (의안·표결·발언). RSS는 공지 위주 (자매 문서 §3-1 참조)</td>
+</tr>
+<tr>
+<td><a href="https://www.law.go.kr"><strong>국가법령정보센터</strong></a></td>
+<td>API 우선. 신규법령 알림은 부처 RSS로 보완</td>
+</tr>
+<tr>
+<td><a href="https://www.scourt.go.kr"><strong>대법원</strong></a> · <a href="https://www.ccourt.go.kr"><strong>헌법재판소</strong></a></td>
+<td>보도자료 RSS 또는 RSSHub로 변환</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.bok.or.kr"><strong>한국은행</strong></a></td>
+<td>보도자료 페이지 → RSSHub <a href="https://docs.rsshub.app/"><code>/bok/press</code></a> 라우트</td>
+</tr>
+<tr>
+<td><a href="https://www.fss.or.kr"><strong>금융감독원</strong></a> · <a href="https://www.fsc.go.kr"><strong>금융위</strong></a></td>
+<td>위 부처 표 참고 + Open DART API 병행</td>
+</tr>
+</tbody></table>
+<h3 id="4-4-지자체-서울부산경기-등">4-4. 지자체 (서울·부산·경기 등)</h3>
+<table>
+<thead>
+<tr>
+<th>자치단체</th>
+<th>RSS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://www.seoul.go.kr"><strong>서울시</strong></a></td>
+<td><a href="https://www.seoul.go.kr/news/news_notice.do">https://www.seoul.go.kr/news/news_notice.do</a> — 보도자료, 분야별 RSS</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.gg.go.kr"><strong>경기도</strong></a></td>
+<td><a href="https://www.gg.go.kr/contents/rssService.do">https://www.gg.go.kr/contents/rssService.do</a></td>
+</tr>
+<tr>
+<td>⚠️ <strong>광역시 (부산·대구·인천·광주·대전·울산·세종)</strong></td>
+<td><a href="https://www.busan.go.kr">부산시</a> · <a href="https://www.daegu.go.kr">대구시</a> · <a href="https://www.incheon.go.kr">인천시</a> · <a href="https://www.gwangju.go.kr">광주시</a> · <a href="https://www.daejeon.go.kr">대전시</a> · <a href="https://www.ulsan.go.kr">울산시</a> · <a href="https://www.sejong.go.kr">세종시</a> — 각 시청 홈페이지 footer RSS</td>
+</tr>
+<tr>
+<td><strong>시·군·구 단위</strong></td>
+<td>RSSHub <a href="https://docs.rsshub.app/"><code>/gov/:region/:board</code></a> 또는 RSS-Bridge로 우회</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-한국-기술-블로그-rss">5. 한국 기술 블로그 RSS</h2>
+<blockquote>
+<p><a href="https://github.com/maczniak/awesome-korean-techblog"><code>maczniak/awesome-korean-techblog</code></a> 기반 + 활성 피드만 정리. IT산업 동향 모니터링용.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>회사</th>
+<th>RSS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://d2.naver.com"><strong>네이버 D2</strong></a></td>
+<td><a href="https://d2.naver.com/d2.atom">https://d2.naver.com/d2.atom</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://tech.kakao.com"><strong>카카오</strong></a></td>
+<td><a href="https://tech.kakao.com/feed/">https://tech.kakao.com/feed/</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://tech.kakaoenterprise.com"><strong>카카오엔터프라이즈</strong></a></td>
+<td><a href="https://tech.kakaoenterprise.com/feed">https://tech.kakaoenterprise.com/feed</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://techblog.lycorp.co.jp"><strong>라인 (LY)</strong></a></td>
+<td><a href="https://techblog.lycorp.co.jp/ko/feed/index.xml">https://techblog.lycorp.co.jp/ko/feed/index.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://techblog.woowahan.com"><strong>우아한형제들</strong></a></td>
+<td><a href="https://techblog.woowahan.com/feed/">https://techblog.woowahan.com/feed/</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://toss.tech"><strong>토스 (Viva Republica)</strong></a></td>
+<td><a href="https://toss.tech/rss.xml">https://toss.tech/rss.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://medium.com/coupang-engineering"><strong>쿠팡 엔지니어링</strong></a></td>
+<td><a href="https://medium.com/feed/coupang-engineering">https://medium.com/feed/coupang-engineering</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://medium.com/daangn"><strong>당근 (당근마켓)</strong></a></td>
+<td><a href="https://medium.com/feed/daangn">https://medium.com/feed/daangn</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://helloworld.kurly.com"><strong>마켓컬리</strong></a></td>
+<td><a href="https://helloworld.kurly.com/feed.xml">https://helloworld.kurly.com/feed.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://tech.devsisters.com"><strong>데브시스터즈</strong></a></td>
+<td><a href="https://tech.devsisters.com/rss.xml">https://tech.devsisters.com/rss.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://medium.com/musinsa-tech"><strong>무신사</strong></a></td>
+<td><a href="https://medium.com/feed/musinsa-tech">https://medium.com/feed/musinsa-tech</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://medium.com/zigbang"><strong>직방</strong></a></td>
+<td><a href="https://medium.com/feed/zigbang">https://medium.com/feed/zigbang</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://medium.com/watcha"><strong>왓챠</strong></a></td>
+<td><a href="https://medium.com/feed/watcha">https://medium.com/feed/watcha</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://blog.banksalad.com"><strong>뱅크샐러드</strong></a></td>
+<td><a href="https://blog.banksalad.com/rss.xml">https://blog.banksalad.com/rss.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://hyperconnect.github.io"><strong>하이퍼커넥트</strong></a></td>
+<td><a href="https://hyperconnect.github.io/feed.xml">https://hyperconnect.github.io/feed.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://techblog.yogiyo.co.kr"><strong>요기요</strong></a></td>
+<td><a href="https://techblog.yogiyo.co.kr/feed">https://techblog.yogiyo.co.kr/feed</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://tech.socarcorp.kr"><strong>쏘카</strong></a></td>
+<td><a href="https://tech.socarcorp.kr/feed">https://tech.socarcorp.kr/feed</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.ridicorp.com"><strong>리디</strong></a></td>
+<td><a href="https://www.ridicorp.com/feed">https://www.ridicorp.com/feed</a></td>
+</tr>
+<tr>
+<td>❌ <a href="https://meetup.toast.com"><strong>NHN Toast Meetup</strong></a></td>
+<td><code>meetup.toast.com/rss</code> — 사이트 메뉴 변경, RSS 미상 → 사이트 직접 확인</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://news.hada.io"><strong>GeekNews</strong></a></td>
+<td><a href="https://feeds.feedburner.com/geeknews-feed">https://feeds.feedburner.com/geeknews-feed</a> (또는 <a href="https://news.hada.io/rss/news">news.hada.io/rss/news</a>)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://blog.lunit.io"><strong>Lunit</strong> (의료 AI)</a></td>
+<td><a href="https://blog.lunit.io/feed/">https://blog.lunit.io/feed/</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://tensorflow.blog"><strong>TensorFlow Korea</strong></a></td>
+<td><a href="https://tensorflow.blog/feed/">https://tensorflow.blog/feed/</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://aws.amazon.com/ko/blogs/korea/"><strong>AWS 한국 블로그</strong></a></td>
+<td><a href="https://aws.amazon.com/ko/blogs/korea/feed/">https://aws.amazon.com/ko/blogs/korea/feed/</a></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="6-글로벌-rss--데이터저널리즘-필수">6. 글로벌 RSS — 데이터저널리즘 필수</h2>
+<h3 id="6-1-종합-뉴스">6-1. 종합 뉴스</h3>
+<table>
+<thead>
+<tr>
+<th>매체</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>❌ <a href="https://www.reuters.com"><strong>Reuters</strong></a></td>
+<td><code>feeds.reuters.com/Reuters/worldNews</code> — Reuters는 2020년 자체 RSS 폐지 → <strong>RSSHub</strong> <a href="https://docs.rsshub.app/routes/traditional-media#reuters"><code>/reuters/:category/:topic</code></a> 사용</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.bbc.com/news"><strong>BBC News</strong></a></td>
+<td><a href="https://feeds.bbci.co.uk/news/rss.xml">https://feeds.bbci.co.uk/news/rss.xml</a>, <a href="https://feeds.bbci.co.uk/news/world/rss.xml"><code>world/rss.xml</code></a>, <a href="https://feeds.bbci.co.uk/news/business/rss.xml"><code>business/rss.xml</code></a>, <a href="https://feeds.bbci.co.uk/news/technology/rss.xml"><code>technology/rss.xml</code></a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.theguardian.com"><strong>The Guardian</strong></a></td>
+<td><a href="https://www.theguardian.com/world/rss">https://www.theguardian.com/world/rss</a> (대분야 단위 다수 — <code>/business/rss</code>, <code>/uk/rss</code>, <code>/technology/rss</code> 등)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.nytimes.com"><strong>NYT</strong></a></td>
+<td><a href="https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml">https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml</a>, <a href="https://rss.nytimes.com/services/xml/rss/nyt/World.xml"><code>World.xml</code></a>, <a href="https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"><code>Business.xml</code></a>, <a href="https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"><code>Technology.xml</code></a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.washingtonpost.com"><strong>Washington Post</strong></a></td>
+<td><a href="http://feeds.washingtonpost.com/rss/world">http://feeds.washingtonpost.com/rss/world</a> (다수 카테고리 페이지 footer 참조)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.aljazeera.com"><strong>Al Jazeera</strong></a></td>
+<td><a href="https://www.aljazeera.com/xml/rss/all.xml">https://www.aljazeera.com/xml/rss/all.xml</a></td>
+</tr>
+<tr>
+<td>❌ <a href="https://apnews.com"><strong>AP News</strong></a></td>
+<td><code>feeds.apnews.com/rss/apf-topnews</code> — AP 자체 RSS는 폐지/제한 → <strong>RSSHub</strong> <a href="https://docs.rsshub.app/"><code>/ap/:topic</code></a> 사용 권장</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.npr.org"><strong>NPR</strong></a></td>
+<td><a href="https://feeds.npr.org/1001/rss.xml">https://feeds.npr.org/1001/rss.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.dw.com"><strong>Deutsche Welle</strong></a></td>
+<td><a href="https://rss.dw.com/rdf/rss-en-all">https://rss.dw.com/rdf/rss-en-all</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.france24.com/en/"><strong>France 24</strong></a></td>
+<td><a href="https://www.france24.com/en/rss">https://www.france24.com/en/rss</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.asahi.com/ajw/"><strong>Asahi (영문)</strong></a></td>
+<td><a href="https://www.asahi.com/ajw/rss/news.rdf">https://www.asahi.com/ajw/rss/news.rdf</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://asia.nikkei.com"><strong>Nikkei Asia</strong></a></td>
+<td><a href="https://asia.nikkei.com/rss">https://asia.nikkei.com/rss</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.scmp.com"><strong>SCMP</strong></a></td>
+<td><a href="https://www.scmp.com/rss/91/feed">https://www.scmp.com/rss/91/feed</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="http://english.news.cn"><strong>Xinhua (English)</strong></a></td>
+<td><a href="http://english.news.cn/rss/index.xml">http://english.news.cn/rss/index.xml</a></td>
+</tr>
+</tbody></table>
+<h3 id="6-2-데이터저널리즘-전문">6-2. 데이터저널리즘 전문</h3>
+<table>
+<thead>
+<tr>
+<th>출처</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://gijn.org"><strong>GIJN</strong> (Global Investigative Journalism Network)</a></td>
+<td><a href="https://gijn.org/feed/">https://gijn.org/feed/</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://datajournalism.com"><strong>DataJournalism.com (EJC)</strong></a></td>
+<td><a href="https://datajournalism.com/feed">https://datajournalism.com/feed</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://themarkup.org"><strong>The Markup</strong></a></td>
+<td><a href="https://themarkup.org/feeds/rss.xml">https://themarkup.org/feeds/rss.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.propublica.org"><strong>ProPublica</strong></a></td>
+<td><a href="https://www.propublica.org/feeds/propublica/main">https://www.propublica.org/feeds/propublica/main</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.reuters.com/graphics/"><strong>Reuters Graphics</strong></a></td>
+<td>RSSHub <a href="https://docs.rsshub.app/"><code>/reuters/graphics</code></a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://fivethirtyeight.com"><strong>FiveThirtyEight</strong></a></td>
+<td><a href="https://fivethirtyeight.com/all/feed/">https://fivethirtyeight.com/all/feed/</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://ourworldindata.org"><strong>Our World in Data</strong></a></td>
+<td><a href="https://ourworldindata.org/atom.xml">https://ourworldindata.org/atom.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.bellingcat.com"><strong>Bellingcat</strong></a></td>
+<td><a href="https://www.bellingcat.com/feed/">https://www.bellingcat.com/feed/</a></td>
+</tr>
+<tr>
+<td><a href="https://www.ire.org/nicar/"><strong>NICAR (IRE)</strong></a></td>
+<td>메일링/이벤트 위주</td>
+</tr>
+</tbody></table>
+<h3 id="6-3-학술연구">6-3. 학술·연구</h3>
+<table>
+<thead>
+<tr>
+<th>출처</th>
+<th>URL/방법</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://arxiv.org"><strong>arXiv</strong></a> (분야별)</td>
+<td><a href="https://rss.arxiv.org/rss/cs">https://rss.arxiv.org/rss/cs</a> — 분야: <code>cs</code>, <code>math</code>, <code>physics</code>, <code>q-bio</code>, <code>q-fin</code>, <code>stat</code>, <code>econ</code> 등</td>
+</tr>
+<tr>
+<td>✅ <strong>arXiv</strong> (서브분야)</td>
+<td>점 표기: <a href="https://rss.arxiv.org/rss/cs.AI"><code>cs.AI</code></a>, <a href="https://rss.arxiv.org/rss/cs.CL"><code>cs.CL</code></a>, <a href="https://rss.arxiv.org/rss/stat.ML"><code>stat.ML</code></a>, <a href="https://rss.arxiv.org/rss/econ.EM"><code>econ.EM</code></a></td>
+</tr>
+<tr>
+<td>✅ <strong>arXiv</strong> (복수 결합)</td>
+<td><a href="https://rss.arxiv.org/rss/cs.AI+stat.ML">https://rss.arxiv.org/rss/cs.AI+stat.ML</a> (요청당 최대 2,000건)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.biorxiv.org"><strong>bioRxiv</strong></a> / <a href="https://www.medrxiv.org"><strong>medRxiv</strong></a></td>
+<td>분야별 RSS, biorxiv.org/medrxiv.org 사이트 footer</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.nature.com"><strong>Nature</strong></a></td>
+<td><a href="https://www.nature.com/nature.rss">https://www.nature.com/nature.rss</a> (저널별 RSS 다수)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.science.org"><strong>Science (AAAS)</strong></a></td>
+<td><a href="https://www.science.org/action/showFeed?type=etoc&amp;feed=rss&amp;jc=science">https://www.science.org/action/showFeed?type=etoc&amp;feed=rss&amp;jc=science</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://journals.plos.org/plosone/"><strong>PLOS ONE</strong></a></td>
+<td><a href="https://journals.plos.org/plosone/feed/atom">https://journals.plos.org/plosone/feed/atom</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.pnas.org"><strong>PNAS</strong></a></td>
+<td><a href="https://www.pnas.org/action/showFeed?type=etoc&amp;feed=rss&amp;jc=pnas">https://www.pnas.org/action/showFeed?type=etoc&amp;feed=rss&amp;jc=pnas</a></td>
+</tr>
+<tr>
+<td><a href="https://pubmed.ncbi.nlm.nih.gov"><strong>PubMed Search</strong></a></td>
+<td>NCBI E-utilities로 검색 → RSS 변환 가능</td>
+</tr>
+<tr>
+<td><a href="https://scholar.google.com"><strong>Google Scholar Alerts</strong></a></td>
+<td>이메일 alert만 — email-to-RSS 변환기 사용 (<a href="https://kill-the-newsletter.com/">Kill the Newsletter</a>, <a href="https://www.followthatpage.com/">FollowThatPage</a>)</td>
+</tr>
+<tr>
+<td><a href="https://openalex.org"><strong>OpenAlex</strong></a></td>
+<td>RSS 없음, API로 폴링 후 자체 RSS 생성</td>
+</tr>
+<tr>
+<td><a href="https://www.ssrn.com"><strong>SSRN</strong></a> / <a href="https://www.repec.org"><strong>RePEc</strong></a></td>
+<td>분야별 RSS</td>
+</tr>
+<tr>
+<td><a href="https://ieeexplore.ieee.org"><strong>IEEE Xplore</strong></a></td>
+<td>저자/주제 검색 결과 RSS</td>
+</tr>
+</tbody></table>
+<h3 id="6-4-정부국제기구">6-4. 정부·국제기구</h3>
+<table>
+<thead>
+<tr>
+<th>출처</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://www.whitehouse.gov"><strong>White House</strong></a></td>
+<td>RSSHub <a href="https://docs.rsshub.app/"><code>/whitehouse/:category</code></a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://news.un.org"><strong>UN News</strong></a></td>
+<td><a href="https://news.un.org/feed/subscribe/en/news/all/rss.xml">https://news.un.org/feed/subscribe/en/news/all/rss.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.who.int"><strong>WHO</strong></a></td>
+<td><a href="https://www.who.int/rss-feeds/news-english.xml">https://www.who.int/rss-feeds/news-english.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.worldbank.org"><strong>World Bank</strong></a></td>
+<td>News &amp; Press 페이지 RSS</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.imf.org"><strong>IMF</strong></a></td>
+<td><a href="https://www.imf.org/external/rss/feeds.aspx">https://www.imf.org/external/rss/feeds.aspx</a> (다수)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.oecd.org"><strong>OECD</strong></a></td>
+<td>보도자료·간행물 RSS</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://ec.europa.eu"><strong>EU Commission</strong></a></td>
+<td><a href="https://ec.europa.eu/commission/presscorner/api/rss">https://ec.europa.eu/commission/presscorner/api/rss</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.federalregister.gov"><strong>US Federal Register</strong></a></td>
+<td>분야별 RSS</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.sec.gov/edgar"><strong>SEC EDGAR Filings</strong></a></td>
+<td>검색 결과 Atom — 예: <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000320193&amp;type=&amp;output=atom">https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000320193&amp;type=&amp;output=atom</a> (Apple)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://fred.stlouisfed.org"><strong>FRED Economic Data</strong></a></td>
+<td>시계열별 RSS — <code>https://fredaccount.stlouisfed.org/rss/series/...</code></td>
+</tr>
+</tbody></table>
+<h3 id="6-5-기술연구소-블로그-aiml">6-5. 기술·연구소 블로그 (AI/ML)</h3>
+<table>
+<thead>
+<tr>
+<th>출처</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://openai.com"><strong>OpenAI</strong></a></td>
+<td><a href="https://openai.com/blog/rss/">https://openai.com/blog/rss/</a> (사이트 개편 후 라우트 변동 가능)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.anthropic.com"><strong>Anthropic</strong></a></td>
+<td><a href="https://www.anthropic.com/rss.xml">https://www.anthropic.com/rss.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://deepmind.google"><strong>DeepMind</strong></a></td>
+<td><a href="https://deepmind.com/blog/feed/basic/">https://deepmind.com/blog/feed/basic/</a> (도메인 deepmind.google로 일부 마이그레이션)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://blog.google"><strong>Google AI</strong></a></td>
+<td><a href="https://blog.google/technology/ai/rss/">https://blog.google/technology/ai/rss/</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://ai.meta.com"><strong>Meta AI / FAIR</strong></a></td>
+<td><a href="https://research.fb.com/blog/feed/">https://research.fb.com/blog/feed/</a> (도메인 ai.meta.com로 마이그레이션 진행 중)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.microsoft.com/en-us/research/"><strong>Microsoft Research</strong></a></td>
+<td><a href="https://www.microsoft.com/en-us/research/feed/">https://www.microsoft.com/en-us/research/feed/</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://bair.berkeley.edu"><strong>BAIR (Berkeley)</strong></a></td>
+<td><a href="https://bair.berkeley.edu/blog/feed.xml">https://bair.berkeley.edu/blog/feed.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://machinelearning.apple.com"><strong>Apple ML</strong></a></td>
+<td><a href="https://machinelearning.apple.com/rss.xml">https://machinelearning.apple.com/rss.xml</a></td>
+</tr>
+<tr>
+<td>✅ <a href="https://huggingface.co"><strong>Hugging Face</strong></a></td>
+<td><a href="https://huggingface.co/blog/feed.xml">https://huggingface.co/blog/feed.xml</a></td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://distill.pub"><strong>Distill</strong></a></td>
+<td><a href="https://distill.pub/rss.xml">https://distill.pub/rss.xml</a> (활성 발행 사실상 중단)</td>
+</tr>
+<tr>
+<td><a href="https://hai.stanford.edu"><strong>Stanford HAI</strong></a> / <a href="https://nlp.stanford.edu"><strong>NLP</strong></a></td>
+<td>페이지별 RSS 확인</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-rsshub--rss가-없는-사이트를-rss로">7. RSSHub — RSS가 없는 사이트를 RSS로</h2>
+<h3 id="7-1-개요">7-1. 개요</h3>
+<ul>
+<li><strong>현황 (2026-05)</strong>: 5,000+ 글로벌 인스턴스, 900+ 라우트, 200+ 사이트 지원, AGPL-3.0</li>
+<li><strong>공식 인스턴스</strong>: <a href="https://rsshub.app">https://rsshub.app</a> (불안정·rate-limit 잦음 — <strong>자체 호스팅 권장</strong>)</li>
+<li><strong>저장소</strong>: <a href="https://github.com/DIYgod/RSSHub">https://github.com/DIYgod/RSSHub</a></li>
+<li><strong>문서</strong>: <a href="https://docs.rsshub.app/">https://docs.rsshub.app/</a></li>
+<li>2025-12 MCP를 Linux Foundation에 기증, RSSHub 자체도 <a href="https://follow.is">Folo</a> (AI RSS reader)와 페어링</li>
+</ul>
+<h3 id="7-2-라우트-사용-예">7-2. 라우트 사용 예</h3>
+<p>도메인 + 라우트 조합으로 RSS URL 생성:</p>
+<pre><code>https://rsshub.app/twitter/user/elonmusk
+https://rsshub.app/youtube/channel/UCxxxxxxxxxxx
+https://rsshub.app/telegram/channel/durov
+https://rsshub.app/github/issue/owner/repo
+https://rsshub.app/bbc/world
+https://rsshub.app/reuters/world/asia
+https://rsshub.app/jtbc/news/politics
+https://rsshub.app/joongang/news/:category    # 중앙일보 (RSS 폐지 후 권장)
+https://rsshub.app/naver/news/:category
+https://rsshub.app/bok/press                   # 한국은행 보도자료
+https://rsshub.app/aeaweb/aer                  # 학술지: American Economic Review
+https://rsshub.app/science/current             # Science 최신호
+https://rsshub.app/trendingpapers/papers/cs.CV/7days/cited
+</code></pre>
+<p>전체 라우트 검색: <a href="https://docs.rsshub.app/routes/">https://docs.rsshub.app/routes/</a> 또는 RSSHub Radar 브라우저 확장.</p>
+<h3 id="7-3-자체-호스팅--최단-1줄">7-3. 자체 호스팅 — 최단 1줄</h3>
+<pre><code class="language-bash">docker run -d --name rsshub -p 1200:1200 \\
+  -e CACHE_EXPIRE=3600 \\
+  -e ACCESS_KEY=your_secret \\
+  diygod/rsshub
+</code></pre>
+<h3 id="7-4-자체-호스팅--docker-compose-redis--puppeteer">7-4. 자체 호스팅 — Docker Compose (Redis + Puppeteer)</h3>
+<pre><code class="language-yaml"># docker-compose.yml
+version: '3'
+services:
+  rsshub:
+    image: diygod/rsshub:chromium-bundled   # JS 렌더링 사이트용
+    restart: always
+    ports:
+      - "1200:1200"
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: redis
+      REDIS_URL: 'redis://redis:6379/'
+      CACHE_EXPIRE: 3600
+      ACCESS_KEY: ${RSSHUB_ACCESS_KEY}
+      PUPPETEER_WS_ENDPOINT: 'ws://browserless:3000'
+      GITHUB_ACCESS_TOKEN: ${GITHUB_TOKEN}
+    depends_on: [redis, browserless]
+
+  browserless:
+    image: browserless/chrome
+    restart: always
+    ulimits:
+      core: { hard: 0, soft: 0 }
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes: ['redis-data:/data']
+
+volumes:
+  redis-data:
+</code></pre>
+<pre><code class="language-bash">echo "RSSHUB_ACCESS_KEY=$(openssl rand -hex 16)" &gt; .env
+echo "GITHUB_TOKEN=ghp_..." &gt;&gt; .env
+docker-compose up -d
+</code></pre>
+<h3 id="7-5-nginx--ssl-digitalocean-sgp1-가정">7-5. Nginx + SSL (DigitalOcean SGP1 가정)</h3>
+<pre><code class="language-nginx"># /etc/nginx/sites-enabled/rsshub
+server {
+    server_name rss.your-domain.com;
+    location / {
+        proxy_pass http://127.0.0.1:1200;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_valid 200 1h;
+    }
+}
+</code></pre>
+<pre><code class="language-bash">sudo certbot --nginx -d rss.your-domain.com
+</code></pre>
+<h3 id="7-6-자동-업데이트-watchtower">7-6. 자동 업데이트 (Watchtower)</h3>
+<pre><code class="language-bash">docker run -d --name watchtower \\
+  -v /var/run/docker.sock:/var/run/docker.sock \\
+  containrrr/watchtower
+</code></pre>
+<h3 id="7-7-rsshub-radar-브라우저-확장">7-7. RSSHub Radar (브라우저 확장)</h3>
+<p>방문 중인 사이트의 RSSHub 라우트를 자동 탐지·구독. Chrome/Firefox/Edge 모두 지원.</p>
+<ul>
+<li>iOS: <strong>RSSBud</strong></li>
+<li>Android: <strong>RSSAid</strong> (Flutter)</li>
+</ul>
+<h3 id="7-8-데이터저널리즘-활용-시나리오">7-8. 데이터저널리즘 활용 시나리오</h3>
+<ul>
+<li><strong>소셜미디어 모니터링</strong>: Twitter/X, Telegram 채널, YouTube 채널, Bluesky → RSS</li>
+<li><strong>국회·정부</strong>: 자체 라우트 부족하면 CssSelectorBridge로 직접 작성 (§8)</li>
+<li><strong>주가·암호화폐</strong>: 거래소 공지 RSS화 (Upbit/Binance)</li>
+<li><strong>법원 판결문</strong>: 신규 게시물 트래킹</li>
+<li><strong>언론사 칼럼니스트</strong>: 특정 기자 글만 추출</li>
+<li><strong>광고/입찰 공고</strong>: <a href="https://www.g2b.go.kr">조달청 나라장터</a> 신규공고 알림</li>
+</ul>
+<hr>
+<h2 id="8-rss-bridge--php-대안">8. RSS-Bridge — PHP 대안</h2>
+<h3 id="8-1-개요">8-1. 개요</h3>
+<ul>
+<li><strong>저장소</strong>: <a href="https://github.com/RSS-Bridge/rss-bridge">https://github.com/RSS-Bridge/rss-bridge</a></li>
+<li><strong>공식 호스팅</strong>: <a href="https://rss-bridge.org/bridge01/">https://rss-bridge.org/bridge01/</a> (비상업적 사용 한정)</li>
+<li><strong>지원 사이트</strong>: 500+ (Reuters, BBC, GitHub, Google Scholar, Reddit, YouTube, ArtStation, AP, Eurogamer 등)</li>
+<li><strong>전제</strong>: PHP 7.4+, Nginx/Apache + php-fpm</li>
+</ul>
+<h3 id="8-2-docker-1줄-배포">8-2. Docker 1줄 배포</h3>
+<pre><code class="language-bash">docker run -d --name rss-bridge \\
+  --publish 3000:80 \\
+  --restart unless-stopped \\
+  rssbridge/rss-bridge:latest
+</code></pre>
+<p>브라우저 → <code>http://your-server:3000</code> → 브리지 선택 → 파라미터 입력 → 생성된 RSS URL 복사.</p>
+<h3 id="8-3-rsshub-vs-rss-bridge-비교">8-3. RSSHub vs RSS-Bridge 비교</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>RSSHub</th>
+<th>RSS-Bridge</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>언어</td>
+<td>Node.js + TypeScript</td>
+<td>PHP</td>
+</tr>
+<tr>
+<td>라우트 수</td>
+<td>900+</td>
+<td>500+</td>
+</tr>
+<tr>
+<td>인기 정도</td>
+<td>압도적 (5,000+ instances)</td>
+<td>견실</td>
+</tr>
+<tr>
+<td>한국 사이트 지원</td>
+<td>더 많음 (네이버/JTBC 등)</td>
+<td>일반</td>
+</tr>
+<tr>
+<td>Filter / Merge</td>
+<td>약함</td>
+<td>강력 (CSS selector, regex, merge)</td>
+</tr>
+<tr>
+<td>자체 라우트 작성</td>
+<td>TS, 약간 학습곡선</td>
+<td>PHP, 매우 쉬움</td>
+</tr>
+<tr>
+<td>권장 용도</td>
+<td><strong>기본값</strong></td>
+<td>RSSHub에 없는 사이트, 강력 필터</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>실전 권장</strong>: 둘 다 배포해서 보완 사용. RSSHub 1200, RSS-Bridge 3000 포트 분리.</p>
+</blockquote>
+<h3 id="8-4-cssselectorbridge--임의-사이트-rss화">8-4. CssSelectorBridge — 임의 사이트 RSS화</h3>
+<p>RSS-Bridge에 내장된 가장 유용한 브리지. 사이트 URL과 CSS selector만 주면 RSS 생성. 한국 정부 게시판 표준 솔루션 외 사이트(예: 자치단체 자체 게시판, 작은 언론사)에 효과적.</p>
+<p><strong>입력 예</strong>:</p>
+<ul>
+<li>URL: <code>https://www.example-gov.kr/notices/list.do</code></li>
+<li>Article selector: <code>ul.notice-list li</code></li>
+<li>Title selector: <code>a.title</code></li>
+<li>Content selector: <code>div.summary</code></li>
+<li>Date selector: <code>span.date</code></li>
+</ul>
+<p>→ 자동으로 RSS 2.0 피드 생성.</p>
+<h3 id="8-5-rss-bridge-강력-기능">8-5. RSS-Bridge 강력 기능</h3>
+<ul>
+<li><strong>MergeBridge</strong>: 여러 RSS를 하나로 병합</li>
+<li><strong>FeedExpanderBridge</strong>: truncated 피드의 본문을 자동으로 fetch</li>
+<li><strong>FilterBridge</strong>: 키워드/regex로 항목 필터링</li>
+<li><strong>WordPressBridge</strong>: WordPress 사이트 자동 인식</li>
+</ul>
+<hr>
+<h2 id="9-python-처리--feedparser--fastfeedparser">9. Python 처리 — feedparser &amp; fastfeedparser</h2>
+<h3 id="9-1-라이브러리-비교">9-1. 라이브러리 비교</h3>
+<table>
+<thead>
+<tr>
+<th>라이브러리</th>
+<th>특징</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://feedparser.readthedocs.io"><strong>feedparser</strong></a> (6.0.12)</td>
+<td>15년+ 검증, RSS 0.9~2.0/Atom/JSON Feed/RDF/CDF, 깨진 XML 관용</td>
+<td>표준 (호환성 우선)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kagisearch/fastfeedparser"><strong>fastfeedparser</strong></a> (Kagi)</td>
+<td>feedparser의 25~50배 빠름, 동일 API</td>
+<td>1,000개 이상 대량</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NicolasLM/atoma"><strong>atoma</strong></a></td>
+<td>타입 안전, Atom/RSS/JSON</td>
+<td>모던 코드 베이스</td>
+</tr>
+<tr>
+<td><strong>lxml + ElementTree</strong></td>
+<td>가장 빠름, 수동 파싱</td>
+<td>커스텀 네임스페이스</td>
+</tr>
+</tbody></table>
+<h3 id="9-2-설치-및-기본-사용">9-2. 설치 및 기본 사용</h3>
+<pre><code class="language-bash">pip install feedparser fastfeedparser httpx aiohttp python-dotenv
+</code></pre>
+<pre><code class="language-python"># basic_feed.py
+import feedparser
+
+d = feedparser.parse("https://www.khan.co.kr/rss/rssdata/total_news.xml")
+print(d.feed.title)            # 채널 제목
+print(len(d.entries), "기사")
+for e in d.entries[:5]:
+    print(e.published, "|", e.title)
+    print("  ", e.link)
+    print("  ", e.get("summary", "")[:100])
+</code></pre>
+<h3 id="9-3-비동기-대량-수집-10초--100개-피드">9-3. 비동기 대량 수집 (10초 → 100개 피드)</h3>
+<pre><code class="language-python"># fetch_many.py
+import asyncio, httpx, feedparser
+from datetime import datetime
+
+# 본 가이드 §3에서 ✅ 마크된 검증 피드만 사용
+FEEDS = [
+    ("경향",     "https://www.khan.co.kr/rss/rssdata/total_news.xml"),
+    ("동아",     "https://rss.donga.com/total.xml"),
+    ("서울신문", "https://www.seoul.co.kr/xml/rss/rss_top.xml"),
+    ("뉴시스",   "https://www.newsis.com/RSS/sokbo.xml"),
+    ("한겨레",   "https://www.hani.co.kr/rss/"),
+    ("조선",     "https://www.chosun.com/arc/outboundfeeds/rss/"),
+    ("연합",     "https://www.yna.co.kr/rss/news.xml"),
+    ("KBS",      "https://news.kbs.co.kr/rss/news.xml"),
+    ("MBC",      "https://imnews.imbc.com/rss/news/news_00.xml"),
+    ("YTN",      "https://www.ytn.co.kr/_comm/rss.php"),
+    # ⚠️ 도메인 변경/폐지된 매체는 RSSHub 라우트로 대체
+    ("중앙",     "https://rsshub.app/joongang/news/all"),
+    ("한국일보", "https://rsshub.app/hankookilbo/all"),
+    ("헤럴드",   "https://rsshub.app/heraldcorp/news"),
+    # ... 수백 개 가능
+]
+
+async def fetch(client, name, url):
+    try:
+        r = await client.get(url, timeout=10, follow_redirects=True,
+                             headers={"User-Agent": "Mozilla/5.0 DataJournLab/1.0"})
+        d = feedparser.parse(r.content)
+        return [(name, e.get("title",""), e.get("link",""),
+                 e.get("published", e.get("updated","")),
+                 e.get("summary", "")[:300])
+                for e in d.entries]
+    except Exception as ex:
+        print(f"[err] {name}: {ex}")
+        return []
+
+async def main():
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch(client, n, u) for n, u in FEEDS]
+        results = await asyncio.gather(*tasks)
+    flat = [item for batch in results for item in batch]
+    print(f"총 {len(flat)}개 수집 ({datetime.now().isoformat()})")
+    return flat
+
+if __name__ == "__main__":
+    items = asyncio.run(main())
+</code></pre>
+<h3 id="9-4-fastfeedparser-대량-처리">9-4. fastfeedparser (대량 처리)</h3>
+<pre><code class="language-python">import fastfeedparser
+feed = fastfeedparser.parse("https://www.khan.co.kr/rss/rssdata/total_news.xml")
+for entry in feed.entries:
+    print(entry.title, entry.link, entry.published)
+</code></pre>
+<p><strong>벤치마크</strong>: 200개 피드 38초 → <strong>0.46초</strong> (Kagi 사례, 27배). API는 feedparser와 거의 동일.</p>
+<h3 id="9-5-중복-제거--sqlite-적재">9-5. 중복 제거 + SQLite 적재</h3>
+<pre><code class="language-python"># store.py
+import sqlite3, hashlib, feedparser
+from datetime import datetime
+
+conn = sqlite3.connect("news.db")
+conn.execute("""CREATE TABLE IF NOT EXISTS articles(
+    id TEXT PRIMARY KEY, source TEXT, title TEXT, url TEXT,
+    pubdate TEXT, summary TEXT, fetched_at TEXT)""")
+conn.execute("CREATE INDEX IF NOT EXISTS idx_source_pubdate ON articles(source, pubdate)")
+
+def stable_id(url, title):
+    """URL + title 해시로 안정적 ID. 캠페인 파라미터로 URL이 바뀌어도 안정"""
+    # 정규화: ?utm_*, #fragment 등 제거
+    clean_url = url.split("?")[0].split("#")[0]
+    return hashlib.sha1((clean_url + "|" + title).encode()).hexdigest()
+
+def upsert(source, entries):
+    rows = []
+    for e in entries:
+        url = e.get("link","")
+        title = e.get("title","")
+        rows.append((stable_id(url, title), source, title, url,
+                     e.get("published", e.get("updated","")),
+                     (e.get("summary","") or "")[:1000],
+                     datetime.now().isoformat()))
+    conn.executemany("INSERT OR IGNORE INTO articles VALUES(?,?,?,?,?,?,?)", rows)
+    conn.commit()
+    return conn.total_changes
+
+d = feedparser.parse("https://www.khan.co.kr/rss/rssdata/total_news.xml")
+new_count = upsert("경향신문", d.entries)
+print(f"신규 {new_count}건 적재")
+</code></pre>
+<h3 id="9-6-etaglast-modified-캐시-활용">9-6. ETag·Last-Modified 캐시 활용</h3>
+<pre><code class="language-python"># 304 Not Modified 활용으로 트래픽 절약
+import feedparser
+
+# 첫 호출
+d = feedparser.parse(url)
+etag, modified = d.get("etag"), d.get("modified")
+
+# 다음 호출
+d2 = feedparser.parse(url, etag=etag, modified=modified)
+if d2.status == 304:
+    print("변경 없음 — 스킵")
+</code></pre>
+<hr>
+<h2 id="10-rss--gemini-통합-llm-필터링요약">10. RSS + Gemini 통합 (LLM 필터링·요약)</h2>
+<h3 id="10-1-핵심-아이디어">10-1. 핵심 아이디어</h3>
+<p>무차별 수집은 인지과부하. <strong>LLM을 필터로 사용</strong>하여 관심 키워드·주제·논조에 맞는 기사만 선별 → 요약 → 알림.</p>
+<p><strong>3단 필터</strong> (비용 최적):</p>
+<ol>
+<li><strong>키워드 필터</strong> (무료, instant): 명백히 무관한 항목 제거</li>
+<li><strong>임베딩 유사도 필터</strong> (저비용): 의미적 유사 항목 추출</li>
+<li><strong>LLM 정밀 필터·요약</strong> (고비용): Top N에 대해서만 호출</li>
+</ol>
+<h3 id="10-2-미니-파이프라인-한-파일">10-2. 미니 파이프라인 (한 파일)</h3>
+<pre><code class="language-python"># rss_to_gemini.py
+import os, asyncio, json
+from datetime import datetime
+from dotenv import load_dotenv
+import httpx, feedparser
+from google import genai
+from google.genai import types
+
+load_dotenv()
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+# §3에서 ✅ 검증된 피드 위주
+FEEDS = [
+    ("경향", "https://www.khan.co.kr/rss/rssdata/total_news.xml"),
+    ("동아", "https://rss.donga.com/total.xml"),
+    ("뉴시스", "https://www.newsis.com/RSS/sokbo.xml"),
+    ("한겨레", "https://www.hani.co.kr/rss/"),
+    ("조선", "https://www.chosun.com/arc/outboundfeeds/rss/"),
+    ("연합", "https://www.yna.co.kr/rss/news.xml"),
+    # ... 본인 관심 매체 추가
+]
+
+KEYWORDS = ["인공지능", "AI", "데이터", "프라이버시", "저널리즘"]
+INTEREST = "한국 미디어 산업의 AI 도입과 저널리즘 윤리"
+
+# --- 1) 수집 ---
+async def fetch(c, name, url):
+    try:
+        r = await c.get(url, timeout=10,
+                        headers={"User-Agent": "Mozilla/5.0"})
+        d = feedparser.parse(r.content)
+        return [(name, e.get("title",""), e.get("link",""),
+                 e.get("published", e.get("updated","")),
+                 (e.get("summary","") or "")[:600])
+                for e in d.entries]
+    except Exception:
+        return []
+
+async def collect():
+    async with httpx.AsyncClient() as c:
+        batches = await asyncio.gather(*[fetch(c, n, u) for n, u in FEEDS])
+    return [x for b in batches for x in b]
+
+# --- 2) 1차 키워드 필터 (LLM 호출 절약) ---
+def keyword_filter(items):
+    return [it for it in items
+            if any(k.lower() in (it[1] + it[4]).lower() for k in KEYWORDS)]
+
+# --- 3) Gemini 의미 필터 ---
+def semantic_filter(items, batch_size=20, threshold=0.6):
+    """배치 단위로 LLM에 보내 관련성 0~1 점수와 한 줄 이유 받음"""
+    selected = []
+    for i in range(0, len(items), batch_size):
+        chunk = items[i:i+batch_size]
+        prompt = f"""다음은 뉴스 헤드라인+요약 목록이다.
+관심 주제: "{INTEREST}"
+각 항목에 대해 관련성 점수(0~1)와 한 줄 사유를 JSON 배열로만 반환하라.
+형식: [{{"idx":0,"score":0.92,"reason":"..."}}, ...]
+
+목록:
+""" + "\\n".join(
+            f"[{j}] {it[1]} | {it[4][:200]}"
+            for j, it in enumerate(chunk))
+        try:
+            resp = client.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0,
+                    response_mime_type="application/json",
+                ),
+            )
+            scored = json.loads(resp.text)
+            for s in scored:
+                if s.get("score", 0) &gt;= threshold:
+                    it = chunk[s["idx"]]
+                    selected.append((it, s["score"], s["reason"]))
+        except Exception as e:
+            print("[err filter]", e)
+    return selected
+
+# --- 4) 요약 ---
+def summarize(items):
+    bundled = "\\n\\n".join(
+        f"[{i+1}] ({it[0][0]}) {it[0][1]}\\n{it[0][4][:400]}\\n링크: {it[0][2]}"
+        for i, it in enumerate(items[:15]))
+    prompt = f"""아래는 오늘 수집된 관련 뉴스 {len(items)}건 중 상위 사례다.
+관심 주제 "{INTEREST}"에 대한 데이터저널리즘 관점의 인사이트를:
+1) 핵심 흐름 (3줄)
+2) 주목할 보도 5건 (제목·매체·한 줄 이유·URL)
+3) 추가 취재 가능한 데이터 가설 2개
+순으로 정리해줘.
+
+{bundled}"""
+    return client.models.generate_content(
+        model="gemini-2.5-flash-lite",
+        contents=prompt,
+        config=types.GenerateContentConfig(temperature=0.3),
+    ).text
+
+# --- 5) 실행 ---
+async def main():
+    raw = await collect()
+    print(f"수집 {len(raw)}건")
+    f1 = keyword_filter(raw)
+    print(f"키워드 필터 통과 {len(f1)}건")
+    f2 = semantic_filter(f1)
+    print(f"의미 필터 통과 {len(f2)}건")
+    if f2:
+        print("\\n=== 일일 브리핑 ===\\n")
+        print(summarize(f2))
+
+if __name__ == "__main__":
+    asyncio.run(main())
+</code></pre>
+<h3 id="10-3-비용속도-가이드">10-3. 비용·속도 가이드</h3>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>도구</th>
+<th>100건 처리</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>키워드 필터</td>
+<td>Python</td>
+<td>0.01초</td>
+<td>무료</td>
+</tr>
+<tr>
+<td>임베딩 필터</td>
+<td>gemini-embedding-001</td>
+<td>~2초, ~$0.0001</td>
+<td>배치</td>
+</tr>
+<tr>
+<td>의미 필터</td>
+<td>gemini-2.5-flash-lite</td>
+<td>~10초, ~$0.001</td>
+<td>배치 20건</td>
+</tr>
+<tr>
+<td>요약</td>
+<td>gemini-2.5-flash-lite</td>
+<td>~5초, ~$0.0005</td>
+<td>Top 15건</td>
+</tr>
+</tbody></table>
+<p>→ <strong>일 100건 처리에 약 $0.002</strong>. 무료 tier로도 충분. RPM 제한 시 <code>time.sleep(2)</code> 또는 exponential backoff.</p>
+<h3 id="10-4-임베딩-기반-의미-검색-llm-호출-90-절감">10-4. 임베딩 기반 의미 검색 (LLM 호출 90% 절감)</h3>
+<pre><code class="language-python"># embed_filter.py
+import numpy as np
+from google import genai
+from google.genai import types
+
+client = genai.Client()
+
+def embed(texts):
+    r = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=texts,
+        config=types.EmbedContentConfig(task_type="RETRIEVAL_QUERY"))
+    return np.array([e.values for e in r.embeddings])
+
+def cosine(A, b):
+    A_norm = A / np.linalg.norm(A, axis=1, keepdims=True)
+    b_norm = b / np.linalg.norm(b)
+    return A_norm @ b_norm
+
+# 1) 관심 주제 임베딩
+topic_vec = embed([INTEREST])[0]
+
+# 2) 수집된 기사 임베딩 (배치)
+texts = [it[1] + " " + it[4] for it in raw]
+items_vec = embed(texts)
+
+# 3) 코사인 유사도 정렬, Top 30만 LLM에 전달
+sims = cosine(items_vec, topic_vec)
+top_idx = sims.argsort()[::-1][:30]
+top_items = [raw[i] for i in top_idx]
+</code></pre>
+<h3 id="10-5-일일-브리핑--telegram-자동-발송">10-5. 일일 브리핑 → Telegram 자동 발송</h3>
+<pre><code class="language-python"># notify.py
+import os, requests
+TG_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+TG_CHAT  = os.environ["TELEGRAM_CHAT_ID"]
+
+def send_telegram(text):
+    requests.post(
+        f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
+        data={"chat_id": TG_CHAT, "text": text[:4000],
+              "parse_mode": "Markdown", "disable_web_page_preview": True},
+        timeout=10)
+
+# 매일 오전 7시 cron
+# 0 7 * * * /home/ubuntu/.venv/bin/python /home/ubuntu/rss/daily.py
+</code></pre>
+<hr>
+<h2 id="11-rss-mcp-서버-claudegemini와-직접-연결">11. RSS-MCP 서버 (Claude·Gemini와 직접 연결)</h2>
+<h3 id="11-1-즉시-사용-가능한-mcp">11-1. 즉시 사용 가능한 MCP</h3>
+<table>
+<thead>
+<tr>
+<th>서버</th>
+<th>설명</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>News MCP (cytrexsgr-news-mcp)</strong></td>
+<td>RSS 통합 + AI 분석, 20+ 도구, PostgreSQL 백엔드, 자동 분석 시스템</td>
+<td>LobeHub</td>
+</tr>
+<tr>
+<td><strong>RSS Reader MCP (Ottoman Archive)</strong></td>
+<td>FastMCP 기반, 뉴스레터/RSS 통합 (AI + History Collaboratory)</td>
+<td>LobeHub</td>
+</tr>
+<tr>
+<td><strong>Crypto RSS MCP (kukapay)</strong></td>
+<td>암호화폐 RSS 큐레이션 (RAW.opml 데이터베이스)</td>
+<td>GitHub</td>
+</tr>
+<tr>
+<td><strong>Cointelegraph MCP</strong></td>
+<td>17 RSS 카테고리 통합</td>
+<td>LobeHub</td>
+</tr>
+<tr>
+<td><strong>GeekNews MCP</strong></td>
+<td>한국 IT 뉴스 GeekNews 통합 (BeautifulSoup 스크래핑)</td>
+<td>LobeHub</td>
+</tr>
+<tr>
+<td><strong>MCP Claude Hacker News (imprvhub)</strong></td>
+<td>HN 스토리·코멘트 (RSS+API)</td>
+<td>GitHub</td>
+</tr>
+<tr>
+<td><strong>TrendRadar MCP</strong></td>
+<td>다중 핫토픽 어그리게이션 (한국 포함)</td>
+<td>LobeHub</td>
+</tr>
+</tbody></table>
+<h3 id="11-2-직접-만들기-fastmcp-권장">11-2. 직접 만들기 (FastMCP, 권장)</h3>
+<pre><code class="language-python"># rss_mcp.py
+from fastmcp import FastMCP
+import feedparser, httpx
+from typing import List, Dict
+
+mcp = FastMCP("Korean-News-RSS")
+
+# §3에서 ✅ 검증된 피드만 사용
+FEEDS = {
+    "khan":     "https://www.khan.co.kr/rss/rssdata/total_news.xml",
+    "donga":    "https://rss.donga.com/total.xml",
+    "newsis":   "https://www.newsis.com/RSS/sokbo.xml",
+    "seoul":    "https://www.seoul.co.kr/xml/rss/rss_top.xml",
+    "hani":     "https://www.hani.co.kr/rss/",
+    "chosun":   "https://www.chosun.com/arc/outboundfeeds/rss/",
+    "yna":      "https://www.yna.co.kr/rss/news.xml",
+    "kbs":      "https://news.kbs.co.kr/rss/news.xml",
+    "mbc":      "https://imnews.imbc.com/rss/news/news_00.xml",
+    "ytn":      "https://www.ytn.co.kr/_comm/rss.php",
+    "hankyung": "https://rss.hankyung.com/economy.xml",
+    "mk":       "https://www.mk.co.kr/rss/30000001/",
+    "geeknews": "https://feeds.feedburner.com/geeknews-feed",
+    # 폐지 매체는 RSSHub 라우트로 대체
+    "joongang": "https://rsshub.app/joongang/news/all",
+    "hankook":  "https://rsshub.app/hankookilbo/all",
+    "herald":   "https://rsshub.app/heraldcorp/news",
+}
+
+@mcp.tool()
+def list_sources() -&gt; List[str]:
+    """사용 가능한 RSS 소스 목록을 반환."""
+    return list(FEEDS.keys())
+
+@mcp.tool()
+def fetch_feed(source: str, limit: int = 20) -&gt; List[Dict]:
+    """지정한 소스의 최신 기사를 limit개 반환.
+    Args:
+        source: list_sources()의 키 중 하나
+        limit: 최대 기사 수 (기본 20)
+    """
+    if source not in FEEDS:
+        return [{"error": "Unknown source. Use list_sources() first."}]
+    r = httpx.get(FEEDS[source], timeout=10,
+                  headers={"User-Agent": "Mozilla/5.0"})
+    d = feedparser.parse(r.content)
+    return [{
+        "title":     e.get("title", ""),
+        "link":      e.get("link", ""),
+        "published": e.get("published", e.get("updated", "")),
+        "summary":   (e.get("summary", "") or "")[:500],
+    } for e in d.entries[:limit]]
+
+@mcp.tool()
+def search_across(keyword: str, sources: List[str] = None,
+                  limit_per_source: int = 50) -&gt; List[Dict]:
+    """모든(또는 지정) 소스에서 키워드를 포함한 기사 검색.
+    Args:
+        keyword: 검색어
+        sources: 검색 대상 소스 목록. None이면 전체.
+        limit_per_source: 소스당 최대 기사 수
+    """
+    targets = sources or list(FEEDS.keys())
+    hits = []
+    for s in targets:
+        try:
+            for e in fetch_feed(s, limit_per_source):
+                blob = (e.get("title", "") + e.get("summary", "")).lower()
+                if keyword.lower() in blob:
+                    hits.append({"source": s, **e})
+        except Exception:
+            pass
+    return hits
+
+@mcp.tool()
+def google_news_search(query: str, hl: str = "ko", gl: str = "KR") -&gt; List[Dict]:
+    """Google News RSS 검색 — 한국어 기본.
+    Args:
+        query: 검색어 (OR 연산자 사용 가능)
+        hl: 인터페이스 언어 (ko, en 등)
+        gl: 지역 코드 (KR, US 등)
+    """
+    url = (f"https://news.google.com/rss/search?"
+           f"q={query}&amp;hl={hl}&amp;gl={gl}&amp;ceid={gl}:{hl}")
+    r = httpx.get(url, timeout=10)
+    d = feedparser.parse(r.content)
+    return [{"title": e.title, "link": e.link,
+             "published": e.get("published", "")}
+            for e in d.entries[:30]]
+
+if __name__ == "__main__":
+    mcp.run()  # stdio
+    # HTTP: mcp.run(transport="http", host="0.0.0.0", port=9100, path="/mcp")
+</code></pre>
+<h3 id="11-3-claude-desktop-등록">11-3. Claude Desktop 등록</h3>
+<p><code>claude_desktop_config.json</code> (macOS: <code>~/Library/Application Support/Claude/</code>, Windows: <code>%APPDATA%\\Claude\\</code>):</p>
+<pre><code class="language-json">{
+  "mcpServers": {
+    "korean-rss": {
+      "command": "python",
+      "args": ["/abs/path/to/rss_mcp.py"]
+    }
+  }
+}
+</code></pre>
+<p>Claude Desktop 재시작 후 도구 자동 인식. "한겨레와 경향에서 합계출산율 관련 기사 비교해줘" 같은 자연어 질의에 즉시 응답.</p>
+<h3 id="11-4-gemini-sdk에서-사용">11-4. Gemini SDK에서 사용</h3>
+<pre><code class="language-python">import asyncio, os
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+from google import genai
+from google.genai import types
+
+server_params = StdioServerParameters(command="python", args=["rss_mcp.py"])
+
+async def ask():
+    async with stdio_client(server_params) as (r, w):
+        async with ClientSession(r, w) as session:
+            await session.initialize()
+            client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+            resp = await client.aio.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                contents="한겨레·경향·조선에서 'AI 저널리즘' 관련 기사를 찾아 매체별 프레임 차이를 비교해줘.",
+                config=types.GenerateContentConfig(tools=[session], temperature=0),
+            )
+            print(resp.text)
+
+asyncio.run(ask())
+</code></pre>
+<h3 id="11-5-웹-배포-digitalocean-sgp1">11-5. 웹 배포 (DigitalOcean SGP1)</h3>
+<p><strong>systemd 서비스</strong>:</p>
+<pre><code class="language-ini"># /etc/systemd/system/rss-mcp.service
+[Unit]
+Description=Korean News RSS MCP Server
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ubuntu/rss-mcp
+ExecStart=/home/ubuntu/.venv/bin/python rss_mcp.py
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl enable --now rss-mcp
+</code></pre>
+<p><strong>Nginx + SSL</strong>:</p>
+<pre><code class="language-nginx">server {
+    server_name rss-mcp.your-domain.com;
+    location /mcp {
+        proxy_pass http://127.0.0.1:9100/mcp;
+        proxy_http_version 1.1;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Upgrade $http_upgrade;
+    }
+}
+</code></pre>
+<p>→ <code>https://rss-mcp.your-domain.com/mcp</code> 엔드포인트가 MCP-호환. Claude/Gemini/Cursor 모두 원격 등록 가능.</p>
+<hr>
+<h2 id="12-강의용-실습-프로젝트">12. 강의용 실습 프로젝트</h2>
+<h3 id="lab-1-rss-첫걸음-1주차">Lab 1. RSS 첫걸음 (1주차)</h3>
+<ul>
+<li><code>feedparser</code> 설치 → 한겨레/조선 동시 수집 → DataFrame 변환</li>
+<li><code>pubDate</code> 파싱·시계열 그래프</li>
+<li><strong>산출물</strong>: 일주일치 헤드라인 표 + 발행 시각 분포 그래프</li>
+</ul>
+<h3 id="lab-2-비동기-대량-수집-2주차">Lab 2. 비동기 대량 수집 (2주차)</h3>
+<ul>
+<li>100개+ 한국 RSS를 <code>asyncio</code>로 수집</li>
+<li>SQLite 적재 + 중복 제거 (GUID 기반)</li>
+<li>"오늘의 헤드라인" 일일 보고서 자동 생성 (Markdown)</li>
+<li><strong>산출물</strong>: cron 등록한 일일 자동 수집기</li>
+</ul>
+<h3 id="lab-3-rsshub-자체-호스팅-3주차">Lab 3. RSSHub 자체 호스팅 (3주차) ⭐</h3>
+<ul>
+<li>DigitalOcean droplet에 Docker로 RSSHub + Redis 배포</li>
+<li>RSSHub Radar 확장으로 라우트 탐색</li>
+<li>Twitter / YouTube / Telegram → RSS 변환 시연</li>
+<li><strong>산출물</strong>: <code>https://rss.학생도메인.com</code> 운영 인스턴스</li>
+</ul>
+<h3 id="lab-4-rss-bridge로-정부-사이트-rss화-4주차">Lab 4. RSS-Bridge로 정부 사이트 RSS화 (4주차)</h3>
+<ul>
+<li>CssSelectorBridge로 환경부·금감원·자치단체 게시판 RSS 생성</li>
+<li>입법예고 신규 알림 자동화</li>
+<li><strong>산출물</strong>: 학생이 선택한 미공개 RSS 사이트 5곳을 RSS화</li>
+</ul>
+<h3 id="lab-5-gemini-의미-필터-56주차">Lab 5. Gemini 의미 필터 (5~6주차)</h3>
+<ul>
+<li>키워드 + 임베딩 + LLM 3단 필터</li>
+<li>일일 브리핑 자동 작성 (Markdown 템플릿)</li>
+<li>텔레그램 봇으로 발송</li>
+<li><strong>산출물</strong>: 본인 관심 주제의 자동 브리핑 시스템</li>
+</ul>
+<h3 id="lab-6-토픽-모델링프레임-분석-78주차">Lab 6. 토픽 모델링·프레임 분석 (7~8주차)</h3>
+<ul>
+<li>1주~1개월 RSS 누적 → BERTopic / KcELECTRA 임베딩</li>
+<li>매체별 프레임 비교 (한겨레 vs 조선)</li>
+<li>Plotly 인터랙티브 시각화</li>
+<li><strong>산출물</strong>: 매체간 프레임 차이 인터랙티브 대시보드</li>
+</ul>
+<h3 id="lab-7-학술-알림-시스템-9주차">Lab 7. 학술 알림 시스템 (9주차)</h3>
+<ul>
+<li>arXiv 분야별 RSS + Google Scholar email-to-RSS</li>
+<li>Gemini로 초록 한국어 요약·관심도 점수</li>
+<li>Notion/Obsidian으로 자동 적재</li>
+<li><strong>산출물</strong>: 본인 연구분야 자동 논문 큐레이션 시스템</li>
+</ul>
+<h3 id="lab-8-자기만의-rss-mcp-서버-1011주차">Lab 8. 자기만의 RSS-MCP 서버 (10~11주차) ⭐</h3>
+<ul>
+<li>학생이 관심 분야 사이트를 RSSHub/RSS-Bridge로 RSS화</li>
+<li>FastMCP로 wrapping → Claude Desktop 연결 시연</li>
+<li>동료 검토 발표</li>
+<li><strong>산출물</strong>: 공개 MCP 서버 + 데모 영상</li>
+</ul>
+<h3 id="lab-9-agentic-뉴스-모니터-1213주차">Lab 9. Agentic 뉴스 모니터 (12~13주차)</h3>
+<ul>
+<li>LangGraph + Gemini + RSS-MCP + 검색 API</li>
+<li>사용자 자연어 질의 → 관련 RSS 폴링 → 검증 → 리포트</li>
+<li>서버님의 LangGraph 팩트체크 시스템과 결합 가능</li>
+<li><strong>산출물</strong>: 자연어로 조사 가능한 뉴스 에이전트</li>
+</ul>
+<h3 id="lab-10-종합-평가-1415주차">Lab 10. 종합 평가 (14~15주차)</h3>
+<ul>
+<li>학생 1인당 특정 보도 분야(예: 부동산, 노동, 외교) 선택</li>
+<li>RSS 수집 → 데이터 분석 → 인사이트 도출 → 기사 시안 작성</li>
+<li>라이브 데모 + 보고서</li>
+<li><strong>평가</strong>: 자동화 수준 + 분석 깊이 + 저널리즘적 가치</li>
+</ul>
+<hr>
+<h2 id="13-프로덕션-운영-체크리스트">13. 프로덕션 운영 체크리스트</h2>
+<h3 id="13-1-안정성">13-1. 안정성</h3>
+<ul>
+<li>User-Agent 헤더 설정 (<code>Mozilla/5.0 + 연구 목적 명시</code>)</li>
+<li>타임아웃 10~15초, 실패 시 재시도 max 3회 + exponential backoff</li>
+<li>HTTP 304 Not Modified 활용 (<code>ETag</code>/<code>Last-Modified</code> 캐시 헤더)</li>
+<li>폴링 간격 <strong>최소 1시간</strong> 권장 (사이트 부하 윤리)</li>
+<li>cron 또는 systemd timer로 스케줄 (<code>0 */2 * * *</code>)</li>
+<li>에러 로그 → Sentry / Telegram 알림</li>
+<li><strong>URL 작동 모니터링</strong>: 주 1회 전체 피드 health-check, 죽은 URL은 RSSHub 라우트로 자동 fallback</li>
+</ul>
+<h3 id="13-2-데이터">13-2. 데이터</h3>
+<ul>
+<li><strong>GUID 기반 중복 제거</strong> (URL이 캠페인 파라미터로 변경되어도 안정)</li>
+<li>발행일 파싱 시 timezone 명시 (<code>feedparser</code>는 <code>*_parsed</code> 필드로 UTC tuple 제공)</li>
+<li>본문 fetch 시 robots.txt 준수</li>
+<li>RSS의 <code>summary</code>만 저장하고 본문 전문은 인용범위로 제한</li>
+<li>DB 백업 (SQLite는 매일 <code>.backup</code>, 또는 PostgreSQL <code>pg_dump</code>)</li>
+</ul>
+<h3 id="13-3-저작권윤리">13-3. 저작권·윤리</h3>
+<ul>
+<li>매체별 이용약관 확인 — RSS 활용 명시 여부</li>
+<li><strong>재배포·미러링 금지</strong> — 수집·분석·인용만</li>
+<li>LLM 요약·인용 시 <strong>원문 URL과 매체명</strong> 의무 표기</li>
+<li>한국 저작권법: 인용은 "정당한 범위" — 헤드라인+짧은 발췌 OK, 전문 재출판 NO</li>
+<li><strong>언론사 본문 학습용 사용 금지</strong> (<a href="https://www.bigkinds.or.kr">한국언론진흥재단 BIGKINDS</a> 약관 참고)</li>
+<li>EU AI Act / 한국 AI기본법 — 학습용 사용 시 별도 검토</li>
+<li>학생 과제 결과물 외부 공개 시 IRB 또는 매체 사전 협의</li>
+</ul>
+<h3 id="13-4-보안">13-4. 보안</h3>
+<ul>
+<li>RSSHub <code>ACCESS_KEY</code> 활성화 (공개 인스턴스 남용 방지)</li>
+<li>DB는 SSH 터널 또는 VPN 내부에서만 접근</li>
+<li>API 키는 <code>.env</code> + <code>.gitignore</code></li>
+<li>CORS 정책 명시 (RSSHub 자체 호스팅 시)</li>
+<li>MCP 원격 서버는 OAuth/Bearer 인증 필수</li>
+</ul>
+<hr>
+<h2 id="14-트러블슈팅-faq">14. 트러블슈팅 (FAQ)</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>원인·해결</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>bozo=1</code></strong></td>
+<td>XML 파싱 경고. <code>d.bozo_exception</code> 확인. 대부분 무시해도 entries는 정상</td>
+</tr>
+<tr>
+<td><strong>빈 entries</strong></td>
+<td>사이트가 RSS 형식 변경 / 차단 / User-Agent 검사 → UA 변경, RSSHub 우회</td>
+</tr>
+<tr>
+<td><strong>403/429</strong></td>
+<td>폴링 과다 → 간격 늘리기, ETag 사용, 자체 RSSHub 운영</td>
+</tr>
+<tr>
+<td><strong>인코딩 깨짐</strong></td>
+<td><code>r.content</code> 대신 <code>r.text</code> 사용 또는 <code>feedparser.parse(r.content)</code> (바이트가 더 안전)</td>
+</tr>
+<tr>
+<td><strong>pubDate 누락/이상</strong></td>
+<td><code>published_parsed</code> 또는 <code>updated_parsed</code> 우선 사용. 둘 다 없으면 <code>fetched_at</code>으로 대체</td>
+</tr>
+<tr>
+<td><strong>RSSHub 502</strong></td>
+<td>Puppeteer 필요 라우트 → <code>chromium-bundled</code> 이미지 사용</td>
+</tr>
+<tr>
+<td><strong>JS 렌더링 사이트</strong></td>
+<td>RSSHub 자체로 안 되면 RSS-Bridge <code>WebSubBridge</code> 또는 Playwright 직접 사용</td>
+</tr>
+<tr>
+<td><strong>네이버 뉴스 막힘</strong></td>
+<td>공식 RSS 종료 — Google News 검색 RSS + RSSHub <code>/naver/news</code> 우회</td>
+</tr>
+<tr>
+<td><strong>메모리 누수</strong></td>
+<td>feedparser 대량 처리 시 fastfeedparser로 교체 (25배 빠르고 가벼움)</td>
+</tr>
+<tr>
+<td><strong>중복 폭주</strong></td>
+<td>GUID 비교 시 URL 정규화 (utm_* 파라미터 제거)</td>
+</tr>
+<tr>
+<td><strong>Google News 결과 부족</strong></td>
+<td><code>q=</code> 파라미터에 <code>OR</code> 연산자, <code>site:</code> 필터 활용. <code>when:7d</code> 시간 필터도 가능</td>
+</tr>
+<tr>
+<td><strong>arXiv 2,000건 제한</strong></td>
+<td>분야 분할 또는 시간 윈도 분할</td>
+</tr>
+<tr>
+<td><strong>❌ 매체 RSS 작동 안 함</strong></td>
+<td>본 가이드 §3 "❌" 표시 매체는 RSSHub 라우트 사용. ⚠️ 매체는 fetch 후 entries 빈 상태면 폐지 가능성 — <code>RSSHub</code> fallback 자동화 권장</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="15-참고추가-자료">15. 참고·추가 자료</h2>
+<h3 id="도구">도구</h3>
+<ul>
+<li><strong>RSSHub</strong>: <a href="https://docs.rsshub.app">https://docs.rsshub.app</a></li>
+<li><strong>RSS-Bridge</strong>: <a href="https://github.com/RSS-Bridge/rss-bridge">https://github.com/RSS-Bridge/rss-bridge</a></li>
+<li><strong>feedparser</strong>: <a href="https://feedparser.readthedocs.io">https://feedparser.readthedocs.io</a></li>
+<li><strong>fastfeedparser</strong>: <a href="https://github.com/kagisearch/fastfeedparser">https://github.com/kagisearch/fastfeedparser</a></li>
+<li><strong>atoma</strong>: <a href="https://github.com/NicolasLM/atoma">https://github.com/NicolasLM/atoma</a></li>
+<li><strong>FastMCP</strong>: <a href="https://github.com/jlowin/fastmcp">https://github.com/jlowin/fastmcp</a></li>
+</ul>
+<h3 id="큐레이션-디렉터리-url-검증-교차-확인용">큐레이션 디렉터리 (URL 검증 교차 확인용)</h3>
+<ul>
+<li><a href="https://rss.feedspot.com/south_korea_news_rss_feeds/">Feedspot — Top 30 South Korea News (2026-04 갱신)</a></li>
+<li><a href="https://rss.feedspot.com/korean_tech_rss_feeds/">Feedspot — Top 25 Korean Tech</a></li>
+<li><a href="https://gist.github.com/koorukuroo/330a644fcc3c9ffdc7b6d537efd939c3">한국 언론 RSS gist (2026-02 갱신)</a></li>
+<li><a href="https://github.com/maczniak/awesome-korean-techblog">한국 기술블로그</a></li>
+<li><a href="https://github.com/akngs/knews-rss">한국 언론 통합</a></li>
+<li><a href="https://github.com/sg-s/science-journal-feeds">학술 저널 RSS (4,700+)</a></li>
+<li><a href="https://github.com/plenaryapp/awesome-rss-feeds">Plenary OPML (500+)</a></li>
+<li><a href="https://github.com/tuan3w/awesome-tech-rss">Awesome Tech RSS</a></li>
+<li><a href="https://github.com/DongjunLee/awesome-feeds">AI/ML 피드</a></li>
+<li><a href="https://github.com/FuVaVa/FT50-Journal-RSS-Feeds">FT50 비즈니스 저널</a></li>
+</ul>
+<h3 id="rss-리더-self-host-추천">RSS 리더 (self-host 추천)</h3>
+<ul>
+<li><a href="https://freshrss.org"><strong>FreshRSS</strong></a> (PHP, 가장 가벼움) — 학생 개인용</li>
+<li><a href="https://tt-rss.org"><strong>Tiny Tiny RSS</strong></a> (PostgreSQL, 강력) — 강의실 공용</li>
+<li><a href="https://miniflux.app"><strong>Miniflux</strong></a> (Go, 미니멀) — Docker 1줄</li>
+<li><a href="https://follow.is"><strong>Folo</strong></a> (RSSHub와 잘 맞음, AI 통합) — 모던</li>
+</ul>
+<h3 id="데이터저널리즘-학습">데이터저널리즘 학습</h3>
+<ul>
+<li><a href="https://datajournalism.com">DataJournalism.com</a> — RSS 큐레이션 + Conversations With Data 팟캐스트</li>
+<li><a href="https://gijn.org">GIJN</a> — RSS로 #ddj 위클리 모니터링</li>
+<li><a href="https://sigmaawards.org">Sigma Awards</a> — 매년 31개 finalist 사례 (2026 기준)</li>
+<li><a href="https://www.ire.org/nicar/">NICAR (IRE)</a> — Network of Computer-Assisted Reporting</li>
+</ul>
+<hr>
+<h2 id="16-확대-워크플로">16. 확대 워크플로</h2>
+<h3 id="전체-아키텍처">전체 아키텍처</h3>
+<pre><code>[수집]                  [필터]                 [분석]               [출력]
+
+RSSHub (own)  ─┐                                                   ┌─ Telegram bot
+RSS-Bridge    ├→ feedparser  →  키워드+임베딩  →  Gemini 요약   ─┼─ Notion/Obsidian
+직접 RSS URL  ┘   asyncio        +Gemini 의미 필터    +Function    └─ 발행 기사 초안
+                                       ↓                Calling
+                                       ↓                   ↓
+                                       └→ 추가 grounding ┐
+                                                         ├→ KOSIS / DART / GDELT
+                                                         ├→ BIGKINDS / 네이버
+                                                         └→ 자작 MCP 서버
+</code></pre>
+<h3 id="한-줄-시작">한 줄 시작</h3>
+<pre><code class="language-bash"># 1) 환경 셋업
+git clone https://github.com/your/data-journalism-class
+cd data-journalism-class &amp;&amp; python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+
+# 2) RSSHub 자체 호스팅 (Docker)
+docker run -d --name rsshub -p 1200:1200 \\
+  -e CACHE_EXPIRE=3600 \\
+  diygod/rsshub:chromium-bundled
+
+# 3) .env 작성
+cat &gt; .env &lt;&lt; EOF2
+GEMINI_API_KEY=...
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
+RSSHUB_URL=http://localhost:1200
+EOF2
+
+# 4) 첫 실행
+python rss_to_gemini.py
+
+# 5) 매일 자동 실행 (cron)
+echo "0 7 * * * cd /home/$USER/data-journalism-class &amp;&amp; /home/$USER/.venv/bin/python rss_to_gemini.py" | crontab -
+</code></pre>
+<hr>
+<h2 id="부록-a-url-검증-요약-quick-reference">부록 A. URL 검증 요약 (Quick Reference)</h2>
+<h3 id="직접-fetch-또는-feedspot-2026-검증된-매체-15개">✅ 직접 fetch 또는 Feedspot 2026 검증된 매체 (15개)</h3>
+<table>
+<thead>
+<tr>
+<th>카테고리</th>
+<th>매체</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>종합지 (직접 fetch)</td>
+<td>경향신문</td>
+</tr>
+<tr>
+<td>종합지 (Feedspot 검증)</td>
+<td>조선일보, 동아일보, 서울신문</td>
+</tr>
+<tr>
+<td>통신사 (직접 fetch)</td>
+<td>뉴시스</td>
+</tr>
+<tr>
+<td>영문 한국 매체</td>
+<td>Korea Herald, Korea JoongAng Daily, Yonhap English, Hankyoreh English, Daily NK, Business Korea</td>
+</tr>
+<tr>
+<td>글로벌 종합</td>
+<td>BBC, Guardian, NYT, NPR, DW, France 24, SCMP, Al Jazeera</td>
+</tr>
+<tr>
+<td>데이터저널리즘</td>
+<td>GIJN, ProPublica, The Markup, FiveThirtyEight, Our World in Data, Bellingcat</td>
+</tr>
+<tr>
+<td>학술</td>
+<td>arXiv (분야별·서브분야·결합), Nature, PLOS ONE</td>
+</tr>
+<tr>
+<td>국제기구</td>
+<td>UN News, WHO, SEC EDGAR</td>
+</tr>
+<tr>
+<td>기술</td>
+<td>Anthropic, Microsoft Research, BAIR, Apple ML, Hugging Face</td>
+</tr>
+</tbody></table>
+<h3 id="폐지도메인-변경-확인된-매체-rsshub-사용-권장">❌ 폐지·도메인 변경 확인된 매체 (RSSHub 사용 권장)</h3>
+<table>
+<thead>
+<tr>
+<th>매체</th>
+<th>옛 URL (작동 안 함)</th>
+<th>대체</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>중앙일보</td>
+<td><code>rss.joins.com/joins_news_list.xml</code></td>
+<td>RSSHub <code>/joongang/news/:category</code></td>
+</tr>
+<tr>
+<td>한국일보</td>
+<td><code>rss.hankooki.com/news/hk_main.xml</code></td>
+<td>RSSHub <code>/hankookilbo/all</code> 또는 Google News 검색 RSS</td>
+</tr>
+<tr>
+<td>헤럴드경제</td>
+<td><code>biz.heraldcorp.com/rss/...</code></td>
+<td>RSSHub <code>/heraldcorp/news</code> (도메인 변경)</td>
+</tr>
+<tr>
+<td>JTBC</td>
+<td>(공식 RSS 없음)</td>
+<td>RSSHub <code>/jtbc/news/:category</code></td>
+</tr>
+<tr>
+<td>다음 뉴스</td>
+<td><code>media.daum.net/rss/...</code></td>
+<td>Google News 검색 RSS 또는 RSSHub</td>
+</tr>
+<tr>
+<td>Reuters</td>
+<td><code>feeds.reuters.com/Reuters/worldNews</code></td>
+<td>RSSHub <code>/reuters/:category/:topic</code> (Reuters 2020년 자체 RSS 폐지)</td>
+</tr>
+<tr>
+<td>AP News</td>
+<td><code>feeds.apnews.com/rss/apf-topnews</code></td>
+<td>RSSHub <code>/ap/:topic</code></td>
+</tr>
+<tr>
+<td>NHN Toast</td>
+<td><code>meetup.toast.com/rss</code></td>
+<td>사이트 직접 확인</td>
+</tr>
+</tbody></table>
+<h3 id="미검증-매체-운영-권장-패턴">⚠️ 미검증 매체 운영 권장 패턴</h3>
+<pre><code class="language-python">import feedparser, httpx
+
+def safe_fetch(url, fallback_rsshub=None, ua="Mozilla/5.0 DataJournLab/1.0"):
+    """1) 원본 URL 시도 → 2) entries 비면 RSSHub fallback"""
+    try:
+        r = httpx.get(url, timeout=10, headers={"User-Agent": ua})
+        d = feedparser.parse(r.content)
+        if len(d.entries) &gt; 0:
+            return d
+    except Exception:
+        pass
+    # 폴백
+    if fallback_rsshub:
+        r = httpx.get(fallback_rsshub, timeout=10)
+        return feedparser.parse(r.content)
+    return None
+
+# 사용 예
+d = safe_fetch(
+    "https://rss.hankooki.com/news/hk_main.xml",
+    fallback_rsshub="https://rsshub.app/hankookilbo/all"
+)
+</code></pre>
+<p>이 패턴으로 ⚠️ 매체의 갑작스런 폐지에도 자동 대응 가능.</p>
+<hr>
+
+      </div>
+    </body>
+    </html>

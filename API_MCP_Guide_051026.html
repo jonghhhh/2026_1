@@ -1,0 +1,1624 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h1 id="뉴스-중심-llm--apimcp-가이드-2026">뉴스 중심 LLM + API/MCP 가이드 (2026)</h1>
+<blockquote>
+<p><strong>핵심 스택</strong>: Gemini 2.5 Flash Lite (<code>GEMINI_API_KEY</code>) + 공공·민간 API + MCP 서버<br><strong>목적</strong>: LLM이 외부 데이터로 grounding된 사실 기반 답변·분석을 산출하도록 파이프라인 구축<br><strong>1차 수집 출처</strong>: <a href="https://github.com/yybmion/public-apis-4Kr"><code>yybmion/public-apis-4Kr</code></a> (한국 260+), <a href="https://github.com/modelcontextprotocol/servers"><code>modelcontextprotocol/servers</code></a>, <a href="https://github.com/wong2/awesome-mcp-servers"><code>wong2/awesome-mcp-servers</code></a>, <a href="https://github.com/appcypher/awesome-mcp-servers"><code>appcypher/awesome-mcp-servers</code></a>, <a href="https://github.com/tolkonepiu/best-of-mcp-servers"><code>tolkonepiu/best-of-mcp-servers</code></a>, <a href="https://github.com/Koomook/data-go-mcp-servers"><code>Koomook/data-go-mcp-servers</code></a></p>
+</blockquote>
+<blockquote>
+<p><strong>본 가이드의 URL 검증 표기 (2026-05 기준)</strong></p>
+<ul>
+<li>✅ <strong>공식 문서·검색결과로 작동 확인</strong> — 안정적</li>
+<li>⚠️ <strong>미검증</strong> — 패턴상 작동 가능성 높음. 사용 전 직접 확인 권장</li>
+<li>❌ <strong>폐지·마이그레이션 확인됨</strong> → 새 엔드포인트 제시</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="0-빠른-요약">0. 빠른 요약</h2>
+<table>
+<thead>
+<tr>
+<th>레이어</th>
+<th>역할</th>
+<th>권장 도구</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LLM</strong></td>
+<td>추론·요약·구조화</td>
+<td>Gemini 2.5 Flash Lite (<code>gemini-2.5-flash-lite</code>), 또는 latest alias <code>gemini-flash-lite-latest</code></td>
+</tr>
+<tr>
+<td><strong>Grounding 1</strong></td>
+<td>단순 fact lookup</td>
+<td>Function Calling으로 직접 REST API 호출</td>
+</tr>
+<tr>
+<td><strong>Grounding 2</strong></td>
+<td>도구 모음 표준화</td>
+<td>MCP 서버 (Python <code>mcp</code> SDK, FastMCP)</td>
+</tr>
+<tr>
+<td><strong>데이터 소스 (한국)</strong></td>
+<td>—</td>
+<td><a href="https://www.data.go.kr">data.go.kr</a>, <a href="https://kosis.kr">KOSIS</a>, <a href="https://ecos.bok.or.kr">한국은행 ECOS</a>, <a href="https://www.bigkinds.or.kr">BIGKINDS</a>, <a href="https://opendart.fss.or.kr">Open DART</a>, <a href="https://open.law.go.kr">국가법령정보</a></td>
+</tr>
+<tr>
+<td><strong>데이터 소스 (글로벌)</strong></td>
+<td>—</td>
+<td><a href="https://data.worldbank.org">World Bank</a>, <a href="https://data.imf.org">IMF</a>, <a href="https://data-explorer.oecd.org">OECD</a>, <a href="https://fred.stlouisfed.org">FRED</a>, <a href="https://www.gdeltproject.org">GDELT</a>, <a href="https://archive.org/web/">Wayback Machine</a>, <a href="https://openalex.org">OpenAlex</a>, <a href="https://gnews.io">GNews</a></td>
+</tr>
+<tr>
+<td><strong>배포</strong></td>
+<td>웹</td>
+<td>FastAPI, Streamlit, Gradio</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="1-gemini-25-flash-lite-셋업-with-env">1. Gemini 2.5 Flash Lite 셋업 (with <code>.env</code>)</h2>
+<h3 id="1-1-모델-선택-근거">1-1. 모델 선택 근거</h3>
+<ul>
+<li><strong>속도/비용 최적</strong>: 분류·요약·번역·구조화 추출 등 데이터저널리즘 반복 작업에 적합</li>
+<li><strong>함수 호출(Function Calling) 지원</strong>: 외부 API 자동 호출 가능</li>
+<li><strong>MCP 클라이언트 내장</strong>: Google GenAI Python SDK가 MCP <code>ClientSession</code>을 <code>tools</code> 파라미터로 직접 받음 → boilerplate 최소화</li>
+<li><strong>대용량 컨텍스트 윈도</strong>: 100만 토큰급 → 긴 기사/문서 일괄 분석 가능</li>
+<li>모델 ID: <code>gemini-2.5-flash-lite</code> 또는 <code>gemini-flash-lite-latest</code> (별칭, 최신 버전 자동 추적)</li>
+</ul>
+<h3 id="1-2-설치-및-키-발급">1-2. 설치 및 키 발급</h3>
+<pre><code class="language-bash"># Python 가상환경 (WSL/Linux 기준)
+python -m venv .venv
+source .venv/bin/activate
+
+# 새 SDK (구 google-generativeai 아님 — 통합 SDK)
+pip install google-genai python-dotenv requests httpx pandas
+
+# MCP를 함께 쓸 경우
+pip install "mcp[cli]" fastmcp
+</code></pre>
+<p><code>.env</code> 파일 (프로젝트 루트):</p>
+<pre><code class="language-env">GEMINI_API_KEY=AIzaSy...your_key
+DATA_GO_KR_KEY=...           # 공공데이터포털 일반인증키 (Decoding)
+KOSIS_API_KEY=...
+BOK_API_KEY=...              # 한국은행 ECOS
+DART_API_KEY=...             # Open DART
+BIGKINDS_API_KEY=...
+NEWSAPI_KEY=...
+TAVILY_API_KEY=...           # 웹검색 grounding용
+OPENALEX_API_KEY=...         # ⚠️ 2025-02부터 필수 (무료 발급)
+</code></pre>
+<p>API 키는 <a href="https://aistudio.google.com/apikey">Google AI Studio</a>에서 무료 발급(Tier에 따라 RPM/RPD 제한 있음).</p>
+<h3 id="1-3-최소-호출-예제">1-3. 최소 호출 예제</h3>
+<pre><code class="language-python"># basic_call.py
+import os
+from dotenv import load_dotenv
+from google import genai
+
+load_dotenv()
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+resp = client.models.generate_content(
+    model="gemini-2.5-flash-lite",
+    contents="2024년 한국 합계출산율을 한 문장으로 정리해줘."
+)
+print(resp.text)
+</code></pre>
+<blockquote>
+<p>⚠️ 위 예제는 LLM 내부 지식만 사용 → <strong>할루시네이션 위험</strong>.
+데이터저널리즘에서는 반드시 다음 섹션의 grounding 패턴을 사용.</p>
+</blockquote>
+<hr>
+<h2 id="2-function-calling--rest-api-직접-호출">2. Function Calling — REST API 직접 호출</h2>
+<h3 id="2-1-핵심-아이디어">2-1. 핵심 아이디어</h3>
+<ol>
+<li>Python 함수를 정의 (실제 데이터 출처 호출)</li>
+<li>Gemini에게 함수 목록을 <code>tools=[...]</code>로 전달</li>
+<li>모델이 필요시 <code>FunctionCall</code> 응답 → 실행 → 결과 다시 모델에 주입</li>
+<li>Python SDK는 <code>automatic_function_calling</code>이 기본 활성화 → 위 루프를 자동 수행</li>
+</ol>
+<h3 id="2-2-실전-예제-한국은행-ecos--통계청-kosis-통합">2-2. 실전 예제: 한국은행 ECOS + 통계청 KOSIS 통합</h3>
+<pre><code class="language-python"># grounded_macro.py
+import os, requests
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
+
+load_dotenv()
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+BOK_KEY = os.environ["BOK_API_KEY"]
+KOSIS_KEY = os.environ["KOSIS_API_KEY"]
+
+def get_bok_series(stat_code: str, item_code1: str, start: str, end: str, cycle: str = "M") -&gt; str:
+    """한국은행 ECOS 통계 시계열 조회.
+    Args:
+        stat_code: 통계표 코드 (예: '722Y001'=한국은행 기준금리)
+        item_code1: 항목코드1
+        start: 시작 기간 (YYYYMM 또는 YYYYQ1 등)
+        end: 종료 기간
+        cycle: 주기 'A'=년 'Q'=분기 'M'=월 'D'=일
+    """
+    url = (f"https://ecos.bok.or.kr/api/StatisticSearch/{BOK_KEY}/json/kr/1/100/"
+           f"{stat_code}/{cycle}/{start}/{end}/{item_code1}")
+    return requests.get(url, timeout=10).text[:4000]
+
+def get_kosis_data(orgId: str, tblId: str, prdSe: str, startPrdDe: str, endPrdDe: str) -&gt; str:
+    """KOSIS 통계자료 조회 API.
+    Args: orgId(기관코드), tblId(통계표ID), prdSe(주기), startPrdDe~endPrdDe(YYYY/YYYYMM)
+    """
+    url = "https://kosis.kr/openapi/Param/statisticsParameterData.do"
+    params = dict(method="getList", apiKey=KOSIS_KEY, format="json", jsonVD="Y",
+                  orgId=orgId, tblId=tblId, prdSe=prdSe,
+                  startPrdDe=startPrdDe, endPrdDe=endPrdDe)
+    return requests.get(url, params=params, timeout=10).text[:4000]
+
+resp = client.models.generate_content(
+    model="gemini-2.5-flash-lite",
+    contents="2023년 1월부터 2024년 12월까지 한국은행 기준금리 변화를 ECOS에서 가져와 표로 정리해줘. stat_code는 722Y001, item_code1은 0101000.",
+    config=types.GenerateContentConfig(
+        tools=[get_bok_series, get_kosis_data],
+        temperature=0,
+    ),
+)
+print(resp.text)
+</code></pre>
+<h3 id="2-3-built-in-도구">2-3. Built-in 도구</h3>
+<p>Gemini에는 자체 내장 도구도 있어 바로 grounding 가능 (무료 API 제한 가능) :</p>
+<ul>
+<li><code>google_search</code> — Google 검색 grounding (RPD 제한 있음)</li>
+<li><code>url_context</code> — URL 직접 fetch (URL을 contents에 포함하면 자동)</li>
+<li><code>code_execution</code> — 모델이 Python 실행 (계산·플로팅)</li>
+</ul>
+<pre><code class="language-python">from google.genai.types import Tool, GoogleSearch, GenerateContentConfig
+resp = client.models.generate_content(
+    model="gemini-2.5-flash-lite",
+    contents="오늘 코스피 종가와 변동률을 알려줘.",
+    config=GenerateContentConfig(tools=[Tool(google_search=GoogleSearch())]),
+)
+</code></pre>
+<hr>
+<h2 id="3-한국-api-카탈로그-뉴스-중심-우선순위">3. 한국 API 카탈로그 (뉴스 중심 우선순위)</h2>
+<blockquote>
+<p>출처: <a href="https://github.com/yybmion/public-apis-4Kr"><code>yybmion/public-apis-4Kr</code></a> (2026-02 기준 260+개) + 추가 보강. 대부분 무료, <code>apiKey</code> 인증.
+강의 우선순위는 ⭐로 표기 (★★★ = 거의 매주 활용 가능).</p>
+</blockquote>
+<h3 id="3-1-정부공공기관-탐사보도-코어">3-1. 정부·공공기관 (탐사보도 코어)</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>API URL / 안내 페이지</th>
+<th>인증</th>
+<th>우선도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://www.data.go.kr/"><strong>공공데이터포털 (data.go.kr)</strong></a></td>
+<td><a href="https://www.data.go.kr/">https://www.data.go.kr/</a> — 10만+ 데이터셋 통합 게이트웨이</td>
+<td>apiKey</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>✅ <a href="https://kosis.kr"><strong>KOSIS 통계청</strong></a></td>
+<td><a href="https://kosis.kr/serviceInfo/openAPIGuide.do">https://kosis.kr/serviceInfo/openAPIGuide.do</a> — 134,586종 국가통계 / API base: <code>https://kosis.kr/openapi/</code></td>
+<td>apiKey</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>✅ <a href="https://ecos.bok.or.kr"><strong>한국은행 ECOS</strong></a></td>
+<td><a href="https://ecos.bok.or.kr/api/">https://ecos.bok.or.kr/api/</a> — 금리·환율·물가 시계열</td>
+<td>apiKey</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>✅ <a href="https://opendart.fss.or.kr"><strong>Open DART (금감원)</strong></a></td>
+<td><a href="https://opendart.fss.or.kr/">https://opendart.fss.or.kr/</a> — 상장사 공시·재무 / API base: <code>https://opendart.fss.or.kr/api/</code></td>
+<td>apiKey</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>✅ <a href="https://open.law.go.kr"><strong>국가법령정보 Open API</strong></a></td>
+<td><a href="https://open.law.go.kr/">https://open.law.go.kr/</a> — 현행 법령·조문</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>✅ <a href="https://open.law.go.kr"><strong>국가법령정보 판례 API</strong></a></td>
+<td><a href="https://open.law.go.kr/">https://open.law.go.kr/</a> — 법원 판례 전문</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>✅ <a href="https://open.assembly.go.kr"><strong>열린국회정보</strong></a></td>
+<td><a href="https://open.assembly.go.kr/portal/openapi/main.do">https://open.assembly.go.kr/portal/openapi/main.do</a> — 의원 표결·발의·본회의</td>
+<td>apiKey</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.openfiscaldata.go.kr"><strong>열린재정</strong></a></td>
+<td><a href="https://www.openfiscaldata.go.kr/">https://www.openfiscaldata.go.kr/</a> — 국가·지방 예산·결산·보조금</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.index.go.kr"><strong>국가지표통합 지표누리</strong></a></td>
+<td><a href="https://www.index.go.kr/unity/openApi/openApiIntro.do">https://www.index.go.kr/unity/openApi/openApiIntro.do</a> — 국가 통계지표</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.molit.go.kr"><strong>국토교통부 실거래가</strong></a></td>
+<td><a href="https://www.data.go.kr/dataset/3050988/openapi.do">https://www.data.go.kr/dataset/3050988/openapi.do</a> — 아파트·오피스텔 실거래</td>
+<td>apiKey</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.airkorea.or.kr"><strong>한국환경공단 에어코리아</strong></a></td>
+<td><a href="https://www.data.go.kr/data/15073861/openapi.do">https://www.data.go.kr/data/15073861/openapi.do</a> — 실시간 미세먼지·대기질</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kma.go.kr"><strong>기상청 단기예보</strong></a></td>
+<td><a href="https://www.data.go.kr/data/15084084/openapi.do">https://www.data.go.kr/data/15084084/openapi.do</a> — 초단기·단기 예보</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://apihub.kma.go.kr"><strong>기상청 API허브</strong></a></td>
+<td><a href="https://apihub.kma.go.kr/">https://apihub.kma.go.kr/</a> — 관측·위성·레이더 등 12종</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.gov.kr"><strong>정부24 공공서비스 API</strong></a></td>
+<td><a href="https://www.gov.kr/openapi/info">https://www.gov.kr/openapi/info</a> — 행정정보 실시간</td>
+<td>apiKey</td>
+<td>★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.ntis.go.kr"><strong>국가과학기술정보 NTIS</strong></a></td>
+<td><a href="https://www.ntis.go.kr/rndopen/api/mng/apiMain.do">https://www.ntis.go.kr/rndopen/api/mng/apiMain.do</a> — R&amp;D 과제·성과</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://sgis.kostat.go.kr"><strong>통계지리정보 SGIS</strong></a></td>
+<td><a href="https://sgis.kostat.go.kr/">https://sgis.kostat.go.kr/</a> — 행정구역 단위 통계지도</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.localdata.go.kr"><strong>Localdata 인허가</strong></a></td>
+<td><a href="https://www.localdata.go.kr/">https://www.localdata.go.kr/</a> — 자치단체 인허가 (<code>데이터포털 이관 예정</code>)</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-뉴스미디어콘텐츠">3-2. 뉴스·미디어·콘텐츠</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>API URL / 안내</th>
+<th>인증</th>
+<th>우선도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://www.bigkinds.or.kr"><strong>BIGKINDS</strong> (한국언론진흥재단)</a></td>
+<td><a href="https://www.bigkinds.or.kr/">https://www.bigkinds.or.kr/</a> — 뉴스 빅데이터 (54개사+)</td>
+<td>apiKey (신청제)</td>
+<td>★★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://news.deepsearch.com"><strong>딥서치 뉴스 API</strong></a></td>
+<td><a href="https://news.deepsearch.com">https://news.deepsearch.com</a> — 국내 150개·해외 50개 언론사</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kobis.or.kr"><strong>영화진흥위원회 KOBIS</strong></a></td>
+<td><a href="https://www.kobis.or.kr/kobisopenapi/homepg/main/main.do">https://www.kobis.or.kr/kobisopenapi/homepg/main/main.do</a> — 박스오피스·영화·영화인</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kopis.or.kr"><strong>KOPIS 공연예술</strong></a></td>
+<td><a href="https://www.kopis.or.kr/">https://www.kopis.or.kr/</a> — 공연·공연장·예매 통계</td>
+<td>apiKey</td>
+<td>★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kmdb.or.kr"><strong>KMDb 영화상세</strong></a></td>
+<td><a href="https://www.kmdb.or.kr/info/api/">https://www.kmdb.or.kr/info/api/</a> — 한국영화 상세 메타데이터</td>
+<td>apiKey</td>
+<td>★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.data4library.kr"><strong>도서관 정보나루</strong></a></td>
+<td><a href="https://www.data4library.kr/">https://www.data4library.kr/</a> — 전국 공공도서관 회원·장서·대출</td>
+<td>apiKey</td>
+<td>★★</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.nl.go.kr"><strong>국립중앙도서관</strong></a></td>
+<td><a href="https://www.nl.go.kr/NL/contents/N31101030700.do">https://www.nl.go.kr/NL/contents/N31101030700.do</a> — 소장자료·디지털컬렉션</td>
+<td>apiKey</td>
+<td>★</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>BIGKINDS 활용 팁</strong>: 한국 뉴스 분석의 사실상 표준 코퍼스. 일반 공개 API는 검색·시계열 위주, 본문 전체는 신청 필요. 강의용으로는 회원가입 후 <code>news</code> 검색 → 메타+요약 활용.</p>
+</blockquote>
+<h3 id="3-3-금융경제">3-3. 금융·경제</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>API URL</th>
+<th>인증</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://ecos.bok.or.kr"><strong>한국은행 ECOS</strong></a></td>
+<td><a href="https://ecos.bok.or.kr/api/">https://ecos.bok.or.kr/api/</a> — 모든 한은 통계지표</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>✅ <a href="https://opendart.fss.or.kr"><strong>Open DART</strong></a></td>
+<td><a href="https://opendart.fss.or.kr/">https://opendart.fss.or.kr/</a> — 공시·재무·지분</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.koreainvestment.com"><strong>한국투자증권 KIS</strong></a></td>
+<td><a href="https://apiportal.koreainvestment.com/intro">https://apiportal.koreainvestment.com/intro</a> — 국내외 시세·주문</td>
+<td>OAuth</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.koreaexim.go.kr"><strong>한국수출입은행</strong></a></td>
+<td><a href="https://www.koreaexim.go.kr/ir/HPHKIR019M01">https://www.koreaexim.go.kr/ir/HPHKIR019M01</a> — 환율·국제금리</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://upbit.com"><strong>업비트 Open API</strong></a></td>
+<td><a href="https://docs.upbit.com/kr">https://docs.upbit.com/kr</a> — 암호화폐 시세·거래</td>
+<td>JWT</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.bithumb.com"><strong>빗썸 프로 API</strong></a></td>
+<td><a href="https://apidocs.bithumb.com/">https://apidocs.bithumb.com/</a> — 가상자산 거래</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.reb.or.kr"><strong>한국부동산원</strong></a></td>
+<td><a href="https://www.reb.or.kr/r-one/portal/openapi/openApiIntroPage.do">https://www.reb.or.kr/r-one/portal/openapi/openApiIntroPage.do</a> — 부동산 시장통계</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kftc.or.kr"><strong>금융결제원 오픈뱅킹</strong></a></td>
+<td><a href="https://openapi.kftc.or.kr/">https://openapi.kftc.or.kr/</a> — 19개+ 은행 통합</td>
+<td>OAuth</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.codef.io"><strong>CODEF API</strong> (쿠콘)</a></td>
+<td><a href="https://developer.codef.io/">https://developer.codef.io/</a> — 금융·보험·통신 스크래핑 통합</td>
+<td>OAuth</td>
+</tr>
+</tbody></table>
+<h3 id="3-4-의료보건안전">3-4. 의료·보건·안전</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>API URL</th>
+<th>인증</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://www.hira.or.kr"><strong>건강보험심사평가원</strong></a></td>
+<td><a href="https://opendata.hira.or.kr/">https://opendata.hira.or.kr/</a> — 의료빅데이터</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.nhis.or.kr"><strong>국민건강보험공단</strong></a></td>
+<td><a href="https://www.nhis.or.kr/">https://www.nhis.or.kr/</a> — 검진·요양시설</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.e-gen.or.kr"><strong>중앙응급의료센터 (E-Gen)</strong></a></td>
+<td><a href="https://www.e-gen.or.kr/nemc/open_api.do">https://www.e-gen.or.kr/nemc/open_api.do</a> — 병의원·약국·AED</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.mfds.go.kr"><strong>식약처 식품의약품 데이터</strong></a></td>
+<td><a href="https://data.mfds.go.kr/OPCAA01F01">https://data.mfds.go.kr/OPCAA01F01</a> — 약품·식품·의료기기</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.safetydata.go.kr"><strong>재난안전데이터 공유플랫폼</strong></a></td>
+<td><a href="https://www.safetydata.go.kr/">https://www.safetydata.go.kr/</a> — 재난·피해통계</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.nfa.go.kr"><strong>소방청</strong></a></td>
+<td><a href="https://www.nfa.go.kr/">https://www.nfa.go.kr/</a> — 화재·구급·소방시설</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.safe182.go.kr"><strong>안전드림 실종</strong> (경찰청)</a></td>
+<td><a href="https://www.safe182.go.kr/">https://www.safe182.go.kr/</a> — 실종자 정보</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://safemap.go.kr"><strong>생활안전정보 SafeMap</strong></a></td>
+<td><a href="https://safemap.go.kr/">https://safemap.go.kr/</a> — 범죄·사고·생활안전시설</td>
+<td>apiKey</td>
+</tr>
+</tbody></table>
+<h3 id="3-5-교통지도위치">3-5. 교통·지도·위치</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>API URL</th>
+<th>인증</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://map.kakao.com"><strong>카카오맵</strong></a></td>
+<td><a href="https://apis.map.kakao.com/web/guide/">https://apis.map.kakao.com/web/guide/</a> — 지도·검색·좌표·경로</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>✅ <a href="https://map.naver.com"><strong>네이버 지도</strong></a></td>
+<td><a href="https://www.ncloud.com/product/applicationService/maps">https://www.ncloud.com/product/applicationService/maps</a> — 지도·Geocoding·Direction</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.vworld.kr"><strong>브이월드 V-World</strong></a></td>
+<td><a href="https://www.vworld.kr/">https://www.vworld.kr/</a> — 국토부 3D 지도·공간정보</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.juso.go.kr"><strong>도로명주소</strong></a></td>
+<td><a href="https://business.juso.go.kr">https://business.juso.go.kr</a> — 도로명주소 검색·DB</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://tmap.life"><strong>T맵</strong></a></td>
+<td><a href="https://openapi.sk.com/">https://openapi.sk.com/</a> — 내비·경로</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.odsay.com"><strong>ODsay 대중교통</strong></a></td>
+<td><a href="https://lab.odsay.com/">https://lab.odsay.com/</a> — 전국 대중교통·고속·항공</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://data.seoul.go.kr"><strong>서울시 지하철 실시간</strong></a></td>
+<td><a href="https://data.seoul.go.kr/dataList/OA-12764/A/1/datasetView.do">https://data.seoul.go.kr/dataList/OA-12764/A/1/datasetView.do</a> — 2~8호선 실시간 도착</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://topis.seoul.go.kr"><strong>서울 버스 도착정보</strong></a></td>
+<td><a href="http://api.bus.go.kr/">http://api.bus.go.kr/</a> — 시내버스 실시간</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.ex.co.kr"><strong>한국도로공사</strong></a></td>
+<td><a href="https://www.data.go.kr/data/15076872/openapi.do">https://www.data.go.kr/data/15076872/openapi.do</a> — 고속도로 실시간 교통량</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.kric.go.kr"><strong>레일포털 KRIC</strong></a></td>
+<td><a href="https://data.kric.go.kr/">https://data.kric.go.kr/</a> — 전국 철도 정보</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <strong>국내항공운항정보</strong></td>
+<td><a href="https://www.data.go.kr/data/15098526/openapi.do">https://www.data.go.kr/data/15098526/openapi.do</a> — 국내선 운항일정</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.airport.kr"><strong>인천공항 여객운항</strong></a></td>
+<td><a href="https://www.data.go.kr/data/15095074/openapi.do">https://www.data.go.kr/data/15095074/openapi.do</a> — 출도착 현황</td>
+<td>apiKey</td>
+</tr>
+</tbody></table>
+<h3 id="3-6-지역별-공공데이터">3-6. 지역별 공공데이터</h3>
+<p><a href="https://data.seoul.go.kr">서울</a> · <a href="https://data.busan.go.kr">부산</a> · <a href="https://data.daegu.go.kr">대구</a> · <a href="https://www.incheon.go.kr/data">인천</a> · <a href="https://data.gwangju.go.kr">광주</a> · <a href="https://www.daejeon.go.kr/dat">대전</a> · <a href="https://data.ulsan.go.kr">울산</a> · <a href="https://www.sejong.go.kr/openapi.do">세종</a> · <a href="https://data.gg.go.kr">경기</a> · <a href="https://data.gwd.go.kr">강원</a> · 충북·충남 · 전북·전남 · 경북·경남 · <a href="https://www.jeju.go.kr/open/open/iopenapi.htm">제주</a> — 모두 자체 포털 운영. 지역 르포에 필수.</p>
+<h3 id="3-7-ainlp-한국어-특화">3-7. AI·NLP (한국어 특화)</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://clovastudio.ncloud.com"><strong>네이버 CLOVA Studio</strong></a></td>
+<td><a href="https://api.ncloud-docs.com/docs/ai-naver-clovastudio-summary">https://api.ncloud-docs.com/docs/ai-naver-clovastudio-summary</a> — 한국어 LLM HyperCLOVA X</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.upstage.ai"><strong>Upstage Solar / Document AI</strong></a></td>
+<td><a href="https://developers.upstage.ai/">https://developers.upstage.ai/</a> — 한국어 LLM·OCR·문서파싱</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.sktelecom.com"><strong>SKT A.X 4.0</strong></a></td>
+<td><a href="https://github.com/SKT-AI/A.X-4.0">https://github.com/SKT-AI/A.X-4.0</a> — 한국어 특화 LLM</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.etri.re.kr"><strong>ETRI AI Open API</strong></a></td>
+<td><a href="https://epretx.etri.re.kr/">https://epretx.etri.re.kr/</a> — 형태소·개체명·발음 등 다수</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.korean.go.kr"><strong>국립국어원 우리말샘</strong></a></td>
+<td><a href="https://opendict.korean.go.kr/">https://opendict.korean.go.kr/</a> — 표준국어대사전 검색</td>
+</tr>
+<tr>
+<td>✅ <a href="https://aihub.or.kr"><strong>AI Hub</strong></a></td>
+<td><a href="https://aihub.or.kr">https://aihub.or.kr</a> — AI 학습용 데이터셋</td>
+</tr>
+<tr>
+<td>✅ <a href="https://papago.naver.com"><strong>파파고 번역</strong></a></td>
+<td><a href="https://developers.naver.com/docs/papago/README.md">https://developers.naver.com/docs/papago/README.md</a> — 신경망 기반 번역</td>
+</tr>
+</tbody></table>
+<h3 id="3-8-검색소셜">3-8. 검색·소셜</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://developers.naver.com"><strong>네이버 검색</strong></a></td>
+<td><a href="https://developers.naver.com/products/service-api/search/search.md">https://developers.naver.com/products/service-api/search/search.md</a> — 블로그·뉴스·이미지·웹·카페 통합 검색 (★★★)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://datalab.naver.com"><strong>네이버 데이터랩 검색어트렌드</strong></a></td>
+<td><a href="https://developers.naver.com/docs/serviceapi/datalab/search/search.md">https://developers.naver.com/docs/serviceapi/datalab/search/search.md</a> — 통합검색어 트렌드 (★★)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://datalab.naver.com"><strong>네이버 데이터랩 쇼핑인사이트</strong></a></td>
+<td><a href="https://developers.naver.com/docs/serviceapi/datalab/shopping/shopping.md">https://developers.naver.com/docs/serviceapi/datalab/shopping/shopping.md</a> — 쇼핑 카테고리 트렌드</td>
+</tr>
+<tr>
+<td>✅ <a href="https://developers.kakao.com"><strong>카카오 검색</strong></a></td>
+<td><a href="https://developers.kakao.com/docs/latest/ko/daum-search/common">https://developers.kakao.com/docs/latest/ko/daum-search/common</a> — 다음 검색 (웹·이미지·동영상·블로그)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>데이터저널리즘 강의 핵심 5종</strong>:</p>
+<ol>
+<li><strong><a href="https://www.data.go.kr">공공데이터포털</a></strong> — 인허가, 행정 데이터 일반 접근</li>
+<li><strong><a href="https://kosis.kr">KOSIS</a></strong> — 인구·고용·물가 시계열</li>
+<li><strong><a href="https://ecos.bok.or.kr">한국은행 ECOS</a></strong> — 거시경제</li>
+<li><strong><a href="https://opendart.fss.or.kr">Open DART</a></strong> — 기업</li>
+<li><strong><a href="https://www.bigkinds.or.kr">BIGKINDS</a> + <a href="https://developers.naver.com">네이버 검색</a></strong> — 뉴스 코퍼스</li>
+</ol>
+</blockquote>
+<hr>
+<h2 id="4-글로벌-api-카탈로그">4. 글로벌 API 카탈로그</h2>
+<h3 id="4-1-거시경제개발지표">4-1. 거시경제·개발지표</h3>
+<table>
+<thead>
+<tr>
+<th>기관</th>
+<th>API URL</th>
+<th>인증</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://data.worldbank.org"><strong>World Bank Open Data</strong></a></td>
+<td><a href="https://api.worldbank.org/v2/">https://api.worldbank.org/v2/</a> — 200개국 1,400+ 지표. 예: <a href="https://api.worldbank.org/v2/country/KOR/indicator/NY.GDP.MKTP.CD?format=json"><code>/country/KOR/indicator/NY.GDP.MKTP.CD?format=json</code></a></td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.imf.org/external/datamapper/"><strong>IMF DataMapper</strong></a></td>
+<td><a href="https://www.imf.org/external/datamapper/api/v2/">https://www.imf.org/external/datamapper/api/v2/</a> — <strong>주의: v2</strong> (사용자 자료의 v1은 구버전). 도움말: <a href="https://www.imf.org/external/datamapper/api/help">https://www.imf.org/external/datamapper/api/help</a></td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>✅ <a href="https://data.imf.org"><strong>IMF Data (SDMX 3.0)</strong></a></td>
+<td><a href="https://data.imf.org">https://data.imf.org</a> — <strong>2025-11-05 기존 dataservices.imf.org 폐쇄</strong>, 신 SDMX 3.0 API로 마이그레이션. 안내: <a href="https://data.imf.org/en/Resource-Pages/IMF-API">https://data.imf.org/en/Resource-Pages/IMF-API</a></td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>❌ <a href="https://www.oecd.org"><strong>OECD (OECD.Stat)</strong></a></td>
+<td><del><code>https://stats.oecd.org/SDMX-JSON/data/</code></del> <strong>2024-07-01 폐쇄됨</strong> → 신 엔드포인트: <a href="https://sdmx.oecd.org/public/rest/data/"><code>https://sdmx.oecd.org/public/rest/data/</code></a> (OECD Data Explorer). 데이터 탐색: <a href="https://data-explorer.oecd.org/">https://data-explorer.oecd.org/</a></td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>✅ <a href="https://fred.stlouisfed.org"><strong>FRED (St. Louis Fed)</strong></a></td>
+<td><a href="https://api.stlouisfed.org/fred/">https://api.stlouisfed.org/fred/</a> — 80만+ 시계열</td>
+<td>apiKey 무료</td>
+</tr>
+<tr>
+<td>✅ <a href="https://ec.europa.eu/eurostat"><strong>Eurostat</strong></a></td>
+<td><a href="https://ec.europa.eu/eurostat/web/main/data/web-services">https://ec.europa.eu/eurostat/web/main/data/web-services</a> — EU 통계</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://data.un.org"><strong>UN Data</strong></a> / <a href="https://comtradeplus.un.org"><strong>UN Comtrade</strong></a></td>
+<td><a href="https://data.un.org">https://data.un.org</a> / <a href="https://comtradeplus.un.org/">https://comtradeplus.un.org/</a> — 인구·무역</td>
+<td>불필요 / apiKey</td>
+</tr>
+</tbody></table>
+<pre><code class="language-python"># 예: World Bank — 한국 GDP (currency current US$) (✅ 검증된 v2 엔드포인트)
+import requests
+url = "https://api.worldbank.org/v2/country/KOR/indicator/NY.GDP.MKTP.CD?format=json&amp;per_page=50"
+data = requests.get(url, timeout=10).json()
+</code></pre>
+<pre><code class="language-python"># 예: OECD — 신 엔드포인트 (sdmx.oecd.org)
+import requests
+# 한국 실업률 (월별, 2023년 이후)
+url = ("https://sdmx.oecd.org/public/rest/data/"
+       "OECD.SDD.TPS,DSD_LFS@DF_IALFS_UNE_M,1.0/"
+       "KOR..PT_LF_SUB._Z.Y._T.Y_GE15..M"
+       "?startPeriod=2023-01&amp;dimensionAtObservation=AllDimensions"
+       "&amp;format=csvfilewithlabels")
+data = requests.get(url, timeout=15).text
+</code></pre>
+<h3 id="4-2-뉴스미디어-분석">4-2. 뉴스·미디어 분석</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://www.gdeltproject.org"><strong>GDELT 2.0</strong></a></td>
+<td><a href="https://api.gdeltproject.org/api/v2/">https://api.gdeltproject.org/api/v2/</a> (Doc/Event/GKG API)</td>
+<td>100+ 언어, 거의 실시간 글로벌 뉴스·이벤트 코딩 — 무인증</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://commoncrawl.org"><strong>Common Crawl News</strong></a></td>
+<td><a href="https://commoncrawl.org/get-started">https://commoncrawl.org/get-started</a> — WARC 형식 월간/뉴스 크롤</td>
+<td>무인증</td>
+</tr>
+<tr>
+<td>✅ <a href="https://archive.org/web/"><strong>Wayback Machine API</strong></a></td>
+<td><a href="https://archive.org/help/wayback_api.php">https://archive.org/help/wayback_api.php</a> — 특정 URL의 스냅샷 조회</td>
+<td>무인증</td>
+</tr>
+<tr>
+<td>✅ <a href="https://archive.org"><strong>Internet Archive Search</strong></a></td>
+<td><a href="https://archive.org/advancedsearch.php">https://archive.org/advancedsearch.php</a> — 도서·영상·웹 통합 검색</td>
+<td>무인증</td>
+</tr>
+<tr>
+<td>✅ <a href="https://gnews.io"><strong>GNews API</strong></a></td>
+<td><a href="https://gnews.io/">https://gnews.io/</a> — 60+ 언어 뉴스 검색</td>
+<td>무료 100req/day</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://newsapi.org"><strong>NewsAPI.org</strong></a></td>
+<td><a href="https://newsapi.org">https://newsapi.org</a> — 영어 위주, 무료 dev tier</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://mediastack.com"><strong>Mediastack</strong></a> / <a href="https://newsdata.io"><strong>NewsData.io</strong></a> / <a href="https://currentsapi.services"><strong>Currents</strong></a></td>
+<td>무료 tier 있는 뉴스 집계</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>✅ <a href="https://developer.nytimes.com"><strong>NYT Developer</strong></a></td>
+<td><a href="https://developer.nytimes.com/">https://developer.nytimes.com/</a> — 기사 검색·아카이브·서평</td>
+<td>apiKey</td>
+</tr>
+<tr>
+<td>✅ <a href="https://open-platform.theguardian.com"><strong>Guardian Open Platform</strong></a></td>
+<td><a href="https://open-platform.theguardian.com/">https://open-platform.theguardian.com/</a> — 1999~ 가디언 전체 본문</td>
+<td>apiKey 무료</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><a href="https://www.gdeltproject.org">GDELT</a>는 데이터저널리즘에서 <strong>무인증 + 100언어 + 30분 단위 갱신</strong>으로 가장 강력. 본문은 주지 않지만 URL·테마·톤·지명·인물·이벤트 코드 제공. 검증된 base: <a href="https://api.gdeltproject.org/api/v2/doc/doc"><code>api.gdeltproject.org/api/v2/doc/doc</code></a>.</p>
+</blockquote>
+<h3 id="4-3-학술과학연구">4-3. 학술·과학·연구</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://openalex.org"><strong>OpenAlex</strong></a></td>
+<td><a href="https://api.openalex.org/">https://api.openalex.org/</a> — 2.5억+ 논문 / docs: <a href="https://docs.openalex.org/">https://docs.openalex.org/</a></td>
+<td><strong>2025-02-13부터 API 키 필수</strong> (무료, <a href="https://openalex.org/settings/api">발급</a>). 무료 100k credits/day</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.crossref.org"><strong>Crossref</strong></a></td>
+<td><a href="https://api.crossref.org/">https://api.crossref.org/</a> — DOI 메타데이터</td>
+<td>무인증 (polite pool 권장: <code>mailto=</code> 파라미터)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.semanticscholar.org"><strong>Semantic Scholar</strong></a></td>
+<td><a href="https://api.semanticscholar.org/">https://api.semanticscholar.org/</a> — 인용·임베딩</td>
+<td>apiKey 무료</td>
+</tr>
+<tr>
+<td>✅ <a href="https://arxiv.org"><strong>arXiv API</strong></a></td>
+<td><a href="http://export.arxiv.org/api/query">http://export.arxiv.org/api/query</a> — 프리프린트</td>
+<td>무인증</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.ncbi.nlm.nih.gov"><strong>PubMed E-utilities</strong> (NCBI)</a></td>
+<td><a href="https://www.ncbi.nlm.nih.gov/books/NBK25501/">https://www.ncbi.nlm.nih.gov/books/NBK25501/</a> — 의학</td>
+<td>무인증 (3 req/sec, key 시 10)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.nasa.gov"><strong>NASA APIs</strong></a></td>
+<td><a href="https://api.nasa.gov/">https://api.nasa.gov/</a> — APOD·EPIC·EONET (재난) 등</td>
+<td>apiKey 무료</td>
+</tr>
+</tbody></table>
+<h3 id="4-4-정치정부법률">4-4. 정치·정부·법률</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://opencorporates.com"><strong>OpenCorporates</strong></a></td>
+<td><a href="https://opencorporates.com">https://opencorporates.com</a> — 1.8억+ 기업 (rate-limited 무료)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.opensanctions.org"><strong>OpenSanctions</strong></a></td>
+<td><a href="https://www.opensanctions.org/">https://www.opensanctions.org/</a> — 제재·PEP·범죄 인물 DB</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://projects.propublica.org/api-docs/congress-api/"><strong>ProPublica Congress</strong></a> / <a href="https://projects.propublica.org/nonprofits/api"><strong>Nonprofit Explorer</strong></a></td>
+<td>미국 의회·비영리</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.govinfo.gov"><strong>GovInfo</strong></a> / <a href="https://www.data.gov"><strong>data.gov</strong></a></td>
+<td><a href="https://api.govinfo.gov/">https://api.govinfo.gov/</a> / <a href="https://www.data.gov/">https://www.data.gov/</a> — 미 연방 정부 데이터</td>
+</tr>
+<tr>
+<td>✅ <a href="https://data.europa.eu"><strong>EU Open Data Portal</strong></a></td>
+<td><a href="https://data.europa.eu/en">https://data.europa.eu/en</a> — EU 데이터</td>
+</tr>
+</tbody></table>
+<h3 id="4-5-지리날씨환경">4-5. 지리·날씨·환경</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://openweathermap.org"><strong>OpenWeatherMap</strong></a></td>
+<td><a href="https://openweathermap.org/api">https://openweathermap.org/api</a> — 무료 tier, 전세계 날씨</td>
+</tr>
+<tr>
+<td>✅ <a href="https://open-meteo.com"><strong>Open-Meteo</strong></a></td>
+<td><a href="https://open-meteo.com/">https://open-meteo.com/</a> — 무인증·무료 기상 (★ 권장)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.noaa.gov"><strong>NOAA</strong></a> / <a href="https://power.larc.nasa.gov"><strong>NASA POWER</strong></a></td>
+<td>기후 재분석</td>
+</tr>
+<tr>
+<td>✅ <a href="https://nominatim.openstreetmap.org"><strong>OpenStreetMap Nominatim</strong></a> / <a href="https://overpass-api.de"><strong>Overpass</strong></a></td>
+<td><a href="https://nominatim.openstreetmap.org/">https://nominatim.openstreetmap.org/</a> / <a href="https://overpass-api.de/">https://overpass-api.de/</a> — Geocoding·POI</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.mapbox.com"><strong>Mapbox</strong></a> / <a href="https://www.here.com"><strong>HERE</strong></a></td>
+<td>지도·내비 (무료 tier)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://earthengine.google.com"><strong>Google Earth Engine</strong></a></td>
+<td><a href="https://earthengine.google.com/">https://earthengine.google.com/</a> — 위성 영상 (학술 무료)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.sentinel-hub.com"><strong>Sentinel Hub</strong></a> / <a href="https://www.copernicus.eu"><strong>Copernicus</strong></a></td>
+<td>EU 위성</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://firms.modaps.eosdis.nasa.gov"><strong>NASA FIRMS</strong></a></td>
+<td>산불 위치</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://eonet.gsfc.nasa.gov"><strong>EONET</strong></a></td>
+<td>자연재해</td>
+</tr>
+</tbody></table>
+<h3 id="4-6-소셜플랫폼검색">4-6. 소셜·플랫폼·검색</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ <a href="https://developers.google.com/youtube/v3"><strong>YouTube Data API v3</strong></a></td>
+<td><a href="https://developers.google.com/youtube/v3">https://developers.google.com/youtube/v3</a> — 검색·댓글·통계 (무료 quota)</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://www.reddit.com/dev/api"><strong>Reddit API</strong></a></td>
+<td><a href="https://www.reddit.com/dev/api">https://www.reddit.com/dev/api</a> — OAuth 무료</td>
+</tr>
+<tr>
+<td>✅ <a href="https://docs.joinmastodon.org/api/"><strong>Mastodon API</strong></a></td>
+<td><a href="https://docs.joinmastodon.org/api/">https://docs.joinmastodon.org/api/</a> — OAuth 무료, 전역</td>
+</tr>
+<tr>
+<td>✅ <a href="https://atproto.com"><strong>Bluesky AT Protocol</strong></a></td>
+<td><a href="https://atproto.com/">https://atproto.com/</a> — 무료</td>
+</tr>
+<tr>
+<td>✅ <a href="https://tavily.com"><strong>Tavily Search</strong></a></td>
+<td><a href="https://tavily.com/">https://tavily.com/</a> — LLM-friendly 웹검색 (1k/월 무료)</td>
+</tr>
+<tr>
+<td>✅ <a href="https://brave.com/search/api/"><strong>Brave Search API</strong></a></td>
+<td><a href="https://brave.com/search/api/">https://brave.com/search/api/</a> — 2k/월 무료</td>
+</tr>
+<tr>
+<td>⚠️ <a href="https://serpapi.com"><strong>SerpAPI</strong></a> / <a href="https://www.searchapi.io"><strong>SearchAPI</strong></a> / <a href="https://serper.dev"><strong>Serper.dev</strong></a></td>
+<td>Google SERP</td>
+</tr>
+<tr>
+<td>✅ <a href="https://en.wikipedia.org/api/rest_v1/"><strong>Wikipedia</strong></a> / <a href="https://query.wikidata.org"><strong>Wikidata SPARQL</strong></a></td>
+<td><a href="https://en.wikipedia.org/api/rest_v1/">https://en.wikipedia.org/api/rest_v1/</a> / <a href="https://query.wikidata.org/">https://query.wikidata.org/</a> — 무인증</td>
+</tr>
+</tbody></table>
+<h3 id="4-7-금융시장">4-7. 금융·시장</h3>
+<table>
+<thead>
+<tr>
+<th>서비스</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>⚠️ <a href="https://www.alphavantage.co"><strong>Alpha Vantage</strong></a></td>
+<td><a href="https://www.alphavantage.co/">https://www.alphavantage.co/</a> — 무료 시세·환율</td>
+</tr>
+<tr>
+<td>✅ <a href="https://github.com/ranaroussi/yfinance"><strong>Yahoo Finance</strong> (yfinance)</a></td>
+<td><a href="https://github.com/ranaroussi/yfinance">https://github.com/ranaroussi/yfinance</a> — 비공식 wrapper</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.coingecko.com"><strong>CoinGecko</strong></a> / <a href="https://coincap.io"><strong>CoinCap</strong></a></td>
+<td><a href="https://www.coingecko.com/en/api">https://www.coingecko.com/en/api</a> / <a href="https://coincap.io/">https://coincap.io/</a> — 암호화폐 무료</td>
+</tr>
+<tr>
+<td>✅ <a href="https://www.sec.gov/edgar"><strong>SEC EDGAR</strong></a></td>
+<td><a href="https://www.sec.gov/edgar/sec-api-documentation">https://www.sec.gov/edgar/sec-api-documentation</a> — 미국 공시</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-mcp-서버-카탈로그-python--웹-배포">5. MCP 서버 카탈로그 (Python · 웹 배포)</h2>
+<h3 id="5-1-mcp란">5-1. MCP란?</h3>
+<p><strong>Model Context Protocol</strong> — <a href="https://www.anthropic.com">Anthropic</a>이 2024-11 발표한 JSON-RPC 2.0 기반 개방 표준. LLM↔도구 연결의 USB-C. Claude/Gemini/GPT 모두 지원. 2026 Q1 공식 <a href="https://github.com/mcp">레지스트리</a>에 2,000+ 서버.</p>
+<p>세 가지 primitive:</p>
+<ul>
+<li><strong>Tools</strong> (model-controlled): 모델이 호출하는 함수</li>
+<li><strong>Resources</strong> (app-controlled): 모델이 읽는 데이터</li>
+<li><strong>Prompts</strong> (user-controlled): 재사용 프롬프트 템플릿</li>
+</ul>
+<p>전송 방식: <code>stdio</code> (로컬 자식 프로세스) 또는 <code>Streamable HTTP/SSE</code> (원격, OAuth 가능).</p>
+<h3 id="5-2-gemini에서-mcp-직접-사용-2026-sdk">5-2. Gemini에서 MCP 직접 사용 (2026 SDK)</h3>
+<pre><code class="language-python"># gemini_mcp.py
+import asyncio, os
+from datetime import datetime
+from dotenv import load_dotenv
+from google import genai
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+load_dotenv()
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+# 예: 공식 fetch 서버를 stdio로 띄움
+server_params = StdioServerParameters(
+    command="uvx",
+    args=["mcp-server-fetch"],
+)
+
+async def main():
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            resp = await client.aio.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                contents="https://www.bok.or.kr/portal/main/main.do 페이지의 헤드라인 5개를 요약해.",
+                config=genai.types.GenerateContentConfig(
+                    tools=[session],   # ★ ClientSession을 그대로 전달 — 자동 함수 변환
+                    temperature=0,
+                ),
+            )
+            print(resp.text)
+
+asyncio.run(main())
+</code></pre>
+<blockquote>
+<p>Python SDK는 <code>tools=[session]</code>만으로 MCP 서버의 모든 tool을 자동 노출. 비활성화하려면 <code>automatic_function_calling=ToolConfig(disabled=True)</code>.</p>
+</blockquote>
+<h3 id="5-3-공식-reference-서버-modelcontextprotocolservershttpsgithubcommodelcontextprotocolservers">5-3. 공식 reference 서버 (<a href="https://github.com/modelcontextprotocol/servers">modelcontextprotocol/servers</a>)</h3>
+<table>
+<thead>
+<tr>
+<th>서버</th>
+<th>설명</th>
+<th>설치</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>fetch</strong></td>
+<td>URL → 마크다운 변환 (LLM 친화)</td>
+<td><code>uvx mcp-server-fetch</code></td>
+</tr>
+<tr>
+<td><strong>filesystem</strong></td>
+<td>안전한 파일 R/W</td>
+<td><code>npx @modelcontextprotocol/server-filesystem</code></td>
+</tr>
+<tr>
+<td><strong>git</strong></td>
+<td>Git repo 읽기·검색</td>
+<td><code>uvx mcp-server-git</code></td>
+</tr>
+<tr>
+<td><strong>memory</strong></td>
+<td>Knowledge graph 메모리</td>
+<td><code>npx ...server-memory</code></td>
+</tr>
+<tr>
+<td><strong>sequential-thinking</strong></td>
+<td>다단계 사고 도우미</td>
+<td><code>npx ...server-sequential-thinking</code></td>
+</tr>
+<tr>
+<td><strong>time</strong></td>
+<td>타임존·시간 변환</td>
+<td><code>uvx mcp-server-time</code></td>
+</tr>
+<tr>
+<td><strong>everything</strong></td>
+<td>테스트용 reference</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3 id="5-4-데이터저널리즘-추천-서드파티-mcp">5-4. 데이터저널리즘 추천 서드파티 MCP</h3>
+<h4 id="검색웹크롤">검색·웹크롤</h4>
+<ul>
+<li><a href="https://github.com/modelcontextprotocol/servers/tree/main/src/brave-search"><strong>Brave Search MCP</strong></a> — <a href="https://brave.com/search/api/">Brave Search API</a> (2k/월 무료) 래핑</li>
+<li><a href="https://github.com/tavily-ai/tavily-mcp"><strong>Tavily MCP</strong></a> — LLM-친화 웹검색 grounding</li>
+<li><a href="https://github.com/exa-labs/exa-mcp-server"><strong>Exa MCP</strong></a> — semantic search 특화</li>
+<li><a href="https://github.com/ppl-ai/modelcontextprotocol"><strong>Perplexity MCP</strong></a> — 검색+요약</li>
+<li><a href="https://github.com/mendableai/firecrawl-mcp-server"><strong>Firecrawl MCP</strong></a> — 페이지 크롤·구조화 추출</li>
+<li><a href="https://apify.com/apify/actors-mcp-server"><strong>Apify Actors MCP</strong></a> — 3,000+ 스크레이퍼 actor</li>
+<li><a href="https://github.com/microsoft/playwright-mcp"><strong>Playwright MCP</strong></a> / <a href="https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer"><strong>Puppeteer MCP</strong></a> — 브라우저 자동화</li>
+<li><a href="https://github.com/pskill9/web-search"><strong><code>@pskill9/web-search</code></strong></a> — Google 결과 (무 API키)</li>
+</ul>
+<h4 id="한국-공공데이터">한국 공공데이터</h4>
+<ul>
+<li><a href="https://github.com/Koomook/data-go-mcp-servers"><strong><code>Koomook/data-go-mcp-servers</code></strong></a> — <code>data.go.kr</code> 통합 — NPS·NTS 사업자, PPS 나라장터, FSC, 대통령기록 등 PyPI: <code>data-go-mcp.*</code></li>
+<li><a href="https://github.com/hjsh200219/korea-public-data-mcp"><strong><code>hjsh200219/korea-public-data-mcp</code></strong></a> — 법제처 + DART + data.go.kr 통합. <a href="https://public-data.up.railway.app/"><code>https://public-data.up.railway.app/</code></a> 원격 호스팅 버전 제공</li>
+<li><a href="https://github.com/pinnaclesoft-ko/be-node-seoul-data-mcp"><strong><code>pinnaclesoft-ko/be-node-seoul-data-mcp</code></strong></a> — <a href="https://data.seoul.go.kr">서울 열린데이터광장</a> (지하철·문화행사)</li>
+</ul>
+<h4 id="지식학술문서">지식·학술·문서</h4>
+<ul>
+<li><strong>OpenAlex MCP</strong> / <strong>Crossref MCP</strong> / <strong>arXiv MCP</strong> / <strong>PubMed MCP</strong> — 학술 grounding</li>
+<li><a href="https://github.com/Rudra-ravi/wikipedia-mcp"><strong>Wikipedia MCP</strong></a> — 무인증</li>
+<li><strong>NotebookLM MCP</strong> — 자체 노트북 기반 무할루시 답변</li>
+</ul>
+<h4 id="데이터베이스지식">데이터베이스·지식</h4>
+<ul>
+<li><strong>PostgreSQL</strong> / <strong>SQLite</strong> / <strong>MySQL MCP</strong> — <code>mcp-server-postgres</code> 등</li>
+<li><a href="https://github.com/neo4j-contrib/mcp-neo4j"><strong>Neo4j MCP</strong></a> — 그래프 DB</li>
+<li><a href="https://github.com/motherduckdb/mcp-server-motherduck"><strong>DuckDB MCP</strong></a> — 분석용 in-process DB</li>
+<li><strong>MongoDB MCP</strong></li>
+<li><a href="https://github.com/chroma-core/chroma-mcp"><strong>Chroma</strong></a> / <strong>Qdrant</strong> / <strong>Pinecone MCP</strong> — 벡터 DB (RAG)</li>
+<li><a href="https://github.com/mindsdb/mindsdb_mcp_server"><strong>MindsDB MCP</strong></a> — 통합 데이터 게이트웨이 (200+ 소스)</li>
+<li><a href="https://github.com/julien040/anyquery"><strong><code>julien040/anyquery</code></strong></a> — 40+ 앱을 SQL로 쿼리</li>
+</ul>
+<h4 id="시각화분석">시각화·분석</h4>
+<ul>
+<li><a href="https://github.com/isaacwasserman/mcp-vegalite-server"><strong><code>isaacwasserman/mcp-vegalite-server</code></strong></a> — Vega-Lite 차트 생성</li>
+<li><a href="https://github.com/antvis/mcp-server-chart"><strong>AntV Chart MCP</strong></a> — 차트 자동 생성</li>
+<li><a href="https://github.com/vivekVells/mcp-pandoc"><strong><code>mcp-server-pandoc</code></strong></a> — 문서 포맷 변환</li>
+</ul>
+<h4 id="미디어소셜">미디어·소셜</h4>
+<ul>
+<li><a href="https://github.com/kimtaeyoon83/mcp-server-youtube-transcript"><strong><code>@kimtaeyoon83/mcp-server-youtube-transcript</code></strong></a> — 자막·트랜스크립트 추출</li>
+<li><strong>YouTube Data MCP</strong></li>
+<li><strong>Slack MCP</strong> / <strong>Discord MCP</strong> / <strong>Telegram MCP</strong></li>
+<li><a href="https://github.com/adhikasp/mcp-twikit"><strong>Twitter (twikit) MCP</strong></a> — <code>adhikasp/mcp-twikit</code></li>
+</ul>
+<h4 id="클라우드인프라">클라우드·인프라</h4>
+<ul>
+<li><strong>AWS</strong> · <strong>GCP</strong> · <strong>Azure MCP</strong> — 공식 서버 다수</li>
+<li><a href="https://github.com/cloudflare/mcp-server-cloudflare"><strong>Cloudflare MCP</strong></a> — Workers·KV·R2·D1</li>
+<li><strong>DigitalOcean</strong> — 서버 환경에 맞춤 (커뮤니티)</li>
+</ul>
+<h3 id="5-5-mcp-서버-직접-만들기-fastmcp">5-5. MCP 서버 직접 만들기 (FastMCP)</h3>
+<p>가장 일반적 형태: <strong>공공데이터 API → MCP wrapper</strong>.</p>
+<pre><code class="language-python"># my_kosis_mcp.py
+import os, requests
+from dotenv import load_dotenv
+from fastmcp import FastMCP
+
+load_dotenv()
+mcp = FastMCP("KOSIS-Korean-Stats")
+KOSIS_KEY = os.environ["KOSIS_API_KEY"]
+
+@mcp.tool()
+def kosis_search(searchNm: str, page: int = 1, num: int = 10) -&gt; dict:
+    """KOSIS 통계표 검색.
+    Args:
+        searchNm: 검색어 (예: '합계출산율')
+        page: 페이지
+        num: 페이지당 결과 수
+    """
+    url = "https://kosis.kr/openapi/statisticsList.do"
+    params = dict(method="getList", apiKey=KOSIS_KEY, format="json", jsonVD="Y",
+                  vwCd="MT_ZTITLE", searchNm=searchNm, parentListId="", pageNo=page, numOfRows=num)
+    return requests.get(url, params=params, timeout=15).json()
+
+@mcp.tool()
+def kosis_data(orgId: str, tblId: str, prdSe: str, startPrdDe: str, endPrdDe: str) -&gt; dict:
+    """KOSIS 통계표의 실제 데이터 조회."""
+    url = "https://kosis.kr/openapi/Param/statisticsParameterData.do"
+    params = dict(method="getList", apiKey=KOSIS_KEY, format="json", jsonVD="Y",
+                  orgId=orgId, tblId=tblId, prdSe=prdSe,
+                  startPrdDe=startPrdDe, endPrdDe=endPrdDe)
+    return requests.get(url, params=params, timeout=15).json()
+
+if __name__ == "__main__":
+    mcp.run()  # 기본 stdio
+    # HTTP로 띄우려면: mcp.run(transport="http", port=8000)
+</code></pre>
+<p>설치/실행:</p>
+<pre><code class="language-bash">pip install fastmcp python-dotenv requests
+python my_kosis_mcp.py
+</code></pre>
+<p>Claude Desktop / Cursor 연결 (<code>claude_desktop_config.json</code>):</p>
+<pre><code class="language-json">{
+  "mcpServers": {
+    "kosis": {
+      "command": "python",
+      "args": ["/abs/path/my_kosis_mcp.py"],
+      "env": { "KOSIS_API_KEY": "..." }
+    }
+  }
+}
+</code></pre>
+<h3 id="5-6-mcp-서버-웹-배포-fastapi">5-6. MCP 서버 웹 배포 (FastAPI)</h3>
+<pre><code class="language-python"># kosis_mcp_http.py — Streamable HTTP transport
+from fastmcp import FastMCP
+mcp = FastMCP("kosis")
+# ... @mcp.tool() 함수 정의 ...
+if __name__ == "__main__":
+    mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp")
+</code></pre>
+<p><a href="https://github.com/tadata-org/fastapi_mcp"><code>fastapi_mcp</code></a> (zero-config wrapper):</p>
+<pre><code class="language-bash">pip install fastapi-mcp uvicorn
+</code></pre>
+<pre><code class="language-python">from fastapi import FastAPI
+from fastapi_mcp import FastApiMCP
+app = FastAPI()
+@app.get("/kosis/{tbl}")
+def kosis(tbl: str, start: str, end: str): ...
+
+mcp = FastApiMCP(app)
+mcp.mount()
+# uvicorn kosis_mcp_http:app --host 0.0.0.0 --port 8000
+</code></pre>
+<p>→ <code>https://yourserver/mcp</code> 엔드포인트가 MCP-호환. Claude/Gemini/Cursor 모두 원격 등록 가능.</p>
+<p>서버에 배포:</p>
+<ol>
+<li>systemd service로 등록 (<code>/etc/systemd/system/mcp-kosis.service</code>)</li>
+<li>nginx reverse proxy + SSL (Let's Encrypt)</li>
+<li>OAuth가 필요하면 <code>mcp.server.auth</code> 모듈 또는 <a href="https://auth0.com">Auth0</a> SaaS 연동</li>
+<li>학생들에게 endpoint URL만 공유 → 각자 클라이언트 등록</li>
+</ol>
+<h3 id="5-7-mcp-디렉터리">5-7. MCP 디렉터리</h3>
+<table>
+<thead>
+<tr>
+<th>디렉터리</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>공식 MCP Registry</strong></td>
+<td><a href="https://github.com/mcp">https://github.com/mcp</a> — 검증된 서버 카탈로그</td>
+</tr>
+<tr>
+<td><strong>mcpservers.org</strong></td>
+<td><a href="https://mcpservers.org">https://mcpservers.org</a> — UI 기반 탐색</td>
+</tr>
+<tr>
+<td><a href="https://github.com/punkpeye/awesome-mcp-servers"><strong><code>punkpeye/awesome-mcp-servers</code></strong></a></td>
+<td>가장 인기 큐레이션</td>
+</tr>
+<tr>
+<td><a href="https://github.com/appcypher/awesome-mcp-servers"><strong><code>appcypher/awesome-mcp-servers</code></strong></a></td>
+<td>카테고리별 정리</td>
+</tr>
+<tr>
+<td><a href="https://github.com/wong2/awesome-mcp-servers"><strong><code>wong2/awesome-mcp-servers</code></strong></a></td>
+<td>알파벳순</td>
+</tr>
+<tr>
+<td><a href="https://github.com/tolkonepiu/best-of-mcp-servers"><strong><code>tolkonepiu/best-of-mcp-servers</code></strong></a></td>
+<td>주간 랭킹</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MobinX/awesome-mcp-list"><strong><code>MobinX/awesome-mcp-list</code></strong></a></td>
+<td>콤팩트</td>
+</tr>
+<tr>
+<td><a href="https://github.com/TensorBlock/awesome-mcp-servers"><strong><code>TensorBlock/awesome-mcp-servers</code></strong></a></td>
+<td>자동 큐레이션 (7,000+ 추적)</td>
+</tr>
+<tr>
+<td><a href="https://www.klavis.ai"><strong>Klavis AI</strong></a></td>
+<td>호스팅 MCP infra</td>
+</tr>
+<tr>
+<td><a href="https://pipedream.com/mcp"><strong>Pipedream</strong></a></td>
+<td>2,500 API · 8,000 도구 통합 MCP</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="6-사용-패턴">6. 사용 패턴</h2>
+<h3 id="패턴-a--단일-api--function-calling">패턴 A — 단일 API + Function Calling</h3>
+<p><strong>용도</strong>: 단일 통계표 기반 사실 확인 기사</p>
+<ul>
+<li>예: "지난 5년 합계출산율 추이"</li>
+<li>구현: <a href="https://kosis.kr">KOSIS API</a> 함수 1개 + Gemini → 표·요약 자동 생성</li>
+</ul>
+<h3 id="패턴-b--다중-api-병렬-grounding">패턴 B — 다중 API 병렬 grounding</h3>
+<p><strong>용도</strong>: 복합 컨텍스트 기사 (뉴스 + 통계 + 지도)</p>
+<ul>
+<li>예: "전국 미세먼지 수치 + 관련 보도 추이"</li>
+<li>구현: <a href="https://www.airkorea.or.kr">에어코리아</a> + <a href="https://www.bigkinds.or.kr">BIGKINDS</a> + 행정동 코드 함수 3개 → Gemini orchestration</li>
+</ul>
+<h3 id="패턴-c--rag-벡터-db--llm">패턴 C — RAG (벡터 DB) + LLM</h3>
+<p><strong>용도</strong>: 장문 기사 코퍼스 분석</p>
+<ul>
+<li>임베딩: <code>gemini-embedding-001</code> 또는 multilingual-e5-large</li>
+<li>벡터 DB: <a href="https://www.trychroma.com">ChromaDB</a> / <a href="https://qdrant.tech">Qdrant</a></li>
+<li>검색 → Gemini 2.5 Flash Lite로 합성</li>
+</ul>
+<h3 id="패턴-d--mcp-서버-통합-워크플로">패턴 D — MCP 서버 통합 워크플로</h3>
+<p><strong>용도</strong>: 반복 가능 분석 파이프라인 (수업 과제 표준)</p>
+<ul>
+<li>KOSIS MCP + DART MCP + GDELT MCP + Vega-Lite MCP</li>
+<li>Claude Desktop / Gemini CLI에서 자연어로 호출</li>
+<li>결과 자동 시각화</li>
+</ul>
+<h3 id="패턴-e--agent--검증-체인">패턴 E — Agent + 검증 체인</h3>
+<p><strong>용도</strong>: 팩트체킹 자동화 (LangGraph 시스템과 호환)</p>
+<ul>
+<li>주장 추출 → 키워드화 → 다중 소스 grounding → 일치/불일치 판정 → 인용</li>
+<li>LLM coordinator: Gemini 2.5 Flash Lite (비용·속도 우위)</li>
+<li>Verifier: 별도 LLM(예: Gemini 2.5 Pro 또는 GPT-4 mini) 교차검증</li>
+</ul>
+<hr>
+<h2 id="7-강의용-실습-프로젝트-단계별">7. 강의용 실습 프로젝트 (단계별)</h2>
+<h3 id="lab-1-hello-gemini--kosis-1주차">Lab 1. Hello Gemini + KOSIS (1주차)</h3>
+<ul>
+<li><code>.env</code> 셋업, <code>client.models.generate_content()</code> 호출</li>
+<li>단일 함수 KOSIS <code>getList</code> 호출 → 출생아수 시계열 표</li>
+</ul>
+<h3 id="lab-2-부동산-실거래--지도-시각화-23주차">Lab 2. 부동산 실거래 + 지도 시각화 (2~3주차)</h3>
+<ul>
+<li><a href="https://www.molit.go.kr">국토교통부 실거래가</a> API</li>
+<li><a href="https://python-visualization.github.io/folium/">Folium</a> / <a href="https://kepler.gl">kepler.gl</a> / <a href="https://plotly.com/python/">Plotly</a>로 시각화</li>
+<li>Gemini가 핫스팟 자동 해설</li>
+</ul>
+<h3 id="lab-3-bigkinds--정치-발화-분석-45주차">Lab 3. BIGKINDS + 정치 발화 분석 (4~5주차)</h3>
+<ul>
+<li><a href="https://www.bigkinds.or.kr">빅카인즈</a> 검색 → 정당별/시기별 빈도</li>
+<li>Gemini로 프레임 분석·요약</li>
+<li>WordCloud + 토픽 모델링</li>
+</ul>
+<h3 id="lab-4-dart-공시-자동-모니터링-6주차">Lab 4. DART 공시 자동 모니터링 (6주차)</h3>
+<ul>
+<li>특정 키워드 공시 발생 시 <a href="https://api.slack.com">Slack</a>/<a href="https://core.telegram.org/bots/api">Telegram</a> 알림</li>
+<li>Gemini가 공시 요약 + 영향도 평가</li>
+</ul>
+<h3 id="lab-5-gdelt-글로벌-이벤트-추적-7주차">Lab 5. GDELT 글로벌 이벤트 추적 (7주차)</h3>
+<ul>
+<li><a href="https://api.gdeltproject.org/api/v2/doc/doc">GDELT 2.0 Doc API</a>로 한국 관련 외신 수집</li>
+<li>톤(tone) 시계열 + 지명 빈도</li>
+<li>Gemini로 주요 이슈 클러스터링</li>
+</ul>
+<h3 id="lab-6-open-dart--ecos--거시-기업-연결-분석-89주차">Lab 6. Open DART + ECOS + 거시-기업 연결 분석 (8~9주차)</h3>
+<ul>
+<li>환율·금리 + 수출기업 영업이익 상관</li>
+<li>Gemini가 인과 가설 후보 생성 → 학생이 검증</li>
+</ul>
+<h3 id="lab-7-자기만의-mcp-서버-1012주차">Lab 7. 자기만의 MCP 서버 (10~12주차) ⭐</h3>
+<ul>
+<li>학생이 관심 분야 공공API를 골라 <a href="https://github.com/jlowin/fastmcp">FastMCP</a>로 래핑</li>
+<li>DigitalOcean에 배포</li>
+<li>Claude Desktop / Gemini에서 호출 시연</li>
+<li>동료 검토 발표</li>
+</ul>
+<h3 id="lab-8-종합--agentic-팩트체크-시스템-1315주차">Lab 8. 종합 — Agentic 팩트체크 시스템 (13~15주차)</h3>
+<ul>
+<li>정치인 발언 입력 → 다중 API/MCP grounding → 검증 결과 + 인용</li>
+<li>LangGraph + Gemini 2.5 Flash Lite + 학생 자작 MCP 결합</li>
+<li>최종 평가: 라이브 데모 + 보고서</li>
+</ul>
+<hr>
+<h2 id="8-보안윤리-체크리스트">8. 보안·윤리 체크리스트</h2>
+<h3 id="보안">보안</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <code>.env</code>는 절대 git push 금지 (<code>.gitignore</code>에 추가)</li>
+<li><input disabled="" type="checkbox"> API 키는 서버 측에서만 사용 (프론트 노출 금지)</li>
+<li><input disabled="" type="checkbox"> 공공데이터 키도 부정사용 시 정지 가능 — rate limit 준수</li>
+<li><input disabled="" type="checkbox"> HTTPS + SSH 키 인증 (DigitalOcean 운영 패턴 유지)</li>
+<li><input disabled="" type="checkbox"> MCP 원격 서버는 OAuth/Bearer 인증 필수</li>
+</ul>
+<h3 id="저작권이용약관">저작권·이용약관</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <a href="https://www.bigkinds.or.kr">BIGKINDS</a>, <a href="https://developers.naver.com">네이버 검색</a> 등 일부는 <strong>언론보도/연구 목적</strong> 한정</li>
+<li><input disabled="" type="checkbox"> 뉴스 본문 재배포 금지 — <strong>요약·인용만 허용</strong></li>
+<li><input disabled="" type="checkbox"> 공공데이터도 데이터셋별 라이선스 확인 (대부분 <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a> 또는 <a href="https://www.kogl.or.kr">KOGL</a>)</li>
+<li><input disabled="" type="checkbox"> LLM 출력 인용 시 원 출처 표기 (저널리즘 윤리)</li>
+</ul>
+<h3 id="개인정보">개인정보</h3>
+<ul>
+<li><input disabled="" type="checkbox"> 실거래가, 사업자번호, 의료데이터 등 결합 시 식별 위험</li>
+<li><input disabled="" type="checkbox"> 익명화·집계화 전제, IRB 검토 필요한 경우 사전 신청</li>
+</ul>
+<h3 id="할루시네이션-방지">할루시네이션 방지</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>항상 grounding</strong> — 순수 LLM 답변 금지</li>
+<li><input disabled="" type="checkbox"> 출력에 출처 URL 포함 의무화</li>
+<li><input disabled="" type="checkbox"> <code>temperature=0</code> 또는 낮게 설정</li>
+<li><input disabled="" type="checkbox"> Pro 모델로 재검증 (Critical claim의 경우)</li>
+</ul>
+<h3 id="url-운영-체크">URL 운영 체크</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>본 가이드 ❌ 마크 API는 즉시 신 엔드포인트로 교체</strong>: OECD <code>stats.oecd.org</code> → <a href="https://sdmx.oecd.org/public/rest/"><code>sdmx.oecd.org</code></a>, IMF DataMapper <code>v1</code> → <a href="https://www.imf.org/external/datamapper/api/v2/"><code>v2</code></a></li>
+<li><input disabled="" type="checkbox"> <strong>OpenAlex는 2025-02부터 API 키 필수</strong> — <code>OPENALEX_API_KEY</code> <code>.env</code>에 추가</li>
+<li><input disabled="" type="checkbox"> ⚠️ 마크 API는 fetch 후 응답 코드 체크하여 자동 fallback (예: 작동 안 하면 RSSHub 또는 Google News 검색 RSS)</li>
+</ul>
+<hr>
+<h2 id="9-참고-자료">9. 참고 자료</h2>
+<h3 id="공식-문서">공식 문서</h3>
+<ul>
+<li><a href="https://ai.google.dev/gemini-api/docs">Gemini API</a>: <a href="https://ai.google.dev/gemini-api/docs">https://ai.google.dev/gemini-api/docs</a></li>
+<li><a href="https://ai.google.dev/gemini-api/docs/function-calling">Function Calling</a>: <a href="https://ai.google.dev/gemini-api/docs/function-calling">https://ai.google.dev/gemini-api/docs/function-calling</a></li>
+<li><a href="https://modelcontextprotocol.io">MCP</a>: <a href="https://modelcontextprotocol.io">https://modelcontextprotocol.io</a></li>
+<li><a href="https://github.com/modelcontextprotocol/python-sdk">MCP Python SDK</a>: <a href="https://github.com/modelcontextprotocol/python-sdk">https://github.com/modelcontextprotocol/python-sdk</a></li>
+<li><a href="https://github.com/jlowin/fastmcp">FastMCP</a>: <a href="https://github.com/jlowin/fastmcp">https://github.com/jlowin/fastmcp</a></li>
+</ul>
+<h3 id="카탈로그">카탈로그</h3>
+<ul>
+<li>한국 API: <a href="https://github.com/yybmion/public-apis-4Kr">https://github.com/yybmion/public-apis-4Kr</a> (260+, 2026-02 업데이트)</li>
+<li>글로벌 API: <a href="https://github.com/public-apis/public-apis">https://github.com/public-apis/public-apis</a></li>
+<li>글로벌 API (대안): <a href="https://github.com/public-api-lists/public-api-lists">https://github.com/public-api-lists/public-api-lists</a> (730+)</li>
+<li>MCP: <a href="https://github.com/modelcontextprotocol/servers">https://github.com/modelcontextprotocol/servers</a></li>
+<li>MCP curated: <a href="https://github.com/punkpeye/awesome-mcp-servers">https://github.com/punkpeye/awesome-mcp-servers</a></li>
+<li>MCP Korean: <a href="https://github.com/Koomook/data-go-mcp-servers">https://github.com/Koomook/data-go-mcp-servers</a></li>
+<li>저널리즘 도구: <a href="https://github.com/peterdalle/mediacommtools">https://github.com/peterdalle/mediacommtools</a></li>
+</ul>
+<h3 id="데이터저널리즘-학습">데이터저널리즘 학습</h3>
+<ul>
+<li><a href="https://datajournalism.com">DataJournalism.com (EJC)</a></li>
+<li><a href="https://gijn.org/stories/?gijn_topic=data-journalism">GIJN Data Journalism Resources</a></li>
+<li><a href="https://sigmaawards.org">Sigma Awards</a> (연도별 best practice 사례 — 2026 31 finalists)</li>
+<li><a href="https://journalismcourses.org">Knight Center</a> 무료 강좌 (climate journalism 등)</li>
+</ul>
+<hr>
+<h2 id="10-빠른-시작-템플릿-한-파일">10. 빠른 시작 템플릿 (한 파일)</h2>
+<pre><code class="language-python"># starter.py — 강의용 미니 템플릿 (2026-05 검증 URL)
+import os, requests, json
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
+
+load_dotenv()
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+def worldbank_indicator(country_iso3: str, indicator: str,
+                        start_year: int, end_year: int) -&gt; str:
+    """World Bank 단일 지표 시계열. (✅ 검증 v2 엔드포인트)
+    예) country_iso3='KOR', indicator='NY.GDP.MKTP.CD' (GDP, current US$)
+    """
+    url = (f"https://api.worldbank.org/v2/country/{country_iso3}/indicator/"
+           f"{indicator}?date={start_year}:{end_year}&amp;format=json&amp;per_page=200")
+    r = requests.get(url, timeout=15)
+    return json.dumps(r.json(), ensure_ascii=False)[:6000]
+
+def gdelt_doc(query: str, timespan: str = "1d", maxrec: int = 10) -&gt; str:
+    """GDELT 2.0 Doc API — 글로벌 뉴스 검색. (✅ 검증)
+    timespan 예: '1d', '7d'  /  query 예: 'Korea AND inflation'
+    """
+    url = "https://api.gdeltproject.org/api/v2/doc/doc"
+    params = dict(query=query, mode="ArtList", maxrecords=maxrec,
+                  timespan=timespan, format="json", sort="HybridRel")
+    return requests.get(url, params=params, timeout=15).text[:6000]
+
+def naver_news(query: str, display: int = 10) -&gt; str:
+    """네이버 뉴스 검색 (한국어). (✅ 검증)"""
+    headers = {
+        "X-Naver-Client-Id": os.environ.get("NAVER_CLIENT_ID", ""),
+        "X-Naver-Client-Secret": os.environ.get("NAVER_CLIENT_SECRET", ""),
+    }
+    r = requests.get("https://openapi.naver.com/v1/search/news.json",
+                     params={"query": query, "display": display, "sort": "date"},
+                     headers=headers, timeout=15)
+    return r.text[:6000]
+
+def oecd_data(dataflow: str, query_filter: str, start_period: str = "2020-01") -&gt; str:
+    """OECD Data Explorer (신 엔드포인트, ✅ 2024-07 마이그레이션 후).
+    Args:
+        dataflow: 예) 'OECD.SDD.TPS,DSD_LFS@DF_IALFS_UNE_M,1.0'
+        query_filter: 예) 'KOR..PT_LF_SUB._Z.Y._T.Y_GE15..M'
+        start_period: 예) '2023-01'
+    """
+    url = (f"https://sdmx.oecd.org/public/rest/data/{dataflow}/{query_filter}"
+           f"?startPeriod={start_period}&amp;dimensionAtObservation=AllDimensions"
+           f"&amp;format=csvfilewithlabels")
+    return requests.get(url, timeout=20).text[:6000]
+
+def main(question: str):
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash-lite",
+        contents=question,
+        config=types.GenerateContentConfig(
+            tools=[worldbank_indicator, gdelt_doc, naver_news, oecd_data],
+            temperature=0,
+            system_instruction=(
+                "당신은 데이터저널리즘 어시스턴트다. "
+                "정량 주장은 반드시 도구를 호출해 확인하고, "
+                "인용한 모든 출처 URL을 답변 끝에 나열한다."
+            ),
+        ),
+    )
+    print(resp.text)
+
+if __name__ == "__main__":
+    main("최근 한국 GDP 성장률을 World Bank 데이터로 확인하고, "
+         "관련 외신 보도 톤을 GDELT로 살펴봐줘.")
+</code></pre>
+<p>실행:</p>
+<pre><code class="language-bash">python starter.py
+</code></pre>
+<p>이 한 파일로 <strong>글로벌 거시지표 + 글로벌 뉴스 + 한국 뉴스 + OECD</strong>를 동시에 grounding하는 데이터저널리즘 어시스턴트가 동작.</p>
+<hr>
+<h2 id="11-트러블슈팅-faq">11. 트러블슈팅 (FAQ)</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>원인·해결</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>API key not valid</code></td>
+<td><code>.env</code> 로딩 안 됨 → <code>load_dotenv()</code> 호출 위치 확인, 환경변수명 대소문자 일치</td>
+</tr>
+<tr>
+<td><code>429 Too Many Requests</code></td>
+<td>무료 tier 분당 제한 초과 → exponential backoff, 또는 <code>gemini-2.5-flash</code> (상위) 일시 사용</td>
+</tr>
+<tr>
+<td><code>400 Schema validation</code></td>
+<td>Function 인자 타입 어노테이션 누락/복잡 → <code>int \| str</code> 같은 union은 피하고 단순 타입 사용</td>
+</tr>
+<tr>
+<td>KOSIS 빈 결과</td>
+<td><code>prdSe</code>, <code>orgId</code>, <code>tblId</code> 일치 필수 — 통계지표 조회 API로 먼저 메타 확보</td>
+</tr>
+<tr>
+<td>BIGKINDS 401</td>
+<td>비공개 API 키, <a href="https://www.kpf.or.kr">한국언론진흥재단</a> 직접 신청 필요</td>
+</tr>
+<tr>
+<td>MCP 서버 미연결</td>
+<td><code>uvx</code>/<code>npx</code> PATH 확인, Windows에서는 절대경로 권장</td>
+</tr>
+<tr>
+<td>한국어 함수 docstring 무시</td>
+<td>docstring을 영문으로 작성하거나 영문+한글 병기 — 모델 파싱 안정성 ↑</td>
+</tr>
+<tr>
+<td><strong>OECD <code>stats.oecd.org</code> 503/timeout</strong></td>
+<td><strong>2024-07 폐쇄됨</strong>. 즉시 <a href="https://sdmx.oecd.org/public/rest/"><code>sdmx.oecd.org/public/rest/</code></a>로 변경</td>
+</tr>
+<tr>
+<td><strong>IMF DataMapper 404</strong></td>
+<td><code>/api/v1/</code>은 일부 엔드포인트 정상이나 <code>/api/v2/</code>가 현재 권장 버전</td>
+</tr>
+<tr>
+<td><strong>OpenAlex 401 (2025-02 이후)</strong></td>
+<td>API 키 필수 — <a href="https://openalex.org/settings/api">https://openalex.org/settings/api</a>에서 무료 발급 후 <code>?api_key=...</code> 또는 <code>mailto=</code> 파라미터 추가</td>
+</tr>
+<tr>
+<td><strong><code>feeds.reuters.com</code> 404</strong></td>
+<td>Reuters 자체 RSS 2020년 폐지 → RSSHub <code>/reuters/...</code> 사용</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="부록-a-url-검증-요약-quick-reference">부록 A. URL 검증 요약 (Quick Reference)</h2>
+<h3 id="검증된-안정-api-직접-사용-권장">✅ 검증된 안정 API (직접 사용 권장)</h3>
+<table>
+<thead>
+<tr>
+<th>카테고리</th>
+<th>API (homepage)</th>
+<th>엔드포인트</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>한국 거시</td>
+<td><a href="https://www.data.go.kr">공공데이터포털</a></td>
+<td><code>data.go.kr</code></td>
+</tr>
+<tr>
+<td>한국 통계</td>
+<td><a href="https://kosis.kr">KOSIS</a></td>
+<td><a href="https://kosis.kr/openapi/"><code>kosis.kr/openapi/</code></a></td>
+</tr>
+<tr>
+<td>한국 금융</td>
+<td><a href="https://ecos.bok.or.kr">한국은행 ECOS</a></td>
+<td><a href="https://ecos.bok.or.kr/api/"><code>ecos.bok.or.kr/api/</code></a></td>
+</tr>
+<tr>
+<td>한국 기업</td>
+<td><a href="https://opendart.fss.or.kr">Open DART</a></td>
+<td><a href="https://opendart.fss.or.kr/api/"><code>opendart.fss.or.kr/api/</code></a></td>
+</tr>
+<tr>
+<td>한국 법령</td>
+<td><a href="https://open.law.go.kr">국가법령정보</a></td>
+<td><a href="https://open.law.go.kr"><code>open.law.go.kr</code></a></td>
+</tr>
+<tr>
+<td>한국 국회</td>
+<td><a href="https://open.assembly.go.kr">열린국회정보</a></td>
+<td><a href="https://open.assembly.go.kr/portal/openapi/main.do"><code>open.assembly.go.kr/portal/openapi/</code></a></td>
+</tr>
+<tr>
+<td>한국 뉴스</td>
+<td><a href="https://www.bigkinds.or.kr">BIGKINDS</a></td>
+<td>(신청제)</td>
+</tr>
+<tr>
+<td>한국 검색</td>
+<td><a href="https://developers.naver.com">네이버 검색</a></td>
+<td><a href="https://developers.naver.com/products/service-api/search/search.md"><code>openapi.naver.com/v1/search/</code></a></td>
+</tr>
+<tr>
+<td>한국 지도</td>
+<td><a href="https://apis.map.kakao.com">카카오맵</a>, <a href="https://www.ncloud.com/product/applicationService/maps">네이버 지도</a></td>
+<td>—</td>
+</tr>
+<tr>
+<td>글로벌 거시</td>
+<td><a href="https://data.worldbank.org">World Bank</a></td>
+<td><a href="https://api.worldbank.org/v2/"><code>api.worldbank.org/v2/</code></a></td>
+</tr>
+<tr>
+<td>글로벌 거시</td>
+<td><a href="https://www.imf.org/external/datamapper/">IMF DataMapper</a></td>
+<td><a href="https://www.imf.org/external/datamapper/api/v2/"><code>imf.org/external/datamapper/api/v2/</code></a></td>
+</tr>
+<tr>
+<td>글로벌 거시</td>
+<td><a href="https://fred.stlouisfed.org">FRED</a></td>
+<td><a href="https://api.stlouisfed.org/fred/"><code>api.stlouisfed.org/fred/</code></a></td>
+</tr>
+<tr>
+<td>글로벌 뉴스</td>
+<td><a href="https://www.gdeltproject.org">GDELT 2.0</a></td>
+<td><a href="https://api.gdeltproject.org/api/v2/"><code>api.gdeltproject.org/api/v2/</code></a></td>
+</tr>
+<tr>
+<td>학술</td>
+<td><a href="https://arxiv.org">arXiv</a>, <a href="https://www.crossref.org">Crossref</a>, <a href="https://www.ncbi.nlm.nih.gov">PubMed</a>, <a href="https://api.nasa.gov">NASA</a></td>
+<td>각 base</td>
+</tr>
+</tbody></table>
+<h3 id="변경폐지된-api-즉시-교체-필요">❌ 변경·폐지된 API (즉시 교체 필요)</h3>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>옛 엔드포인트 (작동 안 함)</th>
+<th>새 엔드포인트</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>OECD</strong></td>
+<td><del><code>https://stats.oecd.org/SDMX-JSON/data/</code></del> (2024-07 폐쇄)</td>
+<td><a href="https://sdmx.oecd.org/public/rest/"><code>https://sdmx.oecd.org/public/rest/data/</code></a></td>
+</tr>
+<tr>
+<td><strong>IMF (legacy)</strong></td>
+<td><del><code>https://dataservices.imf.org</code></del> (2025-11 폐쇄)</td>
+<td><a href="https://data.imf.org"><code>https://data.imf.org</code></a> (SDMX 3.0)</td>
+</tr>
+<tr>
+<td><strong>IMF DataMapper</strong></td>
+<td><code>https://www.imf.org/external/datamapper/api/v1/</code></td>
+<td><a href="https://www.imf.org/external/datamapper/api/v2/"><code>https://www.imf.org/external/datamapper/api/v2/</code></a></td>
+</tr>
+<tr>
+<td><strong>Reuters RSS</strong></td>
+<td><del><code>feeds.reuters.com/Reuters/worldNews</code></del> (2020 폐지)</td>
+<td>RSSHub <code>/reuters/:category</code> (자매 RSS 가이드 §6 참조)</td>
+</tr>
+<tr>
+<td><strong>OpenAlex (인증)</strong></td>
+<td>(이전 무인증)</td>
+<td><a href="https://api.openalex.org/"><code>api.openalex.org</code></a> — <strong>API 키 필수</strong> (2025-02 이후)</td>
+</tr>
+</tbody></table>
+<h3 id="미검증-항목-운영-패턴">⚠️ 미검증 항목 운영 패턴</h3>
+<pre><code class="language-python"># 자동 fallback 패턴
+import requests, time
+
+def safe_call(url, params=None, timeout=15, retries=2):
+    """API 호출 with 자동 재시도 + fallback URL 알림."""
+    for i in range(retries):
+        try:
+            r = requests.get(url, params=params, timeout=timeout)
+            if r.status_code == 200:
+                return r.json() if 'json' in r.headers.get('Content-Type', '') else r.text
+            elif r.status_code in (404, 410):
+                print(f"⚠️ {url} 폐기 가능성 — 본 가이드 ❌ 마크 확인")
+                break
+        except Exception as e:
+            print(f"[err] {url}: {e}")
+            time.sleep(2 ** i)
+    return None
+</code></pre>
+<p>이 패턴으로 ⚠️ 마크 API의 갑작스런 폐지에도 대응 가능. ❌ 마크 API는 본 가이드의 새 엔드포인트로 즉시 교체.</p>
+<hr>
+
+      </div>
+    </body>
+    </html>
