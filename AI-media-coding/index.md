@@ -136,7 +136,8 @@
 
 - (강의) [Gemini 멀티모달 LLM 활용 분석: 설명](https://jonghhhh.github.io/2026_1/Gemini_멀티모달_분석.html)     
 - (실습) [Gemini 멀티모달 LLM 활용 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_analysis_050126.py)
-- (실습 자료) [Gemini 멀티모달 LLM 활용 분석: 실습 자료](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_src.zip)     
+- (실습 자료) [Gemini 멀티모달 LLM 활용 분석: 실습 자료](https://jonghhhh.github.io/2026_1/py/gemini_multimodal_src.zip)
+- (강의) [Gemini 코드와 설정: 설명](https://jonghhhh.github.io/2026_1/gemini_setting_051026.html)       
   
 </details>
 
@@ -149,7 +150,10 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) API 기반 데이터 수집: 뉴스 API, 공공데이터 API, YouTube Data API
+- (강의) [Gemini + API MCP 분석: 설명](https://jonghhhh.github.io/2026_1/API_MCP_Guide_051026.html)  
+- (강의) [Gemini + RSS 분석: 설명](https://jonghhhh.github.io/2026_1/RSS_Guide_051026.html)  
+- (실습) [Gemini + API MCP 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/news_naver_wiki_api.py)  
+- (실습) [Gemini + RSS 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/global_news_brief_rss.py)      
 - (강의) 수집 → 정제 → LLM 분석 파이프라인 설계
 - (실습) 뉴스 API(예: NewsAPI, 네이버 검색 API)로 기사 수집
 - (실습) 수집한 기사에 LLM API 적용: 자동 분류·요약·감성 분석
