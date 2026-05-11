@@ -154,10 +154,6 @@
 - (강의) [Gemini + RSS 분석: 설명](https://jonghhhh.github.io/2026_1/RSS_Guide_051026.html)  
 - (실습) [Gemini + API MCP 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/news_naver_wiki_api.py)  
 - (실습) [Gemini + RSS 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/global_news_brief_rss.py)      
-- (강의) 수집 → 정제 → LLM 분석 파이프라인 설계
-- (실습) 뉴스 API(예: NewsAPI, 네이버 검색 API)로 기사 수집
-- (실습) 수집한 기사에 LLM API 적용: 자동 분류·요약·감성 분석
-- (실습) 결과를 DataFrame으로 정리 → CSV 저장 → 시각화
 
 </details>
 
