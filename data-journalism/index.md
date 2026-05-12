@@ -168,24 +168,16 @@
 
 ---
 
-### 11주차 (5/13, ~~5/18~~): 웹 빌드와 배포 + 챗봇
+### 11주차 (5/13, ~~5/18~~): 웹 개발, 빌드, 배포 + 챗봇
 
 > ※ 5/18(월) 휴일 — 1회 수업
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) **Streamlit 기초**: 설치, 실행(`streamlit run app.py`), 핫 리로드
-- (강의) 레이아웃: `st.columns`, `st.tabs`, `st.sidebar`, `st.expander`
-- (강의) 데이터 표시: `st.dataframe`, `st.metric`, `st.json`
-- (강의) **`st.components.v1.html()` 패턴**: JS 시각화를 Streamlit에 임베드
-  - Pandas → JSON 문자열 → f-string으로 JS에 주입 → `components.html(html, height=500)`
-  - Chart.js, Leaflet, vis.js 모두 이 패턴으로 임베드
-- (강의) 멀티페이지 앱: `pages/` 디렉토리 구조
-- (실습) Streamlit "Hello World" + 교통사고 데이터 표시
-- (실습) Chart.js 그래프를 `components.html()`로 임베드
-- (실습) Leaflet 지도를 `components.html()`로 임베드
-- (실습) 멀티페이지 구성: 메인 / 시각화 / 검색 / 챗봇
+-(강의) [웹 개발 빌드 배포](https://jonghhhh.github.io/2026_1/웹_개발_빌드_배포.html)  
+-(강의) [github 사용법: 배포를 위해](https://jonghhhh.github.io/2026_1/github_사용법.html)  
+-(실습 예제) [챗봇 만들기 프롬프트](https://jonghhhh.github.io/2026_1/프롬프트_goofgleAIStudio_Build_JS_챗봇.html)  
 
 </details>
 
