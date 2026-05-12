@@ -177,7 +177,7 @@
 
 -(강의) [웹 개발 빌드 배포](https://jonghhhh.github.io/2026_1/웹_개발_빌드_배포.html)  
 -(강의) [github 사용법: 배포를 위해](https://jonghhhh.github.io/2026_1/github_사용법.html)  
--(실습 예제) [챗봇 만들기 프롬프트](https://jonghhhh.github.io/2026_1/프롬프트_goofgleAIStudio_Build_JS_챗봇.html)  
+-(실습 예제) [챗봇 만들기 프롬프트](https://jonghhhh.github.io/2026_1/프롬프트_GoogleAIStudio_Build_JS_챗봇.html)     
 
 </details>
 
