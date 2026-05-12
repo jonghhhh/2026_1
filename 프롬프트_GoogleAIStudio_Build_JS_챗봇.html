@@ -1,0 +1,87 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h3 id="google-ai-studio--build-에서-바닐라-js로-bts-챗봇-만들기-프롬프트">Google AI Studio &gt; Build 에서 바닐라 JS로 BTS 챗봇 만들기 프롬프트</h3>
+<p><br><br></p>
+<p>BTS 전문가 챗봇을 만들어줘. 아래 규칙을 반드시 지킬 것.</p>
+<p>【절대 준수 — 위반 시 폐기】</p>
+<ol>
+<li><p>출력은 반드시 "단일 index.html 파일" 하나여야 한다.</p>
+<ul>
+<li>React, TSX, JSX, Vite, 별도 모듈 파일 일체 금지.</li>
+<li>빌드 단계 없이 브라우저에서 더블클릭만으로 실행되어야 한다.</li>
+<li>외부 라이브러리는 ESM CDN(import 구문) 만 허용.</li>
+</ul>
+</li>
+<li><p>모델명은 반드시 "gemini-2.5-flash-lite" 로 고정한다.</p>
+<ul>
+<li>gemini-pro, gemini-1.5-flash, gemini-2.0-* 등 어떤 변형도 금지.</li>
+<li>자동으로 "더 좋은 모델"로 바꾸지 말 것.</li>
+</ul>
+</li>
+</ol>
+<p>【기능 요구사항】</p>
+<ul>
+<li>BTS(방탄소년단) 전문가 챗봇.</li>
+<li>멀티턴 대화: 이전 대화 맥락을 history 배열로 누적 관리.</li>
+<li>CSS는 최소화 (짧은 &lt;style&gt; 블록 하나, 군더더기 없는 단순한 채팅 UI).</li>
+<li>JavaScript는 풍부하게 사용 (스트리밍 출력, 엔터 전송, 로딩 표시,
+에러 핸들링, localStorage 키 저장, 대화 초기화 버튼 등).</li>
+<li>전체 코드는 최대한 간결하게. 불필요한 추상화·주석·래퍼 함수 금지.</li>
+</ul>
+<p>【API 키 입력 UI】</p>
+<ul>
+<li>페이지 상단에 안내문:
+"본인의 Gemini API 키를 입력하세요. 키는 브라우저에만 저장됩니다."</li>
+<li>키 입력 input 박스 (type="password").</li>
+<li>입력 박스 바로 아래에 작은 회색 글씨로:
+"키 발급: <a href="https://aistudio.google.com/apikey">https://aistudio.google.com/apikey</a>"</li>
+</ul>
+<p>【Gemini 호출 패턴 — 이 구조 그대로 사용】</p>
+<p>import { GoogleGenAI } from "<a href="https://esm.run/@google/genai">https://esm.run/@google/genai</a>";</p>
+<p>const ai = new GoogleGenAI({ apiKey: userKey });
+const response = await ai.models.generateContent({
+  model: "gemini-2.5-flash-lite",   // ← 절대 변경 금지
+  contents: history,                 // 멀티턴 누적
+  config: { systemInstruction: BTS_KNOWLEDGE }
+});
+console.log(response.text);</p>
+<p>【시스템 프롬프트 / 지식 베이스】</p>
+<p>아래 자료를 systemInstruction에 그대로 주입하고,
+챗봇은 이 자료를 1차 근거로 삼아 답변하도록 한다.
+자료에 없는 사항은 "자료에 없음"이라고 명시한 뒤 일반 지식으로 보완.</p>
+<p>&lt;BTS_자료&gt;<br>[여기에 BTS 관련 자료 본문 붙여넣기]<br>&lt;/BTS_자료&gt;</p>
+
+      </div>
+    </body>
+    </html>

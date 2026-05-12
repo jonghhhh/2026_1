@@ -1,0 +1,833 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h1 id="웹-개발-빌드-배포-바닐라-js부터-react-typescript-vite까지">웹 개발-빌드-배포: 바닐라 JS부터 React, TypeScript, Vite까지</h1>
+<blockquote>
+<p>목표: "왜 React를 쓰지?", "JSX/TSX는 뭐지?", "Vite는 뭘 해주는 거지?" 라는 질문에 스스로 답할 수 있게 된다</p>
+</blockquote>
+<p>---</p>
+<h2 id="0-이-강의에서-답하려는-질문들">0. 이 강의에서 답하려는 질문들</h2>
+<p>이번 강의를 마치면 여러분은 아래 질문들에 자기 언어로 설명할 수 있게 됩니다.</p>
+<ol>
+<li>HTML + CSS + JavaScript 만으로 웹페이지를 만들 수 있는데, 왜 굳이 React 같은 라이브러리를 쓰는가?</li>
+<li><code>.js</code>, <code>.jsx</code>, <code>.ts</code>, <code>.tsx</code> 파일은 도대체 뭐가 다른가?</li>
+<li>"컴포넌트"라는 단어가 React의 핵심이라고들 하는데, 그게 정확히 무엇인가?</li>
+<li>TypeScript는 왜 등장했고, "타입 안전성"이라는 게 실제로 어떤 버그를 막아주는가?</li>
+<li>Vite, Webpack 같은 "빌드 도구"는 왜 필요하고 내부에서 무슨 일을 하는가?</li>
+</ol>
+<p>이 다섯 가지가 이 강의의 척추입니다. 하나씩 깊이 들어가봅시다.</p>
+<p>---</p>
+<h2 id="1-출발점-웹페이지의-3대-요소">1. 출발점: 웹페이지의 3대 요소</h2>
+<p>여러분이 이미 알고 있을 내용을 짧게 정리합니다.</p>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>역할</th>
+<th>비유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>HTML</strong></td>
+<td>페이지의 <strong>구조</strong> (뼈대)</td>
+<td>신문 기사의 헤드라인, 본문, 사진 캡션 같은 구조</td>
+</tr>
+<tr>
+<td><strong>CSS</strong></td>
+<td>페이지의 <strong>외형</strong> (스타일)</td>
+<td>신문 레이아웃, 폰트, 색깔, 사진 크기</td>
+</tr>
+<tr>
+<td><strong>JavaScript</strong></td>
+<td>페이지의 <strong>동작</strong> (상호작용)</td>
+<td>독자가 버튼을 누르면 댓글이 펼쳐지는 그런 움직임</td>
+</tr>
+</tbody></table>
+<p>이 셋만 있으면 어떤 웹페이지도 만들 수 있습니다. <strong>이론적으로는</strong> 그렇습니다. 그런데 왜 우리는 React, TypeScript, Vite 같은 도구를 추가로 배우는 걸까요? 그걸 이해하려면 먼저 "셋만으로 만든다는 것"의 실제 모습을 봐야 합니다.</p>
+<p>---</p>
+<h2 id="2-바닐라-js로-웹페이지-만들기">2. 바닐라 JS로 웹페이지 만들기</h2>
+<p>"바닐라 JS(Vanilla JS)"는 별다른 라이브러리 없이 순수한 자바스크립트만 쓴다는 뜻입니다. 아이스크림에 토핑 없이 바닐라 맛만 먹는 것과 같다는 비유에서 왔습니다.</p>
+<h3 id="21-예제-클릭-카운터-바닐라-js">2.1 예제: 클릭 카운터 (바닐라 JS)</h3>
+<p>버튼을 누를 때마다 숫자가 1씩 올라가는 단순한 페이지를 만들어 봅시다.</p>
+<pre><code class="language-html">&lt;!-- counter.html --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;카운터&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+    #count { font-size: 48px; margin: 20px; }
+    button { font-size: 20px; padding: 10px 20px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;클릭 카운터&lt;/h1&gt;
+  &lt;div id="count"&gt;0&lt;/div&gt;
+  &lt;button id="increase"&gt;+1&lt;/button&gt;
+  &lt;button id="decrease"&gt;-1&lt;/button&gt;
+  &lt;button id="reset"&gt;초기화&lt;/button&gt;
+
+  &lt;script&gt;
+    // 1. 상태(state)를 변수로 관리
+    let count = 0;
+
+    // 2. DOM 요소들을 미리 잡아둔다
+    const countEl = document.getElementById('count');
+    const increaseBtn = document.getElementById('increase');
+    const decreaseBtn = document.getElementById('decrease');
+    const resetBtn = document.getElementById('reset');
+
+    // 3. 화면을 갱신하는 함수
+    function render() {
+      countEl.textContent = count;
+    }
+
+    // 4. 이벤트 리스너를 일일이 연결
+    increaseBtn.addEventListener('click', () =&gt; {
+      count += 1;
+      render();
+    });
+    decreaseBtn.addEventListener('click', () =&gt; {
+      count -= 1;
+      render();
+    });
+    resetBtn.addEventListener('click', () =&gt; {
+      count = 0;
+      render();
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3 id="22-무엇이-문제인가">2.2 무엇이 문제인가?</h3>
+<p>이 코드는 동작합니다. 그런데 잘 보세요. 무엇을 했나요?</p>
+<ol>
+<li><code>count</code>라는 <strong>데이터(상태)</strong> 를 변수로 따로 만들고</li>
+<li>화면의 <code>#count</code> <strong>DOM 요소</strong> 를 따로 잡고</li>
+<li>데이터가 바뀌면 <strong>수동으로</strong> <code>render()</code> 를 호출해서 둘을 동기화</li>
+</ol>
+<p>즉, <strong>"데이터" 와 "화면"이 따로 놀고, 둘을 맞추는 게 개발자 책임</strong>입니다.</p>
+<p>지금은 버튼 3개니까 괜찮습니다. 그런데 만약 화면에 50개의 요소가 있고, 그중 7개가 <code>count</code> 값에 따라 바뀌어야 한다면? 또 사용자 입력이 20군데에서 들어온다면? <code>render()</code>를 어디서 호출해야 하는지, 어느 요소를 다시 그려야 하는지 추적하기 시작하면 코드가 폭발합니다.</p>
+<p>이게 바로 <strong>"명령형(imperative) 프로그래밍의 한계"</strong> 입니다. 화면을 한 단계 한 단계 "이렇게 바꿔라, 저렇게 바꿔라"라고 명령해야 하니까요.</p>
+<h3 id="23-조금-더-복잡한-예시-to-do-리스트">2.3 조금 더 복잡한 예시: To-do 리스트</h3>
+<p>할 일을 추가하고, 삭제하고, 완료 표시하는 To-do 앱을 바닐라 JS로 짜면 어떨까요? 핵심 부분만 봅시다.</p>
+<pre><code class="language-javascript">// 바닐라 JS로 짠 to-do (일부)
+let todos = \[];
+
+function addTodo(text) {
+  todos.push({ id: Date.now(), text, done: false });
+  renderTodos(); // 매번 호출해야 함
+}
+
+function deleteTodo(id) {
+  todos = todos.filter(t =&gt; t.id !== id);
+  renderTodos(); // 또 호출
+}
+
+function toggleTodo(id) {
+  const todo = todos.find(t =&gt; t.id === id);
+  todo.done = !todo.done;
+  renderTodos(); // 또또 호출
+}
+
+function renderTodos() {
+  const list = document.getElementById('todo-list');
+  list.innerHTML = ''; // 일단 다 지우고
+  todos.forEach(todo =&gt; {
+    const li = document.createElement('li'); // 다시 다 만들고
+    li.textContent = todo.text;
+    if (todo.done) li.style.textDecoration = 'line-through';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '삭제';
+    deleteBtn.addEventListener('click', () =&gt; deleteTodo(todo.id));
+    li.appendChild(deleteBtn);
+
+    li.addEventListener('click', () =&gt; toggleTodo(todo.id));
+    list.appendChild(li);
+  });
+}
+</code></pre>
+<p>문제점이 보이나요?</p>
+<ul>
+<li><code>renderTodos()</code> 안에서 매번 <code>innerHTML = ''</code>로 화면을 다 지우고 새로 그립니다 → <strong>성능 낭비</strong></li>
+<li>데이터가 바뀔 때마다 <code>renderTodos()</code>를 잊지 않고 호출해야 합니다 → <strong>개발자가 일일이 챙겨야 함</strong></li>
+<li>입력 폼, 필터 기능, 정렬 기능 등이 추가되면 함수가 거미줄처럼 얽힙니다 → <strong>유지보수 지옥</strong></li>
+</ul>
+<p>여기서 우리는 다음 질문에 도달합니다.</p>
+<blockquote>
+<p>**"데이터만 바꾸면, 화면이 알아서 그에 맞게 바뀔 수는 없을까?"**</p>
+</blockquote>
+<p>이 질문에 대한 답이 바로 <strong>React</strong>입니다.</p>
+<p>---</p>
+<h2 id="3-react의-등장--컴포넌트와-선언형-사고">3. React의 등장 — 컴포넌트와 선언형 사고</h2>
+<h3 id="31-핵심-사고방식의-전환-명령형--선언형">3.1 핵심 사고방식의 전환: 명령형 → 선언형</h3>
+<table>
+<thead>
+<tr>
+<th>방식</th>
+<th>의미</th>
+<th>예시</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>명령형 (Imperative)</strong></td>
+<td>"이렇게 해라, 저렇게 해라" 단계별 명령</td>
+<td>바닐라 JS의 <code>appendChild</code>, <code>innerHTML = ...</code></td>
+</tr>
+<tr>
+<td><strong>선언형 (Declarative)</strong></td>
+<td>"결과는 이래야 한다" 최종 모습만 선언</td>
+<td>React의 "데이터가 X면 화면은 Y다"</td>
+</tr>
+</tbody></table>
+<p>요리에 비유하면 이렇습니다.</p>
+<ul>
+<li><strong>명령형</strong>: "냄비를 꺼내라. 물을 부어라. 가스를 켜라. 3분 후 불을 꺼라. 라면을 넣어라..."</li>
+<li><strong>선언형</strong>: "라면 한 그릇이 완성된 모습은 이렇다." — 어떻게 만들지는 시스템(React)이 알아서.</li>
+</ul>
+<h3 id="32-react의-가장-중요한-개념-컴포넌트component">3.2 React의 가장 중요한 개념: 컴포넌트(Component)</h3>
+<p><strong>컴포넌트는 "재사용 가능한 UI 조각"</strong> 입니다.</p>
+<p>신문 기사 페이지를 떠올려 보세요. 거기엔 헤드라인, 기자명, 본문, 댓글, 관련기사 박스 같은 <strong>반복되거나 독립적인 단위</strong>들이 있습니다. 각각을 하나의 컴포넌트라고 생각하면 됩니다.</p>
+<pre><code>┌─────────────────────────────────────┐
+│           &lt;Header /&gt;                │
+├─────────────────────────────────────┤
+│  ┌──────────┐  ┌─────────────────┐  │
+│  │&lt;Sidebar/&gt;│  │  &lt;ArticleBody/&gt; │  │
+│  │          │  │                 │  │
+│  │          │  │  &lt;CommentList/&gt; │  │
+│  └──────────┘  └─────────────────┘  │
+├─────────────────────────────────────┤
+│           &lt;Footer /&gt;                │
+└─────────────────────────────────────┘
+</code></pre>
+<p>각 컴포넌트는 <strong>자기 안의 상태(state)</strong> 와 <strong>밖에서 받는 데이터(props)</strong> 만 신경 씁니다. 마치 신문 기사 하나가 다른 기사가 어떻게 생겼는지 신경 안 써도 되는 것처럼요.</p>
+<h3 id="33-같은-카운터를-react로-짜기">3.3 같은 카운터를 React로 짜기</h3>
+<pre><code class="language-jsx">// Counter.jsx
+import { useState } from 'react';
+
+function Counter() {
+  // 상태 선언 - 이 한 줄이 매우 강력합니다
+  const \[count, setCount] = useState(0);
+
+  // 화면이 어떻게 생겨야 하는지 "선언"
+  return (
+    &lt;div style={{ textAlign: 'center', marginTop: 100 }}&gt;
+      &lt;h1&gt;클릭 카운터&lt;/h1&gt;
+      &lt;div style={{ fontSize: 48, margin: 20 }}&gt;{count}&lt;/div&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;+1&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(count - 1)}&gt;-1&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(0)}&gt;초기화&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default Counter;
+</code></pre>
+<p>바닐라 JS와 비교해 봅시다.</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>바닐라 JS</th>
+<th>React</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>상태 관리</td>
+<td><code>let count = 0;</code></td>
+<td><code>const \[count, setCount] = useState(0);</code></td>
+</tr>
+<tr>
+<td>DOM 접근</td>
+<td><code>document.getElementById(...)</code> 일일이 호출</td>
+<td>필요 없음</td>
+</tr>
+<tr>
+<td>화면 갱신</td>
+<td><code>render()</code> 함수 수동 호출</td>
+<td><code>setCount(...)</code> 호출하면 React가 알아서</td>
+</tr>
+<tr>
+<td>이벤트 연결</td>
+<td><code>addEventListener('click', ...)</code></td>
+<td>JSX 안에 <code>onClick={...}</code></td>
+</tr>
+</tbody></table>
+<p><strong>핵심</strong>: <code>setCount(count + 1)</code> 한 줄을 호출하면, React가 "아, 상태가 바뀌었네? 그럼 이 컴포넌트의 화면을 새로 계산해서 바뀐 부분만 DOM에 반영해야겠다"라고 <strong>알아서 해줍니다</strong>. 이게 React가 해주는 일의 99%입니다.</p>
+<h4 id="331-const-count-setcount--usestate0-한-줄-해부">3.3.1 <code>const \[count, setCount] = useState(0)</code> 한 줄 해부</h4>
+<p>이 한 줄이 React 학습의 첫 관문입니다. 다섯 조각으로 쪼개 봅시다.</p>
+<p><strong>(1) <code>useState</code>는 React의 "기억 장치"</strong></p>
+<p>React 컴포넌트는 사실 그냥 함수입니다. 함수는 호출이 끝나면 안의 변수가 사라지죠. 그래서 <code>let count = 0</code>으로 쓰면 화면이 다시 그려질 때마다 0으로 리셋됩니다. <code>useState</code>는 값을 React 내부에 맡겨두고, 컴포넌트가 다시 호출돼도 그 값을 꺼내 쓸 수 있게 해줍니다. 도서관 사물함에 짐을 맡기는 것과 같습니다.</p>
+<p><strong>(2) <code>useState(0)</code>의 <code>0</code>은 초기값</strong></p>
+<p>처음 한 번만 사용됩니다. 두 번째 렌더링부터는 React가 이미 저장해 둔 값을 돌려주고, 이 <code>0</code>은 무시됩니다. 그래서 <code>count</code>가 5인 상태에서 화면이 다시 그려져도 0으로 되돌아가지 않습니다.</p>
+<p><strong>(3) <code>useState</code>는 항상 "두 개짜리 배열"을 돌려준다</strong></p>
+<pre><code class="language-jsx">const result = useState(0);
+// result === \[0, ƒ]
+//            ↑   ↑
+//        현재 값  그 값을 바꾸는 함수
+</code></pre>
+<p><strong>(4) <code>const \[count, setCount] = ...</code> 는 구조 분해 할당</strong></p>
+<p>JavaScript 문법입니다. 배열에서 순서대로 꺼내 이름을 붙입니다.</p>
+<pre><code class="language-javascript">// 일반 예시
+const fruits = \["사과", "바나나"];
+const \[a, b] = fruits;  // a = "사과", b = "바나나"
+
+// useState에 적용
+const \[count, setCount] = useState(0);
+// count = 0 (첫 번째 요소)
+// setCount = 갱신 함수 (두 번째 요소)
+</code></pre>
+<p>이름은 자유롭게 정할 수 있지만(<code>\[숫자, 숫자변경]</code>도 작동함), 관례적으로 <code>\[값, set값]</code> 패턴을 씁니다. <code>name</code>/<code>setName</code>, <code>isOpen</code>/<code>setIsOpen</code> 처럼요.</p>
+<p><strong>(5) 왜 <code>count = count + 1</code>이 아니라 <code>setCount(count + 1)</code>인가?</strong></p>
+<p>두 가지 이유입니다.</p>
+<ul>
+<li><code>count</code>는 <code>const</code>로 선언돼 <strong>재할당 자체가 불가능</strong> (일부러 막아둠)</li>
+<li>그리고 진짜 이유: <strong>React에게 "값이 바뀌었으니 화면을 다시 그려달라"고 알려야</strong> 하기 때문. 그냥 변수를 바꾸면 React는 변화를 모르고, 화면은 옛날 값 그대로 남습니다.</li>
+</ul>
+<blockquote>
+<p>**한 문장 요약**: React에게 "0으로 초기화된 값을 기억해줘"라고 요청하고, 그 값을 읽을 변수(<code>count</code>)와 바꿀 함수(<code>setCount</code>)를 한 줄에 받아오는 코드.</p>
+</blockquote>
+<h3 id="34-jsx는-뭔가">3.4 JSX는 뭔가?</h3>
+<p>위 코드에서 함수가 HTML처럼 생긴 걸 <code>return</code> 하고 있죠? 이게 <strong>JSX (JavaScript XML)</strong> 입니다.</p>
+<pre><code class="language-jsx">return &lt;div&gt;안녕하세요&lt;/div&gt;;
+</code></pre>
+<p>이건 사실 JavaScript가 아닙니다. 브라우저는 이 문법을 모릅니다. 그래서 <strong>빌드 도구</strong>가 이 JSX를 진짜 JavaScript로 변환해줍니다:</p>
+<pre><code class="language-javascript">// 위의 JSX가 빌드 후엔 이렇게 변환됨
+return React.createElement('div', null, '안녕하세요');
+</code></pre>
+<p>즉, <strong>JSX는 "JavaScript 안에서 HTML처럼 보이게 써도 되는 문법적 사탕(syntactic sugar)"</strong> 입니다. 개발자가 더 직관적으로 UI를 표현할 수 있게 해주는 것뿐, 마법은 아닙니다.</p>
+<blockquote>
+<p>**왜 JSX를 쓰는가?**
+<code>React.createElement('div', null, React.createElement('h1', null, '제목'), ...)</code> 처럼 함수 호출로 UI를 표현하면 사람이 읽기 너무 힘듭니다. HTML처럼 보이게 쓰면 한눈에 구조가 잡힙니다.</p>
+</blockquote>
+<h3 id="35-props--컴포넌트-사이-데이터-전달">3.5 Props — 컴포넌트 사이 데이터 전달</h3>
+<p>부모 컴포넌트가 자식 컴포넌트에 데이터를 넘길 때 쓰는 것이 <strong>props (properties의 줄임)</strong> 입니다.</p>
+<pre><code class="language-jsx">// ArticleCard.jsx - 재사용 가능한 기사 카드 컴포넌트
+function ArticleCard({ title, author, date }) {
+  return (
+    &lt;div className="card"&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;p&gt;{author} · {date}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+// App.jsx - 이 컴포넌트를 여러 번 사용
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;ArticleCard
+        title="AI가 바꾸는 저널리즘"
+        author="이종혁"
+        date="2026-05-12"
+      /&gt;
+      &lt;ArticleCard
+        title="컴퓨테이셔널 방법론의 미래"
+        author="홍길동"
+        date="2026-05-10"
+      /&gt;
+      &lt;ArticleCard
+        title="딥페이크 탐지 시스템 ER-Forensics"
+        author="이종혁"
+        date="2026-05-08"
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>같은 <code>ArticleCard</code> 컴포넌트를 데이터만 바꿔서 3번 재사용</strong>했습니다. 이게 컴포넌트의 위력입니다. 신문사 CMS에서 기사 1만 건을 보여줄 때, <code>ArticleCard</code> 컴포넌트 하나만 잘 만들어 두면 끝입니다.</p>
+<h3 id="36-to-do-리스트를-react로-다시-짜보기">3.6 To-do 리스트를 React로 다시 짜보기</h3>
+<pre><code class="language-jsx">import { useState } from 'react';
+
+function TodoApp() {
+  const \[todos, setTodos] = useState(\[]);
+  const \[input, setInput] = useState('');
+
+  const addTodo = () =&gt; {
+    if (!input.trim()) return;
+    setTodos(\[...todos, { id: Date.now(), text: input, done: false }]);
+    setInput('');
+  };
+
+  const toggleTodo = (id) =&gt; {
+    setTodos(todos.map(t =&gt;
+      t.id === id ? { ...t, done: !t.done } : t
+    ));
+  };
+
+  const deleteTodo = (id) =&gt; {
+    setTodos(todos.filter(t =&gt; t.id !== id));
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;할 일 목록&lt;/h1&gt;
+      &lt;input
+        value={input}
+        onChange={(e) =&gt; setInput(e.target.value)}
+        placeholder="할 일을 입력하세요"
+      /&gt;
+      &lt;button onClick={addTodo}&gt;추가&lt;/button&gt;
+
+      &lt;ul&gt;
+        {todos.map(todo =&gt; (
+          &lt;li
+            key={todo.id}
+            style={{ textDecoration: todo.done ? 'line-through' : 'none' }}
+          &gt;
+            &lt;span onClick={() =&gt; toggleTodo(todo.id)}&gt;{todo.text}&lt;/span&gt;
+            &lt;button onClick={() =&gt; deleteTodo(todo.id)}&gt;삭제&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>바닐라 JS의 To-do와 비교해 보세요. <strong><code>renderTodos()</code> 같은 수동 렌더링 함수가 사라졌습니다</strong>. <code>setTodos(...)</code>만 호출하면 React가 알아서 화면을 갱신합니다. 코드가 훨씬 명료하고 짧아졌죠.</p>
+<h3 id="37-정리-react가-해결하는-문제">3.7 정리: React가 해결하는 문제</h3>
+<ol>
+<li><strong>상태(데이터)와 화면을 자동으로 동기화</strong> — 개발자는 데이터만 신경 쓰면 됨</li>
+<li><strong>컴포넌트 단위로 코드 분리</strong> — 큰 앱도 작은 단위들의 조합으로 관리</li>
+<li><strong>재사용성</strong> — 같은 컴포넌트를 여러 데이터로 반복 사용</li>
+</ol>
+<p>---</p>
+<h2 id="4-파일-확장자-정리-js-jsx-ts-tsx">4. 파일 확장자 정리: <code>.js</code>, <code>.jsx</code>, <code>.ts</code>, <code>.tsx</code></h2>
+<p>이제 헷갈리는 확장자들을 정리합시다. 이건 사실 매우 간단합니다.</p>
+<table>
+<thead>
+<tr>
+<th>확장자</th>
+<th>정체</th>
+<th>안에 들어가는 것</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong><code>.js</code></strong></td>
+<td>일반 JavaScript</td>
+<td>순수 JS 코드</td>
+</tr>
+<tr>
+<td><strong><code>.jsx</code></strong></td>
+<td>JSX를 포함한 JavaScript</td>
+<td>JS + JSX(HTML 같은 문법)</td>
+</tr>
+<tr>
+<td><strong><code>.ts</code></strong></td>
+<td>TypeScript</td>
+<td>JS + 타입 표기</td>
+</tr>
+<tr>
+<td><strong><code>.tsx</code></strong></td>
+<td>TypeScript + JSX</td>
+<td>JS + JSX + 타입 표기</td>
+</tr>
+</tbody></table>
+<p>규칙은 단순합니다.</p>
+<ul>
+<li><strong>JSX를 쓰면</strong> 파일명 끝에 <code>x</code>가 붙는다 (jsx, tsx).</li>
+<li><strong>TypeScript를 쓰면</strong> 파일명이 <code>t</code>로 시작한다 (ts, tsx).</li>
+</ul>
+<pre><code>  타입 없음     +  JSX 없음  =  .js
+  타입 없음     +  JSX 있음  =  .jsx
+  타입 있음(TS) +  JSX 없음  =  .ts
+  타입 있음(TS) +  JSX 있음  =  .tsx  ← React + TS 프로젝트에서 가장 흔함
+</code></pre>
+<blockquote>
+<p>실무에서 React + TypeScript로 새 프로젝트를 시작하면, 컴포넌트 파일은 거의 다 <code>.tsx</code> 가 됩니다. 유틸리티 함수처럼 JSX 없는 파일만 <code>.ts</code> 로 만듭니다.</p>
+</blockquote>
+<p>---</p>
+<h2 id="5-typescript--왜-등장했고-무엇을-막아주는가">5. TypeScript — 왜 등장했고 무엇을 막아주는가</h2>
+<h3 id="51-javascript의-고질병-타입을-안-챙긴다">5.1 JavaScript의 고질병: 타입을 안 챙긴다</h3>
+<p>JavaScript는 <strong>동적 타입(dynamic typing) 언어</strong>입니다. 변수에 무엇이든 넣을 수 있습니다.</p>
+<pre><code class="language-javascript">let x = 5;       // 숫자
+x = "hello";     // 갑자기 문자열로 바뀌어도 OK
+x = \[1, 2, 3];   // 배열로 바뀌어도 OK
+x = null;        // null이어도 OK
+</code></pre>
+<p>자유롭고 편한 것 같지만, 이게 곧 <strong>버그의 온상</strong>이 됩니다.</p>
+<h3 id="52-실제-사례-타입-에러로-인한-버그">5.2 실제 사례: 타입 에러로 인한 버그</h3>
+<pre><code class="language-javascript">// 사용자 정보를 받아서 화면에 표시하는 함수
+function displayUserAge(user) {
+  return `${user.name}님은 ${user.age + 1}세가 됩니다.`;
+}
+
+// API에서 사용자 데이터를 받아왔다고 가정
+const user1 = { name: "이종혁", age: 45 };
+console.log(displayUserAge(user1));
+// 출력: "이종혁님은 46세가 됩니다." — 정상
+
+// 그런데 API가 age를 문자열로 줬다면?
+const user2 = { name: "홍길동", age: "45" };
+console.log(displayUserAge(user2));
+// 출력: "홍길동님은 451세가 됩니다." — 버그!
+// "45" + 1 은 JavaScript에서 "451"이 됨 (문자열 연결)
+</code></pre>
+<p>이 버그를 발견하려면 <strong>실행해보고, 화면을 직접 봐야</strong> 합니다. 운이 나쁘면 배포 후 사용자가 발견합니다. 신문사 사이트라면 "기자 평균 나이 451세" 같은 게 라이브로 떠버리는 거죠.</p>
+<h3 id="53-typescript로-바꾸면">5.3 TypeScript로 바꾸면?</h3>
+<pre><code class="language-typescript">// user.ts
+interface User {
+  name: string;
+  age: number;  // 명시적으로 숫자
+}
+
+function displayUserAge(user: User): string {
+  return `${user.name}님은 ${user.age + 1}세가 됩니다.`;
+}
+
+const user1: User = { name: "이종혁", age: 45 };   // OK
+const user2: User = { name: "홍길동", age: "45" }; // ❌ 컴파일 에러!
+//                                       ^^^^
+// Type 'string' is not assignable to type 'number'.
+</code></pre>
+<p><strong>코드를 실행하기도 전에</strong>, 에디터에서 빨간 줄과 함께 "여기 타입이 잘못됐어요"라고 알려줍니다. 배포 후 발견할 버그를 <strong>작성 단계에서</strong> 잡습니다.</p>
+<h3 id="54-typescript의-다른-장점">5.4 TypeScript의 다른 장점</h3>
+<h4 id="1-자동완성과-ide-지원">(1) 자동완성과 IDE 지원</h4>
+<pre><code class="language-typescript">interface Article {
+  title: string;
+  author: string;
+  publishedAt: Date;
+  views: number;
+}
+
+function processArticle(article: Article) {
+  article.  // ← 여기서 점만 찍으면 에디터가
+            //   title, author, publishedAt, views를 자동완성!
+}
+</code></pre>
+<h4 id="2-함수-인자-강제">(2) 함수 인자 강제</h4>
+<pre><code class="language-typescript">function calculatePolarizationScore(
+  before: number,
+  after: number,
+  groupSize: number
+): number {
+  return ((after - before) / groupSize) \* 100;
+}
+
+// 호출 시 인자 개수, 타입이 자동 체크됨
+calculatePolarizationScore(3.2, 4.1);       // ❌ 인자 부족
+calculatePolarizationScore(3.2, 4.1, "30"); // ❌ 세 번째 인자가 문자열
+calculatePolarizationScore(3.2, 4.1, 30);   // ✅ OK
+</code></pre>
+<h4 id="3-큰-프로젝트에서-리팩토링-안전">(3) 큰 프로젝트에서 리팩토링 안전</h4>
+<p>신문사 시스템이 100개 파일로 커지면, 어떤 함수의 인자를 바꾸려고 할 때 그 함수를 쓰는 모든 곳을 찾아 고쳐야 합니다. TypeScript는 그 변경이 영향을 끼치는 모든 위치를 컴파일러가 정확히 짚어줍니다.</p>
+<h3 id="55-react-컴포넌트에-타입-붙이기">5.5 React 컴포넌트에 타입 붙이기</h3>
+<pre><code class="language-tsx">// ArticleCard.tsx
+interface ArticleCardProps {
+  title: string;
+  author: string;
+  date: string;
+  views?: number;  // ?는 선택적(optional) — 없어도 됨
+}
+
+function ArticleCard({ title, author, date, views }: ArticleCardProps) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;p&gt;{author} · {date}&lt;/p&gt;
+      {views !== undefined \&amp;\&amp; &lt;span&gt;조회수: {views}&lt;/span&gt;}
+    &lt;/div&gt;
+  );
+}
+
+// 사용 시
+&lt;ArticleCard title="AI 저널리즘" author="이종혁" date="2026-05-12" /&gt;  // ✅
+&lt;ArticleCard title="AI 저널리즘" author="이종혁" /&gt;                     // ❌ date 필수인데 빠짐
+&lt;ArticleCard title={123} author="이종혁" date="2026-05-12" /&gt;           // ❌ title은 string인데 number
+</code></pre>
+<h3 id="56-그럼-typescript는-어떻게-동작하나">5.6 그럼 TypeScript는 어떻게 동작하나?</h3>
+<p>TypeScript는 <strong>JavaScript의 상위 집합(superset)</strong> 입니다. JavaScript에 타입 문법을 추가한 언어죠.</p>
+<pre><code>JavaScript ⊂ TypeScript
+</code></pre>
+<p>브라우저는 TypeScript를 못 읽습니다. 따라서 <strong>TypeScript 컴파일러(<code>tsc</code>)</strong> 가 <code>.ts</code> 파일을 <code>.js</code> 파일로 변환합니다.</p>
+<pre><code class="language-typescript">// hello.ts (작성)
+function greet(name: string): string {
+  return `안녕, ${name}!`;
+}
+</code></pre>
+<pre><code class="language-javascript">// hello.js (컴파일 결과)
+function greet(name) {
+  return "안녕, " + name + "!";
+}
+</code></pre>
+<p><strong>타입 정보는 컴파일 후 사라집니다.</strong> 즉, 런타임에는 그냥 JavaScript입니다. 타입 검사는 "개발 중에만" 작동하는 안전망인 것이죠.</p>
+<p>---</p>
+<h2 id="6-빌드-도구--왜-필요하고-무엇을-하는가">6. 빌드 도구 — 왜 필요하고 무엇을 하는가</h2>
+<h3 id="61-문제-상황-브라우저는-우리가-쓴-코드를-못-읽는다">6.1 문제 상황: 브라우저는 우리가 쓴 코드를 못 읽는다</h3>
+<p>지금까지 우리가 본 것들을 정리하면:</p>
+<ul>
+<li><code>.jsx</code>, <code>.tsx</code> 파일은 브라우저가 못 읽음 (JSX는 표준 JavaScript가 아님)</li>
+<li><code>.ts</code>, <code>.tsx</code> 의 타입 문법은 브라우저가 못 읽음</li>
+<li><code>import</code>/<code>export</code> 구문도 옛날 브라우저는 못 읽음</li>
+<li>수십~수백 개의 컴포넌트 파일을 그냥 두면 브라우저가 그걸 다 따로 요청해야 함 → 느림</li>
+<li>CSS를 컴포넌트별로 잘게 나눠 쓰면 그것도 합쳐야 함</li>
+<li>이미지, 폰트 등도 최적화해서 묶어야 함</li>
+</ul>
+<p>이 모든 변환 + 묶기 + 최적화 작업을 해주는 게 <strong>빌드 도구(Build Tool, Bundler)</strong> 입니다.</p>
+<h3 id="62-빌드-도구가-하는-일-4가지">6.2 빌드 도구가 하는 일 4가지</h3>
+<pre><code>원본 코드 (.tsx, .ts, .css, 이미지)
+         ↓
+    \[빌드 도구]
+         ↓
+  1. 변환 (Transpile): TS → JS, JSX → JS
+  2. 묶기 (Bundle):    파일 수십 개 → 하나(또는 몇 개)로
+  3. 최적화 (Optimize): 코드 압축, 사용 안 하는 코드 제거
+  4. 변경 감지 (HMR):   개발 중 코드 바꾸면 자동 새로고침
+         ↓
+브라우저가 읽을 수 있는 최종 파일 (.html, .js, .css)
+</code></pre>
+<h3 id="63-빌드-도구의-역사-짧게">6.3 빌드 도구의 역사 짧게</h3>
+<table>
+<thead>
+<tr>
+<th>시기</th>
+<th>도구</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2010년대 초</td>
+<td>Grunt, Gulp</td>
+<td>작업 자동화에 가까움</td>
+</tr>
+<tr>
+<td>2015~2020</td>
+<td><strong>Webpack</strong></td>
+<td>사실상의 표준. 강력하지만 느리고 설정 복잡</td>
+</tr>
+<tr>
+<td>2017~</td>
+<td>Parcel</td>
+<td>설정 없이 동작. 간단함</td>
+</tr>
+<tr>
+<td>2018~</td>
+<td>esbuild</td>
+<td>Go언어로 작성, 압도적 속도</td>
+</tr>
+<tr>
+<td>2020~</td>
+<td><strong>Vite</strong></td>
+<td>esbuild + Rollup. 빠르고 쉬움. <strong>현재의 사실상 표준</strong></td>
+</tr>
+</tbody></table>
+<p>지금 새 프로젝트를 시작한다면 <strong>Vite를 쓰는 게 정답에 가깝습니다</strong>.</p>
+<h3 id="64-vite는-어떻게-그렇게-빠른가">6.4 Vite는 어떻게 그렇게 빠른가?</h3>
+<p>Vite의 핵심 아이디어는 두 가지입니다.</p>
+<h4 id="1-개발-중에는-번들링하지-않는다">(1) 개발 중에는 "번들링하지 않는다"</h4>
+<p>옛날 방식(Webpack)은 이렇습니다.</p>
+<pre><code>\[모든 파일 분석] → \[하나로 합치기] → \[개발 서버 실행]
+       ↑
+   이게 수십 초 걸림. 코드 한 줄 고치면 다시 반복.
+</code></pre>
+<p>Vite는 이렇게 합니다.</p>
+<pre><code>\[개발 서버 즉시 실행] → 브라우저가 요청하는 파일만 그때그때 변환
+       ↑
+   파일이 1만 개여도 처음 켜는 데 1초.
+</code></pre>
+<p>이게 가능한 이유는 <strong>현대 브라우저가 ES Modules(ESM) 을 직접 지원</strong>하기 때문입니다. <code>import</code> 구문을 브라우저가 알아듣기 때문에, 굳이 다 합칠 필요가 없습니다.</p>
+<h4 id="2-변환은-esbuild로-go-언어-매우-빠름">(2) 변환은 esbuild로 (Go 언어, 매우 빠름)</h4>
+<p><code>.tsx</code> → <code>.js</code> 변환을 Vite는 <strong>esbuild</strong>라는 도구로 합니다. esbuild는 Go 언어로 작성되어 있어 JavaScript로 짠 변환기보다 <strong>10~100배 빠릅니다</strong>.</p>
+<h4 id="3-운영-빌드는-rollup으로">(3) 운영 빌드는 Rollup으로</h4>
+<p>배포할 때(=운영 빌드)는 결국 모든 파일을 하나로 묶어야 합니다. 그땐 <strong>Rollup</strong>이라는 검증된 번들러를 씁니다.</p>
+<p>즉 Vite는 "개발은 빠르게(esbuild + 네이티브 ESM), 배포는 안정적으로(Rollup)"를 조합한 것입니다.</p>
+<h3 id="65-hmr--개발-생산성의-핵심">6.5 HMR — 개발 생산성의 핵심</h3>
+<p><strong>HMR (Hot Module Replacement)</strong> 은 "코드를 저장하면 페이지 전체를 새로고침하지 않고, 바뀐 부분만 즉시 반영"하는 기능입니다.</p>
+<p>예시: To-do 앱에서 할 일을 5개 입력해 둔 상태에서 버튼 색깔만 빨강 → 파랑으로 바꾸면</p>
+<ul>
+<li><strong>HMR 없음</strong>: 페이지 새로고침 → 입력해둔 5개가 다 사라짐 → 다시 입력해야 함</li>
+<li><strong>HMR 있음</strong>: 버튼 색만 즉시 바뀜 → 입력 상태 유지</li>
+</ul>
+<p>매번 새로고침하면서 클릭 5번씩 다시 하는 시간을 모으면 하루에 1시간도 절약됩니다.</p>
+<h3 id="66-vite로-reacttypescript-프로젝트-만들기">6.6 Vite로 React+TypeScript 프로젝트 만들기</h3>
+<p>명령어 4줄이면 끝납니다.</p>
+<pre><code class="language-bash"># 1. 프로젝트 생성 (대화형 메뉴가 뜸: React → TypeScript 선택)
+npm create vite@latest my-app
+
+# 2. 폴더로 이동
+cd my-app
+
+# 3. 패키지 설치
+npm install
+
+# 4. 개발 서버 실행
+npm run dev
+</code></pre>
+<p>실행하면 터미널에:</p>
+<pre><code>  VITE v5.x.x  ready in 412 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+</code></pre>
+<p><strong>412ms.</strong> 0.4초 만에 개발 서버가 뜹니다. Webpack이었다면 보통 15~30초 걸리던 일입니다.</p>
+<h3 id="67-생성된-프로젝트-구조">6.7 생성된 프로젝트 구조</h3>
+<pre><code>my-app/
+├── node\_modules/      ← 설치된 라이브러리들 (절대 직접 수정 안 함)
+├── public/            ← 정적 파일 (이미지 등)
+├── src/               ← 우리가 작성할 코드
+│   ├── App.tsx        ← 메인 컴포넌트
+│   ├── main.tsx       ← 진입점
+│   └── index.css
+├── index.html         ← HTML 진입점
+├── package.json       ← 프로젝트 정보, 의존성 목록
+├── tsconfig.json      ← TypeScript 설정
+└── vite.config.ts     ← Vite 설정
+</code></pre>
+<h3 id="68-개발-vs-빌드-vs-배포">6.8 개발 vs 빌드 vs 배포</h3>
+<pre><code class="language-bash">npm run dev      # 개발 모드: 빠르게 실행, HMR(자동 새로고침), 소스맵 포함
+npm run build    # 배포 모드: 압축·최적화 후 dist/ 폴더에 결과물 생성
+npm run preview  # build 결과(dist/)를 로컬 서버로 실행하여 배포 상태 미리 확인
+</code></pre>
+<p><code>npm run build</code> 를 실행하면 <code>dist/</code> 폴더에 이런 게 나옵니다:</p>
+<pre><code>dist/
+├── index.html
+├── assets/
+│   ├── index-abc123.js    ← 모든 컴포넌트가 하나로 묶이고 압축됨
+│   ├── index-def456.css   ← CSS도 합쳐지고 압축됨
+│   └── logo-ghi789.png    ← 이미지 등도 해시 붙어서
+</code></pre>
+<p>이 <code>dist/</code> 폴더를 어떤 웹 서버에든 올리면 사이트가 동작합니다. Cloudflare Pages, Netlify, Vercel, GitHub Pages, DigitalOcean 등 어디든 가능합니다.</p>
+<p>---</p>
+<h2 id="7-전체-그림--한-페이지로-정리">7. 전체 그림 — 한 페이지로 정리</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────┐
+│                       작성 시점 (개발자)                       │
+│                                                              │
+│  Component1.tsx   Component2.tsx   utils.ts   styles.css    │
+│       │                │              │           │          │
+│       └────────────────┴──────────────┴───────────┘          │
+│                            │                                 │
+│                    \[TypeScript 컴파일러]                       │
+│                            │                                 │
+│                       타입 오류 검사                             │
+└────────────────────────────┬─────────────────────────────────┘
+                             │
+┌────────────────────────────▼─────────────────────────────────┐
+│                       빌드 시점 (Vite)                         │
+│                                                              │
+│  1. TSX/TS → JS (esbuild)                                    │
+│  2. JSX → React.createElement(...)                           │
+│  3. import/export 처리                                        │
+│  4. 파일 묶기 (Rollup)                                         │
+│  5. 압축 및 최적화                                              │
+└────────────────────────────┬─────────────────────────────────┘
+                             │
+┌────────────────────────────▼─────────────────────────────────┐
+│                       실행 시점 (브라우저)                      │
+│                                                              │
+│  index.html → index-abc.js + index-abc.css 로딩              │
+│  → React가 컴포넌트 트리를 DOM에 그림                            │
+│  → 사용자 상호작용 → 상태 변경 → React가 변경분만 DOM에 반영        │
+└──────────────────────────────────────────────────────────────┘
+</code></pre>
+<p>---</p>
+<h2 id="8-언제-무엇을-써야-하나--실용-가이드">8. 언제 무엇을 써야 하나? — 실용 가이드</h2>
+<p>학생들이 자주 묻는 질문에 짧게 답합니다.</p>
+<h3 id="q1-간단한-페이지-하나-만드는데-react를-꼭-써야-하나요">Q1. 간단한 페이지 하나 만드는데 React를 꼭 써야 하나요?</h3>
+<p><strong>아니요.</strong> 정적 페이지나 상호작용이 거의 없는 페이지라면 HTML + CSS + 약간의 바닐라 JS로 충분합니다. 블로그 글 하나 보여주는 페이지에 React를 쓰는 건 마치 편지 한 통 부치는데 화물 트럭 부르는 것과 같습니다.</p>
+<p><strong>React가 빛나는 시점</strong>: 상태 변화가 많고, UI가 복잡하고, 컴포넌트를 재사용해야 할 때.</p>
+<h3 id="q2-typescript는-처음부터-써야-하나요">Q2. TypeScript는 처음부터 써야 하나요?</h3>
+<p><strong>상황에 따라.</strong></p>
+<ul>
+<li>학습 중이고 코드 100줄짜리 실습 → JavaScript로 시작해도 됩니다. 진입 장벽 낮추는 게 중요.</li>
+<li>졸업 프로젝트, 연구 시스템, 1000줄 넘어가는 코드 → TypeScript를 강력 추천. 후반부의 디버깅 시간을 압도적으로 줄여줍니다.</li>
+</ul>
+<h3 id="q3-vite-말고-nextjs-remix-같은-건-뭔가요">Q3. Vite 말고 Next.js, Remix 같은 건 뭔가요?</h3>
+<p>Vite는 <strong>빌드 도구</strong>입니다. Next.js, Remix는 <strong>프레임워크</strong>입니다.</p>
+<ul>
+<li>Vite: 도구만 깔아줌. 라우팅, 서버 렌더링 등은 직접 구현.</li>
+<li>Next.js: React 기반으로 라우팅, SSR(서버사이드 렌더링), 이미지 최적화 등을 다 갖춰서 줌.</li>
+</ul>
+<p>신문사 사이트처럼 검색엔진 노출이 중요한 사이트는 Next.js가 강합니다. 사내 대시보드나 학습용 프로젝트는 Vite가 충분합니다.</p>
+<h3 id="q4-react-말고-vue-svelte는요">Q4. React 말고 Vue, Svelte는요?</h3>
+<p>다 비슷한 컴포넌트 기반 라이브러리/프레임워크입니다. 철학과 문법만 다릅니다.</p>
+<ul>
+<li><strong>React</strong>: 시장 점유율 1위, 채용 시장 가장 큼</li>
+<li><strong>Vue</strong>: 학습 곡선 완만, 한국·중국에서 인기</li>
+<li><strong>Svelte</strong>: 빌드 시점에 컴파일, 매우 가벼움</li>
+</ul>
+<p>처음 하나만 배운다면 React가 무난합니다.</p>
+<p>---</p>
+<h2 id="9-실습-과제--같은-앱을-두-가지-방식으로">9. 실습 과제 — 같은 앱을 두 가지 방식으로</h2>
+<p>학생들에게 다음 과제를 내주면 차이를 체감합니다.</p>
+<h3 id="과제-한-줄-메모장">과제: "한 줄 메모장"</h3>
+<p>기능</p>
+<ul>
+<li>입력창에 텍스트 입력 후 추가 버튼을 누르면 목록에 추가</li>
+<li>각 메모 옆 삭제 버튼 클릭 시 삭제</li>
+<li>메모 클릭 시 취소선 토글</li>
+<li>메모 개수 상단 표시 ("현재 5개의 메모")</li>
+</ul>
+<p>요구사항</p>
+<ol>
+<li><strong>버전 A</strong>: 바닐라 JS + HTML + CSS 만으로 작성. <code>index.html</code> 한 파일.</li>
+<li><strong>버전 B</strong>: Vite + React + TypeScript 로 작성.</li>
+</ol>
+<p>작성 후 다음을 비교해서 보고하세요.</p>
+<ul>
+<li>코드 줄 수</li>
+<li>새 기능(예: 필터링) 추가가 얼마나 쉬운가</li>
+<li>DOM을 직접 만지는 코드의 양</li>
+<li>디버깅이 더 쉬운 쪽은?</li>
+</ul>
+<h3 id="추가-과제-typescript-버그-시뮬레이션">추가 과제: TypeScript 버그 시뮬레이션</h3>
+<p><code>displayUserAge</code> 함수처럼 일부러 타입 불일치가 일어나는 상황을 만든 후, JavaScript 버전과 TypeScript 버전에서 각각 어떻게 동작하는지 비교 리포트를 작성하세요.</p>
+<p>---</p>
+<h2 id="10-핵심-요약">10. 핵심 요약</h2>
+<ol>
+<li><strong>HTML/CSS/JS</strong>: 웹의 3대 요소. 셋만으로도 페이지 제작 가능.</li>
+<li><strong>바닐라 JS의 한계</strong>: 데이터와 화면 동기화를 개발자가 일일이 챙겨야 함. 규모 커지면 관리 불가.</li>
+<li><strong>React</strong>: 컴포넌트 단위로 UI를 짜고, 상태가 바뀌면 화면을 알아서 갱신.</li>
+<li><strong>JSX</strong>: JavaScript 안에서 HTML처럼 보이게 쓰는 문법. 빌드 시 일반 JS로 변환됨.</li>
+<li><strong>컴포넌트</strong>: 재사용 가능한 UI 조각. props로 데이터를 받고, state로 자기 상태를 관리.</li>
+<li><strong>확장자 규칙</strong>: TS면 <code>t-</code>, JSX면 <code>-x</code>. 그래서 React+TS는 <code>.tsx</code>.</li>
+<li><strong>TypeScript</strong>: JS에 타입 시스템을 추가. 런타임 버그를 컴파일 단계에서 잡음.</li>
+<li><strong>빌드 도구</strong>: 우리가 쓴 <code>.tsx</code>/<code>.ts</code>/CSS/이미지를 브라우저가 읽을 수 있는 형태로 변환·묶기·최적화.</li>
+<li><strong>Vite</strong>: 현재 가장 빠르고 쉬운 빌드 도구. 개발은 esbuild + ESM, 배포는 Rollup.</li>
+<li><strong>HMR</strong>: 코드 변경 시 페이지 새로고침 없이 즉시 반영. 개발 생산성의 핵심.</li>
+</ol>
+<p>---</p>
+<h2 id="11-더-공부하려면">11. 더 공부하려면</h2>
+<ul>
+<li>공식 문서: <a href="https://ko.react.dev/learn">React 한국어 공식 튜토리얼</a></li>
+<li>공식 문서: <a href="https://typescript-kr.github.io/">TypeScript 한국어 핸드북</a></li>
+<li>공식 문서: <a href="https://ko.vitejs.dev/guide/">Vite 한국어 가이드</a></li>
+<li>무료 강의: 생활코딩 React, 노마드코더 React/TypeScript 기초</li>
+</ul>
+<p>---</p>
+<h2 id=""></h2>
+
+      </div>
+    </body>
+    </html>
