@@ -284,24 +284,24 @@ MIT
 <p>채용 담당자나 다른 학생이 처음 보는 화면입니다. <strong>공들여 작성</strong>할 가치가 있습니다.</p>
 <h3 id="62-gitignore--올리지-말아야-할-파일-지정">6.2 .gitignore — 올리지 말아야 할 파일 지정</h3>
 <pre><code># Python
-\_\_pycache\_\_/
-\*.pyc
+__pycache__/
+*.pyc
 .venv/
 
 # Node
-node\_modules/
+node_modules/
 
 # 환경변수와 비밀
 .env
-\*.key
+*.key
 
 # OS
-.DS\_Store
+.DS_Store
 Thumbs.db
 
 # 큰 데이터 파일
 data/raw/
-\*.csv
+*.csv
 </code></pre>
 <p>이런 내용을 <code>.gitignore</code> 파일에 적으면, Git이 그 파일들을 <strong>무시</strong>합니다. <strong>API 키, 비밀번호, 대용량 데이터, 임시 파일</strong>을 올리지 않게 막아주는 안전장치입니다.</p>
 <h3 id="63-커밋-메시지-잘-쓰기">6.3 커밋 메시지 잘 쓰기</h3>
@@ -436,19 +436,19 @@ my-viz/
 <li>그 안에 <code>.yml</code> 파일을 만든다 (워크플로 정의)</li>
 <li>정해둔 조건(트리거)이 충족되면 GitHub의 서버가 자동 실행</li>
 </ol>
-<pre><code>\[트리거 발생]
+<pre><code>[트리거 발생]
    ├─ push: 누가 코드를 올렸을 때
    ├─ schedule: 정해진 시각이 됐을 때
-   ├─ workflow\_dispatch: 수동 버튼으로 실행
+   ├─ workflow_dispatch: 수동 버튼으로 실행
    └─ issues: 이슈가 생겼을 때 등
         ↓
-\[GitHub의 가상 서버 (Runner) 켜짐]
+[GitHub의 가상 서버 (Runner) 켜짐]
         ↓
-\[.yml에 적힌 단계들 순서대로 실행]
+[.yml에 적힌 단계들 순서대로 실행]
         ↓
-\[결과 저장 / 배포 / 통지]
+[결과 저장 / 배포 / 통지]
         ↓
-\[서버 종료]
+[서버 종료]
 </code></pre>
 <h3 id="83-첫-워크플로--hello-world">8.3 첫 워크플로 — "Hello World"</h3>
 <p>저장소에서 <strong>Add file → Create new file</strong>:</p>
@@ -457,7 +457,7 @@ my-viz/
 
 on:
   push:           # 코드를 푸시할 때마다
-    branches: \[main]
+    branches: [main]
 
 jobs:
   greet:
@@ -500,8 +500,8 @@ jobs:
 
 on:
   push:
-    branches: \[main]
-  workflow\_dispatch:   # 수동 실행 버튼도 추가
+    branches: [main]
+  workflow_dispatch:   # 수동 실행 버튼도 추가
 
 permissions:
   contents: read
@@ -542,7 +542,7 @@ jobs:
 <h3 id="92-추가-설정-1--viteconfigts">9.2 추가 설정 1 — vite.config.ts</h3>
 <p>저장소 이름이 <code>my-app</code>이라면:</p>
 <pre><code class="language-typescript">export default defineConfig({
-  plugins: \[react()],
+  plugins: [react()],
   base: '/my-app/'   // ← 저장소 이름과 일치시킴
 })
 </code></pre>
@@ -571,42 +571,42 @@ import csv
 from datetime import datetime
 import os
 
-def crawl\_naver\_it\_news():
+def crawl_naver_it_news():
     url = "https://news.naver.com/section/105"
     headers = {
         'User-Agent': 'Mozilla/5.0 (educational research, Kyung Hee Univ Media)'
     }
 
     response = requests.get(url, headers=headers, timeout=30)
-    response.raise\_for\_status()
+    response.raise_for_status()
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    headlines = \[]
-    for item in soup.select('.sa\_text\_strong')\[:50]:
-        title = item.get\_text(strip=True)
+    headlines = []
+    for item in soup.select('.sa_text_strong')[:50]:
+        title = item.get_text(strip=True)
         if title:
             headlines.append(title)
 
     return headlines
 
-def save\_to\_csv(headlines):
-    os.makedirs('data', exist\_ok=True)
+def save_to_csv(headlines):
+    os.makedirs('data', exist_ok=True)
     today = datetime.now().strftime('%Y-%m-%d')
-    filepath = f'data/headlines\_{today}.csv'
+    filepath = f'data/headlines_{today}.csv'
 
     with open(filepath, 'w', encoding='utf-8-sig', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow(\['순위', '제목', '수집시각'])
+        writer.writerow(['순위', '제목', '수집시각'])
         now = datetime.now().isoformat()
         for i, title in enumerate(headlines, 1):
-            writer.writerow(\[i, title, now])
+            writer.writerow([i, title, now])
 
     print(f'✅ {len(headlines)}건 저장: {filepath}')
 
-if \_\_name\_\_ == '\_\_main\_\_':
-    headlines = crawl\_naver\_it\_news()
-    save\_to\_csv(headlines)
+if __name__ == '__main__':
+    headlines = crawl_naver_it_news()
+    save_to_csv(headlines)
 </code></pre>
 <h3 id="103-의존성-파일">10.3 의존성 파일</h3>
 <p><code>requirements.txt</code>:</p>
@@ -620,8 +620,8 @@ beautifulsoup4==4.12.3
 on:
   schedule:
     # cron 표현식: UTC 기준 매일 18:00 = 한국 시각 새벽 3:00
-    - cron: '0 18 \* \* \*'
-  workflow\_dispatch:   # 수동 실행도 가능
+    - cron: '0 18 * * *'
+  workflow_dispatch:   # 수동 실행도 가능
 
 permissions:
   contents: write   # 데이터 자동 커밋을 위해 쓰기 권한 필요
@@ -647,14 +647,14 @@ jobs:
 
       - name: 데이터 자동 커밋
         run: |
-          git config user.name "github-actions\[bot]"
-          git config user.email "41898282+github-actions\[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
           git diff --staged --quiet || git commit -m "📊 $(date +'%Y-%m-%d') 자동 수집"
           git push
 </code></pre>
 <h3 id="105-cron-표현식-읽는-법">10.5 Cron 표현식 읽는 법</h3>
-<pre><code>\* \* \* \* \*
+<pre><code>* * * * *
 │ │ │ │ │
 │ │ │ │ └── 요일 (0-6, 일=0)
 │ │ │ └──── 월 (1-12)
@@ -673,27 +673,27 @@ jobs:
 </tr>
 </thead>
 <tbody><tr>
-<td><code>0 18 \* \* \*</code></td>
+<td><code>0 18 * * *</code></td>
 <td>UTC 매일 18:00</td>
 <td>매일 새벽 3:00</td>
 </tr>
 <tr>
-<td><code>0 0 \* \* \*</code></td>
+<td><code>0 0 * * *</code></td>
 <td>UTC 매일 00:00</td>
 <td>매일 오전 9:00</td>
 </tr>
 <tr>
-<td><code>0 23 \* \* 0</code></td>
+<td><code>0 23 * * 0</code></td>
 <td>UTC 일요일 23:00</td>
 <td>월요일 오전 8:00</td>
 </tr>
 <tr>
-<td><code>0 \*/6 \* \* \*</code></td>
+<td><code>0 */6 * * *</code></td>
 <td>UTC 6시간마다</td>
 <td>6시간마다</td>
 </tr>
 <tr>
-<td><code>30 14 1 \* \*</code></td>
+<td><code>30 14 1 * *</code></td>
 <td>UTC 매월 1일 14:30</td>
 <td>매월 1일 23:30</td>
 </tr>
@@ -714,9 +714,9 @@ jobs:
 <h3 id="107-결과-확인">10.7 결과 확인</h3>
 <p>며칠 후 저장소를 보면:</p>
 <pre><code>data/
-├── headlines\_2026-05-12.csv
-├── headlines\_2026-05-13.csv
-├── headlines\_2026-05-14.csv
+├── headlines_2026-05-12.csv
+├── headlines_2026-05-13.csv
+├── headlines_2026-05-14.csv
 └── ...
 </code></pre>
 <p>자동으로 쌓입니다. <strong>서버 하나 안 빌리고</strong>, <strong>한 번 설정해두면 끝</strong>. 학생 강의용 데이터 저널리즘 실습으로 매우 강력합니다.</p>
@@ -726,19 +726,19 @@ jobs:
 <h3 id="111-secret-등록">11.1 Secret 등록</h3>
 <p>저장소 <strong>Settings → Secrets and variables → Actions → New repository secret</strong>:</p>
 <ul>
-<li>Name: <code>GEMINI\_API\_KEY</code></li>
+<li>Name: <code>GEMINI_API_KEY</code></li>
 <li>Value: 실제 키 값</li>
 </ul>
 <p>저장 후엔 본인도 다시 볼 수 없습니다 (수정/삭제만 가능). <strong>암호화돼서 저장</strong>됨.</p>
 <h3 id="112-워크플로에서-사용">11.2 워크플로에서 사용</h3>
 <pre><code class="language-yaml">- name: API 호출 스크립트 실행
   env:
-    GEMINI\_API\_KEY: ${{ secrets.GEMINI\_API\_KEY }}
-  run: python summarize\_news.py
+    GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  run: python summarize_news.py
 </code></pre>
 <p>스크립트 안에서는:</p>
 <pre><code class="language-python">import os
-api\_key = os.environ\['GEMINI\_API\_KEY']
+api_key = os.environ['GEMINI_API_KEY']
 </code></pre>
 <p><strong>중요</strong>: Secrets는 워크플로 로그에 출력해도 자동으로 마스킹됩니다. 코드에 직접 적지 않는 한 안전합니다.</p>
 <p>---</p>
@@ -756,7 +756,7 @@ api\_key = os.environ\['GEMINI\_API\_KEY']
 <p>워크플로 yml과 같은 명령을 본인 PC에서 먼저 실행해 보기. 거기서 안 되면 워크플로에서도 안 됩니다.</p>
 <h3 id="123-워크플로-수동-실행-버튼">12.3 워크플로 수동 실행 버튼</h3>
 <pre><code class="language-yaml">on:
-  workflow\_dispatch:
+  workflow_dispatch:
 </code></pre>
 <p>이 한 줄 추가하면 Actions 탭에서 <strong>Run workflow</strong> 버튼이 생깁니다. 매번 push하지 않고도 테스트 가능. <strong>개발 단계에서 필수</strong>.</p>
 <p>---</p>
@@ -815,9 +815,9 @@ git push origin new-feature
 <li><strong>.gitignore는 안전장치</strong>: 키, 비밀번호, 임시 파일을 거름</li>
 <li><strong>Pages는 무료 호스팅</strong>: Settings → Pages → Branch 선택이면 끝</li>
 <li><strong>Actions는 자동화</strong>: <code>.github/workflows/</code>에 yml 파일</li>
-<li><strong>Cron은 UTC 기준</strong>: 한국 시각 새벽 3시 = <code>0 18 \* \* \*</code></li>
+<li><strong>Cron은 UTC 기준</strong>: 한국 시각 새벽 3시 = <code>0 18 * * *</code></li>
 <li><strong>Secrets로 API 키 관리</strong>: 코드에 직접 적지 말 것</li>
-<li><strong>수동 실행 버튼</strong>: <code>workflow\_dispatch</code> 한 줄 추가</li>
+<li><strong>수동 실행 버튼</strong>: <code>workflow_dispatch</code> 한 줄 추가</li>
 </ol>
 <p>---</p>
 <h2 id="17-더-공부하려면">17. 더 공부하려면</h2>

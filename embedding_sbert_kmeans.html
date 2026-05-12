@@ -1,0 +1,934 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h1 id="임베딩-기반-문서-분류-sbert--k-means--gemini">임베딩 기반 문서 분류: SBERT × K-means × Gemini</h1>
+<blockquote>
+<p>강의 노트 | 텍스트에서 이미지까지 분류하고 주제 도출하기</p>
+</blockquote>
+<p>---</p>
+<h2 id="0-강의-목표">0. 강의 목표</h2>
+<p>이 강의는 비정형 데이터(문서·이미지)를 <strong>의미 단위로 분류</strong>하고, 각 묶음의 <strong>주제(theme)를 자동으로 도출</strong>하는 방법을 익히는 것이 목표다. 핵심 파이프라인은 다음과 같다.</p>
+<pre><code>원문 → (전처리/요약) → 임베딩 모델 → 벡터 → 클러스터링 → 클러스터별 대표 추출 → LLM 주제 도출
+</code></pre>
+<p>이 틀은 텍스트와 이미지에 <strong>동일하게 적용</strong>되며, 전통적인 LDA 토픽모델링이나 의미연결망 분석에 비해 의미 표현력·해석력·범용성 모두에서 우위가 있다.</p>
+<p>---</p>
+<h2 id="1-임베딩embedding이란-무엇인가">1. 임베딩(Embedding)이란 무엇인가</h2>
+<h3 id="11-직관적-정의">1.1 직관적 정의</h3>
+<p><strong>임베딩이란 단어·문장·이미지 같은 비정형 대상을 "고차원 공간 위의 한 점(벡터)"으로 변환하는 것</strong>이다.</p>
+<p>비유하자면 도시를 "위도·경도"로 표현하는 것과 같다. "서울"이라는 이름만 듣고는 컴퓨터가 "부산"과의 관계를 알 수 없지만, (37.57, 126.98) ↔ (35.18, 129.07)로 표현하면 두 점 사이의 거리, 방향, 가까운 도시들을 계산할 수 있다. 임베딩은 이 "지도화" 작업을 <strong>의미 공간</strong>에 대해 수행하는 것이다.</p>
+<p>좋은 임베딩이라면 다음이 성립해야 한다.</p>
+<ul>
+<li>의미가 비슷한 문서는 벡터 공간에서 <strong>가깝다</strong></li>
+<li>의미가 다른 문서는 <strong>멀다</strong></li>
+<li>벡터의 거리(또는 코사인 유사도)가 <strong>의미적 유사도와 대응</strong>한다</li>
+</ul>
+<h3 id="12-왜-임베딩이-필요한가-one-hot의-한계">1.2 왜 임베딩이 필요한가: One-hot의 한계</h3>
+<p>전통적 표현 방식은 단어를 "사전 크기만큼의 벡터에서 해당 위치만 1, 나머지는 0"으로 표시했다(one-hot encoding). 이 방식은 두 가지 치명적 결함이 있다.</p>
+<ol>
+<li><strong>차원 폭발</strong>: 한국어 어휘만 수십만 단어, 문서 단위로 가면 더 커진다.</li>
+<li><strong>의미 표현 불가</strong>: "기자"와 "언론인"은 의미가 비슷하지만, one-hot에서는 완전히 직교한다. 컴퓨터는 두 단어가 무관하다고 판단한다.</li>
+</ol>
+<p>TF-IDF 역시 본질적으로 단어 빈도 기반이라 의미가 아니라 <strong>표면 어휘의 일치</strong>만 잡아낸다. 같은 의미를 다른 단어로 표현하면 유사도가 0이 된다.</p>
+<h3 id="13-임베딩의-작동-원리-분포-가설">1.3 임베딩의 작동 원리: 분포 가설</h3>
+<p>현대 임베딩의 토대는 언어학자 J. R. Firth의 명제 — <strong>"단어의 의미는 그 주변에 함께 나타나는 단어들로 결정된다(You shall know a word by the company it keeps)"</strong> — 에 있다.</p>
+<p>이를 분포 가설(distributional hypothesis)이라 한다.</p>
+<ul>
+<li>"사과를 먹었다", "사과가 빨갛다", "사과나무" — '사과' 주변의 단어 분포를 학습하면, '사과'의 의미가 자연스럽게 좌표로 응축된다.</li>
+<li>"배"도 비슷한 문맥에 자주 나타나므로 '사과'와 가까운 좌표에 위치한다.</li>
+<li>'자동차'는 전혀 다른 문맥에 등장하므로 멀리 위치한다.</li>
+</ul>
+<p>이 원리를 신경망으로 학습한 것이 <strong>Word2Vec(2013)</strong>, <strong>GloVe(2014)</strong>, <strong>FastText(2016)</strong> 등 초기 단어 임베딩이다.</p>
+<h3 id="14-단어--문맥--문장-진화-단계">1.4 단어 → 문맥 → 문장: 진화 단계</h3>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>모델</th>
+<th>한계</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>정적 단어 임베딩</td>
+<td>Word2Vec, GloVe, FastText</td>
+<td>"사과를 먹었다"의 '사과'와 "사과 회사 애플"의 '사과'가 같은 벡터. <strong>다의어 처리 불가</strong></td>
+</tr>
+<tr>
+<td>문맥형 단어 임베딩</td>
+<td>ELMo, BERT(2018), RoBERTa</td>
+<td>같은 단어라도 문맥에 따라 다른 벡터. 하지만 <strong>문장 전체를 하나의 벡터로 만드는 데는 부적합</strong>(BERT의 [CLS] 토큰은 분류 학습에 최적화되어 있어 의미 유사도가 코사인 유사도와 일치하지 않음)</td>
+</tr>
+<tr>
+<td>문장/문서 임베딩</td>
+<td><strong>SBERT(Sentence-BERT, 2019)</strong>, SimCSE, E5, BGE</td>
+<td>문장 단위 의미를 코사인 유사도가 잘 반영하도록 **대조 학습(contrastive learning)**으로 fine-tuning</td>
+</tr>
+</tbody></table>
+<h3 id="15-sbertsentence-bert의-원리">1.5 SBERT(Sentence-BERT)의 원리</h3>
+<p>SBERT는 BERT를 <strong>Siamese network(같은 구조의 두 신경망을 쌍으로 연결한 모델) 구조</strong>로 fine-tuning한 모델이다.</p>
+<ol>
+<li>두 문장 A, B를 같은 BERT에 통과시켜 각각 토큰 벡터를 얻는다.</li>
+<li><strong>Mean pooling</strong>(토큰 벡터의 평균)으로 문장 벡터 u, v를 생성한다.</li>
+<li>의미가 비슷한 쌍(예: NLI의 entailment, STS 데이터셋의 고점수 쌍)은 cos(u,v)가 1에 가깝게, 다른 쌍은 0에 가깝게 학습한다.</li>
+</ol>
+<p>결과: <strong>벡터 두 개를 코사인 유사도로 비교하기만 하면 의미 유사도를 알 수 있다.</strong> 이것이 BERT 대비 SBERT의 결정적 우위다. BERT로 두 문장의 유사도를 알려면 매번 두 문장을 함께 모델에 넣어야 했는데, SBERT는 각 문장을 한 번씩만 벡터화하면 그 다음은 단순 벡터 연산이다.</p>
+<h3 id="16-임베딩의-활용-사례">1.6 임베딩의 활용 사례</h3>
+<ul>
+<li><strong>검색(Semantic Search)</strong>: 키워드가 일치하지 않아도 의미가 비슷한 문서를 찾아준다. RAG(Retrieval-Augmented Generation)의 핵심.</li>
+<li><strong>추천 시스템</strong>: 비슷한 사용자·아이템을 벡터 거리로 찾는다.</li>
+<li><strong>분류·클러스터링</strong>: 라벨이 없어도 비슷한 것들끼리 묶을 수 있다.</li>
+<li><strong>이상 탐지</strong>: 평소 분포에서 멀리 떨어진 벡터 = 이상치.</li>
+<li><strong>다국어 정렬</strong>: multilingual 임베딩은 한국어 "기자"와 영어 "journalist"를 같은 공간의 가까운 점으로 표현한다.</li>
+<li><strong>저널리즘 응용</strong>: 대량 보도자료 분류, 사설 입장 분석, 가짜뉴스 유사도 추적, 인터뷰 응답 클러스터링.</li>
+</ul>
+<p>---</p>
+<h2 id="2-어떤-임베딩-모델을-쓸-것인가">2. 어떤 임베딩 모델을 쓸 것인가</h2>
+<h3 id="21-오픈소스-모델-로컬-실행-가능">2.1 오픈소스 모델 (로컬 실행 가능)</h3>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>차원</th>
+<th>특징</th>
+<th>한국어</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>all-MiniLM-L6-v2</code></td>
+<td>384</td>
+<td>가볍고 빠름. 영문 위주, 입문용</td>
+<td>△</td>
+</tr>
+<tr>
+<td><code>all-mpnet-base-v2</code></td>
+<td>768</td>
+<td>영문 고품질 baseline</td>
+<td>×</td>
+</tr>
+<tr>
+<td><code>paraphrase-multilingual-mpnet-base-v2</code></td>
+<td>768</td>
+<td>50개 언어 지원, 한국어 가능</td>
+<td>○</td>
+</tr>
+<tr>
+<td><strong><code>intfloat/multilingual-e5-large</code></strong></td>
+<td>1024</td>
+<td>100개 언어, <strong>한국어 RAG에서 사실상 표준급</strong></td>
+<td>◎</td>
+</tr>
+<tr>
+<td><code>BAAI/bge-m3</code></td>
+<td>1024</td>
+<td>다국어·다기능(dense+sparse+multi-vector), 긴 문서에 강함</td>
+<td>◎</td>
+</tr>
+<tr>
+<td><code>snunlp/KR-SBERT-V40K-klueNLI-augSTS</code></td>
+<td>768</td>
+<td>한국어 전용 SBERT</td>
+<td>◎</td>
+</tr>
+<tr>
+<td><code>jhgan/ko-sroberta-multitask</code></td>
+<td>768</td>
+<td>한국어 전용 SBERT</td>
+<td>◎</td>
+</tr>
+<tr>
+<td><code>nlpai-lab/KURE-v1</code></td>
+<td>1024</td>
+<td>한국어 검색·분류 특화</td>
+<td>◎</td>
+</tr>
+</tbody></table>
+<p><strong>선택 가이드</strong></p>
+<ul>
+<li>한국어 문서 분류·검색: <code>multilingual-e5-large</code> 또는 <code>bge-m3</code>를 1순위로 본다.</li>
+<li><code>all-MiniLM-L6-v2</code>는 약 22M 규모의 경량 모델로 CPU 환경에서도 빠르게 동작하며, <code>multilingual-e5-large</code>와 <code>bge-m3</code>는 약 500M~600M급 대형 모델로 한국어 검색·RAG 성능은 우수하지만 VRAM·RAM 사용량이 더 크다. <code>jhgan/ko-sroberta-multitask</code>는 약 110M 규모의 한국어 특화 SBERT 계열 모델로, 비교적 가벼우면서도 한국어 문장 유사도·분류·검색 작업에서 성능이 우수하다. <code>snunlp/KR-SBERT-V40K-klueNLI-augSTS</code>는 서울대 자연어처리 연구실(SNUNLP)이 개발한 약 110M 규모의 한국어 특화 SBERT 모델로, 768차원 임베딩을 사용하며 한국어 문장 유사도·클러스터링·시맨틱 검색 성능이 우수해 한국어 RAG·벡터 검색 입문용으로 널리 활용된다.</li>
+<li>영문 입문 실습: <code>all-MiniLM-L6-v2</code>.</li>
+<li>긴 한국어 문서(&gt;512 토큰): <code>bge-m3</code>(8192 토큰까지 처리).</li>
+</ul>
+<h3 id="22-상용-api">2.2 상용 API</h3>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>차원(가변)</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OpenAI <code>text-embedding-3-large</code></td>
+<td>256~3072</td>
+<td>영어권 표준, Matryoshka(차원 축소 가능)</td>
+</tr>
+<tr>
+<td>OpenAI <code>text-embedding-3-small</code></td>
+<td>512~1536</td>
+<td>저렴, 가성비</td>
+</tr>
+<tr>
+<td><strong>Google <code>gemini-embedding-001</code></strong></td>
+<td>768/1536/3072</td>
+<td>다국어 SOTA, 한국어 매우 강함</td>
+</tr>
+<tr>
+<td>Cohere <code>embed-multilingual-v3.0</code></td>
+<td>1024</td>
+<td>100개 언어, 검색 특화</td>
+</tr>
+<tr>
+<td>Voyage <code>voyage-3-large</code></td>
+<td>1024</td>
+<td>도메인 특화 모델 별도 제공(법률·금융 등)</td>
+</tr>
+</tbody></table>
+<h3 id="23-모델-선택의-일반-원칙">2.3 모델 선택의 일반 원칙</h3>
+<ol>
+<li><strong>언어</strong>: 한국어 비중이 크면 다국어/한국어 특화 모델.</li>
+<li><strong>문서 길이</strong>: 평균 토큰 길이가 512를 넘으면 long-context 모델(BGE-M3, Gemini 등) 또는 청크 분할.</li>
+<li><strong>비용 vs 성능</strong>: API는 편하지만 대량 처리 시 비용 누적. 1만 건 이상이고 반복 사용한다면 오픈소스 + GPU/CPU 로컬이 결국 싸다.</li>
+<li><strong>재현성·프라이버시</strong>: 민감 데이터(인터뷰 응답, 미공개 보도자료)는 로컬 모델.</li>
+<li><strong>벤치마크</strong>: 한국어는 <a href="https://klue-benchmark.com">KLUE-STS</a>, <a href="https://huggingface.co/spaces/upstage/open-ko-llm-leaderboard">Ko-MTEB</a> 등의 STS·Retrieval 점수를 참고.</li>
+</ol>
+<p>---</p>
+<h2 id="3-gemini-embedding-api-사용법">3. Gemini Embedding API 사용법</h2>
+<h3 id="31-설치-및-키-설정">3.1 설치 및 키 설정</h3>
+<pre><code class="language-bash">pip install google-genai
+</code></pre>
+<pre><code class="language-python">import os
+os.environ["GOOGLE_API_KEY"] = "YOUR_API_KEY"  # 또는 .env 사용 권장
+</code></pre>
+<h3 id="32-기본-사용">3.2 기본 사용</h3>
+<pre><code class="language-python">from google import genai
+
+client = genai.Client()
+
+# 단일 문서
+result = client.models.embed_content(
+    model="gemini-embedding-001",
+    contents="한국 언론의 정파성에 관한 연구는 오랜 역사를 가진다.",
+)
+vec = result.embeddings[0].values  # 길이 3072의 리스트
+print(len(vec))
+</code></pre>
+<h3 id="33-배치-임베딩-실전">3.3 배치 임베딩 (실전)</h3>
+<pre><code class="language-python">from google import genai
+from google.genai import types
+import numpy as np
+
+client = genai.Client()
+
+docs = [
+    "한국 언론의 정파성에 관한 연구는 오랜 역사를 가진다.",
+    "딥러닝 기반 자연어 처리 기술이 빠르게 발전하고 있다.",
+    "제주도 부동산 시장은 지난해 큰 폭의 조정을 겪었다.",
+    # ... 수천 개
+]
+
+# task_type 지정이 성능에 매우 중요: 목표별 다소 차이나게 학습됨
+# - RETRIEVAL_DOCUMENT:  RAG 문서(벡터 DB) 저장
+
+#  -  RETRIEVAL_QUERY: 사용자 검색
+# - SEMANTIC_SIMILARITY: 유사도 비교
+# - CLASSIFICATION: 분류용. 에를 들면 감성 분석, 주제 분류 등
+# - CLUSTERING: 군집 분석, 토픽 탐색
+
+embeddings = []
+batch_size = 100
+for i in range(0, len(docs), batch_size):
+    batch = docs[i:i+batch_size]
+    resp = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=batch,
+        config=types.EmbedContentConfig(
+            task_type="CLUSTERING",
+            output_dimensionality=768,  # 3072 → 768로 축소도 가능(Matryoshka)
+        ),
+    )
+    embeddings.extend([e.values for e in resp.embeddings])
+
+X = np.array(embeddings)  # (N, 768)
+print(X.shape)
+</code></pre>
+<p><strong>중요 포인트</strong></p>
+<ul>
+<li><code>task_type</code>을 지정하지 않으면 일반 임베딩이 나온다. 군집분석(<strong>클러스터링)에는 반드시 <code>CLUSTERING</code> 지정</strong>.</li>
+<li><code>output_dimensionality</code>로 차원을 줄이면 메모리·속도가 좋아진다(768 권장).</li>
+</ul>
+<h3 id="34-sbert-로컬-모델-비교-예시">3.4 SBERT 로컬 모델 비교 예시</h3>
+<pre><code class="language-python">from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("intfloat/multilingual-e5-large")
+# E5 계열은 "passage: " 접두사를 붙여야 최적 성능
+docs_with_prefix = [f"passage: {d}" for d in docs]
+X = model.encode(docs_with_prefix, normalize_embeddings=True, show_progress_bar=True)
+</code></pre>
+<p>---</p>
+<h2 id="4-문서-전처리-언제-요약이-필요한가">4. 문서 전처리: 언제 요약이 필요한가</h2>
+<h3 id="41-임베딩-모델의-입력-길이-제한">4.1 임베딩 모델의 입력 길이 제한</h3>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>최대 토큰</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SBERT 계열</td>
+<td>256~512 (대부분)</td>
+</tr>
+<tr>
+<td>multilingual-e5-large</td>
+<td>512</td>
+</tr>
+<tr>
+<td>BGE-M3</td>
+<td>8192</td>
+</tr>
+<tr>
+<td>Gemini Embedding</td>
+<td>2048 (모델·버전마다 상이, 공식 문서 확인)</td>
+</tr>
+</tbody></table>
+<p>긴 기사·논문은 잘려서 뒷부분이 무시된다. 대응 방법은 세 가지다.</p>
+<h3 id="42-대응-전략">4.2 대응 전략</h3>
+<p><strong>전략 A. 청크 분할 후 평균(pooling)</strong></p>
+<pre><code class="language-python">def chunk_text(text, chunk_size=400, overlap=50):
+    words = text.split()
+    chunks = []
+    for i in range(0, len(words), chunk_size - overlap):
+        chunks.append(" ".join(words[i:i+chunk_size]))
+    return chunks
+
+chunk_vecs = model.encode(chunks)
+doc_vec = chunk_vecs.mean(axis=0)  # 단순 평균
+</code></pre>
+<p>장점: 정보 손실 적음. 단점: 평균이 의미를 흐릴 수 있음.</p>
+<p><strong>전략 B. LLM 요약 후 임베딩</strong></p>
+<p>긴 문서일수록 핵심 주제만 남기고 요약하는 것이 클러스터링 품질을 높인다. 특히 <strong>혼합 주제 문서</strong>(예: 정치+경제 혼합 사설)는 요약을 거치면 주된 입장이 분명해진다.</p>
+<pre><code class="language-python">from google import genai
+client = genai.Client()
+
+def summarize(text, target_tokens=200):
+    prompt = f"""다음 문서의 핵심 주제·주장·소재를 200자 이내로 요약하라. 
+배경 설명, 인용, 부가 정보는 제외하고 본 문서의 정체성을 가장 잘 드러내는 부분만 남겨라.
+
+문서:
+{text}
+
+요약:"""
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash-lite",
+        contents=prompt,
+    )
+    return resp.text.strip()
+
+summaries = [summarize(d) for d in long_docs]
+X = embed(summaries)
+</code></pre>
+<p>권장: <strong>2000자 이상 문서</strong>는 요약 후 임베딩이 거의 항상 더 좋은 클러스터 결과를 낸다.</p>
+<p><strong>전략 C. Long-context 임베딩 모델 사용</strong></p>
+<p>BGE-M3, Gemini 등은 수천 토큰을 한 번에 처리한다. 가장 간단하지만 비용·시간이 늘어난다.</p>
+<h3 id="43-기타-전처리">4.3 기타 전처리</h3>
+<ul>
+<li>HTML 태그·광고·내비게이션 텍스트 제거</li>
+<li>너무 짧은 문서(예: 50자 미만) 제외 또는 별도 처리</li>
+<li>중복 문서 제거(near-duplicate detection): MinHash 또는 임베딩 코사인 0.98 이상 묶기</li>
+<li>언어 감지·필터링: 다국어 코퍼스에서 한국어만 분석할 때</li>
+</ul>
+<p>---</p>
+<h2 id="5-k-means-클러스터링">5. K-means 클러스터링</h2>
+<h3 id="51-알고리즘">5.1 알고리즘</h3>
+<ol>
+<li>K개의 중심점(centroid)을 임의로 배치</li>
+<li>각 점을 가장 가까운 중심에 배정</li>
+<li>각 클러스터의 평균으로 중심을 갱신</li>
+<li>변화가 없을 때까지 2-3 반복</li>
+</ol>
+<p>목적함수: <strong>클러스터 내 분산(within-cluster sum of squares, WCSS) 최소화</strong></p>
+<p style="text-align:center; font-size:1.05em; font-family: 'Cambria Math', 'Times New Roman', serif;">WCSS = Σ<sub>k=1</sub><sup>K</sup> Σ<sub>x ∈ C<sub>k</sub></sub> ‖x − μ<sub>k</sub>‖²</p>
+<h3 id="52-임베딩에-k-means-적용-시-주의점">5.2 임베딩에 K-means 적용 시 주의점</h3>
+<ol>
+<li><strong>반드시 L2 정규화</strong>: 임베딩 벡터를 단위벡터로 만들면 유클리드 거리 ≈ 코사인 거리가 되어 의미 비교가 일관된다.</li>
+</ol>
+<pre><code class="language-python">   from sklearn.preprocessing import normalize
+   X_norm = normalize(X, norm="l2")
+</code></pre>
+<ol start="2">
+<li><strong>고차원 저주</strong>: 1024차원 이상이면 거리들이 비슷해져 K-means가 불안정. UMAP으로 30~50차원으로 축소 후 K-means 권장.</li>
+</ol>
+<pre><code class="language-python">   import umap
+   reducer = umap.UMAP(n_components=50, metric="cosine", random_state=42)
+   X_reduced = reducer.fit_transform(X_norm)
+</code></pre>
+<ol start="3">
+<li><strong>k-means++ 초기화</strong>: scikit-learn 기본값. 초기 중심 선택을 분산시켜 수렴 품질이 좋아진다.</li>
+<li><strong>여러 번 실행</strong>: <code>n_init=10</code> 이상으로 무작위성에 강건하게.</li>
+</ol>
+<h3 id="53-기본-코드">5.3 기본 코드</h3>
+<pre><code class="language-python">from sklearn.cluster import KMeans
+from sklearn.preprocessing import normalize
+
+X_norm = normalize(X, norm="l2")
+
+km = KMeans(n_clusters=8, n_init=20, random_state=42)
+labels = km.fit_predict(X_norm)
+</code></pre>
+<p>---</p>
+<h2 id="6-k-값-선택-방법">6. K 값 선택 방법</h2>
+<p>K(클러스터 수) 결정은 <strong>단일 정답이 없다</strong>. 여러 지표를 함께 보고, <strong>연구 목적과 해석 가능성</strong>으로 최종 결정한다.</p>
+<h3 id="61-elbow-method-엘보-법">6.1 Elbow Method (엘보 법)</h3>
+<p>K를 늘려가며 WCSS(또는 inertia)를 플롯한다. 감소율이 급격히 꺾이는 "팔꿈치" 지점을 K로 선택.</p>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+inertias = []
+Ks = range(2, 21)
+for k in Ks:
+    km = KMeans(n_clusters=k, n_init=10, random_state=42).fit(X_norm)
+    inertias.append(km.inertia_)
+plt.plot(Ks, inertias, "o-")
+plt.xlabel("K"); plt.ylabel("WCSS"); plt.show()
+</code></pre>
+<p>장점: 직관적. 단점: 꺾임이 모호할 때가 많음.</p>
+<h3 id="62-silhouette-score-실루엣-점수">6.2 Silhouette Score (실루엣 점수)</h3>
+<p>각 점이 자기 클러스터에 얼마나 잘 맞고 다른 클러스터와는 얼마나 떨어졌는지 측정. -1~1, 높을수록 좋음.</p>
+<p style="text-align:center; font-size:1.05em; font-family: 'Cambria Math', 'Times New Roman', serif;">s(i) = ( b(i) − a(i) ) ⁄ max( a(i), b(i) )</p>
+<ul>
+<li>a(i): 자기 클러스터 내 평균 거리</li>
+<li>b(i): 가장 가까운 다른 클러스터까지의 평균 거리</li>
+</ul>
+<pre><code class="language-python">from sklearn.metrics import silhouette_score
+for k in range(2, 21):
+    km = KMeans(n_clusters=k, n_init=10, random_state=42).fit(X_norm)
+    s = silhouette_score(X_norm, km.labels_, metric="cosine")
+    print(k, s)
+</code></pre>
+<p>장점: 절대값 비교 가능. 단점: 데이터가 많으면 계산 느림(샘플링 사용).</p>
+<h3 id="63-davies-bouldin-index-db-지수">6.3 Davies-Bouldin Index (DB 지수)</h3>
+<p>클러스터 내 분산 대비 클러스터 간 거리 비율. <strong>낮을수록 좋음</strong>.</p>
+<pre><code class="language-python">from sklearn.metrics import davies_bouldin_score
+db = davies_bouldin_score(X_norm, labels)
+</code></pre>
+<h3 id="64-calinski-harabasz-index-ch-지수">6.4 Calinski-Harabasz Index (CH 지수)</h3>
+<p>클러스터 간 분산 / 클러스터 내 분산. <strong>높을수록 좋음</strong>. 대용량에 빠름.</p>
+<pre><code class="language-python">from sklearn.metrics import calinski_harabasz_score
+ch = calinski_harabasz_score(X_norm, labels)
+</code></pre>
+<h3 id="65-gap-statistic-갭-통계량">6.5 Gap Statistic (갭 통계량)</h3>
+<p>실제 데이터의 WCSS를 무작위 데이터의 WCSS와 비교해, 차이(gap)가 가장 큰 K를 선택. 통계적 근거가 강하지만 계산 비용이 크다.</p>
+<h3 id="66-bic--aic-gmm-사용-시">6.6 BIC / AIC (GMM 사용 시)</h3>
+<p>K-means 대신 Gaussian Mixture Model을 쓰면 정보기준으로 K 선택 가능.</p>
+<pre><code class="language-python">from sklearn.mixture import GaussianMixture
+bics = [GaussianMixture(n_components=k, random_state=42).fit(X_norm).bic(X_norm) for k in range(2, 21)]
+</code></pre>
+<h3 id="67-hdbscan-k를-정하지-않는-대안">6.7 HDBSCAN: K를 정하지 않는 대안</h3>
+<p>밀도 기반 클러스터링. K를 미리 정할 필요가 없고, <strong>클러스터에 속하지 않는 노이즈도 식별</strong>한다. 임베딩 + UMAP + HDBSCAN 조합은 BERTopic의 기반이며, 실제 연구에서 K-means보다 자연스러운 군집을 자주 만든다.</p>
+<pre><code class="language-python">import hdbscan
+clusterer = hdbscan.HDBSCAN(min_cluster_size=20, metric="euclidean")
+labels = clusterer.fit_predict(X_reduced)  # -1은 노이즈
+</code></pre>
+<h3 id="68-실전-권장-다중-지표--도메인-해석">6.8 실전 권장: 다중 지표 + 도메인 해석</h3>
+<ol>
+<li>K 후보 범위(예: 5~25)에서 Silhouette, DB, CH를 함께 계산.</li>
+<li>상위 3~5개 K를 후보로 좁힘.</li>
+<li>각 후보 K에 대해 <strong>클러스터별 대표 문서 10개씩 읽어</strong> 의미적으로 분리되는지 확인.</li>
+<li>연구 가설·이론적 카테고리 수와 부합하는 K 채택.</li>
+</ol>
+<blockquote>
+<p>**원칙**: 통계 지표는 후보를 좁히는 데 쓰고, 최종 결정은 **해석 가능성**으로 한다. 학술 논문에서도 이 정당화가 핵심이다.</p>
+</blockquote>
+<p>---</p>
+<h2 id="7-클러스터의-주제-도출-topic-naming">7. 클러스터의 주제 도출 (Topic Naming)</h2>
+<h3 id="71-전통적-방법-tf-idf-키워드">7.1 전통적 방법: TF-IDF 키워드</h3>
+<p>각 클러스터 내 문서들의 TF-IDF 상위 단어로 주제를 추정. 빠르지만 단어 나열이라 해석에 노력이 든다.</p>
+<pre><code class="language-python">from sklearn.feature_extraction.text import TfidfVectorizer
+
+def top_words_per_cluster(docs, labels, top_n=10):
+    result = {}
+    for c in set(labels):
+        cluster_docs = [d for d, l in zip(docs, labels) if l == c]
+        tfidf = TfidfVectorizer(max_features=5000).fit_transform(cluster_docs)
+        avg = tfidf.mean(axis=0).A1
+        terms = TfidfVectorizer(max_features=5000).fit(cluster_docs).get_feature_names_out()
+        top_idx = avg.argsort()[::-1][:top_n]
+        result[c] = [terms[i] for i in top_idx]
+    return result
+</code></pre>
+<p>c-TF-IDF (class-based TF-IDF, BERTopic 방식)는 한 클러스터를 하나의 거대 문서로 보고 TF-IDF를 계산해 클러스터 특이 단어를 더 잘 잡는다.</p>
+<h3 id="72-대표-문서-추출">7.2 대표 문서 추출</h3>
+<p>각 클러스터에서 중심(centroid)에 가까운 문서 N개를 뽑으면, 이 문서들이 클러스터의 "전형"이다.</p>
+<pre><code class="language-python">import numpy as np
+
+def representative_docs(X_norm, labels, docs, n=5):
+    reps = {}
+    for c in set(labels):
+        idx = np.where(labels == c)[0]
+        center = X_norm[idx].mean(axis=0)
+        dists = np.linalg.norm(X_norm[idx] - center, axis=1)
+        top = idx[np.argsort(dists)[:n]]
+        reps[c] = [docs[i] for i in top]
+    return reps
+</code></pre>
+<h3 id="73-llm으로-주제-명명-추천">7.3 LLM으로 주제 명명 (추천)</h3>
+<p>Gemini 등 LLM에 <strong>대표 문서 + 상위 키워드</strong>를 함께 던지고 주제명을 받는다.</p>
+<pre><code class="language-python">def name_cluster(rep_docs, top_keywords):
+    docs_str = "\n---\n".join(rep_docs)
+    kw_str = ", ".join(top_keywords)
+    prompt = f"""다음은 같은 클러스터로 분류된 문서들의 대표 샘플과 상위 키워드다.
+이 클러스터의 공통 주제를 다음 형식으로 도출하라.
+
+- 주제명(15자 이내):
+- 주제 설명(2~3문장):
+- 핵심 키워드 5개:
+
+상위 키워드: {kw_str}
+
+대표 문서:
+{docs_str}
+"""
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
+    return resp.text
+
+# 전체 적용
+reps = representative_docs(X_norm, labels, docs, n=7)
+top_kws = top_words_per_cluster(docs, labels, top_n=15)
+topics = {c: name_cluster(reps[c], top_kws[c]) for c in set(labels)}
+</code></pre>
+<p><strong>왜 LLM 주제명이 우수한가</strong></p>
+<ul>
+<li>단어 나열이 아니라 <strong>개념적 명명</strong>을 한다 ("선거 보도, 후보자 비판, 부동산 정책" 같은 키워드 → "여당의 부동산 정책 실패를 둘러싼 선거 국면 비판").</li>
+<li>대표 문서의 실제 문맥을 읽고 주제를 잡으므로 단어 빈도로는 안 보이는 잠재 주제도 포착.</li>
+<li>일관된 명명 규칙(글자수, 형식)을 강제할 수 있다.</li>
+<li>다국어 문서도 통합 명명 가능.</li>
+</ul>
+<h3 id="74-클러스터-품질-검증">7.4 클러스터 품질 검증</h3>
+<p>LLM에게 "이 대표 문서들이 한 주제로 묶이는 게 타당한가? 이질적인 문서가 있다면 지적하라" 같은 검증 프롬프트를 추가로 던지면 K 선택의 근거가 강해진다.</p>
+<p>---</p>
+<h2 id="8-lda의미연결망-대비-sbertk-means의-우수성">8. LDA·의미연결망 대비 SBERT+K-means의 우수성</h2>
+<h3 id="81-ldalatent-dirichlet-allocation-한계">8.1 LDA(Latent Dirichlet Allocation) 한계</h3>
+<p>LDA는 2003년에 제안된 확률 토픽모델로 오랜 시간 주류였다. 그러나 다음 한계가 명확하다.</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>LDA</th>
+<th>SBERT + K-means</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>의미 단위</strong></td>
+<td>Bag-of-Words. 어순·문맥 무시</td>
+<td>문장 구조·문맥 반영</td>
+</tr>
+<tr>
+<td><strong>다의어 처리</strong></td>
+<td>"사과(과일)"와 "사과(애플)" 구분 불가</td>
+<td>문맥 임베딩으로 자연 분리</td>
+</tr>
+<tr>
+<td><strong>유사 표현</strong></td>
+<td>"기자"와 "언론인"이 별개 단어로 취급</td>
+<td>같은 영역에 매핑</td>
+</tr>
+<tr>
+<td><strong>전처리 부담</strong></td>
+<td>불용어 사전, 어간 추출, 명사 추출 필수 (한국어는 형태소 분석기 의존)</td>
+<td>모델이 raw text를 그대로 처리</td>
+</tr>
+<tr>
+<td><strong>하이퍼파라미터</strong></td>
+<td>α, β, K 모두 민감</td>
+<td>K만 결정하면 됨</td>
+</tr>
+<tr>
+<td><strong>해석 가능성</strong></td>
+<td>토픽이 "단어 분포"로만 표현, 의미 해석은 연구자 몫</td>
+<td>대표 문서 + LLM 주제명으로 즉시 해석 가능</td>
+</tr>
+<tr>
+<td><strong>소수 문서 클러스터</strong></td>
+<td>잘 안 잡힘</td>
+<td>잘 잡힘</td>
+</tr>
+<tr>
+<td><strong>다국어 코퍼스</strong></td>
+<td>언어별로 별도 분석 필요</td>
+<td>다국어 임베딩으로 통합 처리</td>
+</tr>
+<tr>
+<td><strong>사전학습 지식</strong></td>
+<td>없음. 코퍼스 통계만 사용</td>
+<td>수십억 토큰의 사전학습 의미 지식 활용</td>
+</tr>
+<tr>
+<td><strong>외부 검증</strong></td>
+<td>perplexity, coherence 등 지표가 인간 판단과 약한 상관</td>
+<td>코사인 유사도가 인간 의미 판단과 강한 상관</td>
+</tr>
+</tbody></table>
+<p>특히 한국어에서 LDA는 형태소 분석 품질에 크게 좌우되어 결과가 불안정하다. 임베딩은 형태소 분석 없이도 작동한다.</p>
+<h3 id="82-의미연결망semantic-network-분석-한계">8.2 의미연결망(Semantic Network) 분석 한계</h3>
+<p>의미연결망은 단어 동시출현(co-occurrence)을 그래프 노드·엣지로 표현하는 방법이다.</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>의미연결망</th>
+<th>SBERT + K-means</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>분석 단위</strong></td>
+<td>단어. 문장·문서 단위 비교 어려움</td>
+<td>문장·문서 단위 직접 비교</td>
+</tr>
+<tr>
+<td><strong>의미 vs 표면</strong></td>
+<td>단어 공출현(표면)만 본다</td>
+<td>의미적 유사도 자체를 본다</td>
+</tr>
+<tr>
+<td><strong>그래프 해석</strong></td>
+<td>시각적으로 풍부하지만 정량 비교 어려움</td>
+<td>거리·유사도가 정량 지표</td>
+</tr>
+<tr>
+<td><strong>확장성</strong></td>
+<td>노드·엣지 수가 폭증하면 해석 불가</td>
+<td>수십만 문서도 처리 가능</td>
+</tr>
+<tr>
+<td><strong>시점 비교(종단)</strong></td>
+<td>그래프 비교 절차가 복잡</td>
+<td>시점별 클러스터 변화 추적 용이</td>
+</tr>
+<tr>
+<td><strong>이론 친화성</strong></td>
+<td>어휘 중심, 프레임 분석에 적합</td>
+<td>주제·입장·서사 분석에 적합</td>
+</tr>
+</tbody></table>
+<p>의미연결망이 무조건 열등한 것은 아니다. <strong>언어의 표면 구조, 프레임 어휘, 사회적 키워드 관계</strong>를 보는 데는 여전히 유효하다. 그러나 <strong>문서·기사·인터뷰 응답의 의미 분류</strong> 문제에는 임베딩 접근이 더 정밀하다.</p>
+<h3 id="83-언제-어떤-방법을-쓸-것인가">8.3 언제 어떤 방법을 쓸 것인가</h3>
+<table>
+<thead>
+<tr>
+<th>연구 질문</th>
+<th>추천 방법</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>"이 코퍼스에 어떤 주제가 있나" (탐색적)</td>
+<td>SBERT + K-means(또는 HDBSCAN) + LLM 주제명</td>
+</tr>
+<tr>
+<td>"특정 단어가 어떤 단어들과 함께 쓰이나"</td>
+<td>의미연결망 / 공출현 분석</td>
+</tr>
+<tr>
+<td>"보도 프레임이 어떻게 구성되나"</td>
+<td>의미연결망 + 질적 분석</td>
+</tr>
+<tr>
+<td>"대규모 문서의 시계열 주제 변화"</td>
+<td>임베딩 + 클러스터링 + 시점별 비교</td>
+</tr>
+<tr>
+<td>"토픽 비중의 확률 모델이 필요"</td>
+<td>LDA, BTM, 또는 BERTopic</td>
+</tr>
+</tbody></table>
+<p><strong>결론</strong>: 분류·검색·대규모 의미 분석에서는 임베딩 기반이 우월하다. 의미연결망과 LDA는 <strong>보조 분석</strong> 또는 <strong>다른 질문</strong>에 적합하다.</p>
+<p>---</p>
+<h2 id="9-전체-파이프라인-코드-문서">9. 전체 파이프라인 코드 (문서)</h2>
+<pre><code class="language-python">"""
+End-to-end: 한국어 문서 클러스터링 + 주제 도출
+"""
+import numpy as np
+import pandas as pd
+from google import genai
+from google.genai import types
+from sklearn.preprocessing import normalize
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+import umap
+
+client = genai.Client()
+
+# 1. 데이터 로드
+df = pd.read_csv("articles.csv")  # columns: id, title, text
+docs = df["text"].tolist()
+
+# 2. 긴 문서 요약
+def maybe_summarize(text, threshold=2000):
+    if len(text) &lt; threshold:
+        return text
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash-lite",
+        contents=f"다음 문서의 핵심 주제와 주장을 200자 이내로 요약하라.\n\n{text}",
+    )
+    return resp.text.strip()
+
+docs_clean = [maybe_summarize(d) for d in docs]
+
+# 3. 임베딩
+def embed_batch(texts, batch_size=100):
+    out = []
+    for i in range(0, len(texts), batch_size):
+        resp = client.models.embed_content(
+            model="gemini-embedding-001",
+            contents=texts[i:i+batch_size],
+            config=types.EmbedContentConfig(
+                task_type="CLUSTERING",
+                output_dimensionality=768,
+            ),
+        )
+        out.extend([e.values for e in resp.embeddings])
+    return np.array(out)
+
+X = embed_batch(docs_clean)
+X = normalize(X, norm="l2")
+
+# 4. 차원 축소
+X_red = umap.UMAP(n_components=30, metric="cosine", random_state=42).fit_transform(X)
+
+# 5. K 후보 평가
+scores = {}
+for k in range(5, 21):
+    km = KMeans(n_clusters=k, n_init=10, random_state=42).fit(X_red)
+    s = silhouette_score(X_red, km.labels_)
+    scores[k] = s
+    print(k, round(s, 4))
+
+best_k = max(scores, key=scores.get)
+print(f"Best K = {best_k}")
+
+# 6. 최종 클러스터링
+km = KMeans(n_clusters=best_k, n_init=20, random_state=42).fit(X_red)
+df["cluster"] = km.labels_
+
+# 7. 대표 문서 + 주제 명명
+def representative_docs(X_red, labels, docs, n=7):
+    reps = {}
+    for c in set(labels):
+        idx = np.where(labels == c)[0]
+        center = X_red[idx].mean(axis=0)
+        dists = np.linalg.norm(X_red[idx] - center, axis=1)
+        top = idx[np.argsort(dists)[:n]]
+        reps[c] = [docs[i] for i in top]
+    return reps
+
+reps = representative_docs(X_red, km.labels_, docs_clean)
+
+def name_cluster(rep_docs):
+    joined = "\n---\n".join(rep_docs)
+    prompt = f"""다음은 같은 클러스터로 분류된 대표 문서들이다.
+공통 주제를 아래 JSON 형식으로만 응답하라.
+
+{{"topic_name": "15자 이내 주제명", "description": "2~3문장 설명", "keywords": ["단어1", "단어2", "단어3", "단어4", "단어5"]}}
+
+문서:
+{joined}
+"""
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+        config=types.GenerateContentConfig(response_mime_type="application/json"),
+    )
+    import json
+    return json.loads(resp.text)
+
+topics = {c: name_cluster(reps[c]) for c in set(km.labels_)}
+for c, t in topics.items():
+    n = (df["cluster"] == c).sum()
+    print(f"[Cluster {c}] n={n} | {t['topic_name']}")
+    print(f"  {t['description']}")
+    print(f"  keywords: {', '.join(t['keywords'])}")
+</code></pre>
+<p>---</p>
+<h2 id="10-이미지-분류-같은-분석-틀의-확장">10. 이미지 분류: 같은 분석 틀의 확장</h2>
+<p>이미지에도 정확히 같은 파이프라인이 적용된다. CLIP(Contrastive Language-Image Pretraining)은 이미지와 텍스트를 같은 의미 좌표 공간(vector space)에 배치하도록 학습한 모델이다. 예를 들어 “고양이 사진”과 “a cat sitting on a sofa”라는 문장은 서로 가까운 벡터 위치로 이동하고, 반대로 “전투기 사진”과 “강아지 산책” 같은 관련 없는 조합은 멀어지도록 contrastive learning 방식으로 학습한다. 즉 CLIP은 이미지를 단순 픽셀로 보는 것이 아니라, “무엇을 의미하는 장면인가”를 언어 수준에서 이해하도록 만든 모델이다.</p>
+<p>그래서 CLIP 이후에는:</p>
+<p>- 텍스트로 이미지 검색</p>
+<p>- 이미지로 유사 이미지 검색</p>
+<p>- 이미지 자동 군집화(clustering)</p>
+<p>- 이미지-기사 의미 불일치 탐지</p>
+<p>같은 작업이 가능해졌다.이 이미지와 텍스트를 같은 의미 벡터 공간에 정렬해 서로 직접 검색·비교할 수 있게 만든 것이다.</p>
+<pre><code>이미지 → (전처리) → 이미지 임베딩 모델 → 벡터 → K-means → 대표 이미지 → 멀티모달 LLM 주제 도출
+</code></pre>
+<h3 id="101-이미지-임베딩-모델">10.1 이미지 임베딩 모델</h3>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CLIP</strong> (OpenAI, 2021)</td>
+<td>이미지-텍스트 공동 학습. <strong>텍스트로 이미지를 검색</strong>할 수 있는 게 결정적 장점. ViT-B/32, ViT-L/14 등 변형 다수</td>
+</tr>
+<tr>
+<td><strong>OpenCLIP</strong></td>
+<td>오픈소스 재학습판, LAION 데이터로 학습. CLIP보다 강한 경우 많음</td>
+</tr>
+<tr>
+<td><strong>SigLIP / SigLIP2</strong> (Google)</td>
+<td>CLIP 후속, sigmoid loss로 안정성·효율 개선</td>
+</tr>
+<tr>
+<td><strong>DINOv2</strong> (Meta)</td>
+<td>자기지도 학습 비전 모델. 의료·과학 등 도메인 특화 분류에 강함</td>
+</tr>
+<tr>
+<td><strong>EVA-CLIP, BLIP-2</strong></td>
+<td>더 큰 멀티모달 모델</td>
+</tr>
+<tr>
+<td><strong>Gemini Vision</strong></td>
+<td>API로 이미지를 LLM에 직접 넣어 임베딩 또는 캡션 생성 가능</td>
+</tr>
+</tbody></table>
+<h3 id="102-clip-기반-이미지-임베딩-코드">10.2 CLIP 기반 이미지 임베딩 코드</h3>
+<pre><code class="language-python">import torch
+from PIL import Image
+from transformers import CLIPProcessor, CLIPModel
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14").to(device).eval()
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
+
+def embed_images(paths, batch_size=32):
+    vecs = []
+    for i in range(0, len(paths), batch_size):
+        imgs = [Image.open(p).convert("RGB") for p in paths[i:i+batch_size]]
+        inputs = processor(images=imgs, return_tensors="pt").to(device)
+        with torch.no_grad():
+            v = model.get_image_features(**inputs)
+        v = v / v.norm(dim=-1, keepdim=True)
+        vecs.append(v.cpu().numpy())
+    return np.concatenate(vecs)
+
+image_paths = [...]  # 사진 파일 경로 리스트
+X_img = embed_images(image_paths)
+</code></pre>
+<h3 id="103-이미지-전처리">10.3 이미지 전처리</h3>
+<ul>
+<li><strong>크기 통일·중앙 크롭</strong>: 모델 자체가 처리하지만, 극단적 비율은 사전에 잘라주는 게 좋음.</li>
+<li><strong>워터마크·로고 제거</strong>: 동일 워터마크가 있으면 클러스터가 워터마크 기준으로 잡힘.</li>
+<li><strong>EXIF 회전 보정</strong>: PIL <code>ImageOps.exif_transpose</code>.</li>
+<li><strong>얼굴 검출 후 자르기</strong>: 인물 사진 분류라면 MTCNN 등으로 얼굴 영역 추출 후 임베딩.</li>
+</ul>
+<h3 id="104-k-선택과-클러스터링-텍스트와-동일">10.4 K 선택과 클러스터링: 텍스트와 동일</h3>
+<pre><code class="language-python">X_img_red = umap.UMAP(n_components=50, metric="cosine", random_state=42).fit_transform(X_img)
+
+for k in range(5, 21):
+    km = KMeans(n_clusters=k, n_init=10, random_state=42).fit(X_img_red)
+    print(k, silhouette_score(X_img_red, km.labels_))
+
+km = KMeans(n_clusters=12, n_init=20, random_state=42).fit(X_img_red)
+img_labels = km.labels_
+</code></pre>
+<h3 id="105-클러스터-주제-도출-멀티모달-llm">10.5 클러스터 주제 도출: 멀티모달 LLM</h3>
+<p>이미지 클러스터의 주제는 <strong>대표 이미지 몇 장을 Gemini Vision에 직접 입력</strong>해 도출한다.</p>
+<pre><code class="language-python">from google import genai
+from pathlib import Path
+
+client = genai.Client()
+
+def representative_images(X_img, labels, paths, n=6):
+    reps = {}
+    for c in set(labels):
+        idx = np.where(labels == c)[0]
+        center = X_img[idx].mean(axis=0)
+        dists = np.linalg.norm(X_img[idx] - center, axis=1)
+        top = idx[np.argsort(dists)[:n]]
+        reps[c] = [paths[i] for i in top]
+    return reps
+
+def name_image_cluster(image_paths):
+    parts = []
+    for p in image_paths:
+        parts.append({"inline_data": {"mime_type": "image/jpeg", "data": Path(p).read_bytes()}})
+    parts.append({"text": """위 이미지들은 같은 클러스터로 묶였다. 공통 시각적·주제적 특징을 도출하라.
+JSON: {"topic_name": "15자 이내", "visual_features": "구도·색감·소재 등 시각 특징", "subject": "주제·맥락", "keywords": ["단어1","단어2","단어3","단어4","단어5"]}"""})
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[{"role": "user", "parts": parts}],
+        config=types.GenerateContentConfig(response_mime_type="application/json"),
+    )
+    import json
+    return json.loads(resp.text)
+
+reps_img = representative_images(X_img, img_labels, image_paths)
+image_topics = {c: name_image_cluster(reps_img[c]) for c in set(img_labels)}
+</code></pre>
+<h3 id="106-텍스트-이미지-통합-분석">10.6 텍스트-이미지 통합 분석</h3>
+<p>CLIP·SigLIP은 텍스트 인코더와 이미지 인코더의 출력을 같은 좌표 공간에 정렬되도록 학습한 모델이다. 인터넷에서 수집한 수억 쌍의 (이미지, 캡션)을 가지고, 올바른 쌍은 가까이, 잘못된 쌍은 멀리 놓이도록 두 인코더를 동시에 훈련(대조 학습, contrastive learning)한 결과다. 학습이 끝나면 "강아지 사진의 벡터"와 "a photo of a dog이라는 문장의 벡터"가 거의 같은 위치에 놓인다. 즉, 텍스트와 이미지를 같은 자(코사인 유사도)로 비교할 수 있다. 학습 데이터에 없던 카테고리도 작동하기 때문에 이를 제로샷(zero-shot) 능력이라 부른다.</p>
+<h3 id="107-응용-사례-저널리즘미디어">10.7 응용 사례 (저널리즘·미디어)</h3>
+<ul>
+<li>보도 사진 자동 분류: 정치인 시찰, 시위 현장, 재해 현장, 스포츠 등</li>
+<li>김정은 등 인물 시각 프레이밍 분석(국가별 매체 비교)</li>
+<li>광고·기사 이미지 구분</li>
+<li>유튜브 썸네일 클러스터링 → 채널 전략 분석</li>
+<li>딥페이크·합성 이미지 후보군 사전 선별</li>
+</ul>
+<p>---</p>
+<h2 id="11-강의-정리">11. 강의 정리</h2>
+<ol>
+<li><strong>임베딩은 비정형 데이터를 의미 좌표로 바꾸는 것</strong>이다. 이 좌표 위에서 거리는 곧 의미 차이다.</li>
+<li><strong>SBERT 계열</strong>은 코사인 유사도가 의미 유사도와 일치하도록 학습된 문장 임베딩이다.</li>
+<li>한국어에는 <code>multilingual-e5-large</code>, <code>bge-m3</code>, 또는 <strong>Gemini Embedding API</strong>(<code>task_type="CLUSTERING"</code>)가 강력하다.</li>
+<li>긴 문서는 <strong>LLM 요약 후 임베딩</strong>이 클러스터 품질을 높인다.</li>
+<li>K-means 적용 전 <strong>L2 정규화 + UMAP 차원 축소</strong>가 권장된다. K 선택은 Silhouette·DB·CH 등 다중 지표로 후보를 좁히고, <strong>대표 문서 검토와 해석 가능성</strong>으로 최종 결정한다.</li>
+<li><strong>클러스터 주제명은 LLM에 대표 문서를 보여주고 도출</strong>하면 단순 키워드 나열보다 훨씬 풍부하다.</li>
+<li>LDA·의미연결망 대비 SBERT+K-means+LLM 파이프라인은 <strong>의미 표현력, 다국어, 전처리 부담, 해석 가능성</strong> 모두에서 우위다.</li>
+<li>이미지에도 <strong>동일한 사고 틀</strong>이 적용된다. CLIP/SigLIP/DINOv2로 임베딩, 동일한 K-means, 멀티모달 LLM으로 주제명. 더 나아가 텍스트-이미지 통합 공간을 활용한 <strong>제로샷 분류</strong>도 가능하다.</li>
+</ol>
+<p>---</p>
+<h2 id="12-더-읽을거리">12. 더 읽을거리</h2>
+<ul>
+<li>Reimers &amp; Gurevych (2019). <em>Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks.</em> EMNLP.</li>
+<li>Grootendorst (2022). <em>BERTopic: Neural topic modeling with a class-based TF-IDF procedure.</em></li>
+<li>Radford et al. (2021). <em>Learning Transferable Visual Models From Natural Language Supervision (CLIP).</em> ICML.</li>
+<li>Wang et al. (2024). <em>Multilingual E5 Text Embeddings.</em> </li>
+<li>Chen et al. (2024). <em>BGE M3-Embedding.</em></li>
+<li>Oquab et al. (2024). <em>DINOv2: Learning Robust Visual Features without Supervision.</em></li>
+</ul>
+
+      </div>
+    </body>
+    </html>
