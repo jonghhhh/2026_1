@@ -184,9 +184,11 @@
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
-
-- (강의) [임베딩_벡터와유사도](https://jonghhhh.github.io/2026_1/임베딩_벡터와유사도.pdf) - One-hot → TF-IDF → 밀집 벡터, 텍스트·이미지의 벡터 표현과 코사인 유사도  
-- (강의) [임베딩_토크나이징과클러스터링](https://jonghhhh.github.io/2026_1/임베딩_토크나이징과클러스터링.pdf) - 토크나이징, 클러스터링(k-means)    
+- (강의) [embedding_sbert_kmeans 분석: 설명](https://jonghhhh.github.io/2026_1/embedding_sbert_kmeans.html)    
+- (실습) [embedding_sbert_kmeans 텍스트 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/Sbert_clustering_text.py)     
+- (실습) [embedding_sbert_kmeans 이미지 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/Sbert_clustering_image.py)    
+- (참조) [임베딩_벡터와유사도](https://jonghhhh.github.io/2026_1/임베딩_벡터와유사도.pdf) - One-hot → TF-IDF → 밀집 벡터, 텍스트·이미지의 벡터 표현과 코사인 유사도    
+- (참조) [임베딩_토크나이징과클러스터링](https://jonghhhh.github.io/2026_1/임베딩_토크나이징과클러스터링.pdf) - 토크나이징, 클러스터링(k-means)    
 
 
 **📄 논문 발표**
