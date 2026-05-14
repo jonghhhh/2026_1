@@ -34,6 +34,8 @@ import io
 import json
 import time
 import platform
+import subprocess
+import sys
 
 import requests
 import numpy as np
@@ -43,6 +45,7 @@ import torch
 from transformers import CLIPModel, CLIPProcessor
 
 import matplotlib
+matplotlib.use("Agg")   # GUI 없는 환경(WSL·서버·headless)에서 plt.show() 블로킹 방지
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import normalize
@@ -91,6 +94,21 @@ def _setup_korean_font():
 
 _setup_korean_font()
 matplotlib.rcParams["axes.unicode_minus"] = False
+
+
+def _open_file(path):
+    """PNG 등을 시스템 기본 뷰어로 비동기 열기 (실패해도 계속 진행)."""
+    try:
+        system = platform.system()
+        if system == "Windows":
+            os.startfile(os.path.abspath(path))
+        elif system == "Darwin":
+            subprocess.Popen(["open", path])
+        else:
+            subprocess.Popen(["xdg-open", path],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
 
 
 # .env 로드 + Gemini API 키
@@ -173,8 +191,13 @@ def embed_images_with_clip(sources, model_name="openai/clip-vit-base-patch32",
     """
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"  Device: {device}")
+    if device == "cpu":
+        # CPU 스레드를 최대한 활용해 추론 속도 향상
+        torch.set_num_threads(os.cpu_count() or 4)
+        print(f"  CPU 스레드: {torch.get_num_threads()}")
 
-    # 모델·전처리기 로드 (Hugging Face에서 자동 다운로드)
+    # 모델·전처리기 로드 (첫 실행 시 HuggingFace 캐시 다운로드, 이후 로컬 재사용)
+    print(f"  모델 로드: {model_name} ...")
     model = CLIPModel.from_pretrained(model_name).to(device).eval()
     processor = CLIPProcessor.from_pretrained(model_name)
 
@@ -259,25 +282,32 @@ def find_optimal_k(X, k_range=(2, 9), chart_path="k_selection_image.png"):
 
     plt.tight_layout()
     plt.savefig(chart_path, dpi=120, bbox_inches="tight")
-    print(f"\n  그래프 저장: {chart_path}")
-    print("  창을 닫으면 K 입력 단계로 진행합니다.")
-    plt.show()
     plt.close("all")
+    print(f"\n  그래프 저장: {chart_path}")
+    _open_file(chart_path)   # 시스템 기본 뷰어로 자동 열기 (비동기, 실패 무시)
 
     return ks[best_idx], ks
 
 
 def ask_k_from_user(suggested_k, valid_ks):
     """
-    연구자가 엘보우/실루엣 그래프를 직접 보고 K를 입력하도록 한다.
+    엘보우/실루엣 그래프를 보고 K를 입력받는다.
     - 엔터만 누르면 추천 K(실루엣 최대)를 채택.
-    - 유효 범위를 벗어나거나 정수가 아니면 다시 묻는다.
+    - 파이프·리다이렉트 등 비대화형 환경이면 추천 K를 자동 선택.
     """
+    if not sys.stdin.isatty():
+        print(f"  비대화형 실행 감지 → 추천 K={suggested_k} 자동 선택")
+        return suggested_k
+
+    print(f"\n  그래프 파일을 확인한 뒤 K를 입력하세요.")
     while True:
-        raw = input(
-            f"\n  사용할 K를 입력하세요 (가능 범위 {valid_ks[0]}~{valid_ks[-1]}, "
-            f"엔터=추천값 {suggested_k}): "
-        ).strip()
+        try:
+            raw = input(
+                f"  K 입력 (범위 {valid_ks[0]}~{valid_ks[-1]}, 엔터=추천값 {suggested_k}): "
+            ).strip()
+        except EOFError:
+            print(f"  입력 종료 → 추천 K={suggested_k} 자동 선택")
+            return suggested_k
         if raw == "":
             return suggested_k
         try:
@@ -323,6 +353,7 @@ def save_cluster_grid(reps_pil, cluster_sizes, save_path="cluster_grid_image.png
     plt.savefig(save_path, dpi=120, bbox_inches="tight")
     plt.close()
     print(f"  그리드 이미지 저장: {save_path}")
+    _open_file(save_path)
 
 
 # ============================================================
