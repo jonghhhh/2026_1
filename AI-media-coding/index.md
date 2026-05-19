@@ -166,15 +166,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) RAG(Retrieval-Augmented Generation) 원리
-  - 문서 청킹 → 임베딩 → 벡터 검색 → LLM 생성
-- (강의) LangChain을 활용한 RAG 파이프라인
-- (강의) Search Grounding: 실시간 웹 검색 기반 응답 생성
-- (강의) 챗봇 기반 커뮤니케이션 실험 설계
-  - 시스템 프롬프트로 실험 조건 조작, 대화 로그 수집
-- (실습) 뉴스 문서 기반 RAG 챗봇 구축 (ChromaDB + LangChain + Gemini)
-- (실습) Search Grounding 기능 추가
-- (실습) Gradio / Streamlit 챗봇 인터페이스 구현
+- (강의) [Gemini + RAG 분석: 설명](https://jonghhhh.github.io/2026_1/RAG_검색증강생성_051926.html)    
+- (실습) [Gemini + RAG 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/RAG_공정선거보도.py)   
+- (실습 자료) [Gemini + RAG 분석: 실습 자료](https://jonghhhh.github.io/2026_1/2026_공정선거보도_안내서_중앙선거관리위원회.txt)     
 
 </details>
 
