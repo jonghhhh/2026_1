@@ -1,0 +1,953 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h1 id="ragretrieval-augmented-generation-검색-증강-생성">RAG(Retrieval-Augmented Generation, 검색 증강 생성)</h1>
+<hr>
+<h2 id="0-이-강의에서-학습할-내용">0. 이 강의에서 학습할 내용</h2>
+<p>이 강의를 마치면 다음을 직접 할 수 있게 됩니다.</p>
+<ul>
+<li>왜 ChatGPT 같은 대형 언어 모델(LLM)이 <em>"방송법 제33조에 따른 심의 기준은?"</em> 같은 구체적 질문에 자신 있게 틀린 답을 하는지 그 메커니즘을 설명할 수 있습니다.</li>
+<li>한국어 미디어 자료를 적절히 잘라(청킹) 임베딩 벡터로 변환하고 데이터베이스에 저장할 수 있습니다.</li>
+<li>새 질문이 들어오면 관련 문서를 검색해 LLM에게 함께 전달하여 <em>근거 있는 답변</em>을 만들어내는 챗봇을 구축할 수 있습니다.</li>
+<li>Gemini 무료 API + Chroma + 파이썬만으로, GPU 없이, 노트북 한 대로 전체 시스템을 만들 수 있습니다.</li>
+<li>GraphRAG·Agentic RAG 같은 최신 발전 방향이 어디서 어떻게 생겨났는지 이해할 수 있습니다.</li>
+</ul>
+<p>수업을 따라가는 데 필요한 사전 지식은 파이썬 기초 문법(변수, 함수, 리스트, 딕셔너리, for문) 정도입니다.   </p>
+<hr>
+<h2 id="1장-왜-rag가-필요한가">1장. 왜 RAG가 필요한가</h2>
+<h3 id="11-llm은-통계적-앵무새다">1.1 LLM은 통계적 앵무새다</h3>
+<p>ChatGPT, Gemini, Claude 같은 대형 언어 모델은 본질적으로 *"앞 단어들이 주어졌을 때 다음 단어가 무엇일 확률이 가장 높은가"*를 예측하는 거대한 통계 기계입니다. 인터넷의 방대한 텍스트로 훈련받아 그 확률 분포를 학습했고, 그 결과로 사람처럼 말하는 능력을 갖추게 되었습니다.</p>
+<p>이 사실을 받아들이면 LLM의 행동이 일관되게 해석됩니다. LLM은 <em>진실</em>을 추구하지 않습니다. <em>그럴듯한 단어 배열</em>을 생성할 뿐입니다. 대부분 그럴듯한 배열은 진실과 일치하지만, 일치하지 않을 때도 LLM은 똑같이 자신감 있게 말합니다.</p>
+<h3 id="12-환각hallucination의-정체">1.2 환각(Hallucination)의 정체</h3>
+<p>다음 질문을 ChatGPT에 던졌다고 가정해 봅시다.</p>
+<blockquote>
+<p><em>"언론중재위원회의 2023년 결정문 중 정정보도 청구가 인용된 사례 세 건을 출처와 함께 알려주세요."</em></p>
+</blockquote>
+<p>ChatGPT는 매우 그럴듯한 사건 번호와 신문사명, 정정 내용을 술술 답해줄 것입니다. 그런데 <strong>그 사건 번호는 실재하지 않을 수 있습니다</strong>. 신문사명은 맞을 수 있지만 사건은 지어낸 것일 수 있습니다. 이것이 <em>환각</em>입니다.</p>
+<p>환각은 LLM이 "거짓말을 한다"기보다는, 훈련 데이터에서 본 <em>비슷한 패턴</em>을 조합해 가장 그럴듯한 답을 만들어낼 뿐이라는 본질에서 비롯됩니다. 모델 입장에서는 "모른다"고 답하는 것보다 "그럴듯한 답"을 만드는 것이 통계적으로 더 확률 높은 출력이기 때문입니다.</p>
+<h3 id="13-컨텍스트-한계와-최신성-한계">1.3 컨텍스트 한계와 최신성 한계</h3>
+<p>LLM에는 두 가지 추가 제약이 있습니다.</p>
+<p><strong>컨텍스트 길이 한계.</strong> 한 번에 입력할 수 있는 텍스트 길이에 제한이 있습니다. Gemini 2.5 Flash는 약 1백만 토큰(대략 한국어 70만 자)까지 받지만, GPT-4o는 약 12만 8천 토큰, 무료 ChatGPT는 더 짧습니다. <em>방송법 전체 + 시행령 + 시행규칙 + 관련 판례 100건</em>을 한 번에 넣는 것은 무료 도구로는 어렵습니다.</p>
+<p><strong>최신성 한계.</strong> LLM은 학습 시점까지의 데이터만 압니다. 어제 발표된 헌법재판소 결정이나 오늘 통과된 법안은 모릅니다.</p>
+<h3 id="14-rag의-핵심-아이디어--기억이-아닌-검색">1.4 RAG의 핵심 아이디어 — "기억"이 아닌 "검색"</h3>
+<p>RAG는 <em>Retrieval-Augmented Generation</em>, 한국어로 <strong>검색 증강 생성</strong>입니다. 발상의 전환은 단순합니다.</p>
+<blockquote>
+<p>"LLM이 모든 것을 기억하도록 만들 필요가 없다. 질문이 들어왔을 때 <em>그 질문에 답하는 데 필요한 자료만</em> 찾아서 LLM에게 함께 던져주면 된다."</p>
+</blockquote>
+<p>사람으로 비유하면 이렇습니다. 변호사가 의뢰인의 질문에 답할 때 모든 판례를 외우고 있지는 않습니다. 대신 관련된 판례 몇 건을 찾아 책상에 펼쳐 놓고, 그것을 참조하며 답합니다. RAG는 LLM에게 <em>책상</em>을 제공하는 기술입니다.</p>
+<h3 id="15-chatgpt와-rag-챗봇의-차이">1.5 ChatGPT와 RAG 챗봇의 차이</h3>
+<p>같은 질문을 두 시스템에 던져봅시다.</p>
+<blockquote>
+<p><em>"언론중재위원회가 2023년 다룬 사건 중에서 '정정보도'와 '추후보도'가 함께 청구된 사례를 찾아주세요."</em></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>시스템</th>
+<th>답변 양상</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>일반 ChatGPT</td>
+<td>그럴듯한 사례를 <em>지어낼</em> 가능성이 높음. 사건 번호와 신문사명이 실재하지 않을 수 있음</td>
+</tr>
+<tr>
+<td>RAG 챗봇 (언론중재위 결정문 200건 적재)</td>
+<td>"다음 3건이 검색되었습니다: 2023-XX호(○○일보, 정정+추후), 2023-YY호..." 출처 명시 가능</td>
+</tr>
+</tbody></table>
+<p>이 차이가 미디어 연구와 저널리즘에서 RAG가 중요한 이유입니다.</p>
+<hr>
+<h2 id="2장-rag의-전체-그림">2장. RAG의 전체 그림</h2>
+<h3 id="21-두-개의-파이프라인">2.1 두 개의 파이프라인</h3>
+<p>RAG 시스템은 두 개의 분리된 파이프라인으로 구성됩니다.</p>
+<p><strong>(A) 빌드 파이프라인 (사전 작업, 한 번만 실행)</strong></p>
+<pre><code>원본 문서 → 청킹 → 임베딩 생성 → 벡터 DB에 저장
+</code></pre>
+<p><strong>(B) 쿼리 파이프라인 (사용자가 질문할 때마다 실행)</strong></p>
+<pre><code>사용자 질문 → 질문 임베딩 → 벡터 DB에서 유사 청크 검색 → LLM에 [질문+검색된 청크] 전달 → 답변 생성
+</code></pre>
+<p>두 파이프라인이 분리되어 있다는 점이 RAG 이해의 첫 번째 핵심입니다. 빌드는 무겁고 느려도 한 번만 하면 됩니다. 쿼리는 가볍고 빨라야 하며 매번 실행됩니다.</p>
+<h3 id="22-일상적-비유">2.2 일상적 비유</h3>
+<p>도서관 사서를 떠올려 봅시다.</p>
+<ul>
+<li><strong>빌드 파이프라인</strong> = 책이 들어올 때마다 사서가 분류하고 색인을 만들어 서가에 꽂는 과정.</li>
+<li><strong>쿼리 파이프라인</strong> = 독자가 *"한국 언론의 정정보도에 관한 연구"*를 물으면, 사서가 색인을 뒤져 관련 책 3권을 찾아 독자에게 건네는 과정.</li>
+</ul>
+<p>LLM은 이 비유에서 <em>독자</em>입니다. 책을 외우고 있지는 않지만 책을 받아 읽고 종합할 수는 있습니다. 사서(검색기)가 좋은 책을 찾아주면 좋은 답이 나오고, 엉뚱한 책을 찾아주면 엉뚱한 답이 나옵니다. <strong>RAG 시스템의 품질은 사서의 품질에 좌우됩니다.</strong></p>
+<h3 id="23-각-단계를-미리-한-번씩-짚어보기">2.3 각 단계를 미리 한 번씩 짚어보기</h3>
+<p>이후 자세히 다룰 각 단계를 일단 한 번씩 미리 만나봅시다.</p>
+<ol>
+<li><strong>청킹</strong>: 긴 문서를 작은 조각(청크)으로 자릅니다. 한 청크가 너무 크면 의미가 흐려지고, 너무 작으면 맥락을 잃습니다.</li>
+<li><strong>임베딩</strong>: 각 청크를 <em>벡터</em>(숫자 배열)로 변환합니다. 의미가 비슷한 청크는 벡터 공간에서 가까이 위치합니다.</li>
+<li><strong>저장</strong>: 벡터들을 <em>벡터 DB</em>에 넣습니다. 일반 DB가 아니라 벡터 간 거리를 빠르게 계산할 수 있도록 설계된 특수 DB입니다.</li>
+<li><strong>검색</strong>: 질문도 같은 방식으로 임베딩해서, 그것과 가장 가까운 청크들을 찾습니다.</li>
+<li><strong>생성</strong>: 찾은 청크들과 원래 질문을 함께 LLM에게 주고 답을 만들게 합니다.</li>
+</ol>
+<hr>
+<h2 id="3장-임베딩--벡터-변환">3장. 임베딩 — 벡터 변환</h2>
+<h3 id="31-단어를-어떻게-숫자로-표현할까">3.1 단어를 어떻게 숫자로 표현할까</h3>
+<p>자연어 처리의 출발점은 <em>단어를 컴퓨터가 다룰 수 있는 형태로 변환하는 것</em>입니다. 가장 단순한 방법은 사전을 만들어 각 단어에 번호를 매기는 것입니다.</p>
+<pre><code>"기자" = 1, "정정보도" = 2, "보도" = 3, ...
+</code></pre>
+<p>문제는 이 방식이 <em>의미 관계</em>를 전혀 표현하지 못한다는 점입니다. "기자"(1)와 "보도"(3)가 관련 있다는 사실이 숫자에서 드러나지 않습니다.</p>
+<h3 id="32-의미를-가진-벡터--word2vec의-발상">3.2 의미를 가진 벡터 — Word2Vec의 발상</h3>
+<p>2013년 구글의 Word2Vec은 혁명적 발상을 선보였습니다. *"비슷한 맥락에 등장하는 단어들은 비슷한 의미를 가진다"*는 분포 가설(distributional hypothesis)에 기반해, 단어를 한 차원의 숫자가 아닌 <em>수백 차원의 벡터</em>로 표현했습니다.</p>
+<pre><code>"기자"      → [0.21, -0.43, 0.88, ..., 0.15]   (300차원)
+"기자들"    → [0.20, -0.41, 0.85, ..., 0.16]   (거의 같은 방향)
+"보도"      → [0.18, -0.39, 0.82, ..., 0.11]   (가까운 방향)
+"커피"      → [0.91, 0.55, -0.12, ..., -0.78]  (전혀 다른 방향)
+</code></pre>
+<p>이 벡터들 사이의 <em>방향</em>과 <em>거리</em>가 의미 관계를 담게 됩니다. 가장 유명한 예는 <em>"왕 - 남자 + 여자 ≈ 여왕"</em> 이라는 벡터 연산입니다.</p>
+<h3 id="33-단어에서-문장으로--sbert의-등장">3.3 단어에서 문장으로 — SBERT의 등장</h3>
+<p>Word2Vec은 단어 단위 임베딩이었습니다. 그러나 우리가 검색하고 싶은 것은 <em>문장</em>과 <em>문단</em>입니다.</p>
+<p>단순한 방법은 <em>문장 안 모든 단어 벡터의 평균</em>을 내는 것이었지만, 이 방식은 어순과 문법 구조를 무시합니다. "기자가 정치인을 비판했다"와 "정치인이 기자를 비판했다"가 같은 벡터가 됩니다.</p>
+<p>2019년 <strong>SBERT</strong>(Sentence-BERT)가 이 문제를 풀었습니다. BERT 같은 트랜스포머 모델을 두 문장 짝(pair)으로 미세 조정(fine-tune)해, <em>문장 전체</em>를 의미 있는 단일 벡터로 만들 수 있게 했습니다. 이후 모든 현대 임베딩 모델은 이 계보를 잇고 있습니다.</p>
+<h3 id="34-코사인-유사도--두-벡터가-얼마나-의미상-비슷한지-측정">3.4 코사인 유사도 — 두 벡터가 얼마나 의미상 비슷한지 측정</h3>
+<p>두 벡터 <em>a</em>, <em>b</em>의 코사인 유사도는 다음과 같이 계산합니다.</p>
+<pre><code>cosine_similarity(a, b) = (a · b) / (||a|| × ||b||)
+</code></pre>
+<p>값의 범위는 -1에서 1입니다. 1에 가까우면 거의 같은 방향(매우 유사), 0이면 무관, -1이면 정반대 의미입니다.</p>
+<p><strong>왜 단순 거리(유클리드 거리)가 아닌 코사인을 쓰는가?</strong> 코사인은 <em>방향</em>만 보고 <em>크기</em>는 무시합니다. 텍스트 임베딩에서는 벡터의 크기가 문장의 길이나 빈도 같은 비본질적 요인에 영향받을 수 있어, 방향만 비교하는 코사인이 더 안정적입니다.</p>
+<hr>
+<h2 id="4장-임베딩-모델-선택">4장. 임베딩 모델 선택</h2>
+<h3 id="41-이-수업의-표준-gemini-embedding">4.1 이 수업의 표준: Gemini Embedding</h3>
+<p>이 수업에서는 <strong><code>gemini-embedding-001</code></strong> 을 사용합니다. 선택 이유는 다음과 같습니다.</p>
+<ul>
+<li><strong>GPU 불필요.</strong> API 호출 방식이라 학생 노트북에 모델을 다운로드할 필요가 없습니다.</li>
+<li><strong>한국어 강함.</strong> 다국어 임베딩 리더보드(MTEB Multilingual)에서 상위권이며, 한국어 텍스트에 안정적입니다.</li>
+<li><strong>무료 tier 충분.</strong> AI Studio에서 카드 없이 키 발급, 임베딩 호출 한도가 학생 실습 규모에는 사실상 무제한입니다.</li>
+<li><strong>차원 선택 가능.</strong> 기본 3,072차원이지만 Matryoshka 기법으로 768·1536차원으로 잘라 쓸 수 있어 저장 비용이 줄어듭니다.</li>
+</ul>
+<pre><code class="language-python">import google.generativeai as genai
+genai.configure(api_key="YOUR_KEY")
+
+result = genai.embed_content(
+    model="gemini-embedding-001",
+    content="언론중재위원회의 정정보도 결정 기준은 무엇인가요?",
+    task_type="retrieval_query",       # 검색 쿼리용 임베딩
+    output_dimensionality=768          # 768차원으로 절단
+)
+embedding = result["embedding"]        # 길이 768의 리스트
+</code></pre>
+<h4 id="411-tasktype--비대칭-임베딩의-핵심">4.1.1 <code>task_type</code> — 비대칭 임베딩의 핵심</h4>
+<p>Gemini Embedding은 <strong>비대칭 임베딩(asymmetric embedding)</strong> 을 지원합니다. <em>문서를 DB에 저장할 때</em>와 <em>사용자 질문으로 검색할 때</em>는 임베딩을 약간 다른 방식으로 조정하는 것이 검색 정확도를 높입니다.</p>
+<p>이유는 직관적입니다. 저장되는 문서는 보통 <em>서술문</em>입니다 — 예: <em>"방송심의위원회 위원의 임기는 3년으로 한다."</em> 반면 질문은 <em>의문문</em>입니다 — 예: <em>"방송심의위원회 위원의 임기는?"</em> 두 문장이 의미적으로 같은 답을 가리키지만 표면 구조가 다릅니다. <code>task_type</code>을 명시하면 모델이 <em>"이건 검색 대상 문서"</em> 또는 <em>"이건 검색 쿼리"</em> 라는 신호를 받아 양쪽이 같은 의미 공간에서 더 가깝게 매핑되도록 조정합니다.</p>
+<p>Gemini Embedding이 지원하는 <code>task_type</code> 전체 목록은 다음과 같습니다.</p>
+<table>
+<thead>
+<tr>
+<th><code>task_type</code></th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>retrieval_document</code></td>
+<td><strong>벡터 DB에 저장할 문서</strong> 임베딩 (RAG 빌드 시)</td>
+</tr>
+<tr>
+<td><code>retrieval_query</code></td>
+<td><strong>검색 쿼리</strong> 임베딩 (RAG 사용자 질문)</td>
+</tr>
+<tr>
+<td><code>question_answering</code></td>
+<td>QA 데이터셋의 질문-문서 매칭용 임베딩</td>
+</tr>
+<tr>
+<td><code>fact_verification</code></td>
+<td>사실 검증용 (fact-check 시스템의 주장 임베딩)</td>
+</tr>
+<tr>
+<td><code>semantic_similarity</code></td>
+<td>두 문장의 의미 유사도 비교 (대칭 임베딩)</td>
+</tr>
+<tr>
+<td><code>classification</code></td>
+<td>분류 모델의 입력 임베딩</td>
+</tr>
+<tr>
+<td><code>clustering</code></td>
+<td>군집화용 임베딩</td>
+</tr>
+<tr>
+<td><code>code_retrieval_query</code></td>
+<td>코드 검색 쿼리 임베딩</td>
+</tr>
+</tbody></table>
+<p><strong>핵심 원칙</strong>: 같은 코퍼스에 대해 <em>빌드 때</em>와 <em>쿼리 때</em>는 반드시 짝을 맞춰야 합니다.</p>
+<ul>
+<li>일반 RAG: 빌드 <code>retrieval_document</code> ↔ 쿼리 <code>retrieval_query</code></li>
+<li>Fact-check 시스템: 빌드 <code>retrieval_document</code> ↔ 쿼리 <code>fact_verification</code></li>
+<li>두 문서 비교(중복 검출 등): 양쪽 모두 <code>semantic_similarity</code></li>
+</ul>
+<p>짝이 안 맞으면 검색 정확도가 눈에 띄게 떨어집니다. 본 강의의 모든 실습 코드는 이 짝을 맞춰 작성되어 있습니다.</p>
+<pre><code class="language-python"># 빌드 시 — 문서 저장용
+doc_emb = genai.embed_content(
+    model="gemini-embedding-001",
+    content="방송심의위원회 위원의 임기는 3년으로 한다.",
+    task_type="retrieval_document",
+    output_dimensionality=768
+)["embedding"]
+
+# 검색 시 — 사용자 질문용
+query_emb = genai.embed_content(
+    model="gemini-embedding-001",
+    content="방송심의위원회 위원의 임기는?",
+    task_type="retrieval_query",
+    output_dimensionality=768
+)["embedding"]
+</code></pre>
+<h3 id="42-한국어-sbert-계열--오픈소스-대안">4.2 한국어 SBERT 계열 — 오픈소스 대안</h3>
+<p>학생들이 <em>"모델 자체가 어떻게 생겼는지"</em> 를 보고 싶거나, 인터넷 없이 오프라인으로 돌리고 싶거나, Gemini가 닿지 않는 미래 시점을 대비하려면 한국어 SBERT 모델을 함께 알아두는 것이 좋습니다.</p>
+<p>CPU만으로 추론 가능한 대표적 한국어 모델은 다음과 같습니다.</p>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>차원</th>
+<th>크기</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jhgan/ko-sroberta-multitask</code></td>
+<td>768</td>
+<td>약 430MB</td>
+<td>가장 널리 쓰이는 한국어 SBERT</td>
+</tr>
+<tr>
+<td><code>BM-K/KoSimCSE-roberta</code></td>
+<td>768</td>
+<td>약 430MB</td>
+<td>SimCSE 기법으로 정밀도 향상</td>
+</tr>
+<tr>
+<td><code>snunlp/KR-SBERT-V40K-klueNLI-augSTS</code></td>
+<td>768</td>
+<td>약 430MB</td>
+<td>KLUE 데이터셋 학습, 서울대 NLP</td>
+</tr>
+<tr>
+<td><code>BAAI/bge-m3</code></td>
+<td>1024</td>
+<td>약 2.2GB</td>
+<td>다국어 + 한국어, 현재 오픈소스 최상급</td>
+</tr>
+</tbody></table>
+<p>CPU에서 한 문장 임베딩에 약 50~200ms 정도 걸리므로, 수백 개 문서 처리에는 충분합니다. 수만 개 처리는 시간이 오래 걸리니 Gemini API가 낫습니다.</p>
+<pre><code class="language-python"># pip install sentence-transformers
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("jhgan/ko-sroberta-multitask")
+embedding = model.encode("언론중재위원회의 정정보도 결정 기준은?")
+# embedding은 길이 768의 numpy 배열
+</code></pre>
+<h3 id="43-어떤-모델을-언제-쓰는가">4.3 어떤 모델을 언제 쓰는가</h3>
+<ul>
+<li><strong>수업 실습·소규모 데모</strong>: Gemini Embedding API (이 강의의 기본)</li>
+<li><strong>개인정보·기밀 데이터 포함</strong>: 로컬 SBERT (<code>jhgan/ko-sroberta-multitask</code>)</li>
+<li><strong>다국어 코퍼스</strong>: <code>BAAI/bge-m3</code></li>
+<li><strong>대규모 프로덕션</strong>: Gemini Embedding 또는 Voyage AI (유료)</li>
+</ul>
+<hr>
+<h2 id="5장-청킹--rag의-숨은-핵심">5장. 청킹 — RAG의 숨은 핵심</h2>
+<h3 id="51-청킹이-왜-필요한가">5.1 청킹이 왜 필요한가</h3>
+<p>긴 문서를 통째로 임베딩하면 두 가지 문제가 생깁니다.</p>
+<p><strong>의미가 평균화된다.</strong> <em>방송법 전체</em>를 하나의 벡터로 만들면, 그 벡터는 "방송법 전반"이라는 모호한 의미만 가집니다. 학생이 *"심의위원 임기"*에 대해 물었을 때, 이 거대한 벡터는 <em>"심의위원 임기"</em> 임베딩과 적당히 유사하긴 하지만 특별히 유사하지는 않습니다.</p>
+<p><strong>LLM 컨텍스트를 낭비한다.</strong> 검색된 문서를 LLM에 통째로 넘기면 무료 LLM의 컨텍스트 한도를 금세 채웁니다. 정작 답변에 필요한 부분은 그 안의 한 문단뿐일 수 있는데도 말입니다.</p>
+<p>해결책은 문서를 <em>적절한 크기의 청크</em>로 잘라 각 청크를 따로 임베딩하는 것입니다. 그러면 <em>"심의위원 임기"</em> 질문에는 <em>해당 조항을 담은 청크</em>가 정확히 매칭됩니다.</p>
+<h3 id="52-청킹-전략의-다섯-가지-유형">5.2 청킹 전략의 다섯 가지 유형</h3>
+<p><strong>(1) 고정 길이 청킹 (Fixed-size chunking)</strong></p>
+<p>가장 단순한 방법입니다. 글자 수나 토큰 수 기준으로 일정 길이마다 자릅니다. 예: 500자마다.</p>
+<pre><code class="language-python">def fixed_chunk(text, chunk_size=500):
+    return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+</code></pre>
+<p>장점: 구현이 가장 단순. 단점: 문장이나 단락 중간에서 잘릴 수 있어 의미가 잘립니다.</p>
+<p><strong>(2) 슬라이딩 윈도우 (오버랩 포함)</strong></p>
+<p>청크가 의미 단위 중간에서 잘리는 문제를 완화하기 위해, 인접 청크가 <em>일정 부분 겹치게</em> 자릅니다. 예: 500자 청크, 100자 오버랩.</p>
+<pre><code class="language-python">def sliding_chunk(text, chunk_size=500, overlap=100):
+    chunks = []
+    start = 0
+    while start &lt; len(text):
+        chunks.append(text[start:start+chunk_size])
+        start += chunk_size - overlap
+    return chunks
+</code></pre>
+<p>오버랩 덕분에 청크 경계에 걸친 문장도 적어도 한 청크에는 온전히 포함됩니다.</p>
+<p><strong>(3) 재귀적 청킹 (Recursive chunking)</strong></p>
+<p>가장 실용적인 방법입니다. 문서를 큰 단위(단락 → 문장 → 단어) 순으로 재귀적으로 분할합니다. LangChain의 <code>RecursiveCharacterTextSplitter</code>가 표준 구현입니다.</p>
+<pre><code class="language-python">from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50,
+    separators=["\n\n", "\n", ". ", " ", ""]   # 우선순위: 단락 → 줄바꿈 → 문장 → 어절
+)
+chunks = splitter.split_text(text)
+</code></pre>
+<p>원리: 먼저 단락(<code>\n\n</code>) 단위로 자르고, 청크가 너무 크면 줄바꿈으로 다시 자르고, 그래도 크면 문장으로, 그래도 크면 어절로 자릅니다. <em>의미 단위를 가능한 한 보존</em>하는 분할 방식입니다.</p>
+<p><strong>(4) 의미 기반 청킹 (Semantic chunking)</strong></p>
+<p>문장 단위로 임베딩한 뒤, 연속한 문장의 임베딩 유사도가 갑자기 떨어지는 <em>지점</em>을 청크 경계로 삼습니다. 주제가 바뀌는 곳에서 자연스럽게 잘리지만, 임베딩 호출이 많아져 빌드 비용이 높습니다.</p>
+<p><strong>(5) 구조 기반 청킹</strong></p>
+<p>문서가 명확한 구조를 가질 때 그 구조를 따릅니다. 예시:</p>
+<ul>
+<li><strong>법령</strong>: 조(條) 단위로 분할 (제1조, 제2조, ...)</li>
+<li><strong>회의록</strong>: 발언 단위로 분할 (○○○ 의원: ...)</li>
+<li><strong>판결문</strong>: 주문 / 이유 / 청구취지 단위로 분할</li>
+<li><strong>마크다운</strong>: <code>#</code>, <code>##</code> 헤더 단위로 분할</li>
+</ul>
+<p>도메인 특성을 살린 가장 강력한 청킹 방식입니다.</p>
+<h3 id="53-청크-크기와-오버랩-어떻게-정하나">5.3 청크 크기와 오버랩, 어떻게 정하나</h3>
+<p><strong>경험적 권장값</strong> (한국어 기준):</p>
+<ul>
+<li>일반 텍스트: 300~500자, 오버랩 50자</li>
+<li>뉴스 기사: 200~400자, 오버랩 30자</li>
+<li>법령 조문: 조 단위 (조 자체가 자연스러운 청크)</li>
+<li>회의록: 발언 단위 (발언 자체가 자연스러운 청크)</li>
+<li>학술 논문: 500~800자, 오버랩 100자</li>
+</ul>
+<p><strong>결정 원칙</strong>: <em>답변에 필요한 정보가 한 청크에 온전히 담겨야 한다</em>는 것이 기준입니다. 청크가 너무 작으면 답변에 필요한 맥락이 잘리고, 너무 크면 한 청크에 여러 주제가 섞여 검색 정밀도가 떨어집니다.</p>
+<h3 id="54-도메인별-청킹-사례">5.4 도메인별 청킹 사례</h3>
+<p>미디어학과 자료별로 권장 청킹 전략을 정리하면 다음과 같습니다.</p>
+<table>
+<thead>
+<tr>
+<th>자료</th>
+<th>권장 청킹</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>언론중재위 결정문</td>
+<td>결정문 1건 = 1청크 또는 결정문 내 섹션 단위</td>
+<td>한 결정의 맥락이 한 청크에 담겨야 함</td>
+</tr>
+<tr>
+<td>방송법 등 법령</td>
+<td>조(條) 단위</td>
+<td>조 단위 인용이 표준이라 출처 명시에도 유리</td>
+</tr>
+<tr>
+<td>국회 회의록</td>
+<td>발언 단위 또는 의제별 단위</td>
+<td>누가 무엇을 발언했는지가 핵심 정보</td>
+</tr>
+<tr>
+<td>뉴스 기사</td>
+<td>기사 1편 = 1청크 (단, 짧은 기사만)</td>
+<td>기사 분량이 짧으면 통째로, 길면 단락</td>
+</tr>
+<tr>
+<td>학술 논문</td>
+<td>섹션 단위 + 재귀적 청킹</td>
+<td>서론·이론·방법론을 분리 검색하기 위해</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="6장-벡터-db">6장. 벡터 DB</h2>
+<h3 id="61-왜-일반-db가-아닌가">6.1 왜 일반 DB가 아닌가</h3>
+<p>수만 개 청크 임베딩을 저장한 뒤 <em>"이 질문 벡터와 가장 가까운 청크 5개를 찾아라"</em> 라고 요청하는 상황을 생각해 봅시다. 일반 SQL DB로는 모든 청크와 코사인 유사도를 일일이 계산해야 합니다. 1만 개면 1만 번, 10만 개면 10만 번 계산입니다. 매 질문마다 이러면 너무 느립니다.</p>
+<p>벡터 DB는 <em>유사도 검색에 특화된 자료구조</em>(HNSW, IVF 등)를 사용해 이 검색을 수십 밀리초 안에 끝냅니다. 정확도는 <em>근사</em>(approximate)지만 실용적으로 충분합니다.</p>
+<h3 id="62-이-수업의-표준-chroma">6.2 이 수업의 표준: Chroma</h3>
+<p>Chroma는 학습용으로 가장 적합한 벡터 DB입니다.</p>
+<ul>
+<li>pip 설치 한 번으로 시작</li>
+<li>파이썬 API가 직관적</li>
+<li>로컬 디스크에 SQLite로 저장 → 학생이 폴더를 USB에 담아 다닐 수 있음</li>
+<li>LangChain 튜토리얼의 표준</li>
+<li>무료, 오픈소스</li>
+</ul>
+<pre><code class="language-python">import chromadb
+
+client = chromadb.PersistentClient(path="./my_chroma_db")
+collection = client.get_or_create_collection("news")
+
+collection.add(
+    ids=["doc_001"],
+    embeddings=[[0.1, 0.2, ..., 0.5]],   # 768차원
+    documents=["원본 텍스트"],
+    metadatas=[{"source": "한겨레", "date": "2026-01-15"}]
+)
+
+results = collection.query(
+    query_embeddings=[[0.11, 0.19, ..., 0.48]],
+    n_results=5,
+    where={"source": "한겨레"}   # 메타데이터 필터링
+)
+</code></pre>
+<h3 id="63-다른-벡터-db들-배포확장-단계용">6.3 다른 벡터 DB들 (배포·확장 단계용)</h3>
+<table>
+<thead>
+<tr>
+<th>벡터 DB</th>
+<th>형태</th>
+<th>무료 한도</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chroma</td>
+<td>로컬 라이브러리</td>
+<td>무제한 (로컬)</td>
+<td>학습용 표준</td>
+</tr>
+<tr>
+<td>Qdrant Cloud</td>
+<td>매니지드</td>
+<td>1GB 영구 무료</td>
+<td>로컬→클라우드 코드 호환</td>
+</tr>
+<tr>
+<td>Pinecone</td>
+<td>매니지드</td>
+<td>2GB, 카드 불필요</td>
+<td>가장 쉬운 서버리스</td>
+</tr>
+<tr>
+<td>Cloudflare Vectorize</td>
+<td>매니지드</td>
+<td>월 30M 쿼리 무료</td>
+<td>Workers와 통합, 한국 엣지</td>
+</tr>
+<tr>
+<td>pgvector</td>
+<td>Postgres 확장</td>
+<td>Postgres 무료 tier</td>
+<td>기존 DB에 통합</td>
+</tr>
+</tbody></table>
+<p>수업에서는 Chroma로 시작하고, 학기 후반에 Vectorize나 Qdrant로 옮기는 흐름이 권장됩니다.</p>
+<hr>
+<h2 id="7장-검색-단계-심화">7장. 검색 단계 심화</h2>
+<h3 id="71-단순-top-k-검색">7.1 단순 top-k 검색</h3>
+<p>가장 기본은 <em>질문 벡터와 가장 가까운 청크 k개</em>를 반환하는 것입니다. 일반적으로 k=3~10입니다.</p>
+<pre><code class="language-python">results = collection.query(query_embeddings=[q_vec], n_results=5)
+</code></pre>
+<h3 id="72-mmr--다양성과-관련성의-균형">7.2 MMR — 다양성과 관련성의 균형</h3>
+<p>단순 top-k는 거의 같은 내용의 청크 다섯 개가 반환되는 문제가 있습니다. 예를 들어 *"정정보도 청구"*를 검색하면 매우 유사한 결정문 다섯 개가 모두 비슷한 부분을 인용해 답변에 도움이 안 됩니다.</p>
+<p><strong>MMR(Maximal Marginal Relevance)</strong> 는 <em>관련성</em>과 <em>서로 간 다양성</em>을 함께 고려해 청크를 선택합니다. 첫 번째 청크는 가장 관련성 높은 것을 뽑고, 그 다음부터는 <em>이미 뽑힌 청크와 너무 비슷하지 않으면서 질문과는 충분히 관련된</em> 청크를 뽑습니다.</p>
+<h3 id="73-메타데이터-필터링">7.3 메타데이터 필터링</h3>
+<p>순수 의미 검색만으로는 <em>"2023년에 한겨레가 받은 정정보도 결정"</em> 같은 복합 조건을 처리하기 어렵습니다. 메타데이터를 청크에 함께 저장하면 SQL 조건처럼 필터링할 수 있습니다.</p>
+<pre><code class="language-python">results = collection.query(
+    query_embeddings=[q_vec],
+    n_results=5,
+    where={
+        "$and": [
+            {"source": {"$eq": "한겨레"}},
+            {"year": {"$eq": 2023}}
+        ]
+    }
+)
+</code></pre>
+<h3 id="74-하이브리드-검색-bm25--임베딩">7.4 하이브리드 검색 (BM25 + 임베딩)</h3>
+<p>의미 검색은 *"기자 폭행"*을 *"언론인 가해"*와도 매칭시키는 강점이 있지만, <em>고유명사·정확한 어구</em>에는 약합니다. *"방송법 제33조"*를 정확히 찾고 싶을 때는 키워드 검색(BM25)이 더 정확합니다. 최근에는 사용자의 자연어 질문을 그대로 검색하지 않고, LLM이 먼저 핵심 키워드나 검색 질의(query)를 재구성한 뒤 BM25 검색을 수행하는 방식도 널리 활용된다. 예를 들어 *“기자가 폭행당한 사건 관련 법률”*이라는 질문을 LLM이 “기자 폭행”, “언론인 폭행”, “관련 법 조항” 등의 검색어로 정제한 뒤 검색하는 방식이다. 하이브리드 검색은 이러한 키워드 기반 검색(BM25)과 임베딩 기반 의미 검색을 함께 결합하는 접근이다. 즉, 정확한 어구 검색의 강점과 의미적 유사성 검색의 장점을 동시에 활용하는 방식이다.   </p>
+<h3 id="75-리랭킹-re-ranking">7.5 리랭킹 (Re-ranking)</h3>
+<p>검색된 청크들을 <em>별도의 정밀한 모델</em>로 다시 정렬하는 단계입니다. 임베딩 검색은 빠르지만 거칠고, 리랭커는 느리지만 정밀합니다. 임베딩으로 100개 후보를 뽑고 리랭커가 5개로 추리는 패턴이 표준입니다. 무료 옵션으로 <code>BAAI/bge-reranker-v2-m3</code>가 있습니다.</p>
+<hr>
+<h2 id="8장-생성-단계--프롬프트가-결정한다">8장. 생성 단계 — 프롬프트가 결정한다</h2>
+<h3 id="81-기본-프롬프트-패턴">8.1 기본 프롬프트 패턴</h3>
+<p>검색된 청크를 LLM에게 어떻게 전달하느냐가 답변 품질을 좌우합니다. 기본 패턴은 다음과 같습니다.</p>
+<pre><code>다음 문서들을 참고하여 질문에 답하세요.
+주어진 문서에 없는 내용은 추측하지 말고 "주어진 자료로는 답할 수 없습니다"라고 답하세요.
+
+[문서 1]
+{청크 1 내용}
+
+[문서 2]
+{청크 2 내용}
+
+[문서 3]
+{청크 3 내용}
+
+질문: {사용자 질문}
+
+답변:
+</code></pre>
+<h3 id="82-출처-인용-강제하기">8.2 출처 인용 강제하기</h3>
+<p>답변의 각 주장에 <em>어느 문서에서 왔는지</em>를 명시하게 하면 환각이 크게 줄어듭니다.</p>
+<pre><code>다음 규칙을 반드시 따르세요.
+1. 답변의 모든 주장 끝에 [문서 N] 형식으로 출처를 표기하세요.
+2. 출처에 명시되지 않은 내용은 답변에 포함하지 마세요.
+3. 자료로 답할 수 없는 부분은 솔직히 그렇게 말하세요.
+</code></pre>
+<h3 id="83-모른다고-답하게-가르치기">8.3 "모른다"고 답하게 가르치기</h3>
+<p>LLM은 기본적으로 <em>답을 만들어내는</em> 경향이 있습니다. 모를 때 모른다고 답하게 하려면 명시적으로 지시해야 합니다.</p>
+<pre><code>주어진 자료로 답할 수 없는 질문에는 추측하지 말고
+"제공된 자료로는 답할 수 없습니다"라고만 답하세요.
+</code></pre>
+<p>이 한 줄이 환각의 절반을 막아줍니다.</p>
+<hr>
+<h2 id="9장-평가">9장. 평가</h2>
+<h3 id="91-무엇을-평가하나">9.1 무엇을 평가하나</h3>
+<p>RAG 평가는 세 측면으로 나뉩니다.</p>
+<ol>
+<li><strong>검색 품질 (Retrieval quality)</strong>: 검색기가 <em>정답을 포함한 청크</em>를 가져왔는가?</li>
+<li><strong>답변 충실도 (Faithfulness)</strong>: 답변이 <em>검색된 청크에 근거</em>하는가? 청크에 없는 주장이 들어가지 않았는가?</li>
+<li><strong>답변 관련성 (Answer relevance)</strong>: 답변이 <em>질문에 실제로 답</em>하는가?</li>
+</ol>
+<h3 id="92-간단한-평가-셋-만들기">9.2 간단한 평가 셋 만들기</h3>
+<p>학기 프로젝트 수준에서는 30~50건의 <em>"질문 ↔ 정답 청크 ↔ 모범 답안"</em> 쌍을 직접 만들어 평가하는 것이 현실적입니다.</p>
+<pre><code class="language-python">eval_set = [
+    {
+        "question": "언론중재위원회 결정에 불복할 경우 절차는?",
+        "expected_chunk_id": "doc_045",
+        "expected_answer_keywords": ["행정소송", "60일", "관할법원"]
+    },
+    # ... 30개 이상
+]
+</code></pre>
+<p>검색이 expected_chunk를 top-5 안에 포함하면 검색 성공으로 카운트, 답변이 expected_keywords를 모두 포함하면 답변 성공으로 카운트합니다.</p>
+<p>본격적 평가는 RAGAS, TruLens 같은 도구가 있지만 학부 수업 범위는 넘어섭니다.</p>
+<hr>
+<h2 id="10장-실습--한국어-미디어-rag-만들기">10장. 실습 — 한국어 미디어 RAG 만들기</h2>
+<p>이 장은 <em>전체 시스템을 실제로 동작시키는</em> 단계입니다. 코드는 위에서 아래로 순서대로 실행하면 완성됩니다.</p>
+<h3 id="101-환경-설정">10.1 환경 설정</h3>
+<pre><code class="language-bash"># 가상환경 (권장)
+python -m venv rag_env
+source rag_env/bin/activate   # Windows: rag_env\Scripts\activate
+
+# 패키지 설치
+pip install google-generativeai chromadb langchain-text-splitters gradio
+</code></pre>
+<p>Gemini API 키 설정 (PowerShell이면 <code>$env:</code>, bash면 <code>export</code>):</p>
+<pre><code class="language-bash">export GEMINI_API_KEY="AIza...your_key..."
+</code></pre>
+<h3 id="102-실습-코퍼스-준비">10.2 실습 코퍼스 준비</h3>
+<p>이 실습에서는 <strong>언론중재위원회 결정문</strong>을 사용합니다. 다음 경로에서 공개 결정문을 다운로드할 수 있습니다.</p>
+<ul>
+<li>언론중재위원회 홈페이지 → 정보공개 → 결정 사례</li>
+<li>또는 학생 실습용으로는 <em>"국가법령정보센터"</em> (law.go.kr)에서 <strong>방송법·언론중재법</strong> 전체를 다운로드해도 좋습니다.</li>
+</ul>
+<p>본 실습 예시에서는 텍스트 파일 형태로 <code>./data/</code> 폴더에 있다고 가정합니다.</p>
+<pre><code>data/
+├── 방송법.txt
+├── 언론중재법.txt
+└── 결정문/
+    ├── 2023-001.txt
+    ├── 2023-002.txt
+    └── ...
+</code></pre>
+<h3 id="103-빌드-파이프라인--청킹부터-저장까지">10.3 빌드 파이프라인 — 청킹부터 저장까지</h3>
+<pre><code class="language-python"># build_index.py
+import os
+import glob
+import time
+import chromadb
+import google.generativeai as genai
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# 1) Gemini 설정
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+# 2) Chroma 클라이언트 생성 (로컬 디스크에 저장)
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.get_or_create_collection(
+    name="media_law",
+    metadata={"hnsw:space": "cosine"}   # 코사인 유사도 사용
+)
+
+# 3) 청킹 도구 준비
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50,
+    separators=["\n\n", "\n", "。 ", ". ", " ", ""]
+)
+
+# 4) 모든 텍스트 파일 처리
+files = glob.glob("./data/**/*.txt", recursive=True)
+print(f"총 {len(files)}개 파일 처리 시작")
+
+doc_id = 0
+for filepath in files:
+    with open(filepath, "r", encoding="utf-8") as f:
+        text = f.read()
+    
+    # 파일 정보를 메타데이터에 저장
+    filename = os.path.basename(filepath)
+    category = "법령" if "법" in filename else "결정문"
+    
+    # 청킹
+    chunks = splitter.split_text(text)
+    print(f"  {filename}: {len(chunks)}개 청크")
+    
+    # 청크별로 임베딩 + 저장
+    for chunk_idx, chunk in enumerate(chunks):
+        # Gemini 임베딩 호출 (저장용: retrieval_document)
+        result = genai.embed_content(
+            model="gemini-embedding-001",
+            content=chunk,
+            task_type="retrieval_document",
+            output_dimensionality=768
+        )
+        embedding = result["embedding"]
+        
+        # Chroma에 추가
+        collection.add(
+            ids=[f"doc_{doc_id:05d}"],
+            embeddings=[embedding],
+            documents=[chunk],
+            metadatas=[{
+                "source": filename,
+                "category": category,
+                "chunk_idx": chunk_idx
+            }]
+        )
+        doc_id += 1
+        
+        # rate limit 회피
+        time.sleep(0.1)
+
+print(f"\n총 {doc_id}개 청크가 ./chroma_db 에 저장되었습니다.")
+</code></pre>
+<p>이 스크립트를 한 번 실행하면 <code>./chroma_db/</code> 폴더에 모든 청크의 임베딩이 저장됩니다. 이후로는 이 폴더만 있으면 즉시 검색이 가능합니다.</p>
+<h3 id="104-쿼리-파이프라인--질문에서-답변까지">10.4 쿼리 파이프라인 — 질문에서 답변까지</h3>
+<pre><code class="language-python"># query.py
+import os
+import chromadb
+import google.generativeai as genai
+
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.get_collection("media_law")
+
+def search(query, top_k=5):
+    """질문에 가장 관련 있는 청크 top_k개 검색"""
+    q_emb = genai.embed_content(
+        model="gemini-embedding-001",
+        content=query,
+        task_type="retrieval_query",
+        output_dimensionality=768
+    )["embedding"]
+    
+    results = collection.query(
+        query_embeddings=[q_emb],
+        n_results=top_k,
+        include=["documents", "metadatas", "distances"]
+    )
+    return results
+
+def answer(query):
+    """검색 + 생성 통합 함수"""
+    # 1) 관련 청크 검색
+    results = search(query, top_k=5)
+    chunks = results["documents"][0]
+    metas = results["metadatas"][0]
+    
+    # 2) 검색 결과로 컨텍스트 구성
+    context = ""
+    for i, (chunk, meta) in enumerate(zip(chunks, metas)):
+        context += f"\n[문서 {i+1}] (출처: {meta['source']})\n{chunk}\n"
+    
+    # 3) LLM에 질문 + 컨텍스트 전달
+    prompt = f"""다음 문서들을 참고하여 질문에 답하세요.
+
+규칙:
+
+1. 답변의 각 주장 끝에 [문서 N] 형식으로 출처를 표기하세요.
+2. 주어진 문서에 없는 내용은 추측하지 말고 "제공된 자료로는 답할 수 없습니다"라고 답하세요.
+3. 답변은 한국어로 작성하세요.
+
+{context}
+
+질문: {query}
+
+답변:"""
+    
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(prompt)
+    return response.text, metas
+
+# 테스트
+if __name__ == "__main__":
+    question = "방송심의위원회 위원의 임기는 얼마인가요?"
+    answer_text, sources = answer(question)
+    print("질문:", question)
+    print("\n답변:\n", answer_text)
+    print("\n참고 출처:", [m["source"] for m in sources])
+</code></pre>
+<h3 id="105-챗봇-인터페이스--gradio로-웹-배포">10.5 챗봇 인터페이스 — Gradio로 웹 배포</h3>
+<p>Gradio는 몇 줄 코드로 챗봇 UI를 만들어주는 라이브러리입니다.</p>
+<pre><code class="language-python"># app.py
+import os
+import chromadb
+import gradio as gr
+import google.generativeai as genai
+
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.get_collection("media_law")
+
+def rag_chat(message, history):
+    # 검색 (쿼리용 임베딩)
+    q_emb = genai.embed_content(
+        model="gemini-embedding-001",
+        content=message,
+        task_type="retrieval_query",
+        output_dimensionality=768
+    )["embedding"]
+    results = collection.query(query_embeddings=[q_emb], n_results=5,
+                                include=["documents", "metadatas"])
+    chunks = results["documents"][0]
+    metas = results["metadatas"][0]
+    
+    # 컨텍스트
+    context = "\n\n".join(
+        f"[문서 {i+1}] (출처: {m['source']})\n{c}"
+        for i, (c, m) in enumerate(zip(chunks, metas))
+    )
+    
+    # 답변 생성
+    prompt = f"""다음 문서를 참고하여 답하세요. 각 주장에 [문서 N] 출처를 표기하고, 
+문서에 없는 내용은 "제공된 자료로는 답할 수 없습니다"라고 답하세요.
+
+{context}
+
+질문: {message}
+답변:"""
+    
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(prompt)
+    
+    sources = "\n\n---\n**참고 문서**: " + ", ".join(set(m["source"] for m in metas))
+    return response.text + sources
+
+demo = gr.ChatInterface(
+    fn=rag_chat,
+    title="언론법 RAG 챗봇",
+    description="언론중재법·방송법 및 결정문에 대한 질문에 답합니다.",
+    examples=[
+        "방송심의위원회 위원의 임기는?",
+        "정정보도 청구가 인용되려면 어떤 요건이 필요한가요?",
+        "언론중재위원회 결정에 불복하면 어떻게 해야 하나요?"
+    ]
+)
+
+if __name__ == "__main__":
+    demo.launch(share=True)   # share=True면 임시 공개 URL 발급
+</code></pre>
+<p><code>python app.py</code> 실행 후 출력되는 <code>*.gradio.live</code> 주소로 접속하면 챗봇이 동작합니다. 그대로 Hugging Face Spaces에 올리면 영구 무료 호스팅도 가능합니다.</p>
+<h3 id="106-자주-만나는-오류와-해결">10.6 자주 만나는 오류와 해결</h3>
+<p><strong>오류 1: <code>RESOURCE_EXHAUSTED</code> 또는 <code>quota exceeded</code></strong></p>
+<ul>
+<li>원인: Gemini 무료 tier 일일 호출 한도 초과</li>
+<li>해결: 다음 날 재시도 또는 <code>time.sleep()</code>을 늘려 호출 간격 조절</li>
+</ul>
+<p><strong>오류 2: <code>Embedding dimension mismatch</code></strong></p>
+<ul>
+<li>원인: 빌드 때 768차원으로 만들고 쿼리 때는 3,072차원으로 호출</li>
+<li>해결: 모든 호출에 <code>output_dimensionality=768</code>을 명시</li>
+</ul>
+<p><strong>오류 3: 검색 결과가 엉뚱함</strong></p>
+<ul>
+<li>원인: 청크 크기가 너무 큼 (의미가 평균화) 또는 너무 작음 (맥락 부족)</li>
+<li>해결: 청크 크기를 300~800자 범위에서 조절하며 실험</li>
+</ul>
+<p><strong>오류 4: 답변이 자료에 없는 내용을 포함</strong></p>
+<ul>
+<li>원인: 프롬프트에서 "모른다고 답하라"는 지시가 약함</li>
+<li>해결: 프롬프트 첫 줄에 강한 제약 추가, <code>temperature=0.1</code> 설정</li>
+</ul>
+<hr>
+<h2 id="11장-rag의-한계--단순-rag가-못-푸는-것들">11장. RAG의 한계 — 단순 RAG가 못 푸는 것들</h2>
+<p>지금까지 만든 RAG는 <em>단순 의미 검색 기반 RAG</em>입니다. 강력하지만 다음 문제들에는 약합니다.</p>
+<h3 id="111-다단계-추론-multi-hop-reasoning">11.1 다단계 추론 (Multi-hop reasoning)</h3>
+<blockquote>
+<p><em>"2023년 정정보도 결정을 가장 많이 받은 신문사의 모회사는 어디인가?"</em></p>
+</blockquote>
+<p>이 질문은 두 단계 추론을 요구합니다. (1) 결정문에서 신문사별 빈도 세기 → (2) 신문사 모회사 정보를 또 다른 자료에서 찾기. 단순 의미 검색은 이런 <em>연결</em>을 잡지 못합니다.</p>
+<h3 id="112-집계-질문">11.2 집계 질문</h3>
+<blockquote>
+<p><em>"이번 해 한겨레가 받은 정정보도 결정은 총 몇 건인가?"</em></p>
+</blockquote>
+<p>이건 의미 검색이 아니라 <em>카운팅</em>이 필요합니다. SQL이 잘하는 일이고 임베딩이 못하는 일입니다.</p>
+<h3 id="113-정보-단편화">11.3 정보 단편화</h3>
+<p>긴 보고서에서 한 결론이 여러 단락에 흩어져 있을 때, 단편 청크 몇 개로는 전체 맥락을 복원하기 어렵습니다.</p>
+<h3 id="114-정확한-인용">11.4 정확한 인용</h3>
+<p>*"방송법 제33조 제2항"*을 정확히 검색하고 싶을 때 의미 검색은 <em>비슷한 의미의 조항</em>을 가져올 수 있습니다. 키워드 검색 결합(하이브리드)이 필요합니다.</p>
+<hr>
+<h2 id="12장-rag의-발전-방향--graphrag와-그-너머">12장. RAG의 발전 방향 — GraphRAG와 그 너머</h2>
+<h3 id="121-graphrag의-핵심-아이디어">12.1 GraphRAG의 핵심 아이디어</h3>
+<p>GraphRAG는 마이크로소프트 리서치가 2024년 제안한 방식으로, <em>문서들을 단순 청크가 아니라 지식 그래프로 표현</em>하는 접근입니다.</p>
+<p><strong>핵심 아이디어</strong>: 문서에서 <em>엔티티</em>(인물·조직·사건)와 <em>관계</em>(누가 누구를 비판했다, 어디서 일어났다)를 LLM으로 추출해 그래프로 만듭니다. 그래프에서 <em>공동체</em>(community)를 자동 탐지하고 각 공동체에 대한 <em>요약</em>을 미리 생성해 둡니다. 질문이 들어오면 관련 공동체의 요약을 함께 LLM에 전달합니다.</p>
+<pre><code>일반 RAG: 문서 → 청크 → 임베딩 → 유사도 검색
+GraphRAG: 문서 → 엔티티·관계 추출 → 그래프 → 공동체 탐지 → 요약 → 검색
+</code></pre>
+<p><strong>왜 강한가</strong>: 단편 청크는 <em>연결</em>을 잃어버리지만, 그래프는 연결을 보존합니다. <em>"누가 누구를 어떻게 비판했는가"</em> 같은 관계 질문에 강합니다.</p>
+<h3 id="122-한국어-미디어-사례">12.2 한국어 미디어 사례</h3>
+<p>GraphRAG는 본 강의의 교수 연구실에서도 활용되고 있습니다. 1979~1981년 한국 군부 검열 기록을 <em>언론사·기자·검열관·기사 주제</em> 노드와 <em>검열·발표 금지·삭제 요구</em> 관계로 그래프화한 사례가 있습니다(약 10,500 노드, 86,000 관계). 일반 RAG로는 <em>"○○일보 검열을 가장 많이 지시한 검열관"</em> 같은 관계 질문에 답하기 어렵지만, GraphRAG는 자연스럽게 답합니다.</p>
+<h3 id="123-agentic-rag">12.3 Agentic RAG</h3>
+<p>LLM이 <em>어떻게 검색할지를 스스로 계획</em>하는 방식입니다. 다단계 추론 질문이 들어오면 LLM이 검색→평가→재검색→집계의 단계를 자동으로 수행합니다. LangGraph 같은 프레임워크가 이를 지원합니다.</p>
+<h3 id="124-multi-vector-retrieval">12.4 Multi-vector Retrieval</h3>
+<p>한 문서를 한 벡터가 아니라 <em>여러 벡터</em>(요약, 가설 질문, 원본 등)로 표현해 검색하는 방식입니다. ColBERT, ColPali 같은 모델이 이 방향을 발전시키고 있습니다.</p>
+<h3 id="125-더-공부하고-싶다면">12.5 더 공부하고 싶다면</h3>
+<ul>
+<li><strong>이론</strong>: Lewis et al., <em>"Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"</em> (NeurIPS 2020) — RAG 원논문</li>
+<li><strong>GraphRAG</strong>: Edge et al., <em>"From Local to Global: A Graph RAG Approach"</em> (2024)</li>
+<li><strong>실습</strong>: LangChain·LlamaIndex 공식 튜토리얼</li>
+<li><strong>평가</strong>: Es et al., <em>"RAGAS: Automated Evaluation of Retrieval Augmented Generation"</em> (2023)</li>
+</ul>
+<hr>
+<h2 id="부록-a-실습용-한국어-자료-추천">부록 A. 실습용 한국어 자료 추천</h2>
+<p>ChatGPT 등 LLM 단독으로 다루기 어려우면서 RAG 실습에 적합한 한국어 자료들입니다.</p>
+<h3 id="a1-미디어언론-도메인">A.1 미디어·언론 도메인</h3>
+<p><strong>언론중재위원회 결정문</strong> </p>
+<ul>
+<li>출처: 언론중재위원회 홈페이지 (pac.or.kr)</li>
+<li>분량: 결정문 1건당 5,000~20,000자, 연간 수백 건</li>
+<li>왜 좋은가: 미디어학과에 정확히 부합. 정정보도·반론보도·손해배상 등 명확한 유형으로 메타데이터 부여 가능. ChatGPT는 전체 결정을 비교 못 함</li>
+</ul>
+<p><strong>방송법·언론중재법·정보통신망법 통합 코퍼스</strong></p>
+<ul>
+<li>출처: 국가법령정보센터 (law.go.kr)</li>
+<li>분량: 본법 + 시행령 + 시행규칙 + 관련 판례까지 합치면 50~100만 자</li>
+<li>왜 좋은가: 조 단위 구조 청킹의 모범 사례. 조항 간 상호 참조가 많아 RAG 가치가 큼</li>
+</ul>
+<p><strong>국회 문화체육관광위원회 회의록</strong></p>
+<ul>
+<li>출처: 국회 회의록 시스템 (likms.assembly.go.kr)</li>
+<li>분량: 1년치 100~200만 자</li>
+<li>왜 좋은가: 방송통신·언론 정책 논의가 담긴 1차 자료. 발언 단위 청킹이 자연스러움</li>
+</ul>
+<h3 id="a2-정치정책-도메인">A.2 정치·정책 도메인</h3>
+<p><strong>대선·총선 후보자 토론 녹취록</strong></p>
+<ul>
+<li>출처: 중앙선관위, KBS·MBC 토론 영상의 자막</li>
+<li>분량: 토론 1회당 약 5~10만 자, 시즌당 수십 회</li>
+<li>왜 좋은가: 발화 단위 청킹, fact-check 응용 가능</li>
+</ul>
+<p><strong>헌법재판소 결정문</strong></p>
+<ul>
+<li>출처: 헌법재판소 홈페이지 (ccourt.go.kr)</li>
+<li>분량: 결정 1건당 1~10만 자</li>
+<li>왜 좋은가: 구조가 명확(주문/이유/소수의견), ChatGPT가 잘 다루지 못하는 법리 분석</li>
+</ul>
+<h3 id="a3-문학문화-도메인">A.3 문학·문화 도메인</h3>
+<p><strong>한국 근현대 장편소설</strong> (저작권 만료된 작품)</p>
+<ul>
+<li>예: 이광수 <em>무정</em>, 염상섭 <em>삼대</em></li>
+<li>분량: 작품당 30~70만 자</li>
+<li>왜 좋은가: 등장인물·사건·시대 배경의 관계가 풍부해 GraphRAG로 확장하기 좋음</li>
+</ul>
+<h3 id="a4-학술-도메인">A.4 학술 도메인</h3>
+<p><strong>한국언론학보·한국방송학보 논문</strong></p>
+<ul>
+<li>출처: DBpia, KISS, KCI</li>
+<li>분량: 논문 1편당 1~3만 자</li>
+<li>왜 좋은가: 학생 본인 연구와 직결되고, 섹션 단위 청킹 실습에 적합</li>
+</ul>
+<hr>
+<h2 id="부록-b-트러블슈팅-체크리스트">부록 B. 트러블슈팅 체크리스트</h2>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>가능한 원인</th>
+<th>점검 사항</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>검색 결과가 항상 같은 청크만</td>
+<td>코퍼스가 너무 작음 또는 모두 비슷한 내용</td>
+<td>청크 수 확인, 도메인 다양성 확인</td>
+</tr>
+<tr>
+<td>답변이 자료와 무관한 내용</td>
+<td>LLM 환각, 프롬프트 약함</td>
+<td>"자료에 없으면 모른다고 답하라" 강조, temperature 낮춤</td>
+</tr>
+<tr>
+<td>한국어 임베딩 성능 낮음</td>
+<td>영어 위주 모델 사용</td>
+<td>Gemini Embedding이나 한국어 SBERT로 교체</td>
+</tr>
+<tr>
+<td><strong>검색 정확도가 미묘하게 떨어짐</strong></td>
+<td><strong>빌드와 쿼리의 <code>task_type</code> 불일치</strong></td>
+<td><strong>빌드 <code>retrieval_document</code> ↔ 쿼리 <code>retrieval_query</code> 짝 맞춤</strong></td>
+</tr>
+<tr>
+<td>빌드가 너무 느림</td>
+<td>청크가 너무 많음, rate limit</td>
+<td>batch 호출, time.sleep 조절</td>
+</tr>
+<tr>
+<td>같은 질문이 매번 다른 답</td>
+<td>LLM 무작위성</td>
+<td><code>temperature=0.1</code> 설정</td>
+</tr>
+<tr>
+<td>검색은 잘 되는데 답변이 짧음</td>
+<td>LLM 출력 제한</td>
+<td><code>max_output_tokens</code> 늘림</td>
+</tr>
+<tr>
+<td>메타데이터 필터링 안 됨</td>
+<td>필드명 오타, 타입 불일치</td>
+<td>metadata 키와 where 절 일치 확인</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="부록-c-추가-학습-자료">부록 C. 추가 학습 자료</h2>
+<h3 id="c1-무료-온라인-자료">C.1 무료 온라인 자료</h3>
+<ul>
+<li>LangChain 공식 RAG 튜토리얼: python.langchain.com</li>
+<li>LlamaIndex 학습 자료: docs.llamaindex.ai</li>
+<li>Hugging Face NLP 코스: huggingface.co/learn</li>
+<li>Sebastian Raschka의 RAG 정리 글 (영어): magazine.sebastianraschka.com</li>
+</ul>
+<h3 id="c2-한국어-자료">C.2 한국어 자료</h3>
+<ul>
+<li>데이터과학자 커뮤니티 KSDS의 RAG 강좌 자료</li>
+<li>강필성 교수 유튜브 채널의 임베딩·BERT 강의</li>
+<li>국립국어원의 한국어 NLP 코퍼스 공개 자료</li>
+</ul>
+<h3 id="c3-다음-단계-학습-순서-추천">C.3 다음 단계 학습 순서 추천</h3>
+<ol>
+<li>본 강의를 마쳤다면 → LangChain으로 같은 시스템 재구현</li>
+<li>→ 평가 셋 만들고 RAGAS로 평가</li>
+<li>→ 하이브리드 검색(BM25 + 임베딩) 구현</li>
+<li>→ 리랭커 추가</li>
+<li>→ GraphRAG 시도 (Neo4j + LLM 엔티티 추출)</li>
+<li>→ Agentic RAG (LangGraph)</li>
+</ol>
+<p>각 단계마다 새로운 한 가지 개념만 추가하는 것이 학습 효율이 높습니다. 한꺼번에 모두 도입하면 어디서 문제가 났는지 파악하기 어렵습니다.</p>
+<hr>
+<h2 id="마무리하며">마무리하며</h2>
+<p>RAG는 <em>기술</em>이지만 그 본질은 <em>정직함</em>입니다. *"내가 모르는 것은 모른다고 인정하고, 답하기 전에 자료를 찾아본다"*는 태도를, LLM에게 시스템 차원에서 강제하는 방법입니다. 미디어학과 학생에게 이 태도는 특히 중요합니다. 저널리즘의 기본 윤리 <em>— 출처 확인, 사실 확인 —</em> 와 정확히 일치하기 때문입니다.</p>
+<p>이 강의를 마친 학생이 *"AI가 만든 답이지만 출처가 명시되어 있어 확인할 수 있다"*는 시스템을 직접 만들 수 있게 되었다면, 강의의 목표는 달성된 것입니다. 더 정교한 기술은 그 다음입니다.</p>
+<p>좋은 RAG는 <em>완벽한 답</em>이 아니라 <em>근거 있는 답</em>을 만드는 시스템입니다. 그 차이를 이해하는 것이 이 강의 전체의 핵심입니다.</p>
+
+      </div>
+    </body>
+    </html>
