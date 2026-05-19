@@ -190,18 +190,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) **Streamlit 네이티브 위젯으로 맞춤형 검색**
-  - `st.selectbox`: 시도·사고유형 선택
-  - `st.slider`: 연도 범위 선택
-  - `st.multiselect`: 복수 조건 조합
-  - `st.text_input`: 위치명 키워드 검색
-  - `st.radio`, `st.checkbox`: 표시 옵션 토글
-- (강의) **위젯-시각화 연동 패턴**
-- (강의) **대시보드 설계**: 정보 계층(핵심 수치→트렌드→상세), 필터 연동
-- (강의) `st.session_state`로 필터 상태 유지
-- (실습) 교통사고 통합 대시보드 구축
-- (실습) 키워드 검색: `st.text_input` → Pandas 텍스트 필터 → 결과 테이블 + 지도
-- (과제) 조별 프로젝트 Streamlit 대시보드 프로토타입
+- (실습) [프로젝트 웹페이지 구성_프롬프트](https://jonghhhh.github.io/2026_1/웹구성_프롬프트.md)
+- (실습 자료) [프로젝트 웹페이지 구성_가상자료](https://jonghhhh.github.io/2026_1/웹구성자료.zip)
 
 </details>
 
