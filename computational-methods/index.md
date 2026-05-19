@@ -226,14 +226,10 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- 챗봇 기반 커뮤니케이션 실험의 이론적 배경: 설득, 프레이밍, 태도 변화
-- 실험 설계: 시스템 프롬프트로 실험 조건 조작 (보수 vs 진보, 공감형 vs 정보형)
-- 대화 로그 수집 및 분석 방법, 사전-사후 태도 측정
-- IRB(연구윤리) 고려사항
-
-**실습**
-- 실험용 챗봇 프로토타입 개발 (조건별 시스템 프롬프트, 대화 로그 자동 저장)
+- (강의) [Gemini + API MCP 분석: 설명](https://jonghhhh.github.io/2026_1/API_MCP_Guide_051026.html)  
+- (강의) [Gemini + RSS 분석: 설명](https://jonghhhh.github.io/2026_1/RSS_Guide_051026.html)  
+- (실습) [Gemini + API MCP 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/news_naver_wiki_api.py)  
+- (실습) [Gemini + RSS 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/global_news_brief_rss.py)      
 
 **📄 논문 발표**
 - Costello, T. H., Pennycook, G., & Rand, D. G. (2024). Durably reducing conspiracy beliefs through dialogues with AI. Science, 385(6714), eadq1814.   
