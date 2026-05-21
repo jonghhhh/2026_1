@@ -9,7 +9,7 @@ RAG (Retrieval-Augmented Generation) 방식으로 질의응답하는 챗봇.
 - 임베딩 모델 : Gemini Embedding 001 (768차원, Matryoshka 절단)
 - 벡터 DB     : Chroma (로컬 영구 저장, 코사인 유사도)
 - 청킹 방식   : LangChain RecursiveCharacterTextSplitter
-- 생성 모델   : Gemini 2.5 Flash
+- 생성 모델   : Gemini 2.5 Flash Lite
 
 [강의안 핵심 개념 반영]
 - 비대칭 임베딩 (task_type 짝맞춤):
@@ -54,12 +54,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 # =====================================================================
 #  설정값  ─  필요시 이 부분만 조정하면 됩니다
 # =====================================================================
-TXT_PATH = "공정선거보도_안내서_RAG용.txt"   # 입력 문서 경로
+TXT_PATH = "2026_공정선거보도_안내서_중앙선거관리위원회.txt"   # 입력 문서 경로
 DB_PATH = "./chroma_election_db"             # Chroma 영구 저장 경로
 COLLECTION_NAME = "election_guide"           # Chroma 컬렉션 이름
 
 EMBED_MODEL = "gemini-embedding-001"         # 임베딩 모델명
-GEN_MODEL = "gemini-2.5-flash"               # 답변 생성 모델명
+GEN_MODEL = "gemini-2.5-flash-lite"          # 답변 생성 모델명
 EMBED_DIM = 768                              # 임베딩 차원 (Matryoshka 절단)
 
 CHUNK_SIZE = 500                             # 청크 크기 (한국어 기준 권장값)
