@@ -179,12 +179,9 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) 에이전트란 무엇인가: Tool Use, Planning, Memory
-- (강의) 에이전트 아키텍처: ReAct, Function Calling
-- (강의) LangGraph를 활용한 에이전트 워크플로우 설계
-  - 상태(State) 관리, 노드와 엣지, 조건부 분기
-- (실습) LangGraph로 팩트체크 에이전트 구현
-  - 웹 검색 → 정보 수집 → 검증 → 보고서 생성
+- (강의) [RAG챗봇_배포: 설명](https://jonghhhh.github.io/2026_1/RAG챗봇_배포.html)    
+- (강의) [Gemini + RAG 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/Streamlit_가이드.html)   
+- (실습 자료) [RAG챗봇_배포: 코드 + 실습 자료](https://jonghhhh.github.io/2026_1/RAG챗봇_배포.zip)    
 
 </details>
 
