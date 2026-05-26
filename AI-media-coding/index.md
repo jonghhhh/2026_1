@@ -180,7 +180,7 @@
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [RAG챗봇_배포: 설명](https://jonghhhh.github.io/2026_1/RAG챗봇_배포.html)    
-- (강의) [Gemini + RAG 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/Streamlit_가이드.html)   
+- (강의) [Streamlit_가이드](https://jonghhhh.github.io/2026_1/py/Streamlit_가이드.html)   
 - (실습 자료) [RAG챗봇_배포: 코드 + 실습 자료](https://jonghhhh.github.io/2026_1/RAG챗봇_배포.zip)    
 
 </details>
