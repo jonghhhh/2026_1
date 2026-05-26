@@ -197,26 +197,19 @@
 
 ---
 
-### 13주차 (5/27, 6/1): 데이터 수집-분석-시각화-배포 통합 실습
+### 13주차 (5/27, 6/1): 전통적 취재보도 방법론 
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) RAG 개념: 외부 문서 기반 LLM 응답으로 환각 방지
-- (강의) **Gemini File Search**: Store 생성 → CSV·PDF 업로드 → 질문 — 끝!
-  - 자동: 청킹 → 임베딩 → 벡터 저장 → 의미 검색 → 인용(citation) 표시
-- (강의) **Streamlit 챗봇 UI**: `st.chat_input` + `st.chat_message` + `st.session_state`
-- (강의) 디지털 보안: Signal, SecureDrop, 취재원 보호
-- (실습) File Search Store 생성 + 교통사고 CSV·PDF 업로드
-- (실습) Streamlit 챗봇 페이지 구현
-- (실습) 추천 질문 버튼 3개 + 대화 히스토리 유지
-- (실습) **최종 통합**: 메인(Scrollytelling) + 대시보드(검색+시각화) + 챗봇 → 멀티페이지 앱
+- (강의) [취재방법론](https://jonghhhh.github.io/2026_1/data-journalism/취재_현장_사람_자료.html): 현장 취재, 인터뷰, 자료 취재
+- (강의) [보도_기사작성](https://jonghhhh.github.io/2026_1/data-journalism/js_network.html): 스트레이트, 해설, 피처, 기획기사 사례
 
 </details>
 
 ---
 
-### 14주차 (~~6/3~~, 6/8): 전통적 취재보도 방법론 + 프로젝트 최종 점검
+### 14주차 (~~6/3~~, 6/8): 데이터 수집-분석-시각화-배포 통합 실습
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
