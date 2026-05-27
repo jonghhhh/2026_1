@@ -179,8 +179,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [RAG챗봇_배포: 설명](https://jonghhhh.github.io/2026_1/RAG챗봇_배포.html)    
-- (강의) [Streamlit_가이드](https://jonghhhh.github.io/2026_1/Streamlit_가이드.html)     
+- (강의) [RAG챗봇_배포: 설명](https://jonghhhh.github.io/2026_1/RAG챗봇+배포.html)    
+- (강의) [Streamlit_가이드](https://jonghhhh.github.io/2026_1/Streamlit_입문.html)     
 - (실습 자료) [RAG챗봇_배포: 코드 + 실습 자료](https://jonghhhh.github.io/2026_1/RAG챗봇_배포.zip)    
 
 </details>
