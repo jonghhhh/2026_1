@@ -249,16 +249,10 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- Silicon Sampling: LLM을 활용한 설문 응답 시뮬레이션
-  - 인구통계 페르소나 부여 → LLM 응답 생성 → 실제 설문 결과와 비교
-- Algorithmic Fidelity: LLM 시뮬레이션의 정확성 평가
-- Homo Silicus: LLM을 경제·사회적 행위자로 활용
-- 한계: 스테레오타이핑, 사회적 바람직성 편향, WEIRD 편향
-
-**실습**
-- 한국 사회 이슈에 대한 Silicon Sampling 실험
-  - 인구통계(연령, 성별, 지역, 정치 성향) 페르소나 → LLM 응답 → 실제 여론조사 비교
+- (강의) [챗봇실험 구현_가이드](https://jonghhhh.github.io/2026_1/computational-methods/chatbot_experiment_가이드.html)    
+- (실습) [챗봇실험 구현_실습 파일](https://jonghhhh.github.io/2026_1/computational-methods/chatbot_experiment_files.zip)    
+- (강의) [Streamlit_가이드](https://jonghhhh.github.io/2026_1/Streamlit_입문.html)     
+-    [Streamlit_cheat_sheet](https://jonghhhh.github.io/2026_1/Streamlit_cheat_sheet.png)   
 
 **📄 논문 발표**
 - Bisbee, J., Clinton, J. D., Dorff, C., Kenkel, B., & Larson, J. M. (2024). Synthetic replacements for human survey data? The perils of large language models. Political Analysis, 32(4), 401-416.  
