@@ -1,0 +1,1006 @@
+<!doctype html>
+      <html lang="en">
+      <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Converted HTML</title>
+      <style>
+        /*
+          Minimal hardening for standalone viewing:
+          keep table semantics stable (avoid stacked/merged cells due to odd defaults or injected CSS in the content).
+          Scoped to .converted-content to minimize side effects.
+        */
+        .converted-content table {
+          display: table !important;
+          border-collapse: collapse;
+          table-layout: auto;
+        }
+        .converted-content thead { display: table-header-group !important; }
+        .converted-content tbody { display: table-row-group !important; }
+        .converted-content tr { display: table-row !important; }
+        .converted-content th,
+        .converted-content td {
+          display: table-cell !important;
+          vertical-align: top;
+          border: 1px solid #d0d7de;
+          padding: 6px 8px;
+          white-space: normal;
+          overflow-wrap: anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="converted-content">
+    <h1 id="챗봇-실험-플랫폼-만들기">챗봇 실험 플랫폼 만들기</h1>
+<blockquote>
+<p>Streamlit + **Hugging Face Dataset** + Hugging Face Spaces + **Gemini 2.5 Flash-Lite**로 만드는 LLM 실험 환경
+<br> 디폴트 사례: **"AI 시대 진로상담 챗봇의 페르소나가 대학생의 정보 수용에 미치는 영향"**</p>
+</blockquote>
+<p>---</p>
+<h2 id="0-이-강의에서-무엇을-배우는가">0. 이 강의에서 무엇을 배우는가</h2>
+<p>이 강의가 끝나면 다음 세 가지를 할 수 있습니다.</p>
+<ol>
+<li><strong>챗봇 실험의 원리</strong>를 이해하고 자기 연구 질문을 실험설계로 옮길 수 있다.</li>
+<li><strong>Streamlit + Gemini API</strong>로 동작하는 챗봇 실험 플랫폼을 직접 만들 수 있다.</li>
+<li><strong>Hugging Face Spaces</strong>에 무료로 배포하고, <strong>데이터를 잃지 않게</strong> 운영할 수 있다.</li>
+</ol>
+<p>Python만 알면 됩니다. HTML/JS 지식은 필요 없습니다.</p>
+<p>---</p>
+<h2 id="1-챗봇-실험이란-무엇인가--개념과-원리">1. 챗봇 실험이란 무엇인가 — 개념과 원리</h2>
+<h3 id="11-정의">1.1 정의</h3>
+<p><strong>챗봇 실험</strong>은 LLM 기반 챗봇을 자극(stimulus)으로 사용하여, 사람이 챗봇과 대화한 전후에 어떤 변화가 일어나는지를 측정하는 실험입니다. 전통적 실험의 "동영상을 보여준다", "글을 읽힌다" 자리에 "챗봇과 대화하게 한다"가 들어간 것입니다.</p>
+<pre><code>[사전조사] → [챗봇과 대화 (조건별로 다름)] → [사후조사]
+                      ↑
+              이것이 독립변수
+</code></pre>
+<h3 id="12-왜-챗봇-실험이-중요해졌는가">1.2 왜 챗봇 실험이 중요해졌는가</h3>
+<p><strong>첫째, 자극의 표준화와 다양성을 동시에 얻습니다.</strong> 챗봇은 참여자 발언에 반응하면서도 시스템 프롬프트로 핵심 성격을 유지합니다. "통제되면서도 자연스러운" 자극입니다.</p>
+<p><strong>둘째, LLM이 사회적 영향력을 가지는 시대가 왔습니다.</strong> Salvi 등(2025)은 <em>Nature Human Behaviour</em>에서 GPT-4가 인간보다 설득력이 높음을, Costello 등(2024)은 <em>Science</em>에서 LLM이 음모론 신념을 지속적으로 약화시킬 수 있음을 보였습니다. LLM은 이제 연구 도구이자 <strong>연구 대상</strong>입니다.</p>
+<p><strong>셋째, 빠르고 싸게 할 수 있습니다.</strong> 과거 인간 공모자(confederate)를 쓰던 대화 실험을, 학부생 한 명이 한 학기에 할 수 있습니다.</p>
+<h3 id="13-챗봇-실험의-5요소">1.3 챗봇 실험의 5요소</h3>
+<table>
+<thead>
+<tr>
+<th>요소</th>
+<th>의미</th>
+<th>본 강의 디폴트</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>참여자</strong></td>
+<td>누구를 모집하는가</td>
+<td>대학생</td>
+</tr>
+<tr>
+<td><strong>조건(독립변수)</strong></td>
+<td>무엇을 다르게 하는가</td>
+<td>챗봇 페르소나(분석가형 vs 멘토형)</td>
+</tr>
+<tr>
+<td><strong>무작위 배정</strong></td>
+<td>어떻게 조건을 나누는가</td>
+<td>입장 순서로 번갈아 배정</td>
+</tr>
+<tr>
+<td><strong>대화 과제</strong></td>
+<td>무엇에 대해 대화하는가</td>
+<td>졸업 후 진로 고민</td>
+</tr>
+<tr>
+<td><strong>측정(종속변수)</strong></td>
+<td>무엇을 잴 것인가</td>
+<td>정보 유용성, 신뢰, 진로 자기효능감 변화</td>
+</tr>
+</tbody></table>
+<p>이 5요소만 자기 주제에 맞게 채우면 실험이 됩니다.</p>
+<p>---</p>
+<h2 id="2-유용성--어디에-쓰는가">2. 유용성 — 어디에 쓰는가</h2>
+<ul>
+<li><strong>커뮤니케이션</strong>: "뉴스 챗봇의 톤(객관 vs 해설)이 정보 신뢰에 주는 영향"</li>
+<li><strong>교육공학</strong>: "AI 튜터가 정답을 직접 줄 때 vs 소크라테스식으로 물을 때 학습성과 차이" (Kestin &amp; Miller 2024)</li>
+<li><strong>정치·사회심리</strong>: "음모론 신봉자가 LLM과 대화하면 신념이 약화되는가" (Costello et al. 2024)</li>
+<li><strong>진로·상담</strong>: "AI 진로상담 챗봇 페르소나가 진로 자기효능감에 주는 영향" (← 본 강의 디폴트)</li>
+<li><strong>소비자행동</strong>: "쇼핑 챗봇의 전문가형 vs 친구형 페르소나가 구매의도에 주는 영향"</li>
+<li><strong>저널리즘</strong>: "팩트체크 챗봇이 미디어 리터러시를 향상시키는가"</li>
+</ul>
+<p>디폴트 사례 하나만 만들 수 있으면, 같은 인프라로 위 모든 질문에 답할 수 있습니다.</p>
+<p>---</p>
+<h2 id="3-선행-연구--반드시-읽어야-할-3편">3. 선행 연구 — 반드시 읽어야 할 3편</h2>
+<h3 id="31-salvi-et-al-2025--on-the-conversational-persuasiveness-of-gpt-4">3.1 Salvi et al. (2025) — <em>On the Conversational Persuasiveness of GPT-4</em></h3>
+<p><em>Nature Human Behaviour</em>. GPT-4가 인구통계 정보를 받으면 인간 토론자보다 81.2% 더 높은 확률로 상대 의견을 바꿨습니다. 2×2×3 요인설계(N=900), 코드는 <a href="https://github.com/epfl-dlab/debategpt">debategpt 저장소</a> 공개.</p>
+<p><strong>시사점</strong>: 챗봇 실험에서 <strong>조건(condition)을 어떻게 정의하는지</strong>의 모범.</p>
+<h3 id="32-costello-et-al-2024--durably-reducing-conspiracy-beliefs-through-dialogues-with-ai">3.2 Costello et al. (2024) — <em>Durably reducing conspiracy beliefs through dialogues with AI</em></h3>
+<p><em>Science</em>, 2024 AAAS Newcomb Cleveland Prize 수상. 음모론 신봉자 2,000여 명이 GPT-4 Turbo와 평균 8분 대화 후 신념이 약 20% 감소, 효과가 2개월 후에도 유지.</p>
+<p><strong>시사점</strong>: <strong>사후조사를 시간차로 두 번</strong> 하는 설계의 힘. 참여자 자유응답을 챗봇이 받아 맞춤 반박하는 패턴.</p>
+<h3 id="33-kestin--miller-2024--ai-tutoring-outperforms-active-learning">3.3 Kestin &amp; Miller (2024) — <em>AI Tutoring Outperforms Active Learning</em></h3>
+<p>Harvard 물리학 수업 194명 무작위 배정 실험. 맞춤형 GPT 튜터로 학습한 학생이 전통적 능동학습 학생보다 학습량이 약 2배.</p>
+<p><strong>시사점</strong>: <strong>within-subjects 설계</strong>(같은 학생이 두 조건 경험, 순서만 무작위). 표본이 작아도 검정력이 높아 학부 프로젝트에 적합.</p>
+<h3 id="34-도구-측면의-선행-연구">3.4 도구 측면의 선행 연구</h3>
+<ul>
+<li><strong>Bermudez Schettino et al. (2025)</strong> — <em>Simple Chat</em> (<a href="https://github.com/center-for-humans-and-machines/simple-chat">GitHub</a>). Max Planck 오픈소스 챗봇 실험 인터페이스. 세 원칙: ① 임베드 가능한 채팅 UI, ② 조건 간 통일된 인터페이스, ③ 이탈을 줄이는 스트리밍. <strong>본 강의 코드도 이 세 원칙을 따릅니다.</strong></li>
+<li><strong>McKenna (2023)</strong> — <a href="https://github.com/clintmckenna/oTree_gpt">oTree GPT</a>. 조건 무작위 배정 + long-form CSV 내보내기.</li>
+<li><strong>Lamprou et al. (2025)</strong> — <em>Customizable LLM-Powered Chatbot (CLPC)</em>. <a href="https://arxiv.org/abs/2501.05541">https://arxiv.org/abs/2501.05541</a></li>
+</ul>
+<h3 id="35-진로상담-이론-배경">3.5 진로상담 이론 배경</h3>
+<ul>
+<li><strong>Fiske, Cuddy, &amp; Glick (2007)</strong> — Stereotype Content Model(SCM). 사회적 지각의 두 차원: **따뜻함(warmth)**과 <strong>유능함(competence)</strong>.</li>
+<li><strong>Betz et al. (1996)</strong> — <em>Career Decision Self-Efficacy Scale(CDSE)</em>. 한국어판 존재.</li>
+<li><strong>Gati et al. (1996)</strong> — <em>Career Decision-Making Difficulties Questionnaire(CDDQ)</em>.</li>
+</ul>
+<p>보고서에서 "페르소나 → 지각된 따뜻함·유능함 → 정보 신뢰 → 진로 자기효능감 변화" 매개 모형을 그리면 깔끔합니다.</p>
+<p>---</p>
+<h2 id="4-본-강의-디폴트-사례-진로상담-챗봇의-페르소나-효과">4. 본 강의 디폴트 사례: 진로상담 챗봇의 페르소나 효과</h2>
+<h3 id="41-왜-이-주제인가">4.1 왜 이 주제인가</h3>
+<p>대학생 모두가 당사자라 모집·몰입도가 높고, 페르소나 조작이 실제 진로상담의 두 학파(객관적 정보 vs 정서적 지지)와 자연스럽게 대응됩니다. 정치·종교·정신건강 같은 민감 영역을 피하면서 학술적 깊이를 확보합니다.</p>
+<h3 id="42-연구-질문">4.2 연구 질문</h3>
+<blockquote>
+<p>**진로상담 챗봇의 페르소나(분석가형 vs 멘토형)가 대학생의 정보 유용성 지각, 챗봇 신뢰, 진로 자기효능감 변화, 추천 의향에 어떤 영향을 주는가?**</p>
+</blockquote>
+<h3 id="43-설계-한눈에">4.3 설계 한눈에</h3>
+<ul>
+<li><strong>설계</strong>: 2조건 between-subjects (참여자당 한 조건만)</li>
+<li><strong>독립변수</strong>: 페르소나 (A: 분석가형 / B: 멘토형)</li>
+<li><strong>무작위 배정</strong>: 입장 순서 기반 교대 (짝수 → A, 홀수 → B)</li>
+<li><strong>과제</strong>: "졸업 후 진로 고민을 챗봇과 5턴 이상 정리"</li>
+<li><strong>사전조사</strong>: 학년, 전공계열, 진로 결정 단계, 진로 불안, AI 사용 빈도 (5문항)</li>
+<li><strong>사후조사</strong>: 정보 유용성, 따뜻함·유능함, 신뢰, 정리도, 추천 의향, 자유응답 (7문항)</li>
+</ul>
+<h3 id="44-이론적-근거">4.4 이론적 근거</h3>
+<blockquote>
+<p>본 연구는 Salvi 등(2025)이 챗봇 조건 조작만으로 인간 의견에 영향을 줄 수 있음을 보인 점, Fiske 등(2007)의 SCM에서 따뜻함과 유능함이 정보 수용을 매개한다는 선행연구에 근거한다. 진로상담 챗봇 페르소나의 두 양식(분석가형/멘토형)이 대학생의 정보 수용과 진로 자기효능감 변화에 미치는 효과를 검증한다.</p>
+</blockquote>
+<p>---</p>
+<h2 id="5-시스템-아키텍처">5. 시스템 아키텍처</h2>
+<h3 id="51-전체-그림">5.1 전체 그림</h3>
+<pre><code>참여자 브라우저
+      │
+      ▼
+┌─────────────────────────────────────────────┐
+│  Streamlit 앱 (streamlit_app.py)             │
+│  ┌────────┐  ┌────────┐  ┌────────┐         │
+│  │ 사전조사│→ │ 대화창 │→ │ 사후조사│         │
+│  └────────┘  └───┬────┘  └────────┘         │
+│                  ▼                           │
+│         ┌──────────────────┐                 │
+│         │  storage.py      │  ← 이중 안전망   │
+│         │  ① HF Dataset 업로드│               │
+│         │  ② 메모리 누적    │                 │
+│         └──────────────────┘                 │
+│  사이드바: (위) 연구 안내 / (아래) CSV 다운로드 │
+└──────┬────────────────────────┬──────────────┘
+       │                        │
+       ▼                        ▼
+Gemini 2.5 Flash-Lite      HF Dataset
+   API                     (participants/messages/surveys CSV)
+</code></pre>
+<h3 id="52-왜-이-스택인가">5.2 왜 이 스택인가</h3>
+<p><strong>Streamlit</strong> — Python만으로 웹앱. <code>st.chat_input()</code>, <code>st.chat_message()</code> 채팅 UI 내장. HF Spaces에 한 번에 배포.</p>
+<blockquote>
+<p>학부생 실험(N=40~200, 동시접속 ≤ 10명)이면 Streamlit으로 충분합니다. 단, 무료 등급은 비활성 시 슬립하므로 첫 접속자는 잠깐 기다립니다. 참여자 안내에 적어두세요.</p>
+</blockquote>
+<p><strong>Gemini 2.5 Flash-Lite</strong> — 무료 등급 제공, 빠른 응답, 안정적 한국어, 스트리밍 지원. 모델 교체는 <code>llm.py</code>에서 한 줄.</p>
+<p><strong>HF Dataset (SQLite 대체)</strong> — 무료, Space 바깥의 git 저장소라 재시작과 무관하게 <strong>영구 보존</strong>, 여러 참여자 데이터 <strong>자동 통합</strong>. 이미 HF Spaces를 쓰므로 <strong>토큰 1개만</strong> 추가하면 되어 설정이 간단합니다.</p>
+<h3 id="53-데이터-구조--long-format">5.3 데이터 구조 — long format</h3>
+<p>데이터 모양은 <strong>long format</strong>(한 행 = 한 기록)으로 HF Dataset에 3개 CSV로 쌓입니다. 새 설문 문항을 추가해도 구조를 바꿀 필요가 없습니다.</p>
+<table>
+<thead>
+<tr>
+<th>워크시트</th>
+<th>한 행의 의미</th>
+<th>주요 컬럼</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>participants</code></td>
+<td>한 사람</td>
+<td>participant_id, condition, assigned_at, completed</td>
+</tr>
+<tr>
+<td><code>messages</code></td>
+<td>대화 한 턴</td>
+<td>participant_id, condition, turn, role, content, latency_ms, created_at</td>
+</tr>
+<tr>
+<td><code>surveys</code></td>
+<td>설문 한 문항</td>
+<td>participant_id, condition, phase, question_id, answer, created_at</td>
+</tr>
+</tbody></table>
+<h3 id="54-무작위-배정">5.4 무작위 배정</h3>
+<pre><code class="language-python"># 입장 순서로 교대 배정 (A, B, A, B, ...). 작은 N에서 쏠림 방지.
+n = len(st.session_state["rows_participants"])
+cond = "A" if n % 2 == 0 else "B"
+</code></pre>
+<p>진짜 무작위(<code>random.choice</code>)보다 교대 배정을 권합니다. N=40이면 random은 17:23 같은 불균형이 흔합니다.</p>
+<h3 id="55-api-키--시크릿-관리">5.5 API 키 / 시크릿 관리</h3>
+<table>
+<thead>
+<tr>
+<th>환경</th>
+<th>위치</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>로컬</td>
+<td>프로젝트 폴더의 <code>.env</code> (반드시 <code>.gitignore</code>에)</td>
+</tr>
+<tr>
+<td>HF Spaces</td>
+<td>Settings → Repository secrets</td>
+</tr>
+</tbody></table>
+<pre><code class="language-bash"># .env (절대 git에 올리지 말 것)
+GEMINI_API_KEY=AIzaSy...
+# HF Dataset을 쓸 때만:
+HF_TOKEN=hf_...write권한토큰
+</code></pre>
+<pre><code># .gitignore
+.env
+__pycache__/
+*.csv
+</code></pre>
+<p>---</p>
+<h2 id="6-코드--6개-파일로-끝나는-실전">6. 코드 — 6개 파일로 끝나는 실전</h2>
+<h3 id="61-파일-구조-v4">6.1 파일 구조 (v4)</h3>
+<pre><code>project/
+├── streamlit_app.py  # 메인 앱 (사이드바 안내 + 다운로드 포함)
+├── prompts.py        # 조건별 시스템 프롬프트
+├── llm.py            # Gemini 호출 래퍼
+├── storage.py        # 이중 안전망 (HF Dataset + 메모리)  ← SQLite 대체
+├── analyze.py        # 분석 스크립트
+├── requirements.txt
+├── .env              # 키 (git 제외)
+└── .gitignore
+</code></pre>
+<h3 id="62-requirementstxt">6.2 <code>requirements.txt</code></h3>
+<pre><code>streamlit&gt;=1.30
+google-genai&gt;=0.3
+python-dotenv&gt;=1.0
+pandas&gt;=2.0
+# --- HF Dataset 저장용 ---
+huggingface_hub&gt;=0.20
+</code></pre>
+<h3 id="63-promptspy">6.3 <code>prompts.py</code></h3>
+<pre><code class="language-python"># prompts.py
+# ───────────────────────────────────────────────────────────────────────────
+# 실험 조건별 시스템 프롬프트와 과제 안내문.
+# 학생이 자기 주제로 바꿀 때 "거의 이 파일만" 수정하면 되도록 분리해 두었다.
+# 핵심 규칙: 두 프롬프트는 '사실 내용은 동일하게, 조작점(스타일)만 다르게'.
+# ───────────────────────────────────────────────────────────────────────────
+
+SYSTEM_PROMPTS = {
+    # 조건 A — 분석가형 (객관적 정보 중심)
+    "A": """당신은 노동시장 데이터와 직업 트렌드에 정통한 진로 분석가입니다.
+
+답변 원칙:
+- 통계, 산업 동향, 직무 요구역량 등 객관적 정보를 중심으로 설명한다.
+- 감정 위로보다는 사실 정보와 구체적 옵션을 제시한다.
+- 친근한 호칭이나 이모지를 사용하지 않는다.
+- 한국어로, 한 답변당 4~6문장.
+- 사용자가 결정을 강요받는다고 느끼지 않도록, 정보 제공에 머문다.
+- 의학·법률·금융의 전문 자문이 필요한 경우 해당 전문가 상담을 권한다.""",
+
+    # 조건 B — 멘토형 (정서적 지지 중심)
+    "B": """당신은 진로 고민을 함께 나누는 따뜻한 멘토입니다.
+
+답변 원칙:
+- 사용자의 불안과 고민을 먼저 인정하고 공감을 표현한다.
+- "충분히 그런 고민 할 수 있어요", "~하시는군요" 같은 공감 표현을 자연스럽게 사용한다.
+- 사용자 스스로 답을 찾아가도록 열린 질문을 적절히 활용한다.
+- 한국어로, 한 답변당 4~6문장.
+- 사용자를 평가하거나 판단하지 않는다.
+- 의학·법률·금융의 전문 자문이 필요한 경우 해당 전문가 상담을 권한다.""",
+}
+
+# 참여자에게 보여줄 대화 과제 안내문
+TASK_INSTRUCTION = (
+    "당신은 졸업 후 진로에 대해 고민이 있습니다. "
+    "챗봇과 최소 5턴 이상 대화하며 자신의 진로 고민을 정리해보세요. "
+    "무엇이든 솔직하게 이야기해도 좋습니다."
+)
+</code></pre>
+<h3 id="64-llmpy--gemini-래퍼">6.4 <code>llm.py</code> — Gemini 래퍼</h3>
+<pre><code class="language-python"># llm.py
+# ───────────────────────────────────────────────────────────────────────────
+# Gemini 2.5 Flash-Lite 호출 래퍼. 모델명만 한 줄 바꾸면 다른 모델로 교체 가능.
+# 스트리밍(generate_content_stream)을 쓰는 이유: 응답이 한 글자씩 흘러나와
+# 참여자 이탈을 줄인다(Simple Chat 논문이 강조한 원칙).
+# ───────────────────────────────────────────────────────────────────────────
+import os
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
+
+load_dotenv()  # 로컬: .env 읽음 / HF Spaces: 무시되고 환경변수에서 직접 읽음
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY가 설정되지 않았습니다. "
+        "로컬은 .env, Spaces는 Settings → Repository secrets에 등록하세요."
+    )
+
+MODEL_NAME = "gemini-2.5-flash-lite"  # ← 모델 교체 지점 (한 줄)
+client = genai.Client(api_key=API_KEY)
+
+
+def _to_gemini(messages):
+    """Streamlit 내부 메시지 → Gemini 포맷 변환.
+    Gemini는 role이 'user'와 'model'만 허용한다('assistant' 아님)."""
+    return [
+        {"role": "model" if m["role"] == "assistant" else "user",
+         "parts": [{"text": m["content"]}]}
+        for m in messages
+    ]
+
+
+def stream_response(system_prompt, messages, temperature=0.7):
+    """응답을 청크 단위로 yield하는 제너레이터."""
+    config = types.GenerateContentConfig(
+        system_instruction=system_prompt,  # 시스템 프롬프트는 매 호출마다 주입
+        temperature=temperature,
+    )
+    stream = client.models.generate_content_stream(
+        model=MODEL_NAME,
+        contents=_to_gemini(messages),
+        config=config,
+    )
+    for chunk in stream:
+        if chunk.text:
+            yield chunk.text
+</code></pre>
+<h3 id="65-storagepy--이중-안전망-이-강의의-핵심">6.5 <code>storage.py</code> — 이중 안전망 (이 강의의 핵심)</h3>
+<pre><code class="language-python"># storage.py  (Hugging Face Dataset 버전)
+# ───────────────────────────────────────────────────────────────────────────
+# 데이터 저장 — SQLite도 구글시트도 쓰지 않고 '이중 안전망'으로 저장한다.
+#
+#   안전망 1) HF Dataset 업로드 : 영구 저장 + 여러 참여자 통합 (구글시트 대체)
+#   안전망 2) 메모리(session_state): 사이드바에서 즉시 CSV 다운로드 (백업)
+#
+# 왜 HF Dataset인가:
+#   - 구글 방식(서비스계정·JSON 키·시트 공유)이 초보자에게 너무 복잡하다.
+#   - 이미 HF Spaces에 배포하므로, 같은 HF 안에서 '토큰 1개'만 더 만들면 끝.
+#   - Dataset 저장소는 Space와 달리 재시작에 영향받지 않는 git 저장소라
+#     데이터가 영구 보존된다(Space가 슬립/재빌드돼도 안전).
+#
+# 작동 방식:
+#   - 모든 기록은 일단 메모리 리스트(rows_*)에 쌓인다(안전망 2).
+#   - '참여자 완료' 시점에만, 그때까지 모인 전체 CSV를 Dataset에 덮어쓴다(안전망 1).
+#     → 매 메시지마다 올리면 너무 잦으므로, 완료 시 한 번만 통째로 올린다.
+#   - 단, 메모리는 '현재 브라우저 세션'만 담는다. 여러 참여자를 한 파일로
+#     합치기 위해, 업로드 전에 Dataset의 기존 CSV를 내려받아 '머지(merge)'한다.
+#
+# 설정(1회): README/강의 7장 참조.
+#   1) HF에서 빈 Dataset 생성 (예: yourname/career-chatbot-data, Private 권장)
+#   2) write 권한 토큰 발급 → Space secret에 HF_TOKEN으로 등록
+#   3) 아래 DATASET_REPO를 본인 것으로 교체
+# HF_TOKEN이 없으면 업로드는 조용히 건너뛰고 사이드바 다운로드만 동작한다
+# (로컬 개발 시 편리).
+# ───────────────────────────────────────────────────────────────────────────
+import os
+import io
+from datetime import datetime, timezone
+
+import pandas as pd
+
+# huggingface_hub은 Dataset 업로드를 쓸 때만 필요. 없으면 메모리 모드로만 동작.
+try:
+    from huggingface_hub import HfApi, hf_hub_download
+    _HAS_HF = True
+except ImportError:
+    _HAS_HF = False
+
+# ▼▼▼ 본인이 만든 Dataset 저장소 이름으로 교체 ▼▼▼
+DATASET_REPO = "yourname/career-chatbot-data"
+# ▲▲▲ (HF에서 New Dataset으로 만든 'yourname/저장소이름') ▲▲▲
+
+HF_TOKEN = os.getenv("HF_TOKEN")  # Space secret 또는 .env에 넣은 write 토큰
+
+# Dataset 안에 저장될 3개 CSV 파일 이름
+FILES = {
+    "participants": "participants.csv",
+    "messages": "messages.csv",
+    "surveys": "surveys.csv",
+}
+
+
+def now_iso():
+    """UTC ISO 8601 타임스탬프 (예: 2026-05-27T12:34:56+00:00)."""
+    return datetime.now(timezone.utc).isoformat()
+
+
+# ── 메모리(안전망 2): 모든 기록을 세션 리스트에 누적 ─────────────────────────
+def init_state(state):
+    """세션 시작 시 누적 리스트 3개를 준비(이미 있으면 그대로)."""
+    state.setdefault("rows_participants", [])
+    state.setdefault("rows_messages", [])
+    state.setdefault("rows_surveys", [])
+
+
+def add_participant(state, pid, condition):
+    """참여자 배정 기록(메모리에만 추가. 업로드는 완료 시 일괄)."""
+    state["rows_participants"].append(
+        {"participant_id": pid, "condition": condition,
+         "assigned_at": now_iso(), "completed": 0})
+
+
+def add_message(state, pid, condition, turn, role, content, latency_ms=""):
+    """대화 한 턴 기록(메모리)."""
+    state["rows_messages"].append(
+        {"participant_id": pid, "condition": condition, "turn": turn,
+         "role": role, "content": content, "latency_ms": latency_ms,
+         "created_at": now_iso()})
+
+
+def add_survey(state, pid, condition, phase, question_id, answer):
+    """설문 한 문항 기록(메모리)."""
+    state["rows_surveys"].append(
+        {"participant_id": pid, "condition": condition, "phase": phase,
+         "question_id": question_id, "answer": str(answer),
+         "created_at": now_iso()})
+
+
+# ── HF Dataset(안전망 1): 기존 데이터와 머지 후 업로드 ───────────────────────
+def _download_existing(api, filename):
+    """Dataset에 이미 있는 CSV를 DataFrame으로 읽어온다. 없으면 빈 DF."""
+    try:
+        path = hf_hub_download(
+            repo_id=DATASET_REPO, filename=filename,
+            repo_type="dataset", token=HF_TOKEN,
+        )
+        return pd.read_csv(path)
+    except Exception:
+        # 파일이 아직 없거나(첫 업로드) 네트워크 문제 → 빈 DF로 시작
+        return pd.DataFrame()
+
+
+def _upload_csv(api, df, filename):
+    """DataFrame을 CSV 바이트로 만들어 Dataset에 덮어쓰기 업로드."""
+    buf = io.BytesIO(df.to_csv(index=False).encode("utf-8-sig"))
+    api.upload_file(
+        path_or_fileobj=buf,          # 파일 경로 대신 메모리 버퍼를 직접 올림
+        path_in_repo=filename,
+        repo_id=DATASET_REPO,
+        repo_type="dataset",
+        token=HF_TOKEN,
+        commit_message=f"update {filename} @ {now_iso()}",
+    )
+
+
+def push_to_dataset(state):
+    """현재 세션의 누적분을 Dataset의 기존 데이터와 합쳐 업로드.
+    실패해도 참여자 흐름을 막지 않도록 조용히 통과(메모리 백업이 남아 있음).
+    반환: (성공여부, 메시지)."""
+    if not _HAS_HF or not HF_TOKEN:
+        return False, "HF_TOKEN 없음 → 업로드 건너뜀(다운로드 백업만 사용)"
+    try:
+        api = HfApi()
+        # 세 종류(participants/messages/surveys) 각각: 기존 + 이번 세션 → 합쳐서 업로드
+        for key, fname in FILES.items():
+            new_df = pd.DataFrame(state[f"rows_{key}"])
+            if new_df.empty:
+                continue
+            old_df = _download_existing(api, fname)
+            merged = pd.concat([old_df, new_df], ignore_index=True)
+            # 혹시 같은 세션을 두 번 올려 생기는 완전 중복 행 제거
+            merged = merged.drop_duplicates()
+            _upload_csv(api, merged, fname)
+        return True, "Dataset 업로드 완료"
+    except Exception as e:
+        return False, f"업로드 실패(무시하고 진행): {e}"
+
+
+# ── 사이드바 다운로드용: 누적분 → CSV 바이트 ────────────────────────────────
+def to_csv_bytes(rows):
+    """누적 리스트 → UTF-8-SIG CSV(엑셀에서 한글 안 깨짐). 비면 빈 bytes."""
+    if not rows:
+        return b""
+    return pd.DataFrame(rows).to_csv(index=False).encode("utf-8-sig")
+</code></pre>
+<h3 id="66-streamlitapppy--메인-앱-사이드바-안내--다운로드">6.6 <code>streamlit_app.py</code> — 메인 앱 (사이드바 안내 + 다운로드)</h3>
+<pre><code class="language-python"># streamlit_app.py
+# ───────────────────────────────────────────────────────────────────────────
+# 챗봇 실험 메인 앱 (SQLite 제거 버전).
+# 흐름: intro → pre(사전설문) → chat(대화) → post(사후설문) → done
+# 저장: storage.py의 이중 안전망(구글시트 + 메모리). DB 파일이 없다.
+# 사이드바: (위) 연구 안내 설명  /  (아래) 데이터 CSV 다운로드 백업
+# ───────────────────────────────────────────────────────────────────────────
+import uuid
+import time
+import streamlit as st
+
+import storage
+from prompts import SYSTEM_PROMPTS, TASK_INSTRUCTION
+from llm import stream_response
+
+st.set_page_config(page_title="진로 챗봇 대화 연구", page_icon="💬")
+
+# ===== 세션 상태 초기화 =====
+# Streamlit은 매 상호작용마다 스크립트를 위→아래로 다시 실행한다.
+# 따라서 '지금 어느 단계인가'를 session_state에 저장해 둬야 한다.
+if "stage" not in st.session_state:
+    st.session_state.stage = "intro"          # 현재 단계
+    st.session_state.participant_id = str(uuid.uuid4())  # 익명 식별자(이름·이메일 안 받음)
+    st.session_state.condition = None         # 'A' 또는 'B'
+    st.session_state.messages = []            # 화면 표시용 대화 기록
+    st.session_state.turn = 0                 # 대화 턴 수
+
+storage.init_state(st.session_state)  # 누적 리스트 3개 준비
+
+
+# ===== 사이드바: 위쪽 안내 + 아래쪽 다운로드 =====
+def render_sidebar():
+    with st.sidebar:
+        # ── (위) 연구 안내 설명 ──
+        st.header("📋 연구 안내")
+        st.markdown(
+            "- **소요시간**: 약 10~15분\\n"
+            "- **절차**: 사전 설문 → 챗봇 대화(5턴+) → 사후 설문\\n"
+            "- **익명성**: 이름·이메일을 수집하지 않습니다.\\n"
+            "- **유의**: 챗봇은 AI이며, 전문 자문이 필요하면 전문가에게 별도 문의하세요."
+        )
+        st.divider()
+
+        # ── (아래) 데이터 다운로드 백업 ──
+        # 안전망 2: HF Dataset 업로드가 실패해도 이 메모리 누적분으로 회수 가능.
+        # 주의: session_state는 '현재 브라우저 세션'의 데이터만 담는다.
+        #       전체 참여자 통합본은 HF Dataset에서 받는다(안전망 1).
+        st.header("⬇️ 데이터 다운로드")
+        st.caption("이 세션에 쌓인 기록(백업용). 전체 통합본은 HF Dataset 참조.")
+        n_p = len(st.session_state["rows_participants"])
+        n_m = len(st.session_state["rows_messages"])
+        n_s = len(st.session_state["rows_surveys"])
+        st.download_button("참여자 CSV", storage.to_csv_bytes(st.session_state["rows_participants"]),
+                           "participants.csv", "text/csv", disabled=(n_p == 0))
+        st.download_button("대화 CSV", storage.to_csv_bytes(st.session_state["rows_messages"]),
+                           "messages.csv", "text/csv", disabled=(n_m == 0))
+        st.download_button("설문 CSV", storage.to_csv_bytes(st.session_state["rows_surveys"]),
+                           "surveys.csv", "text/csv", disabled=(n_s == 0))
+        st.caption(f"참여자 {n_p} · 대화 {n_m}줄 · 설문 {n_s}줄")
+
+
+render_sidebar()
+
+
+# ===== Stage 1: 인트로 + 동의 =====
+if st.session_state.stage == "intro":
+    st.title("AI 진로상담 챗봇 대화 연구")
+    st.markdown(
+        "졸업 후 진로에 대해 챗봇과 대화하는 연구입니다. "
+        "사전 설문 → 대화 → 사후 설문 순으로 진행됩니다."
+    )
+    if st.button("동의하고 시작하기", type="primary"):
+        # 입장 순서로 교대 배정(A,B,A,B...). 작은 N에서 쏠림을 막는다.
+        n = len(st.session_state["rows_participants"])
+        cond = "A" if n % 2 == 0 else "B"
+        st.session_state.condition = cond
+        storage.add_participant(st.session_state, st.session_state.participant_id, cond)
+        st.session_state.stage = "pre"
+        st.rerun()
+
+# ===== Stage 2: 사전조사 =====
+elif st.session_state.stage == "pre":
+    st.title("사전 설문")
+    with st.form("pre_survey"):
+        year = st.selectbox("학년", ["1학년", "2학년", "3학년", "4학년", "졸업유예/휴학", "대학원생"])
+        major = st.selectbox("전공 계열", ["인문", "사회", "상경", "공학", "자연", "의약", "예체능", "기타"])
+        d_stage = st.selectbox("현재 진로 결정 단계",
+                               ["아직 탐색 중", "방향이 어느 정도 잡힘", "구체적 계획 수립 중", "거의 확정"])
+        anxiety = st.slider("최근 진로 불안 정도 (1: 전혀 없음 ~ 7: 매우 큼)", 1, 7, 4)
+        ai_freq = st.selectbox("AI 챗봇 사용 빈도", ["거의 안 씀", "월 1\~2회", "주 1\~2회", "거의 매일"])
+        if st.form_submit_button("다음"):
+            pid, cond = st.session_state.participant_id, st.session_state.condition
+            for qid, val in [("year", year), ("major", major), ("decision_stage", d_stage),
+                             ("career_anxiety", anxiety), ("ai_usage", ai_freq)]:
+                storage.add_survey(st.session_state, pid, cond, "pre", qid, val)
+            st.session_state.stage = "chat"
+            st.rerun()
+
+# ===== Stage 3: 대화 =====
+elif st.session_state.stage == "chat":
+    st.title("진로 챗봇과 대화하기")
+    st.info(TASK_INSTRUCTION)
+    st.caption(f"최소 5턴 이상 대화 후 아래 버튼을 누르세요. (현재 {st.session_state.turn}턴)")
+
+    # 이전 메시지 다시 그리기(매 실행마다 화면을 새로 그리므로 필요)
+    for m in st.session_state.messages:
+        with st.chat_message(m["role"]):
+            st.markdown(m["content"])
+
+    if prompt := st.chat_input("메시지를 입력하세요"):
+        pid, cond = st.session_state.participant_id, st.session_state.condition
+        st.session_state.turn += 1
+
+        # 1) 사용자 메시지: 화면 표시 + 저장
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        storage.add_message(st.session_state, pid, cond, st.session_state.turn, "user", prompt)
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # 2) 챗봇 응답: 스트리밍으로 한 청크씩 표시
+        with st.chat_message("assistant"):
+            placeholder = st.empty()
+            full, t0 = "", time.time()
+            try:
+                for delta in stream_response(SYSTEM_PROMPTS[cond], st.session_state.messages):
+                    full += delta
+                    placeholder.markdown(full + "▌")  # 커서 효과
+                placeholder.markdown(full)
+            except Exception as e:
+                full = f"[오류가 발생했습니다: {e}]"
+                placeholder.markdown(full)
+            latency = int((time.time() - t0) * 1000)
+            st.session_state.messages.append({"role": "assistant", "content": full})
+            storage.add_message(st.session_state, pid, cond, st.session_state.turn,
+                                "assistant", full, latency)
+
+    # 5턴 이상이면 사후설문으로 넘어가는 버튼 노출
+    if st.session_state.turn &gt;= 5:
+        if st.button("대화 종료하고 사후 설문으로", type="primary"):
+            st.session_state.stage = "post"
+            st.rerun()
+
+# ===== Stage 4: 사후조사 =====
+elif st.session_state.stage == "post":
+    st.title("사후 설문")
+    with st.form("post_survey"):
+        usefulness = st.slider("받은 정보가 유용했다 (1~7)", 1, 7, 4)
+        warmth = st.slider("챗봇이 따뜻했다 (1~7)", 1, 7, 4)
+        competence = st.slider("챗봇이 유능했다 (1~7)", 1, 7, 4)
+        trust = st.slider("챗봇을 신뢰한다 (1~7)", 1, 7, 4)
+        clarity = st.slider("대화 후 진로 고민이 더 정리되었다 (1~7)", 1, 7, 4)
+        recommend = st.slider("친구에게 추천할 의향 (1~7)", 1, 7, 4)
+        free_text = st.text_area("자유 의견: 가장 도움이 된 점, 아쉬웠던 점 (선택)")
+        if st.form_submit_button("제출"):
+            pid, cond = st.session_state.participant_id, st.session_state.condition
+            for qid, val in [("usefulness", usefulness), ("warmth", warmth),
+                             ("competence", competence), ("trust", trust),
+                             ("clarity", clarity), ("recommend", recommend),
+                             ("free_text", free_text)]:
+                storage.add_survey(st.session_state, pid, cond, "post", qid, val)
+            # 완료 표시(메모리): 해당 참여자 행의 completed를 1로
+            for r in st.session_state["rows_participants"]:
+                if r["participant_id"] == pid:
+                    r["completed"] = 1
+            # 안전망 1: 이번 세션 누적분을 HF Dataset에 일괄 업로드
+            # (완료 시점에 한 번만. 실패해도 메모리 백업이 남으므로 흐름은 계속)
+            storage.push_to_dataset(st.session_state)
+            st.session_state.stage = "done"
+            st.rerun()
+
+# ===== Stage 5: 완료 =====
+elif st.session_state.stage == "done":
+    st.title("참여해주셔서 감사합니다 🙏")
+    st.markdown(f"참여자 ID: `{st.session_state.participant_id}`")
+    st.caption("응답이 안전하게 기록되었습니다.")
+</code></pre>
+<h3 id="67-핵심-설계-결정--이해해야-할-7가지">6.7 핵심 설계 결정 — 이해해야 할 7가지</h3>
+<ol>
+<li><strong><code>st.session_state.stage</code>로 단계 관리</strong>: Streamlit은 매번 코드를 위→아래로 다시 실행하므로 "어느 페이지인가"를 변수로 저장해야 한다.</li>
+<li><strong>UUID로 익명 식별</strong>: 이메일·이름을 안 받아 IRB에 유리.</li>
+<li><strong>조건은 첫 진입 시 한 번만 배정</strong>: <code>session_state</code>에 저장해 새로고침해도 안 바뀐다.</li>
+<li><strong>시스템 프롬프트는 매 호출마다 주입</strong>: Gemini의 <code>config.system_instruction</code>으로 전달.</li>
+<li><strong>Gemini 역할 변환</strong>: <code>"assistant"</code> → <code>"model"</code> (<code>_to_gemini</code>에서 처리).</li>
+<li><strong>스트리밍 응답</strong>: 참여자 이탈을 줄이는 핵심.</li>
+<li><strong>메모리 누적 + 완료 시 업로드</strong>: 대화 중에는 메모리에 쌓이고(안전망 2), 참여자 완료 시 그 세션 누적분을 HF Dataset에 일괄 업로드한다(안전망 1). 업로드는 기존 데이터와 합쳐(merge) 올리므로 여러 참여자가 한 파일에 통합된다.</li>
+</ol>
+<h3 id="68-로컬-실행">6.8 로컬 실행</h3>
+<pre><code class="language-bash">python -m venv venv
+source venv/bin/activate     
+pip install -r requirements.txt
+echo "GEMINI_API_KEY=your_key_here" &gt; .env
+streamlit run streamlit_app.py
+</code></pre>
+<p>로컬에서는 <code>HF_TOKEN</code>이 없어도 됩니다. Dataset 업로드는 자동으로 건너뛰고 <strong>사이드바 다운로드만</strong> 동작합니다.</p>
+<p>---</p>
+<h2 id="7-hf-dataset-설정--spaces-배포">7. HF Dataset 설정 + Spaces 배포</h2>
+<blockquote>
+<p>큰 그림: 데이터는 **Hugging Face Dataset**(데이터 전용 저장소)에 CSV로 영구 저장합니다. 이미 Spaces를 쓰므로 같은 HF 안에서 **토큰 1개만** 더 만들면 끝입니다. 구글 클라우드·서비스계정·JSON 키 같은 복잡한 과정이 없습니다. Gemini 키는 [aistudio.google.com/apikey](<a href="https://aistudio.google.com/apikey)%EC%97%90%EC%84%9C">https://aistudio.google.com/apikey)에서</a> 무료로 발급받아 둡니다.</p>
+</blockquote>
+<h3 id="71-hf-dataset-만들기-1회-무료">7.1 HF Dataset 만들기 (1회, 무료)</h3>
+<p>데이터를 영구 보존하는 <strong>안전망 1</strong>입니다. 세 단계면 됩니다.</p>
+<ol>
+<li><strong>빈 Dataset 생성</strong>: <a href="https://huggingface.co">huggingface.co</a> 로그인 → 오른쪽 위 프로필 → <strong>New Dataset</strong> → 이름 입력(예: <code>career-chatbot-data</code>) → <strong>Private</strong> 권장 → <strong>Create dataset</strong>. 만들어진 저장소 주소는 <code>본인아이디/career-chatbot-data</code> 형태입니다.</li>
+<li><strong>write 토큰 발급</strong>: 오른쪽 위 프로필 → <strong>Settings</strong> → 왼쪽 <strong>Access Tokens</strong> → <strong>New token</strong> → 이름 아무거나, 권한은 <strong>Write</strong> 선택 → 만들기 → 생성된 토큰(<code>hf_...</code>)을 <strong>복사해 둡니다.</strong> (이 토큰은 비밀번호와 같으니 외부에 노출 금지)</li>
+<li><strong>코드에 저장소 이름 적기</strong>: <code>storage.py</code> 맨 위의 <code>DATASET_REPO</code>를 1번에서 만든 본인 저장소로 교체합니다.</li>
+</ol>
+<pre><code class="language-python">DATASET_REPO = "본인아이디/career-chatbot-data"   # ← 본인 것으로 교체
+</code></pre>
+<blockquote>
+<p>저장될 CSV 3개(participants/messages/surveys)는 앱이 자동으로 만들어 올립니다. 미리 만들 필요 없습니다.</p>
+</blockquote>
+<h3 id="72-hugging-face-spaces-배포">7.2 Hugging Face Spaces 배포</h3>
+<ol>
+<li><p><strong>Space 생성</strong>: <a href="https://huggingface.co">huggingface.co</a> → New Space → SDK는 Docker를 클릭 → 펼쳐지는 템플릿 목록에서 <strong>Streamlit</strong> 선택, Hardware <strong>CPU basic(무료)</strong>, Public.</p>
+</li>
+<li><p><strong>파일 올리기</strong>: 이 템플릿은 코드가 <strong><code>src/</code> 폴더</strong> 안에서 실행되고, Dockerfile이 <code>src/streamlit_app.py</code>를 메인으로 지정합니다. 따라서 파일 이름과 위치를 아래처럼 맞춰 올립니다. (Files 탭 → Add file → Upload files)</p>
+<ul>
+<li><code>streamlit_app.py</code>(메인 앱)를 <strong><code>src/</code> 폴더 안</strong>에 올립니다. Dockerfile이 이 이름을 메인으로 실행합니다.</li>
+<li><code>prompts.py</code>, <code>llm.py</code>, <code>storage.py</code>, <code>analyze.py</code> 도 <strong>모두 <code>src/</code> 폴더 안</strong>에 올립니다(서로 import하므로 같은 폴더에 있어야 함).</li>
+<li><code>requirements.txt</code> 는 <strong>맨 바깥(루트)</strong> 의 기존 것을 내 것으로 덮어씁니다.</li>
+<li><code>Dockerfile</code>, <code>README.md</code>, <code>.gitattributes</code> 는 <strong>그대로 둡니다.</strong></li>
+<li><code>.env</code> 는 <strong>절대 올리지 말 것</strong>(키 노출).</li>
+</ul>
+</li>
+</ol>
+<pre><code>   career-chatbot-exp/
+   ├── Dockerfile          ← 그대로
+   ├── README.md           ← 그대로
+   ├── requirements.txt    ← 내 것으로 덮어쓰기
+   └── src/
+       ├── streamlit_app.py  ← 메인 앱
+       ├── prompts.py
+       ├── llm.py
+       ├── storage.py
+       └── analyze.py
+</code></pre>
+<blockquote>
+<p>업로드 창에서 파일 이름 앞에 <code>src/</code>를 붙이면(예: <code>src/prompts.py</code>) 자동으로 그 폴더에 들어갑니다. 올린 뒤 아래 **Commit changes to main**을 누르면 다시 빌드됩니다.</p>
+</blockquote>
+<ol start="3">
+<li><p><strong>비밀 키 등록</strong>: Settings → Variables and secrets → <strong>New secret</strong> 으로 두 개 등록.</p>
+<ul>
+<li><code>GEMINI_API_KEY</code> = Gemini 키</li>
+<li><code>HF_TOKEN</code> = 7.1-2에서 만든 write 토큰(<code>hf_...</code>)</li>
+<li>(이름은 철자·대소문자까지 정확히)</li>
+</ul>
+</li>
+<li><p><strong>확인</strong>: 자동 빌드 후 App 탭이 "Running"이 되면 완료. 그 URL을 참여자에게 배포하고, 직접 한 번 끝까지 진행해 Dataset에 CSV가 쌓이는지 점검.</p>
+</li>
+</ol>
+<h3 id="73-데이터는-어디서-받나">7.3 데이터는 어디서 받나</h3>
+<ul>
+<li><strong>전체 통합본(안전망 1)</strong>: 본인 Dataset 저장소(<code>huggingface.co/datasets/본인아이디/career-chatbot-data</code>)의 <strong>Files</strong> 탭에서 <code>participants.csv</code>, <code>messages.csv</code>, <code>surveys.csv</code>를 내려받습니다. 모든 참여자가 합쳐져 있습니다.</li>
+<li><strong>즉시 백업(안전망 2)</strong>: 앱 사이드바 아래쪽 다운로드 버튼. 단, 이건 <strong>현재 세션</strong> 데이터만입니다.</li>
+</ul>
+<h3 id="74-이중-안전망이-작동하는-방식">7.4 이중 안전망이 작동하는 방식</h3>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>안전망 1 (HF Dataset)</th>
+<th>안전망 2 (사이드바 다운로드)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>평상시</td>
+<td>참여자 완료마다 자동 누적(머지 업로드)</td>
+<td>현재 세션 기록을 즉시 CSV로</td>
+</tr>
+<tr>
+<td>Space 슬립/재시작</td>
+<td>✅ 영향 없음(별도 저장소)</td>
+<td>세션 끊기면 사라짐</td>
+</tr>
+<tr>
+<td>여러 참여자 통합</td>
+<td>✅ 자동 통합</td>
+<td>세션별 분리</td>
+</tr>
+<tr>
+<td>Dataset 업로드 실패</td>
+<td>—</td>
+<td>✅ 메모리 백업으로 회수</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>**운영 원칙**: 평소 데이터는 **Dataset에서** 받습니다(전체 통합본). 사이드바 다운로드는 업로드가 막혔을 때를 위한 **즉시 백업**입니다. 파일럿에서 두 경로 모두 실제로 쌓이는지 확인하세요.</p>
+</blockquote>
+<h3 id="75-안-될-때--증상별-해결">7.5 안 될 때 — 증상별 해결</h3>
+<table>
+<thead>
+<tr>
+<th>증상</th>
+<th>해결</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GEMINI_API_KEY가 설정되지 않았습니다</code></td>
+<td>secret 이름이 정확히 <code>GEMINI_API_KEY</code>인지 확인</td>
+</tr>
+<tr>
+<td>앱은 되는데 Dataset에 안 쌓임</td>
+<td>① <code>HF_TOKEN</code> secret을 등록했는지 ② 토큰 권한이 <strong>Write</strong>인지 ③ <code>DATASET_REPO</code>가 본인 저장소와 정확히 일치하는지</td>
+</tr>
+<tr>
+<td><code>401</code>/<code>403</code> 권한 에러</td>
+<td>토큰이 Write가 아니거나 만료됨 → 새 write 토큰 발급 후 secret 교체</td>
+</tr>
+<tr>
+<td>Space 빌드 안 끝남</td>
+<td>Logs 탭에서 빨간 에러 줄 확인</td>
+</tr>
+<tr>
+<td>첫 접속이 느림</td>
+<td>무료 등급 슬립(정상). "처음 1분 대기" 안내</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>토큰을 잃어버리면 재발급만 가능합니다(원본은 다시 못 봄). 7.1-2를 다시 해서 새 write 토큰을 만들고 secret을 교체하세요.</p>
+</blockquote>
+<h2 id="8-분석--analyzepy">8. 분석 — <code>analyze.py</code></h2>
+<p>DB가 없으므로 HF Dataset(또는 사이드바에서 내려받은) CSV 3개를 직접 읽습니다. long format이라 pivot 한 번이면 끝납니다.</p>
+<pre><code class="language-python"># analyze.py
+# ───────────────────────────────────────────────────────────────────────────
+# 구글시트(또는 다운로드한 CSV) → 조건별 비교 분석.
+# DB가 없으므로 CSV 3개를 직접 읽는다. long-format이라 pivot 한 번이면 끝.
+# ───────────────────────────────────────────────────────────────────────────
+import pandas as pd
+from scipy import stats
+
+# 구글시트에서 받은(혹은 사이드바에서 내려받은) CSV 3개
+participants = pd.read_csv("participants.csv")
+messages = pd.read_csv("messages.csv")
+surveys = pd.read_csv("surveys.csv")
+
+# 1) 완료자만
+done = participants[participants["completed"] == 1]
+print(f"완료자: {len(done)}명")
+print(done["condition"].value_counts())
+
+# 2) 사후 설문을 wide format으로 (한 문항=한 열)
+post = surveys[surveys["phase"] == "post"]
+post_wide = post.pivot_table(index="participant_id", columns="question_id",
+                             values="answer", aggfunc="first")
+
+# 3) 조건과 합치기
+df = done[["participant_id", "condition"]].merge(post_wide, on="participant_id")
+numeric = ["usefulness", "warmth", "competence", "trust", "clarity", "recommend"]
+for c in numeric:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+
+# 4) 조건별 t-test
+print("\\n=== 조건별 비교 (A: 분석가형, B: 멘토형) ===")
+for var in numeric:
+    a = df[df["condition"] == "A"][var].dropna()
+    b = df[df["condition"] == "B"][var].dropna()
+    if len(a) &gt; 1 and len(b) &gt; 1:
+        t, p = stats.ttest_ind(a, b)
+        print(f"{var:12s}: A={a.mean():.2f}, B={b.mean():.2f}, t={t:+.2f}, p={p:.3f}")
+</code></pre>
+<p>---</p>
+<h2 id="9-학생-변형-가이드--자기-주제로-바꾸는-5단계">9. 학생 변형 가이드 — 자기 주제로 바꾸는 5단계</h2>
+<ol>
+<li><strong>연구 질문 다듬기</strong>: "챗봇의 [X]가 사용자의 [Y]에 미치는 영향" 한 문장으로. (X=조작할 것, Y=측정할 것)</li>
+<li><strong>조건 프롬프트 두 개 작성</strong>: <code>prompts.py</code>의 <code>SYSTEM_PROMPTS["A"]</code>, <code>["B"]</code>만 수정. 핵심은 <strong>내용 동일, 조작점만 다르게</strong>.</li>
+<li><strong>과제 메시지 수정</strong>: <code>TASK_INSTRUCTION</code> 교체.</li>
+<li><strong>설문 문항 수정</strong>: <code>streamlit_app.py</code>의 사전·사후 슬라이더만 교체. <strong>저장 구조는 안 바꿔도 됨</strong>(long format이라).</li>
+<li><strong>시범 운영</strong>: 본인이 두 조건을 모두 체험하고 "내용은 같고 스타일만 다른지" 확인.</li>
+</ol>
+<h3 id="변형-예시-7선">변형 예시 7선</h3>
+<table>
+<thead>
+<tr>
+<th>분야</th>
+<th>조건 A</th>
+<th>조건 B</th>
+<th>종속변수</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>뉴스리터러시</td>
+<td>객관·중립 톤</td>
+<td>해설·맥락 톤</td>
+<td>뉴스 신뢰, 이해도</td>
+</tr>
+<tr>
+<td>헬스</td>
+<td>의사형</td>
+<td>동료환자형</td>
+<td>자가관리 의도</td>
+</tr>
+<tr>
+<td>학습</td>
+<td>정답 직접 제공형</td>
+<td>소크라테스식 질문형</td>
+<td>학습 성과</td>
+</tr>
+<tr>
+<td>인간관계</td>
+<td>분석·조언형</td>
+<td>공감·경청형</td>
+<td>정서 안정, 통찰</td>
+</tr>
+<tr>
+<td>MBTI</td>
+<td>학술·비판형</td>
+<td>재미·해석형</td>
+<td>자기이해, 만족도</td>
+</tr>
+<tr>
+<td>정치(주의)</td>
+<td>개인화 정보 사용</td>
+<td>개인화 정보 미사용</td>
+<td>의견 변화</td>
+</tr>
+<tr>
+<td>소비자</td>
+<td>전문가형</td>
+<td>친구형</td>
+<td>구매의도</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>정치·종교·정신건강 등 민감 주제는 IRB 사전 검토가 추가로 필요할 수 있습니다.</p>
+</blockquote>
+<h3 id="강의용-space를-복제해-내-실험-만들기-학생용">강의용 Space를 복제해 내 실험 만들기 (학생용)</h3>
+<p>강의용 Space를 그대로 <strong>복제(Duplicate)</strong> 해서 내 실험으로 쓸 수 있습니다. 코드는 복사되지만 <strong>키(secret)와 데이터 저장소는 복사되지 않으므로</strong>, 복제 후 내 것으로 다시 연결해야 합니다.</p>
+<p><strong>준비물 (복제 전에 미리 만들어 두기)</strong></p>
+<ol>
+<li><strong>내 Gemini 키</strong>: <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>에서 발급 (<code>AIzaSy...</code>)</li>
+<li><strong>내 HF Dataset</strong>: <a href="https://huggingface.co">huggingface.co</a> → New Dataset → 이름 입력(예: <code>내아이디/career-chatbot-data</code>) → Private 권장</li>
+<li><strong>내 HF write 토큰</strong>: Settings → Access Tokens → New token → 권한 <strong>Write</strong> (<code>hf_...</code>)</li>
+</ol>
+<p><strong>복제 단계</strong></p>
+<ol>
+<li><p>강의용 Space 화면 우상단 <strong>⋮ → Duplicate this Space</strong> 클릭</p>
+</li>
+<li><p>복제 창에서 채우기:</p>
+<ul>
+<li><p><strong>Owner</strong>: 내 계정(자동으로 내 아이디가 뜸)</p>
+</li>
+<li><p><strong>Space name</strong>: 원하는 이름</p>
+</li>
+<li><p><strong>Visibility</strong>: <strong>Public</strong> (참여자가 링크로 접속해야 하므로)</p>
+</li>
+<li><p><strong>Space hardware</strong>: <strong>CPU Basic (Free)</strong></p>
+</li>
+<li><p><strong>Space secrets</strong>: 빈 칸 두 개에 <strong>내 키</strong>를 채웁니다.</p>
+<ul>
+<li><code>HUGGINGFACE_TOKEN_WRITE</code> → 내 write 토큰(<code>hf_...</code>)</li>
+<li><code>GEMINI_API_KEY</code> → 내 Gemini 키(<code>AIzaSy...</code>)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Duplicate Space</strong> 클릭</p>
+</li>
+</ol>
+<p><strong>복제 후 반드시 할 일 (이걸 안 하면 내 데이터가 강의용 저장소로 가려다 실패함)</strong></p>
+<p>복제된 내 Space에서 <code>src/storage.py</code>를 열어, 저장소 이름을 <strong>내 Dataset으로</strong> 바꿉니다.</p>
+<pre><code class="language-python">DATASET_REPO = "내아이디/career-chatbot-data"   # ← 반드시 내 것으로 변경
+</code></pre>
+<p><strong>점검</strong></p>
+<p>내 Space가 "Running"이 되면 직접 한 번 끝까지(사전→5턴 대화→사후 제출) 해보고, 내 Dataset의 Files 탭에 <code>participants.csv</code> 등이 쌓이는지 확인합니다. 안 쌓이면 7.5절(증상별 해결)을 참고하세요.</p>
+<blockquote>
+<p>복제해도 강의용 키·토큰은 넘어오지 않으니 안전합니다. 다만 <code>DATASET_REPO</code>만은 코드에 직접 적혀 있으므로 꼭 내 것으로 바꿔야 합니다.</p>
+</blockquote>
+<p>---</p>
+<h2 id="10-향후-발전-방향">10. 향후 발전 방향</h2>
+<ul>
+<li><strong>사후 추적조사</strong>: Costello et al.(2024)처럼 1주·1개월 후 follow-up(IRB 동의 시).</li>
+<li><strong>사전등록(preregistration)</strong>: OSF에 가설·설계·분석계획 등록. 학부생도 가능.</li>
+<li><strong>공개 데이터 공유</strong>: 익명화 대화 로그를 OSF/GitHub에 공개.</li>
+<li><strong>모델 비교 조건</strong>: <code>MODEL_NAME</code>을 조건별로 다르게 두면 Gemini vs GPT vs Claude 비교 실험도 같은 코드로.</li>
+<li><strong>N이 커지면</strong>: HF Dataset은 수천~수만 행도 무리 없음. 본격 대규모면 그때 전용 DB로.</li>
+</ul>
+<p>---</p>
+<h2 id="11-체크리스트--시작-전-점검">11. 체크리스트 — 시작 전 점검</h2>
+<ul>
+<li>[ ] 연구 질문이 한 문장으로 정리됐다</li>
+<li>[ ] 조건 A, B 프롬프트가 "내용 동일, 스타일만 차이"를 통과한다</li>
+<li>[ ] 사전·사후 설문이 5분 이내에 끝난다</li>
+<li>[ ] 본인이 두 조건을 직접 체험하고 수정했다</li>
+<li>[ ] IRB 신청서를 제출했다</li>
+<li>[ ] <code>.env</code>가 <code>.gitignore</code>에 들어 있다</li>
+<li>[ ] <strong>HF Dataset을 만들었고, <code>DATASET_REPO</code>가 일치하며, write 토큰을 secret으로 등록했다</strong></li>
+<li>[ ] <strong>파일럿에서 HF Dataset에 CSV가 실제로 쌓이는지 + 사이드바 다운로드가 되는지 확인했다</strong></li>
+<li>[ ] Gemini API 키 사용량 한도를 설정했다</li>
+<li>[ ] 참여자 3명(파일럿)에게 먼저 돌려보고 버그를 수정했다</li>
+</ul>
+<p>---</p>
+<h2 id="12-참고문헌">12. 참고문헌</h2>
+<p>학생 보고서 작성 시 적어도 ★ 표시한 3편은 인용하시기 바랍니다.</p>
+<p>★ Bermudez Schettino, R., Dasmeh, A., &amp; Brinkmann, L. (2025). <em>Facilitating the Integration of LLMs Into Online Experiments With Simple Chat</em>. arXiv:2511.19123.</p>
+<p>★ Costello, T. H., Pennycook, G., &amp; Rand, D. G. (2024). Durably reducing conspiracy beliefs through dialogues with AI. <em>Science</em>, <em>385</em>(6714), eadq1814.</p>
+<p>★ Salvi, F., Horta Ribeiro, M., Gallotti, R., &amp; West, R. (2025). On the conversational persuasiveness of GPT-4. <em>Nature Human Behaviour</em>, <em>9</em>(8), 1645–1653.</p>
+<p>Betz, N. E., Klein, K. L., &amp; Taylor, K. M. (1996). Evaluation of a short form of the Career Decision-Making Self-Efficacy Scale. <em>Journal of Career Assessment</em>, <em>4</em>(1), 47–57.</p>
+<p>Fiske, S. T., Cuddy, A. J., &amp; Glick, P. (2007). Universal dimensions of social cognition: Warmth and competence. <em>Trends in Cognitive Sciences</em>, <em>11</em>(2), 77–83.</p>
+<p>Gati, I., Krausz, M., &amp; Osipow, S. H. (1996). A taxonomy of difficulties in career decision making. <em>Journal of Counseling Psychology</em>, <em>43</em>(4), 510–526.</p>
+<p>Kestin, G., Miller, K., Klales, A., Milbourne, T., &amp; Ponti, G. (2024). AI tutoring outperforms active learning. <em>Research Square</em> (preprint).</p>
+<p>Lamprou, Z. et al. (2025). <em>Customizable LLM-Powered Chatbot for Behavioral Science Research</em>. arXiv:2501.05541.</p>
+<p>McKenna, C. (2023). <em>oTree GPT</em>. GitHub: <a href="https://github.com/clintmckenna/oTree%5C_gpt">https://github.com/clintmckenna/oTree_gpt</a></p>
+
+      </div>
+    </body>
+    </html>
