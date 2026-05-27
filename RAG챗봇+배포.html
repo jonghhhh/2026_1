@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<!-- saved from url=(0079)https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG 챗봇 + 배포</title>
+
+<style>
+body {
+  margin: 0;
+  padding: 32px;
+  font-family: sans-serif;
+}
+
+.converted-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="converted-content">
+
+<h1>🗳️ RAG 챗봇 + 배포</h1>
+
+<blockquote>
+<p><strong>대상:</strong> RAG·ChatBot·Streamlit·Hugging Face Spaces를 처음 접하는 학습자<br>
+<strong>목표:</strong> 챗봇이 어떻게 작동하는지 이해하고, Hugging Face Spaces에 배포</p>
+</blockquote>
+<p>---</p>
+<h2 id="목차">목차</h2>
+<ol>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#1-%EC%A0%84%EC%B2%B4-%EA%B5%AC%EC%A1%B0-%ED%95%9C%EB%88%88%EC%97%90-%EB%B3%B4%EA%B8%B0">전체 구조 한눈에 보기</a></li>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#2-rag%EB%9E%80-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80">RAG란 무엇인가</a></li>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#3-%EC%9D%B4-%EC%B1%97%EB%B4%87%EC%9D%98-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D">이 챗봇의 기술 스택</a></li>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#4-%EB%A1%9C%EC%BB%AC-%EC%8B%A4%ED%96%89-%EA%B0%9C%EB%B0%9C-%ED%99%98%EA%B2%BD">로컬 실행 (개발 환경)</a></li>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#5-hugging-face-spaces-%EB%B0%B0%ED%8F%AC">Hugging Face Spaces 배포</a></li>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#6-%EC%A3%BC%EC%9A%94-%EC%84%A4%EC%A0%95%EA%B0%92-%EC%A1%B0%EC%A0%95-%EA%B0%80%EC%9D%B4%EB%93%9C">주요 설정값 조정 가이드</a></li>
+<li><a href="https://jonghhhh.github.io/2026_1/RAG%EC%B1%97%EB%B4%87_%EB%B0%B0%ED%8F%AC.html#7-%EC%9E%90%EC%A3%BC-%EB%AC%BB%EB%8A%94-%EC%A7%88%EB%AC%B8">자주 묻는 질문</a></li>
+</ol>
+<p>---</p>
+<h2 id="1-전체-구조-한눈에-보기">1. 전체 구조 한눈에 보기</h2>
+<pre><code>사용자 질문 입력
+      │
+      ▼
+[Streamlit UI] ──── 화면에 말풍선 형태로 대화 표시
+      │
+      ▼
+[Gemini Embedding] ── 질문을 768차원 숫자 벡터로 변환
+      │
+      ▼
+[Chroma 벡터 DB] ──── 비슷한 내용의 문서 조각(청크) 5개 검색
+      │
+      ▼
+[Gemini 2.5 Flash-Lite] ── 검색 결과 + 이전 대화 + 질문 → 답변 생성
+      │
+      ▼
+화면에 답변 + 출처 페이지 표시
+</code></pre>
+<p><strong>비유로 이해하기</strong></p>
+<blockquote>
+<p>도서관 사서(RAG 챗봇)에게 질문하면,
+사서는 키워드로 책장(벡터 DB)에서 관련 페이지를 찾아오고,
+그 페이지만 보면서 대답합니다.
+사서가 기억에 의존하지 않고 **항상 원문을 확인**하므로
+오답(환각, hallucination)이 훨씬 줄어듭니다.</p>
+</blockquote>
+<p>---</p>
+<h2 id="2-rag란-무엇인가">2. RAG란 무엇인가</h2>
+<h3 id="21-왜-rag가-필요한가">2.1 왜 RAG가 필요한가?</h3>
+<p>일반 LLM의 두 가지 한계:</p>
+<table>
+<thead>
+<tr>
+<th>문제</th>
+<th>설명</th>
+<th>예시</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>지식 단절 (Knowledge Cutoff)</strong></td>
+<td>학습 데이터 이후의 내용은 모름</td>
+<td>2026년 선거법 개정 내용</td>
+</tr>
+<tr>
+<td><strong>환각 (Hallucination)</strong></td>
+<td>모르는 내용을 그럴듯하게 지어냄</td>
+<td>존재하지 않는 조항 번호 인용</td>
+</tr>
+</tbody></table>
+<p>RAG는 이 두 문제를 <strong>외부 문서 검색</strong>으로 해결합니다.</p>
+<h3 id="22-rag-3단계">2.2 RAG 3단계</h3>
+<pre><code>① 준비 단계 (최초 1회)
+   원본 문서 → 청크 분할 → 임베딩 → 벡터 DB 저장
+
+② 검색 단계 (질문마다)
+   사용자 질문 → 임베딩 → 벡터 DB에서 유사 청크 검색
+
+③ 생성 단계 (질문마다)
+   검색된 청크 + 질문 → LLM → 출처 포함 답변
+</code></pre>
+<h3 id="23-임베딩embedding이란">2.3 임베딩(Embedding)이란?</h3>
+<p>텍스트를 숫자 벡터로 변환하는 기술입니다.</p>
+<pre><code>"선거 보도 공정성"  →  [0.12, -0.45, 0.78, ...]  (768개 숫자)
+"선거 뉴스 균형"    →  [0.11, -0.43, 0.76, ...]  (비슷한 숫자!)
+"오늘 날씨 맑음"    →  [-0.89, 0.23, -0.11, ...]  (완전히 다른 숫자)
+</code></pre>
+<p>의미가 비슷한 문장은 <strong>비슷한 벡터</strong>를 가지므로, 코사인 유사도로 관련성을 측정할 수 있습니다.</p>
+<h3 id="24-비대칭-임베딩-이-챗봇의-핵심-기법">2.4 비대칭 임베딩 (이 챗봇의 핵심 기법)</h3>
+<p>같은 임베딩 모델이라도 <strong>역할에 따라 다른 task_type</strong>을 지정해야 합니다.</p>
+<pre><code class="language-python"># ✅ 올바른 사용
+embed_text("선거 보도 기준...", task_type="retrieval_document")  # 문서 저장 시
+embed_text("선거 보도 기준이 뭔가요?", task_type="retrieval_query")   # 질문 검색 시
+</code></pre>
+<h2 id="3-이-챗봇의-기술-스택">3. 이 챗봇의 기술 스택</h2>
+<h3 id="31-구성-요소-설명">3.1 구성 요소 설명</h3>
+<table>
+<thead>
+<tr>
+<th>구성 요소</th>
+<th>역할</th>
+<th>왜 이걸 선택했나</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Streamlit</strong></td>
+<td>웹 UI</td>
+<td>Python만으로 대화형 앱 구현, 설치 쉬움</td>
+</tr>
+<tr>
+<td><strong>Gemini Embedding 001</strong></td>
+<td>텍스트 → 벡터 변환</td>
+<td>768차원 Matryoshka, 한국어 우수</td>
+</tr>
+<tr>
+<td><strong>Chroma DB</strong></td>
+<td>벡터 저장·검색</td>
+<td>로컬 파일 기반, 별도 서버 불필요</td>
+</tr>
+<tr>
+<td><strong>Gemini 2.5 Flash-Lite</strong></td>
+<td>답변 생성</td>
+<td>빠르고 저렴, 한국어 품질 우수</td>
+</tr>
+<tr>
+<td><strong>Hugging Face Spaces</strong></td>
+<td>무료 배포</td>
+<td>GitHub 연동, 무료 CPU 인스턴스 제공</td>
+</tr>
+</tbody></table>
+<h3 id="32-데이터-흐름-상세">3.2 데이터 흐름 상세</h3>
+<pre><code>[원본 TXT 파일]
+    │  read_text()
+    ▼
+[전체 텍스트]  →  re.split("[페이지 N]")  →  [페이지별 텍스트 목록]
+                                                    │
+                                    RecursiveCharacterTextSplitter
+                                                    │
+                                              [청크 목록]
+                                    {"text": "...", "page": 23}
+                                                    │
+                                    embed_text(task_type="retrieval_document")
+                                                    │
+                                              [벡터 목록]
+                                                    │
+                                    chromadb.PersistentClient.add()
+                                                    │
+                                          [Chroma DB 파일]
+                                          (disk에 저장됨)
+</code></pre>
+<p>---</p>
+<h2 id="4-로컬-실행-개발-환경">4. 로컬 실행 (개발 환경)</h2>
+<h3 id="41-필요한-것">4.1 필요한 것</h3>
+<ul>
+<li>Python 3.10 이상</li>
+<li>Gemini API 키 (<a href="https://aistudio.google.com/">Google AI Studio</a>에서 무료 발급)</li>
+</ul>
+<h3 id="42-설치-순서">4.2 설치 순서</h3>
+<pre><code class="language-bash"># 1. 패키지 설치
+pip install streamlit google-generativeai chromadb \\
+            langchain-text-splitters python-dotenv
+
+# 2. 파일 배치
+#    같은 폴더에 아래 파일들이 있어야 합니다:
+#    ├── rag챗봇_배포.py
+#    └── 2026_공정선거보도_안내서_중앙선거관리위원회.txt
+
+# 3. .env 파일 생성 (API 키 저장)
+echo "GEMINI_API_KEY=AIza...본인키..." &gt; .env
+
+# 4. 앱 실행
+streamlit run app.py
+</code></pre>
+<p>브라우저에서 <code>http://localhost:8501</code> 접속하면 챗봇이 열립니다.</p>
+<blockquote>
+<p>💡 **첫 실행 시 주의:**<br>DB 구축에 약 2~3분이 걸립니다. 화면에 진행 바가 표시됩니다.<br>이후 실행 시에는 저장된 DB를 즉시 로드하므로 5초 이내에 시작됩니다.</p>
+</blockquote>
+<h3 id="43-requirementstxt">4.3 requirements.txt</h3>
+<p>배포를 위해 이 파일도 만들어두세요:</p>
+<pre><code>streamlit&gt;=1.35.0
+google-generativeai&gt;=0.8.0
+chromadb&gt;=0.5.0
+langchain-text-splitters&gt;=0.2.0
+python-dotenv&gt;=1.0.0
+</code></pre>
+<p>---</p>
+<h2 id="5-hugging-face-spaces-배포">5. Hugging Face Spaces 배포</h2>
+<blockquote>
+<p>Hugging Face Spaces는 **무료로 AI 앱을 배포**할 수 있는 플랫폼입니다.<br>GitHub처럼 파일을 올리면 자동으로 앱이 실행됩니다.</p>
+</blockquote>
+<h3 id="51-hugging-face-계정-만들기">5.1 Hugging Face 계정 만들기</h3>
+<ol>
+<li><a href="https://huggingface.co/">huggingface.co</a> 접속 → <strong>Sign Up</strong></li>
+<li>이메일 인증 완료</li>
+</ol>
+<h3 id="52-새-space-만들기">5.2 새 Space 만들기</h3>
+<ol>
+<li>로그인 후 우측 상단 프로필 → <strong>New Space</strong> 클릭</li>
+<li>설정 입력:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Space name</strong></td>
+<td><code>election-rag-chatbot</code> (원하는 이름)</td>
+</tr>
+<tr>
+<td><strong>License</strong></td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><strong>SDK</strong></td>
+<td><strong>Streamlit</strong> ← 반드시 선택!</td>
+</tr>
+<tr>
+<td><strong>Space hardware</strong></td>
+<td>CPU basic · Free</td>
+</tr>
+<tr>
+<td><strong>Visibility</strong></td>
+<td>Public 또는 Private</td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li><strong>Create Space</strong> 클릭</li>
+</ol>
+<h3 id="53-api-키-등록-secrets">5.3 API 키 등록 (Secrets)</h3>
+<blockquote>
+<p>코드에 API 키를 직접 쓰면 절대 안 됩니다! Secrets를 사용하세요.</p>
+</blockquote>
+<ol>
+<li><p>Space 페이지 → <strong>Settings</strong> 탭</p>
+</li>
+<li><p><strong>Repository secrets</strong> 섹션 → <strong>New secret</strong> 클릭</p>
+</li>
+<li><p>입력:</p>
+<ul>
+<li><strong>Name:</strong> <code>GEMINI_API_KEY</code></li>
+<li><strong>Value:</strong> <code>AIza...본인키...</code></li>
+</ul>
+</li>
+<li><p><strong>Save</strong> 클릭</p>
+</li>
+</ol>
+<p>앱 코드에서 <code>st.secrets["GEMINI_API_KEY"]</code>로 자동으로 읽어옵니다.</p>
+<h3 id="54-파일-업로드">5.4 파일 업로드</h3>
+<p>Space에 올려야 할 파일 목록:</p>
+<pre><code>Space 루트
+├── RAG챗봇_배포.py              ← 챗봇 메인 코드
+├── requirements.txt                ← 패키지 목록
+└── 2026_공정선거보도_안내서_중앙선거관리위원회.txt  ← 원본 문서
+</code></pre>
+<p><strong>방법 A: 웹 UI로 업로드 (쉬움)</strong></p>
+<ol>
+<li>Space 페이지 → <strong>Files</strong> 탭 → <strong>Add file</strong> → <strong>Upload files</strong></li>
+<li>위 세 파일을 드래그 앤 드롭</li>
+<li><strong>Commit changes</strong> 클릭 → 자동으로 앱 빌드 시작</li>
+</ol>
+<p><strong>방법 B: Git으로 업로드 (추천)</strong></p>
+<pre><code class="language-bash"># Space를 로컬에 클론
+git clone https://huggingface.co/spaces/본인아이디/election-rag-chatbot
+cd election-rag-chatbot
+
+# 파일 복사
+cp app.py requirements.txt 2026_공정선거보도_안내서_중앙선거관리위원회.txt ./
+
+# 커밋 &amp; 푸시
+git add .
+git commit -m "Add RAG chatbot"
+git push
+</code></pre>
+<h3 id="55-빌드-확인">5.5 빌드 확인</h3>
+<p>파일을 올리면 Space가 자동으로 빌드를 시작합니다.</p>
+<ul>
+<li><strong>Building</strong> (파란색) → 빌드 중 (1~3분)</li>
+<li><strong>Running</strong> (초록색) → 앱 실행 중 ✅</li>
+<li><strong>Error</strong> (빨간색) → Logs 탭에서 오류 확인</li>
+</ul>
+<blockquote>
+<p>⚠️ **Chroma DB 영구 저장 주의**<br>Hugging Face Spaces의 무료 인스턴스는 **재시작 시 파일이 초기화**됩니다.<br>따라서 앱이 재시작될 때마다 DB를 다시 구축합니다 (약 2~3분 소요).<br>이를 피하려면 DB 파일을 Space에 미리 커밋하거나, 유료 Persistent Storage를 사용하세요.</p>
+</blockquote>
+<h3 id="56-미리-빌드한-db를-space에-포함시키기-권장">5.6 미리 빌드한 DB를 Space에 포함시키기 (권장)</h3>
+<p>로컬에서 DB를 먼저 구축한 뒤 통째로 업로드하면 배포 후 즉시 사용 가능합니다.</p>
+<pre><code class="language-bash"># 1. 로컬에서 DB 구축 (app.py를 한 번 실행하면 chroma_election_db/ 폴더 생성됨)
+streamlit run app.py
+# → 질문 한 번 하면 DB가 구축됨
+# → Ctrl+C로 종료
+
+# 2. DB 폴더를 Space에 포함시켜 커밋
+git add chroma_election_db/
+git commit -m "Add pre-built Chroma DB"
+git push
+</code></pre>
+<p>---</p>
+<h2 id="6-주요-설정값-조정-가이드">6. 주요 설정값 조정 가이드</h2>
+<p><code>app.py</code> 상단의 설정값을 바꾸면 챗봇 동작을 튜닝할 수 있습니다.</p>
+<h3 id="61-청킹-설정">6.1 청킹 설정</h3>
+<pre><code class="language-python">CHUNK_SIZE = 500    # 청크 크기
+CHUNK_OVERLAP = 50  # 청크 간 겹침
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>CHUNK_SIZE</th>
+<th>효과</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>200~300</td>
+<td>작고 정밀한 청크 → 특정 조항 검색에 유리</td>
+</tr>
+<tr>
+<td>500 (기본)</td>
+<td>균형잡힌 청크 (권장)</td>
+</tr>
+<tr>
+<td>800~1000</td>
+<td>큰 청크 → 문맥이 풍부하지만 노이즈 증가</td>
+</tr>
+</tbody></table>
+<h3 id="62-검색-설정">6.2 검색 설정</h3>
+<pre><code class="language-python">TOP_K = 5  # 검색할 청크 수
+</code></pre>
+<ul>
+<li><code>TOP_K = 3</code> → 빠르지만 컨텍스트가 적음</li>
+<li><code>TOP_K = 5</code> → 균형 (기본값)</li>
+<li><code>TOP_K = 8</code> → 풍부한 컨텍스트, 응답 시간 증가</li>
+</ul>
+<h3 id="63-생성-모델-temperature">6.3 생성 모델 temperature</h3>
+<pre><code class="language-python">generation_config={"temperature": 0.2}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>temperature</th>
+<th>적합한 상황</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0.0~0.3</td>
+<td>사실 기반 Q&amp;A (이 챗봇처럼 정확성 중요한 경우)</td>
+</tr>
+<tr>
+<td>0.5~0.7</td>
+<td>일반적인 도우미</td>
+</tr>
+<tr>
+<td>0.9~1.0</td>
+<td>창의적 글쓰기, 브레인스토밍</td>
+</tr>
+</tbody></table>
+<p>---</p>
+<h2 id="7-자주-묻는-질문">7. 자주 묻는 질문</h2>
+<p><strong>Q: DB 구축이 너무 오래 걸립니다.</strong><br>A: 무료 Gemini API는 분당 요청 수 제한이 있습니다. <code>RATE_LIMIT_SLEEP = 0.15</code>를 <code>0.3</code>으로 늘려보세요. 또는 로컬에서 미리 DB를 구축한 뒤 Space에 업로드하는 방법을 권장합니다.</p>
+<p><strong>Q: "GEMINI_API_KEY를 찾을 수 없습니다" 오류가 납니다.</strong><br>A: 로컬이면 <code>.env</code> 파일에 키가 있는지, Spaces라면 Settings → Secrets에 <code>GEMINI_API_KEY</code>가 등록됐는지 확인하세요.</p>
+<p><strong>Q: 이전 대화 내용을 기억하지 못합니다.</strong><br>A: 브라우저 탭을 새로고침하면 <code>session_state</code>가 초기화됩니다. 같은 탭에서 계속 대화하면 이전 내용을 기억합니다.</p>
+<p><strong>Q: 답변이 "제공된 자료에서는 확인할 수 없습니다"라고만 합니다.</strong><br>A: 질문이 원본 문서 범위 밖이거나, 검색이 잘 안 된 경우입니다. 질문을 더 구체적으로 바꿔보거나, <code>TOP_K</code>를 늘려보세요.</p>
+<p><strong>Q: Hugging Face Space가 자꾸 잠듭니다 (sleeping).</strong><br>A: 무료 Space는 일정 시간 사용이 없으면 잠듭니다. 첫 접속 시 깨어나는 데 30초~1분 걸립니다. 유료 플랜을 사용하면 항상 켜둘 수 있습니다.</p>
+
+      </div>
+    
+    
+<div id="SplitView--wrapper" style="width: 81.3393vw;"><div id="SplitView--dragger"></div><div class="SplitView--wrapper-title"><a id="SplitView--title" class="SplitView--title" target="_blank"></a></div><iframe class="SplitView--iframe" src="./RAG 챗봇 + 배포_files/saved_resource.html"></iframe><div class="SplitView--image-wrapper"><img class="SplitView--image"></div><div class="SplitView--actions"><div title="Close the preview" class="SplitView--action-close"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></div><div title="Switch to the other side" class="SplitView--action-switch-sides"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg></div><div title="Open in new tab" class="SplitView--action-open-in-new-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.4583 5.56767L6 18.026M19 14.776V5.39758C19 5.29214 18.9581 5.19101 18.8835 5.11645C18.809 5.04189 18.7079 5 18.6024 5H9.25" stroke="currentColor" stroke-width="2.16667" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div title="Open SplitView homepage" class="SplitView--action-open-sv-homepage"><svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.4 13V6.88235H0L8 0L16 6.88235H13.6V13H2.4ZM8 2.05706L4 5.49824V11.4706H8H12V5.49824L8 2.05706Z" fill="currentColor"></path>
+</svg></div></div></div></body></html>
