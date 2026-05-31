@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>기사작성 </title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+
+<style>
+:root { --fg:#24292f; --muted:#57606a; --line:#d0d7de; --bg:#fff; --soft:#f6f8fa; --accent:#0969da; }
+html { background: var(--bg); }
+body { max-width: 960px; margin: 40px auto; padding: 0 24px 80px; color: var(--fg); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif; line-height: 1.72; font-size: 16px; }
+h1 { font-size: 2.2rem; border-bottom: 2px solid var(--line); padding-bottom: .35em; margin-top: 0; }
+h2 { margin-top: 2.4em; border-bottom: 1px solid var(--line); padding-bottom: .25em; }
+h3 { margin-top: 1.8em; }
+a { color: var(--accent); text-decoration: none; word-break: break-all; }
+a:hover { text-decoration: underline; }
+blockquote { margin: 1.2em 0; padding: .8em 1em; border-left: 4px solid var(--line); background: var(--soft); color: var(--fg); }
+code, pre { font-family: "SFMono-Regular",Consolas,"Liberation Mono",monospace; }
+pre { overflow:auto; padding: 1em; background: var(--soft); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: .95em; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+th { background: var(--soft); }
+hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+ul, ol { padding-left: 1.5em; }
+li { margin: .2em 0; }
+strong { font-weight: 700; }
+@media print { body { margin: 0 auto; max-width: none; } a { color: inherit; } }
+</style>
+
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">보도(기사 작성) — 5가지 유형과 7가지 원칙</h1>
+</header>
+<blockquote>
+<p>한국기자협회 ‘이달의 기자상’ 추천작(2025–2026)에서 발췌한 최신 사례
+추가. 각 사례마다 <strong>언론사 · 보도 시점 · 무엇을·어떻게
+썼는지</strong> 를 표기합니다.</p>
+</blockquote>
+<hr />
+<h2 id="들어가며-취재-다음의-일-기사-쓰기">0. 들어가며 — 취재 다음의 일:
+‘기사 쓰기’</h2>
+<p>취재(reporting)와 보도(writing)는 다른 능력입니다. 아무리 취재를
+잘했어도, <strong>읽히지 않으면 사회를 움직이지 못합니다.</strong> 이
+강의는 취재를 마친 뒤 ’어떻게 쓰느냐’에 집중합니다.</p>
+<p>기사 쓰기에는 두 축이 있습니다.</p>
+<ul>
+<li><strong>유형(Format)</strong> — 무엇을 쓰는가? 정보를 전하나, 원인을
+해설하나, 사람을 그리나, 주장을 하나, 모두를 엮나? → 5가지 유형</li>
+<li><strong>원칙(Principle)</strong> — 어떻게 쓰는가? 정확하게? 짧게?
+생생하게? → 7가지 원칙</li>
+</ul>
+<p>두 축은 별개가 아닙니다. 좋은 기사는 <strong>‘적절한 유형으로 +
+7원칙을 모두 지켜’</strong> 쓰입니다.</p>
+<hr />
+<h2 id="기사의-5가지-유형-한눈에">1. 기사의 5가지 유형 한눈에</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>유형</th>
+<th>한마디로</th>
+<th>핵심 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>스트레이트</strong></td>
+<td>사실·정보 전달</td>
+<td>“무슨 일이 있었나?”</td>
+</tr>
+<tr class="even">
+<td><strong>해설</strong></td>
+<td>원인·배경·전망 설명</td>
+<td>“왜 이런 일이 벌어졌고, 앞으로 어떻게 되는가?”</td>
+</tr>
+<tr class="odd">
+<td><strong>피처</strong></td>
+<td>사람·현장·이야기</td>
+<td>“누가 어떻게 살고 있는가?”</td>
+</tr>
+<tr class="even">
+<td><strong>의견</strong></td>
+<td>주장과 근거</td>
+<td>“어떻게 해야 하는가?”</td>
+</tr>
+<tr class="odd">
+<td><strong>기획</strong></td>
+<td>종합·심층</td>
+<td>“이 사회의 구조를 어떻게 봐야 하는가?”</td>
+</tr>
+</tbody>
+</table>
+<p>대다수 이슈는 한 가지 유형으로 끝나지 않습니다. <strong>한 사건은 —
+스트레이트로 알리고 → 해설로 맥락을 주고 → 피처로 사람을 보여주고 →
+의견으로 방향을 제시하며 → 기획으로 묶입니다.</strong> 좋은 매체는 같은
+사안에 대해 이 5종 세트를 모두 만들어 냅니다.</p>
+<hr />
+<h2 id="스트레이트-기사-정보를-깔끔하게-전달">2. 스트레이트 기사 —
+정보를 깔끔하게 전달</h2>
+<h3 id="정의">2.1 정의</h3>
+<p><strong>가장 기본적이고 가장 많이 쓰는 기사 형태.</strong> 일어난
+일(사실)을 빠르고 정확하게 알리는 것이 목적입니다. 속보·발표·사건·사고가
+주로 여기에 속합니다.</p>
+<h3 id="구성요소">2.2 구성요소</h3>
+<ul>
+<li><strong>사실(fact)과 취재원(source)</strong> — “OO에 따르면” 출처
+명시</li>
+<li><strong>6하 원칙(5W1H)</strong> — 누가(Who), 언제(When),
+어디서(Where), 무엇을(What), 왜(Why), 어떻게(How)</li>
+<li><strong>3단 구조</strong> — 제목(headline) → 전문(lead) →
+본문(body)</li>
+</ul>
+<h3 id="역피라미드-구조">2.3 역피라미드 구조</h3>
+<pre><code>   [리드]      ━━━━━━━━━━━━━━━━━━━━━━━  ← 가장 중요한 한 문장 (5W1H 압축)
+   [근거]      ━━━━━━━━━━━━━━━━━━     ← 출처·수치·핵심 근거
+   [중요사실]  ━━━━━━━━━━━━━━━━        ← 사건의 핵심 디테일
+   [세부사실]  ━━━━━━━━━━━━━━           ← 추가 디테일·인용·반응
+   [추가정보]  ━━━━━━━━━━              ← 배경, 후속 일정 등</code></pre>
+<p><strong>왜 역피라미드?</strong> ① 독자는 첫 문장만 읽고 떠나도 핵심을
+가져갑니다. ② 편집자가 분량을 줄일 때 아래부터 잘라도 무방합니다. ③
+디지털 시대엔 더 결정적입니다 — 모바일 화면 위 1/3만 보고 이탈하는
+독자가 많기 때문.</p>
+<h3 id="사례">2.4 사례</h3>
+<blockquote>
+<p><strong>단독 스트레이트의 정석 — 부산파이낸셜뉴스 ‘평일 대낮
+볼링·1000만 원 패딩’</strong> <em>(부산파이낸셜뉴스 백창훈 기자, 2026년
+2월 23일 첫 단독 · 제428회 이달의 기자상 추천작 · 전문보도부문
+특별상)</em> 한 의회사무국 직원의 용기 있는 제보가 시작이었습니다.
+부산지역 16개 구·군의회가 상위 협의체에 매년 700~1,000만 원을 부담금으로
+내는데, 그중 450만 원이 ‘역량 강화 지원금’ 명목으로 각 의회에 돌아갔다는
+것. 기자는 정보공개청구로 영수증·증빙을 받아냈고, <em>“평일 대낮 볼링이
+‘역량 강화’? 패딩 구매에 1000만 원 쓴 부산 구의원들”</em> 이라는 첫 단독
+기사로 터뜨렸습니다. 9건의 시리즈 끝에 사하·진구의회는 <strong>사비로
+패딩값 전액을 반환</strong>했고, 시민단체는 공익감사를 청구했습니다.</p>
+<p><strong>이 기사의 리드 한 문장으로 5W1H가 모두 들어가
+있습니다.</strong> “<em>부산 구의원들이(Who) 의회 부담금 중 일부를(What)
+평일 대낮 볼링·패딩 구매에(How) 썼다(Where=부산 · When=2025년 ·
+Why=훈령상 사용처 미규정).</em>”</p>
+</blockquote>
+<blockquote>
+<p><strong>속보 스트레이트 — 동아일보 ‘유류할증료 사상 최고치’</strong>
+<em>(동아일보 변종국 기자, 2026년 3월 30일 단독 · 제428회 추천작 ·
+경제보도부문)</em> <em>“미국·이스라엘과 이란의 전쟁으로 유가가
+치솟으면서 5월 발권 항공권은 미국 왕복 유류할증료만 100만 원에 달할
+전망이다.”</em> — 사건(전쟁) → 결과(유가 상승) → 소비자 영향(항공권)
+순으로 깔끔한 인과형 역피라미드. <strong>숫자 하나에 사실 하나</strong>
+원칙이 잘 지켜져 있습니다.</p>
+</blockquote>
+<h3 id="초보자가-가장-자주-틀리는-것">2.5 초보자가 가장 자주 틀리는
+것</h3>
+<ul>
+<li>❌ 한 문장에 정보를 두세 개 욱여넣기 → ✅ <strong>1문장
+1팩트</strong></li>
+<li>❌ “관계자에 따르면” 출처 모호 → ✅
+<strong>이름·직책·소속</strong>까지 가능한 한 구체적으로</li>
+<li>❌ ‘예정’, ‘계획’, ‘검토’ 같은 미래형 남발 → ✅ <strong>확정된
+사실과 발표를 구분</strong></li>
+<li>❌ 리드에 형용사·부사 가득 → ✅ <strong>수치와 동사
+중심</strong></li>
+</ul>
+<hr />
+<h2 id="해설-기사-어제오늘내일을-잇다">3. 해설 기사 — 어제·오늘·내일을
+잇다</h2>
+<h3 id="정의-1">3.1 정의</h3>
+<p>스트레이트가 “무슨 일이 있었나”를 답한다면, <strong>해설은 “왜 이
+일이 벌어졌고, 무엇을 의미하며, 앞으로 어떻게 되는가”</strong> 를
+답합니다. 정책 발표, 통계 공개, 판결, 사건의 후속 보도가 여기에
+속합니다.</p>
+<h3 id="시간축으로-본-구성-yesterday-today-tomorrow">3.2 시간축으로 본
+구성: yesterday – today – tomorrow</h3>
+<table>
+<thead>
+<tr class="header">
+<th>시점</th>
+<th>무엇을 다루나</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>yesterday</strong></td>
+<td>사건의 원인 · 배경 · 과정</td>
+</tr>
+<tr class="even">
+<td><strong>today</strong></td>
+<td>사건의 결과 · 의미 · 영향</td>
+</tr>
+<tr class="odd">
+<td><strong>tomorrow</strong></td>
+<td>앞으로의 전망 · 대응책 · 쟁점</td>
+</tr>
+</tbody>
+</table>
+<h3 id="구성-리드-본문">3.3 구성 (리드 → 본문)</h3>
+<ul>
+<li><strong>전문(lead)</strong>: 해설의 방향을 한 문장으로 요약</li>
+<li><strong>본문(body)</strong>: 배경 → 원인 → 경과 → 결과 → 전망</li>
+</ul>
+<p><strong>객관적이어야 합니다.</strong> 해설은 의견이 아닙니다. “이
+정책은 잘못됐다”가 아니라, “이 정책이 작동하지 않는 이유는 ①②③
+때문이다”로 써야 합니다.</p>
+<h3 id="사례-1">3.4 사례</h3>
+<blockquote>
+<p><strong>‘감당 가능한 수준’이라더니 — JTV 전주방송 ’7천억 빚더미
+전주시’</strong> <em>(JTV 전주방송 김학준·강경진 기자, 2026년 4월
+12~19일 시리즈 · 제428회 추천작 · 지역 기획보도 방송부문)</em> 전주시
+지방채가 7천억 원까지 불어나 있는데도 시는 <em>“감당 가능한 수준”</em>
+이라고 했습니다. JTV는 ① <strong>어제</strong> (지방채가 어떻게
+7천억까지 늘었나) ② <strong>오늘</strong> (전시컨벤션센터·복합스포츠타운
+700억 부족, 사업 지연 가시화) ③ <strong>내일</strong>
+(재정진단·재정위기단체 지정 가능성) 순으로 해설했습니다. 단순 “빚이
+많다”가 아니라 <strong>“왜 늘었나 → 지금 어떤 사업이 흔들리나 → 앞으로
+어떻게 되나”</strong> 의 3박자 구조입니다.</p>
+</blockquote>
+<blockquote>
+<p><strong>78년치를 한 번에 — 연합뉴스 ‘정부포상 취소 실태’</strong>
+<em>(연합뉴스 차민지·최원정 기자, 2026년 3월 29일~4월 6일 보도 · 제428회
+추천작 · 기획보도 신문·통신부문)</em> ‘고문기술자’ 이근안 사망(어제)을
+계기로 → 78년간 정부포상 취소 833건 분석(오늘) → 경찰청 훈·포장 7만 개
+전수조사 착수(내일)로 이어졌습니다. <strong>’사건 하나’를 ’시스템
+점검’으로 확장</strong>한 모범적 해설 구조.</p>
+</blockquote>
+<h3 id="초보자-팁">3.5 초보자 팁</h3>
+<ul>
+<li>해설 기사의 첫 문장은 <em>“왜 지금 이 기사를 읽어야 하는가”</em> 에
+답해야 합니다. 단순 “정부가 OO 정책을 발표했다”가 아니라, <strong>“왜 이
+발표가 중요한가”</strong> 가 먼저.</li>
+<li>전망(tomorrow)을 쓸 때 추측은 금물 — <em>반드시 전문가·당국·문서로
+근거를 댑니다.</em></li>
+</ul>
+<hr />
+<h2 id="피처-기사-사람현장이야기">4. 피처 기사 — 사람·현장·이야기</h2>
+<h3 id="정의-2">4.1 정의</h3>
+<p><strong>재미있는 읽을거리.</strong> 사람의 사연, 현장의 풍경,
+인상적인 일화를 다룹니다. 정보 전달이 아니라
+<strong>공감·감동·반성</strong>을 일으키는 것이 목적입니다.</p>
+<h3 id="두-가지-유형">4.2 두 가지 유형</h3>
+<ul>
+<li><strong>현장 스케치</strong> — 사건이 벌어지는 곳의 분위기와
+디테일을 그림처럼 묘사</li>
+<li><strong>일화(에피소드)</strong> — 한 사람의 이야기 또는 짧은 사건을
+통해 보편적인 의미를 드러냄</li>
+</ul>
+<h3 id="피처의-특수-리드">4.3 피처의 특수 리드</h3>
+<p>스트레이트가 5W1H로 시작한다면, 피처는
+<strong>장면·일화·사례</strong>로 시작합니다. 독자를 먼저 ‘데려가는’
+것이 목적입니다.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>리드 유형</th>
+<th>예시</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>장면 리드</strong></td>
+<td>“5일 오후 2시, 성수동 ‘문화공간2025’ 입구. 빨간 유모차를 끈 40대
+주부 20명이 줄을 서 있다.”</td>
+</tr>
+<tr class="even">
+<td><strong>일화 리드</strong></td>
+<td>“<em>‘엄마 언제 들어가?’</em> 5살 딸이 발을 동동 굴렀다.
+박모씨(42)는 30분째 입장권 줄을 기다리고 있다.”</td>
+</tr>
+<tr class="odd">
+<td><strong>사례 리드</strong></td>
+<td>“박씨에게 김씨와 같은 일이 닥친 건 2025년 가을이었다.”</td>
+</tr>
+<tr class="even">
+<td><strong>인용 리드</strong></td>
+<td>“<em>‘평일 대낮 볼링이 역량강화인가요?’</em> 의회사무국 직원의
+한마디가 모든 것의 시작이었다.”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="피처의-글쓰기-원칙">4.4 피처의 글쓰기 원칙</h3>
+<ul>
+<li><strong>문학적 글솜씨</strong> — 묘사와 비유, 리듬</li>
+<li><strong>역동성</strong> — 독자가 동영상을 떠올릴 수 있게. 대립·극적
+상황·긴장 유발</li>
+<li><strong>정서적 효과</strong> — 교훈·감동·반성</li>
+<li><strong>⚠️ 옐로페이퍼식 선정성은 금물</strong> — 자극 그 자체가
+목적이 되면 안 됨</li>
+</ul>
+<h3 id="사례-2">4.5 사례</h3>
+<blockquote>
+<p><strong>15분짜리 점심 — 인천일보 ‘식판경제학’</strong> <em>(인천일보
+김원진·정혜리·홍준기 기자, 2026년 2월 19일~3월 시리즈 · 제428회 추천작 ·
+지역 기획보도 신문·통신부문)</em> 취재팀은 이렇게 썼습니다. <em>“노후
+산단은 늘 ’지역 경제’라는 거시적 언어와 동일 선상에 올라 있었다. 가동률,
+수출액, 입주 기업 수 등등. 숫자는 있었지만 숫자 뒤에 사람은
+없었다.”</em> 그래서 그들이 꺼낸 카드가 <strong>‘식판’</strong>
+이었습니다. <em>“15분짜리 점심. 노동자들이 식판을 들고 마주 앉는 그
+순간은 거시 경제가 포착하지 못한 삶의 언어가 가장 솔직하게 흘러나오는
+시간.”</em> 임금 등락, 발주처 동향, 자녀 학원비 — 모든 게 식판 위에서
+오갔습니다. <strong>교훈: 피처의 핵심은 ’작은 디테일로 큰 구조를
+보여주는 것’이다. 식판 하나에 산업단지가 들어 있다.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>이름 없이 공동체를 지탱한 사람들 — KCTV 제주방송 ‘4·3 재건의
+서사’</strong> <em>(KCTV 제주방송 김용민·김용원·김경임 기자, 2026년 4월
+30일 방영 · 제428회 추천작 · 지역 기획보도 방송부문)</em> 78년 전 4·3
+사건은 보통 ’희생자 2만 5천 명’이라는 숫자로 기억됩니다. 그러나 KCTV는
+<em>“어떻게 다시 살았는지”</em> 를 물었습니다. 광풍 속 살아남은 이의
+대부분이 여성이던 시절. 심방(무당)·해녀·어멍(어머니) — <strong>이름 없이
+공동체를 지탱한 인물들을 한 명씩 인터뷰</strong>하며, ’치유 → 희망 →
+연대’의 흐름으로 4·3을 현재까지 이어지는 삶의 역사로 확장했습니다.
+<strong>교훈: 같은 사건을 ’숫자’가 아니라 ’사람의 얼굴’로 다시 그리는
+것이 피처다.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>2년의 동행 — JTBC ‘세월호 생존자 김동수의 12년’</strong>
+<em>(JTBC 이상엽·김동준 기자, 2026년 4월 15~16일 방영 · 제428회 추천작 ·
+기획보도 방송부문)</em> 이상엽 기자는 2014년 진도체육관에서 3개월,
+2017년 목포신항에서 8개월을 살았던 기자입니다. 그 인연이 이어져 2024년
+10주기부터 김동수 씨 가족과 동행했고, <em>“도망치고 자해했던 의인이
+’이겨낼 수 있어’라고 말할 수 있게 된 12년”</em> 의 서사를 길어
+올렸습니다. <strong>교훈: 인물 피처는 ’취재 시간’이 아니라 ’함께 살아낸
+시간’이다.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>200km 잠수 탐사 — MBC 강원영동 ‘꽁치풀 — 바다의
+속삭임’</strong> <em>(MBC 강원영동 이준호·홍한표·배광우 기자, 2026년 4월
+27일 방영 · 제428회 추천작 · 지역 기획보도 방송부문)</em> 2년 전 우연히
+본 해양수산부 옛 포스터 한 장. <em>“한대성 해조류 ’삼나무말’이 생존
+위기를 겪고 있다.”</em> 기자는 직접 잠수복을 입었습니다. 강원도 삼척
+고포마을부터 통일전망대까지 약 200km 의 동해 바다를. 어민들은 그
+해조류를 <strong>‘꽁치풀’</strong>(맨손 꽁치 낚시 미끼)이라 불렀습니다.
+도감의 ’삼나무말’에 묻혀 있던 문화적 이름을 다시 살려낸 피처입니다.
+<strong>교훈: 피처는 ’책상 위 자료 한 장’에서 시작될 수도 있다. 거기서
+1년의 탐사가 시작된다.</strong></p>
+</blockquote>
+<hr />
+<h2 id="의견-기사-주장하고-설득하기">5. 의견 기사 — 주장하고
+설득하기</h2>
+<h3 id="정의-3">5.1 정의</h3>
+<p><strong>사안에 대한 문제점이나 집필자의
+판단·의견·주장·해결책</strong>을 제시하는 기사입니다.</p>
+<h3 id="세-종류">5.2 세 종류</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>종류</th>
+<th>누가 쓰나</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>사설(社說)</strong></td>
+<td>매체 자체 (편집국 입장)</td>
+<td>공식 견해. 익명. 강한 어조 가능.</td>
+</tr>
+<tr class="even">
+<td><strong>칼럼</strong></td>
+<td>특정 필자 (기명)</td>
+<td>개인 견해. 문체 다양. 정기 연재 다수.</td>
+</tr>
+<tr class="odd">
+<td><strong>비평</strong></td>
+<td>전문 기자/평론가</td>
+<td>특정 작품·정책·인물 평가. 근거 중심.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="구성-서론-본론-결론">5.3 구성: 서론 – 본론 – 결론</h3>
+<ul>
+<li><strong>서론</strong> — 사안 소개, 논의 범위 설정</li>
+<li><strong>본론</strong> — 주장 + 근거 (보통 2~4개의 근거)</li>
+<li><strong>결론</strong> — 요약 + 대안 제시</li>
+</ul>
+<h3 id="사례-3">5.4 사례</h3>
+<blockquote>
+<p><strong>단어 자체를 바꾸자는 주장 — 헤럴드경제 ‘수치스러운 피해자는
+없다’</strong> <em>(헤럴드경제 안대용·안세연·양근혁 기자, 2026년 4월
+21~22일 단독 시리즈 · 제428회 추천작 · 기획보도 신문·통신부문)</em>
+취재진은 성폭력 판결문에 반복적으로 등장하는 <em>“피해자가 성적 수치심을
+느꼈다”</em> 라는 표현에 의문을 던집니다.</p>
+<ul>
+<li><strong>서론</strong>: 사전에서 ’수치’는 <em>‘다른 사람들을 볼 낯이
+없거나 스스로 떳떳하지 못함’</em>. 그렇다면 성폭력 피해자가 왜 ’수치’를
+느껴야 하는가?</li>
+<li><strong>본론</strong>: 피해자에게 직접 물었더니 <em>“수치심이라뇨?
+저는 화가 났는데요!”</em> / 판결문·수사 규정에 어떻게 굳어져 있는가 /
+외국·다른 분야에선 어떻게 쓰는가</li>
+<li><strong>결론</strong>: 표현 자체를 바꿔야 한다. 그래야 피해자의
+경험이 정확하게 기록된다.</li>
+</ul>
+<p><strong>교훈: 의견 기사의 강력함은 ’근거의 디테일’에서 나온다. 사전
+정의, 피해자의 실제 발언, 판결문 분석을 줄줄이 늘어놓을 때 주장에 힘이
+실린다.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>구조적 모순에 대한 명백한 주장 — 무등일보 ‘민주주의 심장의
+역설’</strong> <em>(무등일보 정치팀, 2026년 4월 22일~5월 6일 시리즈 ·
+제428회 추천작 · 지역 기획보도 신문·통신부문)</em> <em>“광주·전남지역
+30만여 명의 민주당 권리당원이 320만 명의 통합특별시 미래를 결정하는
+셈.”</em> 이 한 줄에 무등일보의 주장이 다 들어 있습니다. 1987년 13대
+대선 이후 굳어진 ‘공천=당선’ 구조, 그 폐쇄성과 폐해, 개선 방안 — 사설형
+시리즈의 모범.</p>
+</blockquote>
+<h3 id="의견-기사의-함정">5.5 의견 기사의 함정</h3>
+<ul>
+<li><strong>❌ 주장만 있고 근거가 없다</strong> — “이건 잘못됐다”만
+반복하면 칼럼이 아니라 푸념이 됨</li>
+<li><strong>❌ 반론을 무시한다</strong> — 좋은 의견 기사는 <em>“반대편
+입장은 이렇다. 그러나 그 입장은 이런 이유로 부족하다”</em> 를 반드시
+거친다</li>
+<li><strong>❌ 결론이 막연하다</strong> — “사회가 노력해야 한다”가
+아니라 <strong>“○○법 ○조를 이렇게 개정하자”</strong> 처럼
+구체적으로</li>
+</ul>
+<hr />
+<h2 id="기획-기사-다섯을-엮어-큰-그림">6. 기획 기사 — 다섯을 엮어 큰
+그림</h2>
+<h3 id="정의-4">6.1 정의</h3>
+<p><strong>중요 사안을 긴 시간을 들여 깊이 있게 취재·보도하는
+기사.</strong> 짧은 단편 기획부터 몇 달짜리 시리즈까지 폭이
+넓습니다.</p>
+<h3 id="두-가지-유형-1">6.2 두 가지 유형</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>유형</th>
+<th>특징</th>
+<th>분량</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>단편성 기획</strong></td>
+<td>이슈·사람·장소·캠페인·행사·역사·트렌드·계절 스케치</td>
+<td>1~3편</td>
+</tr>
+<tr class="even">
+<td><strong>장기 시리즈</strong></td>
+<td>탐사보도 수준의 깊이. 스트레이트+해설+피처가 혼합</td>
+<td>5~20편+</td>
+</tr>
+</tbody>
+</table>
+<h3 id="구조-도입피처-주제스트레이트-설명-원인-해설-대책의견">6.3 구조 —
+‘도입(피처) → 주제(스트레이트) → 설명 → 원인 해설 → 대책(의견)’</h3>
+<p>기획기사 한 편 안에 <strong>5가지 유형이 모두 들어갑니다.</strong>
+이게 기획기사의 정체입니다.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>단계</th>
+<th>어떤 유형으로 쓰나</th>
+<th>무엇을 다루나</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>① 도입</strong></td>
+<td>피처</td>
+<td>상징적 현장이나 일화로 관심 끌기</td>
+</tr>
+<tr class="even">
+<td><strong>② 주제</strong></td>
+<td>스트레이트</td>
+<td>문제의 전체 요약 + 핵심 수치·근거</td>
+</tr>
+<tr class="odd">
+<td><strong>③ 설명</strong></td>
+<td>스트레이트 + 피처</td>
+<td>세부 실태, 추가 현장/일화, 관련 취재원 인용</td>
+</tr>
+<tr class="even">
+<td><strong>④ 원인 해설</strong></td>
+<td>해설</td>
+<td>문제의 시작부터 현재까지, 제도·규정·역사</td>
+</tr>
+<tr class="odd">
+<td><strong>⑤ 대책</strong></td>
+<td>의견</td>
+<td>정책적 대책 제시, 전문가 인용</td>
+</tr>
+</tbody>
+</table>
+<h3 id="사례-4">6.4 사례</h3>
+<blockquote>
+<p><strong>8회 시리즈, 3개월 기초취재 — 조선일보 ‘마약의 둑 무너진
+한국’</strong> <em>(조선일보 김희래·김나영·박혜연·이민경 기자, 2026년
+3월 26일~4월 7일 8회 · 제428회 추천작 · 기획보도 신문·통신부문)</em>
+사회부 법조팀 네 기자가 약 3개월간 마약 중독 경험자 20여 명과 전문가
+10여 명을 직접 만났고, 부산·김해·창원·용인 등 전국을 돌았습니다.</p>
+<ul>
+<li><strong>① 도입(피처)</strong>: <em>“‘시원한 술 있나’ 묻자 ‘입 돌아갈
+정도’”</em> — 클럽 현장 스케치</li>
+<li><strong>② 주제(스트레이트)</strong>: <em>“압송된 마약왕, 그 뒤엔
+숨은 중독자 65만 명”</em> — 핵심 수치</li>
+<li><strong>③ 설명</strong>: <em>“프로포폴·ADHD 치료제 남용이 마약
+중독의 첫발”</em> — 실태</li>
+<li><strong>④ 원인 해설</strong>: 단속 체계의 빈틈, 의료 처방 관리의
+허점</li>
+<li><strong>⑤ 대책(의견)</strong>: 의료-수사-재활을 잇는 통합 시스템
+제안</li>
+</ul>
+<p><strong>교훈: 좋은 기획은 5가지 유형이 마치 한 편의 영화처럼
+자연스럽게 이어진다.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>‘선입견을 갖지 말자’를 첫 원칙으로 — 경향신문 ’딸깍,
+노동’</strong> <em>(경향신문 김원진·김남희·김송이·최서은 기자, 2026년
+4월 13~30일 시리즈 · 제428회 추천작 · 기획보도 신문·통신부문)</em> ‘AI와
+노동의 미래’ 기획 첫 회의에서 팀은 한 가지 원칙을 명문화했습니다 —
+<em>“선입견을 갖지 말자.”</em> ‘AI가 인간을 대체한다’는 통념을 일부러
+의심하기로. 결과 보도는 <strong>“AI는 하청 노동자부터 흔든다”</strong>
+는 구조적 결론에 도달했습니다 — 콜센터에선 도입과 동시에 월급이 깎이고,
+번역가는 ’딸깍’ 한 번에 자리가 사라지고 있었습니다. <strong>교훈: 기획은
+’내가 잡은 야마’와 싸울 각오부터 시작한다.</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>국내 최초 전수 데이터 — 중부일보 ‘비례대표, 당신은
+누구십니까’</strong> <em>(중부일보 박명호·박지우 기자, 2026년 4월
+12~14일 시리즈 · 제428회 추천작 · 지역 기획보도 신문·통신부문)</em>
+중앙선관위 공식 자료를 바탕으로 2006년 4회 지방선거부터 2022년 8회
+지방선거까지 경기도 31개 시·군 기초의원 비례대표 당선자 <strong>275명
+전수</strong>를 분석한 데이터 저널리즘 기획. <strong>교훈: 인상이 아니라
+’전수 데이터’로 말할 때 정치인도 반박하기 어렵다.</strong></p>
+</blockquote>
+<hr />
+<h2 id="글쓰기-7원칙-모든-유형에-공통">7. 글쓰기 7원칙 — 모든 유형에
+공통</h2>
+<p>다섯 가지 유형 중 무엇을 쓰든, 다음 7가지 원칙은 공통입니다.</p>
+<h3 id="정확성-팩트표현문법-틀리지-않게">7.1 정확성 — 팩트·표현·문법
+틀리지 않게</h3>
+<p>❌ <strong>나쁜 예</strong> (모호하고 검증되지 않음)</p>
+<blockquote>
+<p><em>“전국 각지의 학교에서 학생들의 스마트폰 중독 문제가 심각한 수준에
+이르렀으며, 초중고생 10명 중 7명이 스마트폰 중독 증세를 보이고 있고,
+수업시간 중 스마트폰 사용으로 처벌받는 학생들이 증가하고 있다. 교육
+현장에서는 이에 대한 근본적인 해결책 마련이 시급한 상황이라고 교육
+관계자들이 우려를 표명하고 있다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong> (출처·수치·구체 사례)</p>
+<blockquote>
+<p><em>“한국정보화진흥원이 전국 초중고생 2만 3천 명을 대상으로 실시한
+‘2024년 스마트폰 과의존 실태조사’ 결과, 30.4%가 ’과의존 위험군’으로
+분류됐다고 5일 발표했다. (…) 서울 강남구 A중학교 김모 교감은 ’수업 시간
+중 스마트폰 사용으로 지도받은 학생이 작년 87명에서 올해 122명으로 40%
+증가했다’고 밝혔다. 교육부는 ’스마트폰 사용 가이드라인 마련’을 위한
+전문가 회의를 이달 말 개최할 예정이라고 발표했다.”</em></p>
+</blockquote>
+<blockquote>
+<p><strong>현장에서의 정확성 — 경향신문 ‘AI 99% 판독’</strong>
+<em>(경향신문 한수빈 기자, 2026년 4월 단독 · 제428회 추천작 ·
+사진보도부문)</em> 의원실 보도자료 사진의 손가락이 6개. 기자는 ①
+<strong>AI 이미지 분석기로 99% AI 판독</strong> ② <strong>국무총리실
+확인</strong> (“원본 사진에 AI 사용한 것 같다”) ③ <strong>의원실
+시인</strong> (“AI 사용 사실, 화질 향상 목적”) — 세 출처를 모두 거친
+후에야 단독 보도. 이게 정확성입니다.</p>
+</blockquote>
+<h3 id="명확성-5w1h로-점검">7.2 명확성 — 5W1H로 점검</h3>
+<p>❌ <strong>나쁜 예</strong></p>
+<blockquote>
+<p><em>“유명 연예인의 결혼 소식이 전해지면서 팬들과 연예계 관계자들
+사이에서 큰 화제가 되고 있으며, 관련 온라인 커뮤니티에서는 다양한
+반응들이 쏟아지고 있다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong></p>
+<blockquote>
+<p><em>“배우 김○○(32·Who)이(가) 3일(When) 자신의 인스타그램을(Where)
+통해 일반인 남성 A씨(35)와 오는 10월 결혼한다고(What) 발표(How)했다.
+김씨는 ’오랜 시간 신중하게 생각한 끝에 결정했다(Why)’며 ’따뜻한 시선으로
+지켜봐 달라’고 당부했다. 발표 직후 김씨 인스타그램에는 축하 댓글 1만 2천
+개가 달렸다.”</em></p>
+</blockquote>
+<p><strong>점검 습관</strong>: 첫 두 문장에 5W1H가 다 들어 있는지
+손가락으로 짚어보기.</p>
+<h3 id="독이성易讀性-쉽게-읽히게-구어체로">7.3 독이성(易讀性) — 쉽게
+읽히게, 구어체로</h3>
+<p>❌ <strong>나쁜 예</strong> (관념적이고 어려운 한자어)</p>
+<blockquote>
+<p><em>“최근 1인 가구의 급속한 증가 추세에 따라 관련 산업계에서는 이들을
+겨냥한 다양한 상품과 서비스를 출시하고 있으며, 이는 전통적인 가족 단위
+소비 패턴에 상당한 변화를 가져오고 있는 것으로 분석되고 있다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong> (입말처럼)</p>
+<blockquote>
+<p><em>“혼자 사는 사람들이 늘고 있다. 통계청에 따르면 전체 가구의 33%가
+1인 가구다. 이들을 위한 ‘혼밥’, ‘혼술’ 전문점이 곳곳에 생겨나고 있다.
+편의점에서는 1인용 반찬과 소포장 식품 매출이 3년 새 2배
+늘었다.”</em></p>
+</blockquote>
+<p><strong>팁</strong>: 다 쓴 뒤 소리 내어 읽어 봅니다. 한 문장이 한
+호흡에 못 읽히면 너무 깁니다.</p>
+<h3 id="구체성-자세하고-세밀하게-사람-주어로">7.4 구체성 — 자세하고
+세밀하게, 사람 주어로</h3>
+<p>❌ <strong>나쁜 예</strong> (관념적 일반화)</p>
+<blockquote>
+<p><em>“성수동에 새로 개장한 복합문화공간이 시민들의 큰 관심을 받으면서
+많은 방문객들이 몰리고 있다. 다양한 문화 프로그램과 편의시설로 인해
+지역의 새로운 명소로 자리잡아 가고 있다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong> (장면과 사람)</p>
+<blockquote>
+<p><em>“5일 오후 2시 성수동 ‘문화공간2025’ 입구에는 빨간색·파란색
+유모차를 끈 40대 주부들이 20미터 길게 줄을 서 있다. 입장권을 받기 위해
+30분째 기다리고 있는 박모씨(42)는 아이 손을 잡고 발을 동동 구르며 ’엄마
+언제 들어가?’라고 조르는 5살 딸을 달래고 있다. 1층 160㎡ 갤러리 바닥에는
+알록달록한 점토 조각들이 흩어져 있다. 초록색 점토를 주무르던 김모군(7)이
+’기린 목이 너무 길어졌어요’라며 웃고 있고, 옆에서 지켜보던 엄마는
+아이폰14로 연신 사진을 찍어댄다.”</em></p>
+</blockquote>
+<p><strong>원칙</strong>: ① <strong>시간·장소·인원을 숫자로</strong> ②
+<strong>인물을 이름·나이·직업으로</strong> ③ <strong>사물을
+색·크기·재료로</strong> ④ <strong>‘~하고 있다’(현재진행)와
+직접인용</strong>으로 장면을 살린다.</p>
+<blockquote>
+<p><strong>실전 — 인천일보 ‘식판경제학’ 도입부 (요약 재구성)</strong>
+<em>(인천일보 김원진·정혜리·홍준기 기자, 2026년 2월 19일 보도 · 제428회
+추천작)</em> 산단의 점심시간. 식판을 들고 마주 앉은 노동자들의 대화엔
+임금 등락, 발주처 동향, 자녀 학원비가 모두 등장합니다. <strong>15분짜리
+점심이 거시경제 통계 한 페이지보다 정직했습니다.</strong> 통계가 못 잡는
+’사람’을 식판이 잡았습니다.</p>
+</blockquote>
+<h3 id="간결성-1문장-1팩트-1문단-1아이디어">7.5 간결성 — 1문장 1팩트,
+1문단 1아이디어</h3>
+<p>❌ <strong>나쁜 예</strong> (수식어·접속사 과잉)</p>
+<blockquote>
+<p><em>“최근 K-팝의 전세계적인 인기가 계속 상승하면서 한국 문화에 대한
+관심도 함께 높아지고 있다. 이에 따라 한국어 학습열풍과 함께 한국 음식,
+패션, 뷰티 등 다양한 분야에서 한류 확산 현상이 지속되고 있어 국가 이미지
+제고와 경제적 파급효과 창출에도 긍정적인 영향을 미치고 있다고
+분석된다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong> (단문 · 1문장 1사실)</p>
+<blockquote>
+<p><em>“K-팝이 전세계를 사로잡고 있다. 빌보드 차트에서 BTS와 블랙핑크가
+상위권을 차지했다. 한국어 학습자가 급증하고 있다. 한국국제교류재단 조사
+결과, 해외 한국어 학습자가 1,600만 명을 넘어섰다. 미국 대학 한국어
+수강생은 5년 새 3배 늘었다.”</em></p>
+</blockquote>
+<p><strong>체크 도구</strong>:</p>
+<ul>
+<li>한 문장 안에 동사가 두 개 이상이면 → 자르기</li>
+<li>‘그리고’, ‘또한’, ‘아울러’ 접속사는 대부분 삭제 가능</li>
+<li>‘~한 것으로 보인다’, ‘~할 것으로 분석된다’ → <strong>누가</strong>
+그렇게 분석하는지 명시하고 능동태로</li>
+</ul>
+<h3 id="객관성-주장하지-말고-보여줄-것">7.6 객관성 — 주장하지 말고
+보여줄 것</h3>
+<p>❌ <strong>나쁜 예</strong> (주장 + 막연한 우려)</p>
+<blockquote>
+<p><em>“의료진들과 시민들 사이에서는 현재의 의료 시스템에 대한 우려의
+목소리가 높아지고 있으며, 특히 응급의료 서비스의 질적 저하 문제가 심각한
+수준에 이르렀다는 지적이 계속해서 제기되고 있다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong> (수치 + 현장)</p>
+<blockquote>
+<p><em>“대한응급의학회 조사 결과, 전국 응급실 평균 대기시간이 3시간
+28분으로 나타났다. 서울아산병원 응급실에서는 7일 밤 11시 현재 47명이
+병상을 기다리고 있다. 간호사 김모씨(32)는 ’밤 근무 때 환자 1명당 평균
+7분밖에 돌볼 수 없다’고 말했다.”</em></p>
+</blockquote>
+<p><strong>원칙</strong>: ① <strong>숫자로 보여준다</strong> ②
+<strong>현장으로 보여준다</strong> ③ <strong>사람의 말로
+보여준다.</strong> 기자의 의견이 들어가야 한다면 → 그건 의견 기사로 따로
+쓴다.</p>
+<h3 id="긴장감-갈등에-주목-능동태">7.7 긴장감 — 갈등에 주목, 능동태</h3>
+<p>❌ <strong>나쁜 예</strong> (상황만 나열)</p>
+<blockquote>
+<p><em>“아파트 주민들과 관리사무소 간에 관리비를 둘러싼 갈등이 지속되고
+있으며, 양측 간의 입장 차이로 인해 해결책 마련이 쉽지 않은 상황이
+계속되고 있다.”</em></p>
+</blockquote>
+<p>✅ <strong>좋은 예</strong> (장면 + 대립 + 능동태)</p>
+<blockquote>
+<p><em>“강남구 A아파트 주민 200명이 관리사무소 앞에 몰려들었다. ’관리비
+50% 인상 철회하라’며 피켓을 든 주민들과 ’불가피한 조치’라고 맞서는
+관리소장이 2시간째 실랑이를 벌이고 있다. 일부 주민들은 ’관리소장 해임’을
+요구하며 목소리를 높였다.”</em></p>
+</blockquote>
+<p><strong>팁</strong>: ① <strong>수동태 → 능동태</strong> ②
+<strong>상황 → 사람의 행동</strong> ③ <strong>‘~되고 있다’ →
+‘<sub>한다·</sub>했다’</strong></p>
+<blockquote>
+<p><strong>긴장감의 정석 — 전주 MBC ‘김관영 현금 살포’</strong>
+<em>(전주 MBC 특별취재팀, 2026년 4월 1일 단독 · 제428회 추천작)</em>
+<em>“김관영 지사가 수행 직원에게 배낭을 가져오게 한 뒤, 흰 봉투에서 5만
+원·1만 원권 지폐를 꺼내 청년 당원 20여 명에게 일일이 건넸다. 받는
+사람들은 두 손으로 받으며 경례까지 했다.”</em> — 동사는 모두 능동,
+현장이 영상처럼 펼쳐집니다.</p>
+</blockquote>
+<hr />
+<h2 id="년의-추가-원칙-ai-시대의-기사-쓰기">8. 2026년의 추가 원칙 — AI
+시대의 기사 쓰기</h2>
+<p>생성형 AI가 보편화된 지금, 위 7원칙 외에 <strong>두 가지가 더
+추가</strong>됩니다.</p>
+<h3 id="ai-보정생성-여부를-명시한다">8.1 ’AI 보정·생성 여부’를
+명시한다</h3>
+<blockquote>
+<p><strong>경향신문 한수빈 기자의 사례</strong>(제428회 추천작)를 떠올려
+봅시다. 박덕흠 의원실이 배포한 보도자료 사진의 파일명이 <em>‘ChatGPT
+Image 2026년 4월 8일 오후 02_08_18.png’</em> 였고, 김민석 총리의
+손가락이 6개였습니다. 의원실은 <em>“AI 사용한 건 맞으나 화질 향상
+목적”</em> 이라고 해명했지만, 결과적으로 <strong>사진의 사실성 자체가
+의심</strong>받게 됐습니다.</p>
+</blockquote>
+<p><strong>한국기자협회 ‘언론을 위한 생성형 AI 활용 준칙’(2024 선포,
+10조 36항)</strong> 의 핵심:</p>
+<ul>
+<li><strong>① 인간의 감독</strong> — AI 결과물은 반드시 사람이 최종
+판단</li>
+<li><strong>② 사실 검증</strong> — AI는 ‘hallucination’(환각·거짓생성)이
+잦으므로 모든 사실은 별도 출처 확인</li>
+<li><strong>③ 투명한 공개</strong> — AI를 활용한 기사·사진·영상은 그
+사실을 독자에게 명시</li>
+</ul>
+<h3 id="데이터전수조사를-적극-활용한다">8.2 데이터·전수조사를 적극
+활용한다</h3>
+<p>AI 시대엔 데이터가 더 중요해졌습니다. 최근 1년 추천작들이
+보여주듯:</p>
+<ul>
+<li>SBS ‘프로야구 10개 구단 11년치 감사보고서 102편 전수 분석’
+(제428회)</li>
+<li>중부일보 ‘경기도 비례대표 17년치 275명 전수 분석’ (제428회)</li>
+<li>연합뉴스 ‘정부포상 78년치 833건 분석’ (제428회)</li>
+<li>광주일보 ‘전남 영농형 태양광 31곳 전수 현장조사’ (제428회)</li>
+<li>제주 MBC ‘4개년 공직자 이해충돌 신고 전수조사’ (제428회)</li>
+</ul>
+<p><strong>이게 의미하는 것</strong>: ‘인상’ 보도는 점점 설 자리가
+좁아지고, <strong>‘전수 데이터’ + ‘검증’</strong> 이 표준이 되고
+있습니다.</p>
+<hr />
+<h2 id="종합-체크리스트">9. 종합 체크리스트</h2>
+<p>원고를 출고하기 전 자문할 질문들입니다.</p>
+<p><strong>■ 유형 점검</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />이 기사는 어떤 유형인가? (스트레이트
+/ 해설 / 피처 / 의견 / 기획)</label></li>
+<li><label><input type="checkbox" />유형에 맞는 구조를 따랐는가?
+(역피라미드 / yesterday-today-tomorrow / 장면리드 / 서론-본론-결론 /
+도입-주제-설명-원인-대책)</label></li>
+</ul>
+<p><strong>■ 정확성</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />모든 숫자에 출처가
+있는가?</label></li>
+<li><label><input type="checkbox" />익명 취재원이라면 익명 사용이
+정당한가? (피해자 보호·내부고발 등)</label></li>
+<li><label><input type="checkbox" />이름·직책·소속·날짜에 오타가
+없는가?</label></li>
+<li><label><input type="checkbox" />AI를 사용했다면 그 사실을 독자에게
+명시했는가?</label></li>
+</ul>
+<p><strong>■ 명확성</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />리드 한 문장에 5W1H가 들어
+있는가?</label></li>
+<li><label><input type="checkbox" />독자가 한 번 읽고 핵심을 파악할 수
+있는가?</label></li>
+</ul>
+<p><strong>■ 독이성</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />소리 내어 읽었을 때 부드럽게
+읽히는가?</label></li>
+<li><label><input type="checkbox" />어려운 한자어·전문용어를 풀어
+썼는가?</label></li>
+</ul>
+<p><strong>■ 구체성</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />사람의 이름·나이·직업이
+등장하는가?</label></li>
+<li><label><input type="checkbox" />시간·장소·수치가
+구체적인가?</label></li>
+<li><label><input type="checkbox" />장면이 영상처럼
+그려지는가?</label></li>
+</ul>
+<p><strong>■ 간결성</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />1문장 1팩트, 1문단 1아이디어를
+지켰는가?</label></li>
+<li><label><input type="checkbox" />불필요한 접속사·수식어를
+잘랐는가?</label></li>
+<li><label><input type="checkbox" />한 문장이 50자를 넘는다면 자를 곳이
+있는가?</label></li>
+</ul>
+<p><strong>■ 객관성</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />형용사·부사에 의한 평가가 들어 있지
+않은가?</label></li>
+<li><label><input type="checkbox" />반대 의견을 들었는가?</label></li>
+<li><label><input type="checkbox" />수동태로 책임 주체를 흐리지
+않았는가?</label></li>
+</ul>
+<p><strong>■ 긴장감</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />갈등과 대립이
+드러나는가?</label></li>
+<li><label><input type="checkbox" />능동태를 썼는가?</label></li>
+<li><label><input type="checkbox" />동사가 강한가?</label></li>
+</ul>
+<p><strong>■ 기획·시리즈라면 추가</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" />5가지 유형이 자연스럽게 흐르는가?
+(도입-주제-설명-원인-대책)</label></li>
+<li><label><input type="checkbox" />데이터/전수조사로 ’인상’을
+넘어섰는가?</label></li>
+</ul>
+<hr />
+<h2 id="한-장으로-기억하기">10. 한 장으로 기억하기</h2>
+<blockquote>
+<p><strong>5가지 유형</strong> — 스트레이트(사실) · 해설(원인·전망) ·
+피처(사람·현장) · 의견(주장·근거) · 기획(종합) <strong>시간축의
+사고</strong> — yesterday(어제) · today(오늘) · tomorrow(내일)을 모두
+채워라 <strong>7가지 원칙</strong> — 정확 · 명확 · 독이 · 구체 · 간결 ·
+객관 · 긴장 <strong>2026년의 두 가지 추가 원칙</strong> — ① AI 사용 명시
+② 전수 데이터로 인상을 대체 <strong>변치 않는 한 줄</strong> — 주장하지
+말고 <strong>보여줘라.</strong> 그 보여줌의 재료가 곧 취재다.</p>
+</blockquote>
+<hr />
+<h2 id="참고-자료">참고 자료</h2>
+<h3 id="윤리실천-규범">윤리·실천 규범</h3>
+<ul>
+<li><strong>한국기자협회 윤리강령 및 실천요강</strong> — 한국기자협회,
+1994 제정·2006 개정. <a
+href="https://www.journalist.or.kr/news/section4.html?p_num=4">https://www.journalist.or.kr/news/section4.html?p_num=4</a></li>
+<li><strong>신문윤리실천요강</strong> — 한국신문윤리위원회. <a
+href="https://www.ikpec.or.kr">https://www.ikpec.or.kr</a></li>
+<li><strong>언론을 위한 생성형 인공지능(AI) 준칙</strong> —
+한국기자협회, 2024 선포 · 10조 36항. <a
+href="https://www.journalist.or.kr/news/section4.html?p_num=24">https://www.journalist.or.kr/news/section4.html?p_num=24</a></li>
+</ul>
+<h3 id="연구보고서-한국언론진흥재단">연구·보고서 (한국언론진흥재단)</h3>
+<ul>
+<li><strong>디지털 뉴스 리포트 2025 한국</strong> — 한국언론진흥재단,
+2025. <a
+href="https://www.kpf.or.kr/front/research/selfDetail.do?seq=600108">https://www.kpf.or.kr/front/research/selfDetail.do?seq=600108</a>
+→ 포털 뉴스 영향력 축소, 주간 유튜브 뉴스 이용 50% 등 한국 디지털 뉴스
+지형 분석.</li>
+<li><strong>미디어이슈리포트 1호: 2025 언론산업 성장 추세와 주요 이슈
+전망</strong> — 한국언론진흥재단, 2025.01. <a
+href="https://www.kpf.or.kr/front/board/boardContentsView.do?board_id=246&amp;contents_id=d19903ee606e410d80e5f7a72f195be1">https://www.kpf.or.kr/front/board/boardContentsView.do?board_id=246&amp;contents_id=d19903ee606e410d80e5f7a72f195be1</a></li>
+<li><strong>해외 미디어 동향 2025-1호: AI 플랫폼과 언론사의 제휴
+동향</strong> — 한국언론진흥재단, 2025.04. <a
+href="https://www.kpf.or.kr/front/board/boardContentsView.do?board_id=246&amp;contents_id=7b59fcfba04a4bd4be629e019867a4dc">https://www.kpf.or.kr/front/board/boardContentsView.do?board_id=246&amp;contents_id=7b59fcfba04a4bd4be629e019867a4dc</a></li>
+<li><strong>신문과방송</strong>(월간지) — 한국언론진흥재단, 1964 창간.
+<a
+href="https://www.kpf.or.kr/front/news/newsPaperListPage.do">https://www.kpf.or.kr/front/news/newsPaperListPage.do</a></li>
+</ul>
+<h3 id="국제-비교">국제 비교</h3>
+<ul>
+<li><strong>Reuters Institute Digital News Report 2025 — South
+Korea</strong> — <a
+href="https://reutersinstitute.politics.ox.ac.uk/digital-news-report/2025/south-korea">https://reutersinstitute.politics.ox.ac.uk/digital-news-report/2025/south-korea</a>
+→ 핵심 발견: 네이버 포털 영향력 하락, 주간 유튜브 뉴스 이용 50%, 2023년
+말 이후 JTBC·KBS·TBS 등 대규모 인력 감축.</li>
+</ul>
+<h3
+id="사례-출처-한국기자협회-이달의-기자상-추천작-제428회-2026년-4월">사례
+출처 — 한국기자협회 ‘이달의 기자상’ 추천작 (제428회, 2026년 4월)</h3>
+<p>본 강의의 사례는 다음 추천작을 참고했습니다. 원문은 한국기자협회
+홈페이지 <a
+href="https://www.journalist.or.kr">https://www.journalist.or.kr</a>의
+각 회차 공적서 페이지에서 확인할 수 있습니다.</p>
+<ul>
+<li>부산파이낸셜뉴스 백창훈 — ‘부산 기초의회 지원금 사적 유용’ — <a
+href="https://www.fnnews.com/news/202602191512094592">https://www.fnnews.com/news/202602191512094592</a></li>
+<li>SBS 배정훈 — ‘KBO 리그 10개 구단 재무제표 분석’ — <a
+href="https://news.sbs.co.kr/news/endPage.do?news_id=N1008068072">https://news.sbs.co.kr/news/endPage.do?news_id=N1008068072</a></li>
+<li>경향신문 한수빈 — ‘김민석 총리 손가락 6개 AI 보정’ — <a
+href="https://www.khan.co.kr/article/202604091742001">https://www.khan.co.kr/article/202604091742001</a></li>
+<li>JTV 전주방송 김학준·강경진 — ‘7천억 빚더미 전주시’ — <a
+href="https://www.jtv.co.kr/2021/?bid=news06&amp;m=bbs&amp;uid=224675">https://www.jtv.co.kr/2021/?bid=news06&amp;m=bbs&amp;uid=224675</a></li>
+<li>연합뉴스 차민지·최원정 — ‘정부포상 취소 실태’ — <a
+href="https://www.yna.co.kr/view/AKR20260404027700530">https://www.yna.co.kr/view/AKR20260404027700530</a></li>
+<li>무등일보 정치팀 — ‘민주주의 심장의 역설’ — <a
+href="https://m.mdilbo.com/detail/c3QycN/755758">https://m.mdilbo.com/detail/c3QycN/755758</a></li>
+<li>인천일보 김원진·정혜리·홍준기 — ‘식판경제학’ — <a
+href="https://www.incheonilbo.com/news/articleView.html?idxno=1317406">https://www.incheonilbo.com/news/articleView.html?idxno=1317406</a></li>
+<li>KCTV 제주방송 김용민·김용원·김경임 — ‘4·3 재건의 서사’ — <a
+href="https://v.daum.net/v/20260427175627647">https://v.daum.net/v/20260427175627647</a></li>
+<li>JTBC 이상엽·김동준 — ‘세월호 생존자 김동수의 12년’ — <a
+href="https://news.nate.com/view/20260416n33009">https://news.nate.com/view/20260416n33009</a></li>
+<li>MBC 강원영동 이준호·홍한표·배광우 — ‘꽁치풀 — 바다의 속삭임’ — <a
+href="https://www.mbceg.co.kr/post/133966">https://www.mbceg.co.kr/post/133966</a></li>
+<li>헤럴드경제 안대용·안세연·양근혁 — ‘수치스러운 피해자는 없다’ — <a
+href="https://biz.heraldcorp.com/article/10721849">https://biz.heraldcorp.com/article/10721849</a></li>
+<li>조선일보 김희래·김나영·박혜연·이민경 — ‘마약의 둑 무너진 한국’ — <a
+href="https://www.chosun.com/national/court_law/2026/03/26/EKA2V7IKFRA3FOT3ZQXMKE6HMQ/">https://www.chosun.com/national/court_law/2026/03/26/EKA2V7IKFRA3FOT3ZQXMKE6HMQ/</a></li>
+<li>경향신문 김원진·김남희·김송이·최서은 — ‘딸깍, 노동’ — <a
+href="https://www.khan.co.kr/series/articles/as428">https://www.khan.co.kr/series/articles/as428</a></li>
+<li>중부일보 박명호·박지우 — ‘비례대표, 당신은 누구십니까’ — <a
+href="https://www.joongboo.com/news/articleView.html?idxno=363722600">https://www.joongboo.com/news/articleView.html?idxno=363722600</a></li>
+<li>전주 MBC 특별취재팀 — ‘김관영 현금 살포’ — <a
+href="https://www.jmbc.co.kr/news/view/63565">https://www.jmbc.co.kr/news/view/63565</a></li>
+<li>동아일보 변종국 — ‘항공유 지옥문, 유류할증료 사상 최고치’ — <a
+href="https://www.donga.com/news/Economy/article/all/20260330/133635611/1">https://www.donga.com/news/Economy/article/all/20260330/133635611/1</a></li>
+<li>광주일보 김진아·김혜림·박준원 — ‘전남 영농형 태양광 공수표’ — <a
+href="https://v.daum.net/v/20260402204412047">https://v.daum.net/v/20260402204412047</a></li>
+<li>제주 MBC 홍수현·이인제 — ‘제주시장의 이해충돌 논란’ — <a
+href="https://jejumbc.com/NewsArticle/837944">https://jejumbc.com/NewsArticle/837944</a></li>
+</ul>
+</body>
+</html>
