@@ -168,7 +168,8 @@
 
 - (강의) [Gemini + RAG 분석: 설명](https://jonghhhh.github.io/2026_1/RAG_검색증강생성_051926.html)    
 - (실습) [Gemini + RAG 분석: 실습 코드](https://jonghhhh.github.io/2026_1/py/RAG_공정선거보도.py)   
-- (실습 자료) [Gemini + RAG 분석: 실습 자료](https://jonghhhh.github.io/2026_1/2026_공정선거보도_안내서_중앙선거관리위원회.txt)     
+- (실습 자료) [Gemini + RAG 분석: 실습 자료](https://jonghhhh.github.io/2026_1/2026_공정선거보도_안내서_중앙선거관리위원회.txt)
+- (실습 자료: 벡터DB) [Gemini + RAG 분석: 실습 자료](https://jonghhhh.github.io/2026_1/AI_media-coding/chroma_election_db/)  
 
 </details>
 
