@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실리콘 샘플링 기초</title>
+<style>
+:root{--bg:#f6f8fb;--paper:#fff;--text:#1f2937;--muted:#5b6472;--line:#d8dee9;--accent:#1f4e79;--accent2:#eef5fb;--code:#f3f4f6;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif;line-height:1.72;font-size:16px}.wrap{max-width:980px;margin:34px auto;padding:0 20px}.paper{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(31,41,55,.08);padding:44px 54px}h1{font-size:2.1rem;line-height:1.25;margin:0 0 8px;color:var(--accent);letter-spacing:-.03em}h2{font-size:1.45rem;margin:42px 0 16px;padding-top:20px;border-top:2px solid var(--line);color:#183b59;letter-spacing:-.02em}h3{font-size:1.12rem;margin:28px 0 10px;color:#23364a}p{margin:10px 0}a{color:#0b63b6;text-decoration:none;border-bottom:1px solid rgba(11,99,182,.35)}a:hover{border-bottom-color:#0b63b6}hr{border:0;border-top:1px solid var(--line);margin:34px 0}blockquote{margin:18px 0;padding:16px 20px;background:var(--accent2);border-left:5px solid var(--accent);border-radius:10px;color:#1d3d5a}table{width:100%;border-collapse:collapse;margin:18px 0 24px;overflow:hidden;border-radius:12px;border:1px solid var(--line);font-size:.96rem}thead{background:#edf2f7}th,td{border:1px solid var(--line);padding:10px 12px;vertical-align:top}th{font-weight:700;color:#243447}ul,ol{padding-left:1.35rem}li{margin:5px 0}pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;line-height:1.5;margin:16px 0 22px}code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;background:var(--code);border-radius:5px;padding:.13em .32em;font-size:.92em}pre code{background:transparent;padding:0;border-radius:0}.subtitle{font-size:1.05rem;color:var(--muted);margin-bottom:28px}.note{font-size:.92rem;color:var(--muted);margin-top:34px;border-top:1px solid var(--line);padding-top:14px}@media(max-width:720px){.paper{padding:28px 22px}.wrap{margin:18px auto}h1{font-size:1.7rem}h2{font-size:1.25rem}table{font-size:.9rem;display:block;overflow-x:auto}}</style>
+</head>
+<body>
+<div class="wrap"><article class="paper">
+<h1 id="실리콘-샘플링silicon-sampling-기초">실리콘 샘플링(Silicon
+Sampling) 기초</h1>
+<h2 id="ai-페르소나에게-설문-답하게-하기-nemotron-gemini">AI
+페르소나에게 설문 답하게 하기: Nemotron + Gemini</h2>
+<hr />
+<h2 id="오늘-배울-것">오늘 배울 것</h2>
+<table>
+<thead>
+<tr class="header">
+<th>순서</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>실리콘 샘플링이 무엇인지 개념 이해</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Nemotron-Personas-Korea 데이터셋 탐색</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>페르소나 → 프롬프트로 변환하는 방법</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Gemini API로 설문 응답 수집</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>응답 분포 정리 및 해석</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="실리콘-샘플링이란">1. 실리콘 샘플링이란?</h2>
+<blockquote>
+<p>AI(LLM)에게 특정 사람인 척 설문에 답하게 한 뒤, 그 답변 분포를 진짜
+여론처럼 활용할 수 있는지 검증하는 방법론</p>
+</blockquote>
+<h3 id="쉬운-비유">쉬운 비유</h3>
+<p>62세 영남 거주 보수 성향 남성 1,000명에게 설문을 직접 받으려면?</p>
+<ul>
+<li>사람 모집: 몇 달</li>
+<li>비용: 수백만 원</li>
+<li>실제 응답률: 10% 이하</li>
+</ul>
+<p><strong>실리콘 샘플링은 이렇게 합니다:</strong></p>
+<pre><code>AI에게 알려줍니다 →  &quot;당신은 62세, 경남 창원 거주, 보수 성향 남성입니다.&quot; (페르소나 구현)
+그리고 물어봅니다 →  &quot;빈부 격차가 얼마나 심각하다고 생각하세요?&quot;
+AI가 답합니다   →  &quot;③ 약간 심각하다&quot;</code></pre>
+<p>이것을 서로 다른 페르소나 AI에게 1,000번 반복 → 분포 완성!</p>
+<h3 id="왜-연구자들이-관심-갖는가">왜 연구자들이 관심 갖는가</h3>
+<pre><code>전통 여론조사           실리콘 샘플링
+─────────────          ─────────────
+비용: 수백만 원    vs   비용: 수천 원
+시간: 수주         vs   시간: 수시간
+응답률: 5~15%      vs   응답률: 100%
+그러나 진짜 사람   vs   AI가 생성 → 정확도 검증 필요!</code></pre>
+<h3 id="중요한-전제">중요한 전제</h3>
+<p>실리콘 샘플링은 <strong>“대체재”가 아니라 “보조 도구”</strong>
+입니다.<br />
+실제 여론조사와 얼마나 비슷한지 <strong>항상 검증</strong>해야
+합니다.</p>
+<hr />
+<h2 id="오늘의-재료">2. 오늘의 재료</h2>
+<h3 id="재료-1-nemotron-personas-korea">재료 1:
+Nemotron-Personas-Korea</h3>
+<h3 id="nvidia가-공개한-합성-한국인-페르소나-데이터셋입니다.">NVIDIA가
+공개한 <strong>합성 한국인 페르소나 데이터셋</strong>입니다.</h3>
+<p>(https://huggingface.co/datasets/nvidia/Nemotron-Personas-Korea)</p>
+<p><strong>합성(synthetic)</strong> = 실제 개인 정보 없음, 통계적으로
+진짜 같음</p>
+<pre><code>실제 한국 인구 통계청 데이터
+        ↓
+인구 분포 반영해서 가상 한국인 생성
+        ↓
+약 100만 명의 가상 한국인 프로파일</code></pre>
+<p>각 페르소나에는 두 종류 정보가 있습니다:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>종류</th>
+<th>예시</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>구조화 정보</strong></td>
+<td>성별: 여자 / 나이: 53 / 지역: 경남 창원 / 학력: 고졸</td>
+</tr>
+<tr class="even">
+<td><strong>서사 정보</strong></td>
+<td>“창원 공단에서 잔뼈가 굵은 꼼꼼한 생산관리자로, 가족을 향한 헌신과
+실용적인 삶의 태도를 지닌 50대 여성”</td>
+</tr>
+</tbody>
+</table>
+<p>서사 정보 덕분에 AI가 단순한 통계 태그가 아니라 <strong>입체적인
+인물</strong>로 응답하게 됩니다.</p>
+<h3 id="재료-2-google-gemini-api">재료 2: Google Gemini API</h3>
+<p>NVIDIA의 페르소나를 읽고 설문에 답해줄 AI 엔진입니다.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 이런 식으로 동작합니다</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">&quot;당신은 53세 경남 창원 여성입니다. 빈부 격차가 심각하다고 생각하십니까?&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>response <span class="op">=</span> gemini.generate(prompt)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># → &quot;③ 약간 심각하다고 생각합니다. 주변에...&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="오늘-실습의-파이프라인-5단계">3. 오늘 실습의 파이프라인
+(5단계)</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│  [1단계]           [2단계]           [3단계]                 │
+│  Nemotron에서  →  1,000명  →  각 페르소나를                  │
+│  데이터 로드       샘플링       프롬프트로 변환                │
+│                                                              │
+│                   [4단계]           [5단계]                  │
+│               →  Gemini API  →  응답 파싱 →                  │
+│                  1,000번 호출    분포 정리                   │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘</code></pre>
+<p>각 단계에서 무슨 일이 벌어지는지 하나씩 살펴봅시다.</p>
+<hr />
+<h2 id="코드-단계별-설명">4. 코드 단계별 설명</h2>
+<h3 id="step-0-필요한-라이브러리-설치">Step 0: 필요한 라이브러리
+설치</h3>
+<p>터미널(VSCode 내 Terminal)에서 실행:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install datasets google-generativeai pandas tqdm</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th>라이브러리</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>datasets</code></td>
+<td>HuggingFace에서 Nemotron 다운로드</td>
+</tr>
+<tr class="even">
+<td><code>google-generativeai</code></td>
+<td>Gemini API 호출</td>
+</tr>
+<tr class="odd">
+<td><code>pandas</code></td>
+<td>데이터 표 형태로 관리</td>
+</tr>
+<tr class="even">
+<td><code>tqdm</code></td>
+<td>진행 상황 표시줄 (1000번 루프 시각화)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-1-설정값-코드-맨-위에-모아두기">Step 1: 설정값 (코드 맨
+위에 모아두기)</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>API_KEY   <span class="op">=</span> <span class="st">&quot;여기에_Gemini_API_키_입력&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>N_SAMPLES <span class="op">=</span> <span class="dv">1000</span>   <span class="co"># 몇 명에게 물어볼지</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>RANDOM_SEED <span class="op">=</span> <span class="dv">42</span>   <span class="co"># 재현 가능성 위해 고정 (같은 숫자 = 같은 샘플)</span></span></code></pre></div>
+<blockquote>
+<p><strong>Gemini API 키 발급</strong>: https://aistudio.google.com →
+“Get API Key” 무료 티어로 시도. 1,000명 가능한지 고려!</p>
+</blockquote>
+<h3 id="step-2-nemotron-데이터셋-로드">Step 2: Nemotron 데이터셋
+로드</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> load_dataset</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> load_dataset(<span class="st">&quot;nvidia/Nemotron-Personas-Korea&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> dataset[<span class="st">&quot;train&quot;</span>].to_pandas()</span></code></pre></div>
+<p>처음 실행 시 자동으로 데이터를 다운로드합니다 (약 수백 MB).</p>
+<blockquote>
+<p><strong>첫 번째로 할 일</strong>: 컬럼 이름 확인</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.columns.tolist())</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head(<span class="dv">2</span>))</span></code></pre></div>
+<p>출력된 컬럼 이름을 보고 아래 코드의 필드명을 맞춰주세요.</p>
+</blockquote>
+<h3 id="step-3-1000명-샘플링">Step 3: 1,000명 샘플링</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sample_df <span class="op">=</span> df.sample(n<span class="op">=</span><span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code></pre></div>
+<blockquote>
+<p><code>random_state=42</code>를 쓰면 누가 실행해도 똑같은 1,000명이
+뽑힙니다. 이것이 <strong>재현 가능성(reproducibility)</strong> 의
+핵심입니다.</p>
+</blockquote>
+<h3 id="step-4-페르소나-프롬프트-변환">Step 4: 페르소나 → 프롬프트
+변환</h3>
+<p>각 사람의 정보를 AI가 읽을 수 있는 텍스트로 만듭니다.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_prompt(persona):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f&quot;&quot;&quot;당신은 다음과 같은 한국인입니다:</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ss">    </span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ss">성별: </span><span class="sc">{</span>persona[<span class="st">&#39;gender&#39;</span>]<span class="sc">}</span><span class="ss"> / 나이: </span><span class="sc">{</span>persona[<span class="st">&#39;age&#39;</span>]<span class="sc">}</span><span class="ss">세</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ss">거주지: </span><span class="sc">{</span>persona[<span class="st">&#39;region&#39;</span>]<span class="sc">}</span><span class="ss"> / 직업: </span><span class="sc">{</span>persona[<span class="st">&#39;occupation&#39;</span>]<span class="sc">}</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>persona[<span class="st">&#39;bio&#39;</span>]<span class="sc">}</span><span class="ss">  ← 여기가 서사(이야기) 정보</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ss">위 인물의 입장에서 솔직하게 답하세요.</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span></span></code></pre></div>
+<p><strong>구조화 정보 + 서사 정보</strong>가 합쳐져야 AI가 더
+사실적으로 답합니다.</p>
+<p>비교해 보세요:</p>
+<pre><code>서사 없이:  &quot;53세 여성, 고졸, 생산직&quot;
+서사 포함:  &quot;53세 여성, 고졸, 생산직. 창원 공단에서 잔뼈가 굵은 
+              꼼꼼한 관리자로, 가족을 향한 헌신과 실용적인 삶의 태도를...&quot;</code></pre>
+<p>서사가 있으면 AI가 훨씬 구체적이고 일관된 캐릭터로 응답합니다.</p>
+<h3 id="step-5-gemini-api-호출">Step 5: Gemini API 호출</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> tqdm(sample_df.iterrows(), total<span class="op">=</span><span class="dv">1000</span>):</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> model.generate_content(prompt)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="fl">0.1</span>)  <span class="co"># ← API 과부하 방지!</span></span></code></pre></div>
+<blockquote>
+<p><strong><code>time.sleep(0.1)</code> 중요!</strong><br />
+너무 빠르게 호출하면 API 서버가 요청을 거부합니다.<br />
+0.1초 대기 → 1,000번 호출 = 약 100초 소요</p>
+</blockquote>
+<h3 id="step-6-응답-파싱-텍스트에서-보기-추출">Step 6: 응답 파싱
+(텍스트에서 보기 추출)</h3>
+<p>AI는 자유 문장으로 답하므로, 선택지를 뽑아내야 합니다.</p>
+<pre><code>AI 응답: &quot;③ 약간 심각하다고 생각합니다. 주변에서도...&quot;
+         ↓
+파싱 →  &quot;약간 심각하다&quot;</code></pre>
+<p>3단계 안전망:</p>
+<ol type="1">
+<li><strong>텍스트 직접 매칭</strong>: “약간 심각하다”가 응답에
+있나?</li>
+<li><strong>번호 기호 매칭</strong>: ①②③④ 있나?</li>
+<li><strong>숫자 매칭</strong>: 1,2,3,4 있나?</li>
+<li>모두 실패 → “모름/무응답”</li>
+</ol>
+<h3 id="step-7-결과-저장">Step 7: 결과 저장</h3>
+<pre><code>결과 파일:
+- silicon_sampling_results.csv  ← 1,000명 응답 전체</code></pre>
+<hr />
+<h2 id="결과-해석-방법">5. 결과 해석 방법</h2>
+<h3 id="분포-읽기">분포 읽기</h3>
+<pre><code>빈부 격차 심각성 인식 분포 (예시)
+
+전혀 심각하지 않다  ██              3%
+별로 심각하지 않다  ████████       10%
+약간 심각하다       ████████████████████  47%
+매우 심각하다       ████████████████    40%</code></pre>
+<h3 id="주의할-점-3가지">주의할 점 3가지</h3>
+<ol type="1">
+<li><strong>균질화(homogenization)</strong><br />
+AI는 실제보다 분포를 더 좁게(한쪽으로 치우치게) 만드는 경향이
+있습니다.<br />
+→ 다양성이 실제보다 낮을 수 있음</li>
+<li><strong>사회적 바람직성 편향</strong><br />
+AI는 “사회적으로 좋아보이는 답”을 선호합니다.<br />
+→ 민감한 질문(이민, 성소수자 등)에서 특히 주의</li>
+<li><strong>진짜 여론조사와 비교 필수</strong><br />
+실리콘 샘플링 결과만 보지 말고, 실제 여론조사 결과와 함께 놓고 비교해야
+의미가 있습니다.</li>
+</ol>
+<hr />
+<h2 id="오늘-실습-체크리스트">6. 오늘 실습 체크리스트</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><code>pip install</code>
+완료</label></li>
+<li><label><input type="checkbox" />Gemini API 키 발급 및
+입력</label></li>
+<li><label><input type="checkbox" /><code>silicon_sampling.py</code>
+실행</label></li>
+<li><label><input type="checkbox" />컬럼 이름 확인 후 수정</label></li>
+<li><label><input type="checkbox" />1,000명 응답 수집 완료</label></li>
+<li><label><input type="checkbox" />응답 분포 표 확인</label></li>
+<li><label><input type="checkbox" />CSV 파일 열어서 응답 원문
+읽어보기</label></li>
+</ul>
+<hr />
+<h2 id="다음-단계-확장-가능성">7. 다음 단계: 확장 가능성</h2>
+<p>오늘 만든 코드는 <strong>실리콘 샘플링의 기초
+플랫폼</strong>입니다.<br />
+이 위에 다음 기능을 쌓을 수 있습니다:</p>
+<table>
+<thead>
+<tr class="header">
+<th>확장 방향</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>설문 항목 추가</td>
+<td><code>SURVEY_QUESTIONS</code> 리스트에 문항만 추가하면 확장</td>
+</tr>
+<tr class="even">
+<td>️ 실제 여론조사 연동</td>
+<td>KSIS, NBS 데이터 불러와서 분포 비교</td>
+</tr>
+<tr class="odd">
+<td>충실도 측정</td>
+<td>Jensen-Shannon 발산으로 AI vs 실측 거리 계산</td>
+</tr>
+<tr class="even">
+<td>️ 인구집단별 분석</td>
+<td>연령별, 지역별, 이념별 응답 차이 비교</td>
+</tr>
+<tr class="odd">
+<td>속도 향상</td>
+<td>비동기(asyncio) 처리로 100배 빠르게</td>
+</tr>
+</tbody>
+</table>
+<hr />
+
+<p class="note">이 문서는 강의용으로 정리된 HTML 파일입니다.</p>
+</article></div>
+</body>
+</html>
