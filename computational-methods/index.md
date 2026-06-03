@@ -263,20 +263,14 @@
 
 ---
 
-### 14주차 (6/4): 에이전트 & 워크플로우
+### 14주차 (6/4): 챗봇 설문조사 - 실리콘 샘플링 
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- 에이전트란 무엇인가: Tool Use, Planning, Memory
-- 에이전트 아키텍처: ReAct, Function Calling
-- LangGraph를 활용한 에이전트 워크플로우 설계: 상태 관리, 노드/엣지, 조건부 분기
-- 에이전트 프레임워크: LangChain Agents, Google ADK, CrewAI
-
-**실습**
-- LangGraph로 팩트체크 에이전트 구현
-- 뉴스 분석 에이전트: 기사 수집 → 프레임 분석 → 요약 → 보고서
+- (강의) [실리콘 샘플링 설명](https://jonghhhh.github.io/2026_1/computational-methods/silicon_sampling_nemotron_060226.html)       
+- (실습) [실리콘 샘플링_실습](https://jonghhhh.github.io/2026_1/computational-methods/silicon_sampling.py)   
+- (자료) [nemotron 일부](https://jonghhhh.github.io/2026_1/computational-methods/nemotron_first100.xlsx)   
 
 **📄 논문 발표**
 - 이문혁, 이두황, 이종혁 (세미나 발표문, 별도 배포). AI 에이전트를 활용한 뉴스 윤리 심의문 자동 생성 시스템의 개발 및 적용: 네이버 '많이 본 뉴스' 분석을 중심으로
@@ -286,25 +280,12 @@
 
 ---
 
-### 15주차 (6/11): 에이전트 시뮬레이션
+### 15주차 (6/11): 에이전트 워크플로 & 시뮬레이션
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-**강의**
-- 에이전트 간 토론 시스템
-  - 숙의 민주주의 이론 기반 멀티 에이전트 토론
-  - 에이전트에 페르소나 부여 (인구통계, 정치 성향, 미디어 이용 패턴)
-  - 토론 프로토콜 설계 (라운드제, 자유토론, 모더레이터)
-- Generative Agent-Based Modeling (ABM)
-  - 생성적 에이전트: 기억, 반성, 계획
-  - 태도 극화(polarization) 시뮬레이션
-  - 미디어 노출 → 에이전트 간 상호작용 → 의견 변화 추적
-  - 에코 챔버, 필터 버블 시뮬레이션
-
-**실습**
-- 멀티 에이전트 토론 시스템 구현: 3~5개 에이전트가 특정 이슈에 대해 토론
-- 소규모 Generative ABM: 10~20개 에이전트, 5라운드 상호작용, 태도 변화 시각화
+- (강의) [에이전트 워크플로 설명](https://jonghhhh.github.io/2026_1/computational-methods/AI에이전트+워크플로_0602266.html)      
 
 **📄 논문 발표**
 - Park, J. S., Zou, C. Q., Shaw, A., Hill, B. M., Cai, C., Morris, M. R., ... & Bernstein, M. S. (2024). Generative agent simulations of 1,000 people. arXiv preprint arXiv:2411.10109.
