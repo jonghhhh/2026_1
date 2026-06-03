@@ -286,7 +286,7 @@
 <summary>📖 강의 내용 보기</summary>
 
 - (강의) [에이전트 워크플로 설명](https://jonghhhh.github.io/2026_1/computational-methods/AI에이전트+워크플로_060226.html)
-- (강의) [에이전트 워크플로 설명](https://jonghhhh.github.io/2026_1/computational-methods/Generative_agent_simulation_토론_시뮬_060326.html)          
+- (강의) [생성형 에이전트 시뮬레이션 설명](https://jonghhhh.github.io/2026_1/computational-methods/Generative_agent_simulation_토론_시뮬_060326.html)          
 
 **📄 논문 발표**
 - Park, J. S., Zou, C. Q., Shaw, A., Hill, B. M., Cai, C., Morris, M. R., ... & Bernstein, M. S. (2024). Generative agent simulations of 1,000 people. arXiv preprint arXiv:2411.10109.
