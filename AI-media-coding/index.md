@@ -195,14 +195,10 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) 멀티에이전트 시스템: 역할 분담, 협업 워크플로우
-- (강의) 특수 목적 AI 서비스 기획
-  - 예시: 뉴스 윤리 검증 AI, 선거 공약 비교 AI, 미디어 리터러시 교육 AI, 콘텐츠 기획 AI
-- (강의) 공모전 프로젝트 전략: 문제 정의 → 아키텍처 → 프로토타입 → 발표
-- (실습) LangGraph 멀티에이전트 실습
-  - 기획자-조사자-작성자-검수자 역할 분담 에이전트
-- (토론) 프로젝트 아이디어 피칭 및 피드백
-
+- (강의) [에이전트_워크플로우:_설명](https://jonghhhh.github.io/2026_1/computational-methods/에이전트_워크플로우_설명_060626.html)    
+- (강의) [에이전트_워크플로우:_langgraph](https://jonghhhh.github.io/2026_1/computational-methods/에이전트_워크플로_langgraph_060626.html)   
+- (실습) [langgraph: 실습코드](https://jonghhhh.github.io/2026_1/computational-methods/langgraph_실습코드.zip)         
+  
 </details>
 
 ---
