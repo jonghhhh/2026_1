@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>보도사진 촬영·편집 원칙 종합 정리</title>
+<style>
+:root {
+  --bg:#f7f7f4;
+  --paper:#ffffff;
+  --ink:#22252a;
+  --muted:#6b7280;
+  --line:#d8dee8;
+  --accent:#1f3a6d;
+  --soft:#eef3fb;
+  --soft2:#f8fafc;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#fbfbf8,var(--bg));
+  line-height:1.78;
+}
+.layout {
+  display:grid;
+  grid-template-columns:300px minmax(0,1fr);
+  min-height:100vh;
+}
+aside {
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
+  padding:28px 22px;
+  background:rgba(255,255,255,.94);
+  border-right:1px solid var(--line);
+}
+.label {
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.14em;
+  color:var(--accent);
+  margin-bottom:10px;
+}
+aside h2 {
+  font-size:20px;
+  line-height:1.35;
+  margin:0 0 22px;
+  letter-spacing:-.03em;
+}
+nav a {
+  display:block;
+  color:var(--ink);
+  text-decoration:none;
+  padding:5px 8px 5px 12px;
+  margin:1px 0;
+  border-left:3px solid transparent;
+  border-radius:0 8px 8px 0;
+  font-size:14px;
+}
+nav a:hover {
+  background:var(--soft);
+  border-left-color:var(--accent);
+}
+.toc-h2 { padding-left:20px; color:var(--muted); font-size:13px; }
+.toc-h3 { padding-left:34px; color:var(--muted); font-size:12.5px; }
+main {
+  width:min(1060px,100%);
+  padding:50px 54px 90px;
+}
+article {
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:0 20px 60px rgba(15,23,42,.08);
+  padding:50px;
+}
+h1 {
+  margin:0 0 24px;
+  font-size:clamp(32px,4vw,48px);
+  line-height:1.18;
+  letter-spacing:-.05em;
+  color:#111827;
+  border-bottom:4px solid var(--accent);
+  padding-bottom:18px;
+}
+h2 {
+  margin-top:58px;
+  padding-top:20px;
+  border-top:3px double var(--line);
+  font-size:28px;
+  letter-spacing:-.04em;
+  color:var(--accent);
+}
+h3 {
+  margin-top:34px;
+  font-size:21px;
+  color:#1e3a8a;
+  letter-spacing:-.03em;
+}
+p { margin:14px 0; }
+strong { font-weight:800; color:#111827; }
+em { color:#374151; }
+blockquote {
+  margin:24px 0;
+  padding:18px 22px;
+  border-left:6px solid var(--accent);
+  background:var(--soft);
+  border-radius:0 14px 14px 0;
+  font-weight:600;
+}
+ul,ol { padding-left:1.35rem; margin:14px 0 24px; }
+li { margin:7px 0; }
+.check-item { list-style:none; margin-left:-1.2rem; }
+.checkbox {
+  display:inline-block;
+  width:15px;
+  height:15px;
+  border:2px solid #9aa4b2;
+  border-radius:3px;
+  margin-right:8px;
+  vertical-align:-2px;
+  background:#fff;
+}
+.table-wrap {
+  overflow-x:auto;
+  margin:24px 0 32px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+}
+table {
+  width:100%;
+  min-width:650px;
+  border-collapse:collapse;
+}
+th,td {
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+  text-align:left;
+}
+th {
+  background:var(--soft2);
+  font-weight:800;
+  color:#111827;
+}
+tr:last-child td { border-bottom:0; }
+pre {
+  overflow-x:auto;
+  background:#111827;
+  color:#f9fafb;
+  border-radius:14px;
+  padding:18px 20px;
+  line-height:1.55;
+  font-size:14px;
+}
+code {
+  background:#eef2f7;
+  padding:2px 5px;
+  border-radius:6px;
+  font-family:Consolas,Menlo,monospace;
+}
+pre code { background:transparent; color:inherit; padding:0; }
+a { color:var(--accent); text-underline-offset:3px; }
+@media(max-width:920px) {
+  .layout { display:block; }
+  aside {
+    position:relative;
+    height:auto;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+  }
+  main { padding:24px 14px 60px; }
+  article { padding:28px 20px; border-radius:16px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="label">PHOTOJOURNALISM</div>
+    <h2>보도사진 촬영·편집 원칙</h2>
+    <nav><a class="toc-h1" href="#보도사진-촬영편집-원칙-종합-정리">보도사진 촬영·편집 원칙 종합 정리</a>
+<a class="toc-h2" href="#목차">목차</a>
+<a class="toc-h2" href="#1-보도사진의-제1원칙-진실성">1. 보도사진의 제1원칙: 진실성</a>
+<a class="toc-h3" href="#nppa-윤리강령의-핵심-code-of-ethics-for-visual-journalists">NPPA 윤리강령의 핵심 (Code of Ethics for Visual Journalists)</a>
+<a class="toc-h2" href="#2-촬영-단계-원칙">2. 촬영 단계 원칙</a>
+<a class="toc-h3" href="#2-1-절대-금지-장면-조작">2-1. 절대 금지 (장면 조작)</a>
+<a class="toc-h3" href="#2-2-취재-태도">2-2. 취재 태도</a>
+<a class="toc-h2" href="#3-인물-구도연출-세부-규칙">3. 인물 구도·연출 세부 규칙</a>
+<a class="toc-h3" href="#3-1-삼등분의-법칙-rule-of-thirds">3-1. 삼등분의 법칙 (Rule of Thirds)</a>
+<a class="toc-h3" href="#3-2-신체-절단-금지-규칙-cropping-rules">️ 3-2. 신체 절단 금지 규칙 (Cropping Rules)</a>
+<a class="toc-h3" href="#3-3-인물과-배경의-조화-subject-background">️ 3-3. 인물과 배경의 조화 (Subject &amp; Background)</a>
+<a class="toc-h3" href="#3-4-인물-수에-따른-배치-규칙">3-4. 인물 수에 따른 배치 규칙</a>
+<a class="toc-h3" href="#3-5-그-외-구도-보조-기법">3-5. 그 외 구도 보조 기법</a>
+<a class="toc-h2" href="#4-편집후보정-원칙">4. 편집·후보정 원칙</a>
+<a class="toc-h3" href="#4-1-대원칙">4-1. 대원칙</a>
+<a class="toc-h3" href="#4-2-허용되는-후보정-정상-범위">4-2.  허용되는 후보정 (정상 범위)</a>
+<a class="toc-h3" href="#4-3-금지되는-조작">4-3.  금지되는 조작</a>
+<a class="toc-h3" href="#4-4-hdr과도한-톤매핑-주의">4-4. HDR·과도한 톤매핑 주의</a>
+<a class="toc-h3" href="#4-5-사진-일러스트레이션-표기-의무">4-5. 사진 일러스트레이션 표기 의무</a>
+<a class="toc-h3" href="#4-6-원본-보존">4-6. 원본 보존</a>
+<a class="toc-h2" href="#5-캡션설명문-작성-원칙">5. 캡션(설명문) 작성 원칙</a>
+<a class="toc-h3" href="#5-1-기본-구조-ap-스타일">5-1. 기본 구조 (AP 스타일)</a>
+<a class="toc-h3" href="#5-2-5w1h-충족">5-2. 5W1H 충족</a>
+<a class="toc-h3" href="#5-3-캡션-do">5-3.  캡션 Do</a>
+<a class="toc-h3" href="#5-4-캡션-dont">5-4.  캡션 Don't</a>
+<a class="toc-h2" href="#6-상황별-촬영-가이드">6. 상황별 촬영 가이드</a>
+<a class="toc-h3" href="#6-1-행사-취재-기자회견리본-커팅시상식">6-1. 행사 취재 (기자회견·리본 커팅·시상식)</a>
+<a class="toc-h3" href="#6-2-현장-고발-시위재난사고">6-2. 현장 고발 (시위·재난·사고)</a>
+<a class="toc-h3" href="#6-3-인물-인터뷰프로필">6-3. 인물 인터뷰·프로필</a>
+<a class="toc-h2" href="#7-핵심-체크리스트">7. 핵심 체크리스트</a>
+<a class="toc-h3" href="#촬영-전중">촬영 전·중</a>
+<a class="toc-h3" href="#편집후보정">편집·후보정</a>
+<a class="toc-h3" href="#캡션">캡션</a>
+<a class="toc-h2" href="#참고-출처">참고 출처</a></nav>
+  </aside>
+  <main>
+    <article>
+      <h1 id="보도사진-촬영편집-원칙-종합-정리">보도사진 촬영·편집 원칙 종합 정리</h1>
+<blockquote>NPPA(미국보도사진가협회) 윤리강령·AP 스타일 등 국제 표준 + 인물 구도 세부 규칙<br>작성일: 2026-06-02</blockquote>
+<h2 id="목차">목차</h2>
+<ol><li><a href="#1-보도사진의-제1원칙-진실성">보도사진의 제1원칙: 진실성</a></li>
+<li><a href="#2-촬영-단계-원칙">촬영 단계 원칙</a></li>
+<li><a href="#3-인물-구도연출-세부-규칙">인물 구도·연출 세부 규칙</a></li>
+<li><a href="#4-편집후보정-원칙">편집·후보정 원칙</a></li>
+<li><a href="#5-캡션설명문-작성-원칙">캡션(설명문) 작성 원칙</a></li>
+<li><a href="#6-상황별-촬영-가이드">상황별 촬영 가이드</a></li>
+<li><a href="#7-핵심-체크리스트">핵심 체크리스트</a></li></ol>
+<h2 id="1-보도사진의-제1원칙-진실성">1. 보도사진의 제1원칙: 진실성</h2>
+<p>보도사진(photojournalism)은 예술사진과 달리 <strong>사실의 정확한 기록</strong>이 최우선이다. 사진기자는 사진 한 장이 곧 역사적 기록이자 공적 신뢰의 근거임을 인식해야 한다.</p>
+<h3 id="nppa-윤리강령의-핵심-code-of-ethics-for-visual-journalists">NPPA 윤리강령의 핵심 (Code of Ethics for Visual Journalists)</h3>
+<ul><li><strong>정확성·포괄성</strong>: 피사체를 정확하고 포괄적으로 재현한다 (Be accurate and comprehensive)</li>
+<li><strong>연출 거부</strong>: 연출된 촬영 기회에 저항한다 (Resist staged photo opportunities)</li>
+<li><strong>맥락 제공</strong>: 항상 사진과 함께 맥락을 제공한다</li>
+<li><strong>존엄성 존중</strong>: 피사체를 존엄과 존중으로 대하며, 취약한 피사체·범죄·비극의 피해자에게 특별한 배려를 한다</li>
+<li><strong>무개입</strong>: 촬영 중 사건을 조작·변경·영향을 미치지 않는다</li></ul>
+<blockquote><strong>결정적 순간의 봉인 원칙</strong><br>사진·영상의 내용 — 무엇이 보이고 보이지 않는지, 무엇이 들리고 들리지 않는지 —<br>은 <strong>기록되는 그 순간에 잠긴다(locked at the moment it is recorded)</strong>.</blockquote>
+<h2 id="2-촬영-단계-원칙">2. 촬영 단계 원칙</h2>
+<h3 id="2-1-절대-금지-장면-조작">2-1. 절대 금지 (장면 조작)</h3>
+<p>촬영자는 다음 방식으로 의도적으로 장면을 변경해서는 안 된다:</p>
+<ul><li><strong>물체 추가 금지</strong> (You must not add objects)</li>
+<li><strong>물체 이동·제거 금지</strong> (You must not move/take away objects)</li>
+<li><strong>연출(staging) 금지</strong>: 이미 발생하지 않은 물체·인물·상황을 의도적으로 배치하지 않는다</li>
+<li><strong>설정(set-up) 금지</strong>: 존재하지 않는 상황을 의도적으로 만들지 않는다</li>
+<li>예: 함께 있지 않을 인물들을 한자리에 모으거나, 특정 옷을 입도록 지시하는 행위</li></ul>
+<h3 id="2-2-취재-태도">2-2. 취재 태도</h3>
+<ul><li>가능한 한 <strong>눈에 띄지 않고 겸손하게(unobtrusive and humble)</strong> 피사체를 대한다</li>
+<li>다양한 관점을 추구하고, 주목받지 못한 시각도 보여주려 노력한다</li>
+<li>자신의 편견을 인식하고 작업에 드러나지 않도록 한다</li>
+<li>취재원·피사체에게 금전·물질적 보상을 하지 않는다</li></ul>
+<h2 id="3-인물-구도연출-세부-규칙">3. 인물 구도·연출 세부 규칙</h2>
+<blockquote>이 절은 보도사진 촬영 시 인물을 다룰 때 적용되는 구도와 연출의 실무 규칙이다.</blockquote>
+<h3 id="3-1-삼등분의-법칙-rule-of-thirds">3-1. 삼등분의 법칙 (Rule of Thirds)</h3>
+<ul><li><strong>시선 집중 효과</strong>: 화면을 가로·세로 3등분 한 선의 교차점에 인물의 눈이나 중요 피사체를 배치</li>
+<li><strong>여백(Room) 확보</strong>: 인물이 바라보는 방향(시선)이나 움직이는 방향 앞쪽에 더 많은 여백을 남겨 답답함을 없앤다</li>
+<li><strong>안정적인 앵글</strong>: 인물의 눈 높이를 상단 3분의 1 선에 맞추면 독자가 가장 편안함을 느낀다</li></ul>
+<h3 id="3-2-신체-절단-금지-규칙-cropping-rules">️ 3-2. 신체 절단 금지 규칙 (Cropping Rules)</h3>
+<ul><li><strong>관절 부위 크롭 금지</strong>: 목, 손목, 팔꿈치, 허리, 무릎, 발목 등 관절 부위가 프레임 테두리에 걸려 잘리지 않도록 한다</li>
+<li><strong>절단 시 착시 예방</strong>: 관절이 잘리면 신체 일부가 절단된 듯한 부자연스러운 느낌을 주므로, 반드시 <strong>관절과 관절 사이</strong>(허벅지 중간, 팔 중간 등)에서 프레임을 끊는다</li>
+<li><strong>목 자르지 않기</strong>: 인물의 목 부분만 프레임 하단에 걸치게 촬영하면 불쾌감을 주므로, 가슴 선(바스트 샷)까지 여유 있게 담는다</li></ul>
+<h3 id="3-3-인물과-배경의-조화-subject-background">️ 3-3. 인물과 배경의 조화 (Subject &amp; Background)</h3>
+<ul><li><strong>맥락을 주는 배경 포함</strong>: 인물만 가득 채우기보다, 그 인물이 어떤 상황에 있는지 보여주는 주변 환경(사건 현장, 집무실, 간판 등)을 함께 담아야 보도사진으로서의 가치가 생긴다 → <strong>환경 인물사진(Environmental Portraiture)</strong></li>
+<li><strong>머리 위 장애물 제거</strong>: 인물 머리 바로 뒤에 전신주, 가로수, 간판 등이 겹쳐 머리에서 나무·깃대가 자라나는 듯한 착시를 피한다</li>
+<li><strong>배경 흐림(아웃포커싱) 조절</strong>: 배경이 너무 복잡할 때는 조리개를 열어 배경을 부드럽게 뭉개되, 현장 정보(글자, 형태)가 완전히 사라지지 않는 선을 유지한다</li></ul>
+<h3 id="3-4-인물-수에-따른-배치-규칙">3-4. 인물 수에 따른 배치 규칙</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>구분</th><th>인원</th><th>핵심</th></tr></thead>
+<tbody>
+<tr><td><strong>단독 샷</strong></td><td>1인</td><td>표정과 정면/측면 시선을 명확히, 악수·발언 등 '행동'의 순간 포착</td></tr>
+<tr><td><strong>투 샷</strong></td><td>2인</td><td>시선 교환·대화·상호작용을 담되, 두 사람 거리감이 멀어 화면이 비지 않게 조절</td></tr>
+<tr><td><strong>그룹 샷</strong></td><td>3인 이상</td><td>주요 인물을 중심(또는 삼등분 교차점)에 두고 주변 인물이 시선·행동으로 주인공을 받쳐주는 구도</td></tr>
+</tbody></table></div>
+<h3 id="3-5-그-외-구도-보조-기법">3-5. 그 외 구도 보조 기법</h3>
+<ul><li><strong>수평·수직 정렬</strong>: 지평선·건물 등 기준선이 기울지 않게 (의도적 사선 제외)</li>
+<li><strong>리딩 라인(Leading Lines)</strong>: 도로·난간·시선 등 선 요소로 독자의 시선을 주피사체로 유도</li>
+<li><strong>프레이밍(Framing)</strong>: 문틀·창틀 등으로 피사체를 감싸 시선 집중</li>
+<li><strong>균형(Balance)</strong>: 화면 양측 시각적 무게 배분</li></ul>
+<h2 id="4-편집후보정-원칙">4. 편집·후보정 원칙</h2>
+<h3 id="4-1-대원칙">4-1. 대원칙</h3>
+<blockquote><strong>편집은 사진 내용과 맥락의 무결성(integrity)을 유지해야 한다.</strong><br>시청자를 오도하거나 피사체를 잘못 재현할 수 있는 어떤 방식으로도 이미지를 조작하지 않는다.</blockquote>
+<h3 id="4-2-허용되는-후보정-정상-범위">4-2.  허용되는 후보정 (정상 범위)</h3>
+<p>후보정 자체는 조작이 아니다 — <strong>토닝·색보정의 정상 범위 내</strong>라면 허용된다.</p>
+<ul><li>밝기·대비(contrast) 조정</li>
+<li>색상 균형·화이트밸런스 보정</li>
+<li>노출 조정</li>
+<li><strong>크롭(cropping)</strong>: 더 강한 구도를 위해 허용 (단, 핵심 맥락을 제거하거나 스토리를 바꾸지 않는 선)</li>
+<li><strong>닷징·버닝(dodging &amp; burning)</strong>: 하이라이트/섀도 디테일을 살리는 전통적 암실 기법의 디지털 버전</li>
+<li><strong>클로닝 툴</strong>: 렌즈·센서 먼지, 스캔 시 생긴 먼지 점 제거 <strong>목적에 한해서만</strong> 사용</li></ul>
+<h3 id="4-3-금지되는-조작">4-3.  금지되는 조작</h3>
+<ul><li>요소의 <strong>추가·이동·제거</strong> (인물·물체)</li>
+<li>여러 사진의 <strong>합성(combining)</strong></li>
+<li>클로닝 툴로 사진을 <strong>확장하거나 캔버스를 늘리는</strong> 행위</li>
+<li>내용을 <strong>가리거나·강조하거나·축소</strong>할 정도의 과도한 닷징/버닝·밝기·대비·채도·샤프닝·클래리티 조정</li>
+<li>카메라가 촬영 순간 포착한 내용을 디지털 툴로 변경하는 모든 행위</li>
+<li><strong>AI 생성 도구</strong>로 이미지·영상을 생성·추가·제거·확장·변경하는 모든 행위 (명시적 금지)</li>
+<li>오디오·영상의 <strong>시퀀스 변경</strong>으로 발언·행동의 의미를 바꾸는 행위</li></ul>
+<h3 id="4-4-hdr과도한-톤매핑-주의">4-4. HDR·과도한 톤매핑 주의</h3>
+<p>HDR 등 인위적으로 디테일을 더하거나 제거하는 기법은 "사실적 재현이 아니다"라는 비판을 받는다. 보도사진에서는 자연스러운 톤 범위를 유지하는 것이 안전하다.</p>
+<h3 id="4-5-사진-일러스트레이션-표기-의무">4-5. 사진 일러스트레이션 표기 의무</h3>
+<p>크기·색 조정을 넘어 디지털 변형이 가해진 사진은 캡션이나 크레딧에 <strong>"사진 일러스트레이션(Photo Illustration)"</strong> 으로 반드시 표기한다. 타임랩스 등 특수 기법, 인셋·연속 사진 등 특수 효과도 설명을 덧붙인다.</p>
+<h3 id="4-6-원본-보존">4-6. 원본 보존</h3>
+<p>원본(카메라 기록 파일)을 보존해야 하며, 조작 의혹 시 원본 제출을 요구받을 수 있다. 파일은 RGB로 저장(CMYK 금지), 장변 최소 3000px 권장(콘테스트 기준).</p>
+<blockquote>️ <strong>역사적 교훈</strong><br>- National Geographic의 기자(피라미드 디지털 이동) 사건<br>- Adnan Hajj의 전쟁 피해 이미지 조작 사건<br>- 2026년 1월 백악관의 체포 시위자 '울고 있는' 이미지 조작 (NPPA 공개 규탄)<br>→ 조작은 시청자 기만일 뿐 아니라 역사적 기록을 왜곡한다.</blockquote>
+<h2 id="5-캡션설명문-작성-원칙">5. 캡션(설명문) 작성 원칙</h2>
+<h3 id="5-1-기본-구조-ap-스타일">5-1. 기본 구조 (AP 스타일)</h3>
+<p>캡션은 <strong>2문장 이내</strong>를 권장한다.</p>
+<ul><li><strong>첫 문장 (현재형)</strong>: 누가(Who) + 무엇을(What) + 도시·지역(Where) + 날짜(When, 2주 이내면 요일 포함)</li>
+<li>직접 보이지 않는 행동은 출처를 밝힌다 ("경찰에 따르면…")</li>
+<li><strong>둘째 문장</strong>: 사건의 맥락(Why) 또는 사진이 중요한 이유</li></ul>
+<h3 id="5-2-5w1h-충족">5-2. 5W1H 충족</h3>
+<p>who · what · when · where · why · how 를 모두 담되, 사진이 이미 보여주는 것은 해설하지 않고 <strong>보이지 않는 정보</strong>를 보완한다.</p>
+<h3 id="5-3-캡션-do">5-3.  캡션 Do</h3>
+<ul><li>정확성이 최우선 — 이름·지명의 철자와 식별을 정확히</li>
+<li>인물은 <strong>왼쪽에서 오른쪽 순서</strong>로 식별 (AP)</li>
+<li>구체적·시각적 명사와 능동 동사 사용</li>
+<li>사진 속 인물을 인터뷰해 배경 정보 확보</li>
+<li>50~75단어 내외 (50단어 초과 시 기사에 가까워짐)</li></ul>
+<h3 id="5-4-캡션-dont">5-4.  캡션 Don't</h3>
+<ul><li>"looks on", "poses", "is pictured above", "shown here" 같은 군더더기 표현 금지</li>
+<li>"seems to", "tries to" 등 추측성 표현 금지</li>
+<li>이름으로 시작 금지 (가장 중요한 요소일 때만 예외) — 라벨형 캡션 유발</li>
+<li>사설화(editorializing)·가정·과도한 미사여구 금지</li>
+<li>명백한 사실의 동어반복 금지</li></ul>
+<h2 id="6-상황별-촬영-가이드">6. 상황별 촬영 가이드</h2>
+<h3 id="6-1-행사-취재-기자회견리본-커팅시상식">6-1. 행사 취재 (기자회견·리본 커팅·시상식)</h3>
+<ul><li>연출이 불가피한 의례적 순간이라도 <strong>자연스러운 상호작용 순간</strong>을 포착 (악수 직전·발언 중)</li>
+<li>리본 커팅: 가위·테이프·인물 표정이 한 프레임에 들어오는 결정적 순간</li>
+<li>기자회견: 발언자의 손짓·표정과 마이크·현수막(맥락) 동시 확보</li>
+<li>단상 인물은 눈높이 또는 약간 아래에서 권위 있게</li></ul>
+<h3 id="6-2-현장-고발-시위재난사고">6-2. 현장 고발 (시위·재난·사고)</h3>
+<ul><li><strong>안전 최우선</strong> (촬영자 본인과 피해자)</li>
+<li>피해자·취약 대상에 대한 <strong>존엄성·연민</strong> 배려, 자극적 프레이밍 자제</li>
+<li>현장의 규모·맥락을 보여주는 와이드 + 개별 인물의 감정을 담는 클로즈업 병행</li>
+<li>연출·재현 절대 금지 — 있는 그대로 기록</li>
+<li>시위: 구호·플래카드(텍스트 정보)와 군중·경찰 대치 구도</li></ul>
+<h3 id="6-3-인물-인터뷰프로필">6-3. 인물 인터뷰·프로필</h3>
+<ul><li><strong>환경 인물사진</strong>: 인물의 직업·맥락을 드러내는 공간에서 촬영</li>
+<li>시선 방향 앞 여백 확보, 자연광 활용</li></ul>
+<h2 id="7-핵심-체크리스트">7. 핵심 체크리스트</h2>
+<h3 id="촬영-전중">촬영 전·중</h3>
+<ul><li class="check-item"><span class="checkbox"></span>장면을 연출·설정하지 않았는가</li>
+<li class="check-item"><span class="checkbox"></span>물체를 추가·이동·제거하지 않았는가</li>
+<li class="check-item"><span class="checkbox"></span>삼등분 교차점에 눈/주피사체를 두었는가</li>
+<li class="check-item"><span class="checkbox"></span>시선·이동 방향 앞에 여백을 두었는가</li>
+<li class="check-item"><span class="checkbox"></span>관절 부위에서 크롭되지 않았는가 (목·손목·무릎 등)</li>
+<li class="check-item"><span class="checkbox"></span>머리 위 장애물(전신주·간판)이 겹치지 않는가</li>
+<li class="check-item"><span class="checkbox"></span>맥락을 주는 배경이 포함되었는가</li>
+<li class="check-item"><span class="checkbox"></span>피사체의 존엄성을 존중했는가</li></ul>
+<h3 id="편집후보정">편집·후보정</h3>
+<ul><li class="check-item"><span class="checkbox"></span>토닝·색보정·크롭의 정상 범위를 지켰는가</li>
+<li class="check-item"><span class="checkbox"></span>요소를 추가·제거·합성하지 않았는가</li>
+<li class="check-item"><span class="checkbox"></span>닷징/버닝이 내용을 왜곡할 정도가 아닌가</li>
+<li class="check-item"><span class="checkbox"></span>AI 생성·변형 도구를 쓰지 않았는가</li>
+<li class="check-item"><span class="checkbox"></span>변형 시 "사진 일러스트레이션"으로 표기했는가</li>
+<li class="check-item"><span class="checkbox"></span>원본 파일을 보존했는가</li></ul>
+<h3 id="캡션">캡션</h3>
+<ul><li class="check-item"><span class="checkbox"></span>첫 문장에 5W를 현재형으로 담았는가</li>
+<li class="check-item"><span class="checkbox"></span>이름·지명 철자가 정확한가</li>
+<li class="check-item"><span class="checkbox"></span>인물을 좌→우 순서로 식별했는가</li>
+<li class="check-item"><span class="checkbox"></span>추측·사설·군더더기 표현을 배제했는가</li>
+<li class="check-item"><span class="checkbox"></span>보이지 않는 맥락을 보완했는가</li></ul>
+<h2 id="참고-출처">참고 출처</h2>
+<ul><li>NPPA(National Press Photographers Association) Code of Ethics for Visual Journalists</li>
+<li>NPPA Best of Photojournalism — Visual Integrity &amp; Technical Guidelines (2022~2026)</li>
+<li>Associated Press (AP) Stylebook — Photo Caption Guidelines</li>
+<li>International Journalists' Network (IJNet) — Writing Photo Captions</li>
+<li>Writing With Light 글로벌 이니셔티브</li></ul>
+    </article>
+  </main>
+</div>
+</body>
+</html>
