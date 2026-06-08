@@ -204,6 +204,7 @@
 
 - (강의) [취재방법론](https://jonghhhh.github.io/2026_1/data-journalism/취재_현장_사람_자료.html): 현장 취재, 인터뷰, 자료 취재
 - (강의) [보도_기사작성](https://jonghhhh.github.io/2026_1/data-journalism/보도_기사작성_유형원칙.html): 스트레이트, 해설, 피처, 기획기사 사례
+- (강의) [보도사진_촬영편집_원칙](https://jonghhhh.github.io/2026_1/data-journalism/보도사진_촬영편집_원칙.html): 보도사진의 특성, 촬영과 편집, 윤리       
 
 </details>
 
