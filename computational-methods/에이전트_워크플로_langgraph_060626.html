@@ -1,7 +1,7 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
+<!DOCTYPE html>
+<!-- saved from url=(0151)https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LangGraph 실습</title>
 <style>
@@ -45,59 +45,60 @@ a{color:var(--accent);text-underline-offset:3px}
 </head>
 <body>
 <div class="layout">
-<aside><div class="label">LECTURE HTML</div><h2>LangGraph 실습</h2><nav><a class="toc-h1" href="#sec-0">LangGraph 실습</a>
-<a class="toc-h2" href="#sec-1">이론 강의에서 배운 것 → 이 실습에서 만드는 것</a>
-<a class="toc-h2" href="#sec-2">제1장. LangGraph — 에이전트 이론을 코드로 바꾸는 도구</a>
-<a class="toc-h3" href="#sec-3">1-1. 이론에서 코드로</a>
-<a class="toc-h3" href="#sec-4">1-2. 핵심 비유: 지하철 노선도</a>
-<a class="toc-h3" href="#sec-5">1-3. 이론 개념 → LangGraph API 매핑표</a>
-<a class="toc-h2" href="#sec-6">제2장. 환경 설정</a>
-<a class="toc-h3" href="#sec-7">2-1. 패키지 설치</a>
-<a class="toc-h3" href="#sec-8">2-2. API 키 설정</a>
-<a class="toc-h3" href="#sec-9">2-3. 공통 초기화 코드 (모든 실습 파일 상단에 복사)</a>
-<a class="toc-h2" href="#sec-10">제3장. 첫 번째 그래프 — "Hello LangGraph"</a>
-<a class="toc-h3" href="#sec-11">3-1. 전체 코드</a>
-<a class="toc-h3" href="#sec-12">3-2. 그래프 시각화</a>
-<a class="toc-h3" href="#sec-13">3-3. 핵심 정리: 그래프 조립 3단계 공식</a>
-<a class="toc-h2" href="#sec-14">제4장. 순차 파이프라인 — 여러 단계를 연결</a>
-<a class="toc-h3" href="#sec-15">4-1. 예제: 기사 데이터 처리 파이프라인</a>
-<a class="toc-h2" href="#sec-16">제5장. 조건부 분기 — 상황에 따라 다른 경로</a>
-<a class="toc-h3" href="#sec-17">5-1. 개념 복습</a>
-<a class="toc-h3" href="#sec-18">5-2. 예제: 감정 분석 후 분기 응답</a>
-<a class="toc-h3" href="#sec-19">5-3. 핵심 문법 정리</a>
-<a class="toc-h2" href="#sec-20">제6장. LLM 연결 — AI 챗봇 만들기</a>
-<a class="toc-h3" href="#sec-21">6-1. MessagesState — 채팅 전용 상태</a>
-<a class="toc-h3" href="#sec-22">6-2. 기본 챗봇</a>
-<a class="toc-h3" href="#sec-23">6-3. 코드 흐름 이해</a>
-<a class="toc-h2" href="#sec-24">제7장. 도구(Tool)와 ReAct 에이전트</a>
-<a class="toc-h3" href="#sec-25">7-1. 복습: 이론에서 배운 ReAct</a>
-<a class="toc-h3" href="#sec-26">7-2. 도구 정의하기</a>
-<a class="toc-h3" href="#sec-27">7-3. 방법 A: create_react_agent (가장 쉬운 방법)</a>
-<a class="toc-h3" href="#sec-28">7-4. 방법 B: 직접 그래프로 구현 (원리 이해용)</a>
-<a class="toc-h2" href="#sec-29">제8장. 대화 기억 — 메모리(Memory) 구현</a>
-<a class="toc-h3" href="#sec-30">8-1. 문제 확인: 기억 없는 챗봇</a>
-<a class="toc-h3" href="#sec-31">8-2. 해결: Checkpointer (단기 기억)</a>
-<a class="toc-h3" href="#sec-32">8-3. 시스템 메시지로 성격 부여</a>
-<a class="toc-h2" href="#sec-33">제9장. 사람의 개입 — Human-in-the-Loop</a>
-<a class="toc-h3" href="#sec-34">9-1. interrupt로 일시정지</a>
-<a class="toc-h3" href="#sec-35">9-2. 실행 흐름 요약</a>
-<a class="toc-h2" href="#sec-36">제10장. 스트리밍 — 실시간 출력</a>
-<a class="toc-h3" href="#sec-37">10-1. 노드별 스트리밍</a>
-<a class="toc-h3" href="#sec-38">10-2. 토큰 단위 스트리밍</a>
-<a class="toc-h2" href="#sec-39">제11장. RAG — 검색 증강 생성</a>
-<a class="toc-h3" href="#sec-40">11-1. 이론 복습 → 코드 구조</a>
-<a class="toc-h3" href="#sec-41">11-2. 구현</a>
-<a class="toc-h2" href="#sec-42">제12장. 멀티 에이전트 — Supervisor 패턴</a>
-<a class="toc-h3" href="#sec-43">12-1. 구현</a>
-<a class="toc-h2" href="#sec-44">제13장. 종합 실습 과제</a>
-<a class="toc-h3" href="#sec-45">실습 1: 시간대별 인사봇 (난이도: ★☆☆)</a>
-<a class="toc-h3" href="#sec-46">실습 2: 성격 있는 메모리 챗봇 (난이도: ★★☆)</a>
-<a class="toc-h3" href="#sec-47">실습 3: 멀티 도구 에이전트 (난이도: ★★★)</a>
-<a class="toc-h3" href="#sec-48">실습 4: RAG + 조건부 분기 (난이도: ★★★★)</a>
-<a class="toc-h2" href="#sec-49">제14장. 핵심 정리</a>
-<a class="toc-h3" href="#sec-50">14-1. 이론 → 구현 완성 매핑</a>
-<a class="toc-h3" href="#sec-51">14-2. API 치트시트</a>
-<a class="toc-h3" href="#sec-52">14-3. 더 공부하려면</a></nav></aside>
+<aside><div class="label">LECTURE HTML</div><h2>LangGraph 실습</h2><nav><a class="toc-h1" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-0">LangGraph 실습</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-1">이론 강의에서 배운 것 → 이 실습에서 만드는 것</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-2">제1장. LangGraph — 에이전트 이론을 코드로 바꾸는 도구</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-3">1-1. 이론에서 코드로</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-4">1-2. 핵심 비유: 지하철 노선도</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-5">1-3. 이론 개념 → LangGraph API 매핑표</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-6">제2장. 환경 설정</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-7">2-1. 패키지 설치</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-8">2-2. API 키 설정</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-9">2-3. 공통 초기화 코드 (모든 실습 파일 상단에 복사)</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-10">제3장. 첫 번째 그래프 — "Hello LangGraph"</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-11">3-1. 전체 코드</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-12">3-2. 그래프 시각화</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-13">3-3. 핵심 정리: 그래프 조립 3단계 공식</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-14">제4장. 순차 파이프라인 — 여러 단계를 연결</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-15">4-1. 예제: 기사 데이터 처리 파이프라인</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-16">제5장. 조건부 분기 — 상황에 따라 다른 경로</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-17">5-1. 개념 복습</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-18">5-2. 예제: 감정 분석 후 분기 응답</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-19">5-3. 핵심 문법 정리</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-20">제6장. LLM 연결 — AI 챗봇 만들기</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-21">6-1. MessagesState — 채팅 전용 상태</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-22">6-2. 기본 챗봇</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-23">6-3. 코드 흐름 이해</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-24">제7장. 도구(Tool)와 ReAct 에이전트</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-25">7-1. 복습: 이론에서 배운 ReAct</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-26">7-2. 도구 정의하기</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-27">7-3. 방법 A: create_agent (LangChain 1.x 표준)</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-28">7-4. 방법 B: 직접 그래프로 구현 (원리 이해용)</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-29">제8장. 대화 기억 — 메모리(Memory) 구현</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-30">8-1. 문제 확인: 기억 없는 챗봇</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-31">8-2. 해결: Checkpointer (단기 기억)</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-32">8-3. 시스템 메시지로 성격 부여</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-33">제9장. 사람의 개입 — Human-in-the-Loop</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-34">9-1. interrupt로 일시정지</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-35">9-2. 실행 흐름 요약</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-36">제10장. 스트리밍 — 실시간 출력</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-37">10-1. 노드별 스트리밍</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-38">10-2. 토큰 단위 스트리밍</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-39">제11장. RAG — 검색 증강 생성</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-40">11-1. 이론 복습 → 코드 구조</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-41">11-2. 구현</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-42">제12장. 멀티 에이전트 — Supervisor 패턴</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-plan">제13장. Plan-and-Execute — 계획 후 실행</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-43">12-1. 구현</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-44">제14장. 종합 실습 과제</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-45">실습 1: 시간대별 인사봇 (난이도: ★☆☆)</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-46">실습 2: 성격 있는 메모리 챗봇 (난이도: ★★☆)</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-47">실습 3: 멀티 도구 에이전트 (난이도: ★★★)</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-48">실습 4: RAG + 조건부 분기 (난이도: ★★★★)</a>
+<a class="toc-h2" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-49">제15장. 핵심 정리</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-50">15-1. 이론 → 구현 완성 매핑</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-51">15-2. API 치트시트</a>
+<a class="toc-h3" href="https://jonghhhh.github.io/2026_1/computational-methods/%EC%97%90%EC%9D%B4%EC%A0%84%ED%8A%B8_%EC%9B%8C%ED%81%AC%ED%94%8C%EB%A1%9C_langgraph_060626.html#sec-52">15-3. 더 공부하려면</a></nav></aside>
 <main><article><h1 id="sec-0">LangGraph 실습</h1>
 <blockquote><strong>필수 권장</strong>: AI 에이전트 개념과 원리 먼저 학습<br><strong>대상</strong>: Python 기본 문법을 이해하는 학부생·대학원생<br><strong>목표</strong>: 이론 강의에서 배운 에이전트 개념(ReAct, 도구, 메모리, 워크플로우, 멀티 에이전트)을 LangGraph 코드로 직접 구현할 수 있다.<br><strong>사용 LLM</strong>: Gemini 2.5 Flash Lite (<code>gemini-2.5-flash-lite</code>)<br><strong>참고</strong>: <a href="https://github.com/braincrew-lab/langgraph-tutorial" target="_blank">braincrew-lab/langgraph-tutorial</a> · <a href="https://docs.langchain.com/oss/python/langgraph/overview" target="_blank">LangGraph 공식 문서</a></blockquote>
 <h2 id="sec-1">이론 강의에서 배운 것 → 이 실습에서 만드는 것</h2>
@@ -139,7 +140,7 @@ a{color:var(--accent);text-underline-offset:3px}
 <tr><td>조건부 분기 (패턴②)</td><td><code>add_conditional_edges</code></td><td>5장</td></tr>
 <tr><td>두뇌 = LLM</td><td><code>ChatGoogleGenerativeAI</code></td><td>6장</td></tr>
 <tr><td>도구 = Tool (5장)</td><td><code>@tool</code> 데코레이터</td><td>7장</td></tr>
-<tr><td>ReAct 루프 (4장)</td><td><code>create_react_agent()</code></td><td>7장</td></tr>
+<tr><td>ReAct 루프 (4장)</td><td><code>create_agent()</code></td><td>7장</td></tr>
 <tr><td>단기 기억 (2장)</td><td><code>MemorySaver</code> (Checkpointer)</td><td>8장</td></tr>
 <tr><td>Human-in-the-Loop (10장)</td><td><code>interrupt()</code> + <code>Command</code></td><td>9장</td></tr>
 <tr><td>RAG (8장)</td><td>retrieve → generate 그래프</td><td>11장</td></tr>
@@ -165,18 +166,17 @@ from dotenv import load_dotenv
 # .env 파일에서 환경변수를 읽어온다
 load_dotenv()
 
-# langchain-google-genai는 GOOGLE_API_KEY를 참조하므로,
-# 우리가 .env에 저장한 GEMINI_API_KEY를 GOOGLE_API_KEY로 복사해 준다
-os.environ[&quot;GOOGLE_API_KEY&quot;] = os.environ[&quot;GEMINI_API_KEY&quot;]
+# GEMINI_API_KEY만 .env에 설정하면 된다. langchain-google-genai 4.x가 직접 인식한다.
+os.environ["LANGCHAIN_TRACING_V2"] = "false"   # LangSmith 403 오류 방지
 
-print(&quot;✅ 환경 설정 완료!&quot;)</code></pre>
+print("✅ 환경 설정 완료!")</code></pre>
 <blockquote><strong>💡 API 키 발급</strong>: <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>에서 무료로 발급받을 수 있다.</blockquote>
 <h2 id="sec-10">제3장. 첫 번째 그래프 — "Hello LangGraph"</h2>
 <blockquote><strong>이론 연결</strong>: 이론 강의 2장(에이전트 구조)에서 배운 "상태"와 "작업 단계"를 코드로 만든다.</blockquote>
 <h3 id="sec-11">3-1. 전체 코드</h3>
 <pre><code># ============================================================
 # 실습 3-1: 가장 단순한 LangGraph 그래프
-# 이론 강의 2장의 &quot;에이전트의 상태&quot;와 &quot;작업 단계&quot;를 코드로 구현
+# 이론 강의 2장의 "에이전트의 상태"와 "작업 단계"를 코드로 구현
 # ============================================================
 
 from langgraph.graph import StateGraph, START, END
@@ -185,36 +185,36 @@ from typing import TypedDict
 
 # ── ① 상태(State) 정의 ──────────────────────────────────────
 # 이론 강의 2장: 에이전트의 기억(Memory) = 여기서는 State
-# TypedDict로 &quot;이 그래프에서 어떤 데이터가 오갈 것인지&quot; 선언한다
-# 사람으로 치면 &quot;릴레이 선수가 들고 뛰는 바통&quot;의 내용물을 정의하는 것
+# TypedDict로 "이 그래프에서 어떤 데이터가 오갈 것인지" 선언한다
+# 사람으로 치면 "릴레이 선수가 들고 뛰는 바통"의 내용물을 정의하는 것
 class MyState(TypedDict):
     message: str  # 그래프 전체에서 공유할 메시지
 
 
 # ── ② 노드(Node) 정의 ──────────────────────────────────────
-# 이론 강의 6장: 워크플로우의 각 &quot;작업 단계&quot;가 곧 노드
+# 이론 강의 6장: 워크플로우의 각 "작업 단계"가 곧 노드
 # 규칙 1: 현재 상태(state)를 입력으로 받는다
 # 규칙 2: 업데이트할 키-값 쌍을 딕셔너리로 반환한다
 def greet(state: MyState) -&gt; dict:
-    name = state[&quot;message&quot;]                       # 상태에서 이름을 꺼내고
-    return {&quot;message&quot;: f&quot;안녕하세요, {name}님!&quot;}   # 업데이트된 메시지를 반환
+    name = state["message"]                       # 상태에서 이름을 꺼내고
+    return {"message": f"안녕하세요, {name}님!"}   # 업데이트된 메시지를 반환
 
 
 # ── ③ 그래프 조립 ───────────────────────────────────────────
 # 이론 강의 6장: 워크플로우 = Node들을 Edge로 연결하는 것
 graph = StateGraph(MyState)         # 상태 스키마로 그래프 생성
-graph.add_node(&quot;greet&quot;, greet)      # 노드 등록 (이름, 함수)
-graph.add_edge(START, &quot;greet&quot;)      # START → greet 연결
-graph.add_edge(&quot;greet&quot;, END)        # greet → END 연결
+graph.add_node("greet", greet)      # 노드 등록 (이름, 함수)
+graph.add_edge(START, "greet")      # START → greet 연결
+graph.add_edge("greet", END)        # greet → END 연결
 
 
 # ── ④ 컴파일 &amp; 실행 ────────────────────────────────────────
-# compile()은 그래프를 &quot;실행 가능한 형태&quot;로 변환한다 (건축 설계도 → 실제 건물)
+# compile()은 그래프를 "실행 가능한 형태"로 변환한다 (건축 설계도 → 실제 건물)
 app = graph.compile()
 
 # invoke()로 초기 상태를 넣고 실행
-result = app.invoke({&quot;message&quot;: &quot;민수&quot;})
-print(result[&quot;message&quot;])
+result = app.invoke({"message": "민수"})
+print(result["message"])
 # 출력: 안녕하세요, 민수님!</code></pre>
 <h3 id="sec-12">3-2. 그래프 시각화</h3>
 <pre><code># 그래프 구조를 텍스트 그림으로 확인
@@ -234,11 +234,11 @@ print(app.get_graph().draw_ascii())</code></pre>
      +---------+</code></pre>
 <h3 id="sec-13">3-3. 핵심 정리: 그래프 조립 3단계 공식</h3>
 <pre><code># 이 3단계 공식은 이후 모든 실습에서 동일하게 반복된다
-graph.add_node(&quot;이름&quot;, 함수)           # ① 노드 등록
-graph.add_edge(&quot;출발노드&quot;, &quot;도착노드&quot;)  # ② 연결
+graph.add_node("이름", 함수)           # ① 노드 등록
+graph.add_edge("출발노드", "도착노드")  # ② 연결
 app = graph.compile()                 # ③ 컴파일</code></pre>
 <h2 id="sec-14">제4장. 순차 파이프라인 — 여러 단계를 연결</h2>
-<blockquote><strong>이론 연결</strong>: 이론 강의 6장 워크플로우 패턴① "순차 파이프라인" (A → B → C)</blockquote>
+<blockquote><strong>이론 연결</strong>: 이론 강의 6장 워크플로우 패턴① "Sequential Workflow (순차)" (A → B → C)</blockquote>
 <h3 id="sec-15">4-1. 예제: 기사 데이터 처리 파이프라인</h3>
 <p>미디어 분야 사례로, 뉴스 기사 텍스트를 단계별로 처리하는 파이프라인을 만들자.</p>
 <pre><code># ============================================================
@@ -259,59 +259,59 @@ class ArticleState(TypedDict):
 
 # ── 노드 1: 텍스트 정제 (공백·특수문자 제거) ────────────────
 def clean_text(state: ArticleState) -&gt; dict:
-    text = state[&quot;raw_text&quot;]
+    text = state["raw_text"]
     # 앞뒤 공백 제거, 연속 공백을 하나로
-    cleaned = &quot; &quot;.join(text.split())
-    print(f&quot;  [clean_text] 정제 완료: {len(text)}자 → {len(cleaned)}자&quot;)
-    return {&quot;cleaned&quot;: cleaned}
+    cleaned = " ".join(text.split())
+    print(f"  [clean_text] 정제 완료: {len(text)}자 → {len(cleaned)}자")
+    return {"cleaned": cleaned}
 
 
 # ── 노드 2: 단어 수 세기 ────────────────────────────────────
 def count_words(state: ArticleState) -&gt; dict:
-    count = len(state[&quot;cleaned&quot;].split())
-    print(f&quot;  [count_words] 단어 수: {count}개&quot;)
-    return {&quot;word_count&quot;: count}
+    count = len(state["cleaned"].split())
+    print(f"  [count_words] 단어 수: {count}개")
+    return {"word_count": count}
 
 
 # ── 노드 3: 요약 생성 ──────────────────────────────────────
 def make_summary(state: ArticleState) -&gt; dict:
-    text = state[&quot;cleaned&quot;]
-    count = state[&quot;word_count&quot;]
+    text = state["cleaned"]
+    count = state["word_count"]
     # 간단한 요약: 첫 50자 발췌
-    excerpt = text[:50] + &quot;...&quot; if len(text) &gt; 50 else text
-    summary = f&quot;[{count}단어] {excerpt}&quot;
-    print(f&quot;  [make_summary] 요약 생성 완료&quot;)
-    return {&quot;summary&quot;: summary}
+    excerpt = text[:50] + "..." if len(text) &gt; 50 else text
+    summary = f"[{count}단어] {excerpt}"
+    print(f"  [make_summary] 요약 생성 완료")
+    return {"summary": summary}
 
 
 # ── 그래프 조립: 3단계 공식 적용 ────────────────────────────
 graph = StateGraph(ArticleState)
 
 # ① 노드 등록
-graph.add_node(&quot;clean_text&quot;, clean_text)
-graph.add_node(&quot;count_words&quot;, count_words)
-graph.add_node(&quot;make_summary&quot;, make_summary)
+graph.add_node("clean_text", clean_text)
+graph.add_node("count_words", count_words)
+graph.add_node("make_summary", make_summary)
 
 # ② 순차 연결: START → clean → count → summary → END
-graph.add_edge(START, &quot;clean_text&quot;)
-graph.add_edge(&quot;clean_text&quot;, &quot;count_words&quot;)
-graph.add_edge(&quot;count_words&quot;, &quot;make_summary&quot;)
-graph.add_edge(&quot;make_summary&quot;, END)
+graph.add_edge(START, "clean_text")
+graph.add_edge("clean_text", "count_words")
+graph.add_edge("count_words", "make_summary")
+graph.add_edge("make_summary", END)
 
 # ③ 컴파일 &amp; 실행
 app = graph.compile()
 
 result = app.invoke({
-    &quot;raw_text&quot;: &quot;  LangGraph는   AI 에이전트를   위한   강력한  프레임워크이다.  &quot;,
-    &quot;cleaned&quot;: &quot;&quot;,
-    &quot;word_count&quot;: 0,
-    &quot;summary&quot;: &quot;&quot;
+    "raw_text": "  LangGraph는   AI 에이전트를   위한   강력한  프레임워크이다.  ",
+    "cleaned": "",
+    "word_count": 0,
+    "summary": ""
 })
 
-print(f&quot;\n최종 결과: {result[&#x27;summary&#x27;]}&quot;)</code></pre>
+print(f"\n최종 결과: {result['summary']}")</code></pre>
 <p><strong>핵심 포인트</strong>: <code>clean_text</code>가 업데이트한 <code>cleaned</code>를 → <code>count_words</code>가 읽고, <code>count_words</code>가 업데이트한 <code>word_count</code>를 → <code>make_summary</code>가 읽는다. <strong>상태가 바통처럼 노드를 따라 전달</strong>되는 것이다.</p>
 <h2 id="sec-16">제5장. 조건부 분기 — 상황에 따라 다른 경로</h2>
-<blockquote><strong>이론 연결</strong>: 이론 강의 6장 워크플로우 패턴② "조건부 분기 (Router)"</blockquote>
+<blockquote><strong>이론 연결</strong>: 이론 강의 6장 워크플로우 패턴③ "Routing Workflow (분기)"</blockquote>
 <h3 id="sec-17">5-1. 개념 복습</h3>
 <p>이론 강의에서 고객 문의 자동 분류를 예로 들었다.</p>
 <pre><code>              ┌──(환불 문의)──→ [환불 처리 에이전트]
@@ -335,80 +335,80 @@ class MoodState(TypedDict):
 
 
 # ── 노드 1: 감정 분석 (키워드 기반 간단 버전) ────────────────
-# 이론 강의 6장: &quot;입력의 종류나 상태에 따라 다른 경로로 분기&quot;
+# 이론 강의 6장: "입력의 종류나 상태에 따라 다른 경로로 분기"
 def analyze_mood(state: MoodState) -&gt; dict:
-    text = state[&quot;user_input&quot;]
-    positive_words = [&quot;좋아&quot;, &quot;행복&quot;, &quot;감사&quot;, &quot;기쁘&quot;, &quot;최고&quot;, &quot;사랑&quot;, &quot;재밌&quot;]
-    # 긍정 키워드가 하나라도 포함되면 &quot;positive&quot;
+    text = state["user_input"]
+    positive_words = ["좋아", "행복", "감사", "기쁘", "최고", "사랑", "재밌"]
+    # 긍정 키워드가 하나라도 포함되면 "positive"
     if any(word in text for word in positive_words):
-        return {&quot;mood&quot;: &quot;positive&quot;}
+        return {"mood": "positive"}
     else:
-        return {&quot;mood&quot;: &quot;negative&quot;}
+        return {"mood": "negative"}
 
 
 # ── 노드 2a: 긍정 응답 ─────────────────────────────────────
 def positive_reply(state: MoodState) -&gt; dict:
-    return {&quot;reply&quot;: f&quot;좋은 소식이네요! &#x27;{state[&#x27;user_input&#x27;]}&#x27;라니 기쁩니다 😊&quot;}
+    return {"reply": f"좋은 소식이네요! '{state['user_input']}'라니 기쁩니다 😊"}
 
 
 # ── 노드 2b: 부정 응답 ─────────────────────────────────────
 def negative_reply(state: MoodState) -&gt; dict:
-    return {&quot;reply&quot;: f&quot;힘든 일이 있으셨군요. 이야기해 주시면 도움이 될 거예요.&quot;}
+    return {"reply": f"힘든 일이 있으셨군요. 이야기해 주시면 도움이 될 거예요."}
 
 
 # ── 라우팅 함수: 어느 노드로 갈지 결정 ──────────────────────
-# 이 함수의 반환값이 &quot;다음 노드의 이름&quot;이 된다
+# 이 함수의 반환값이 "다음 노드의 이름"이 된다
 # Literal 타입 힌트로 가능한 반환값을 명시하면 LangGraph가 검증해 준다
-def route_by_mood(state: MoodState) -&gt; Literal[&quot;positive_reply&quot;, &quot;negative_reply&quot;]:
-    if state[&quot;mood&quot;] == &quot;positive&quot;:
-        return &quot;positive_reply&quot;    # → positive_reply 노드로 이동
+def route_by_mood(state: MoodState) -&gt; Literal["positive_reply", "negative_reply"]:
+    if state["mood"] == "positive":
+        return "positive_reply"    # → positive_reply 노드로 이동
     else:
-        return &quot;negative_reply&quot;    # → negative_reply 노드로 이동
+        return "negative_reply"    # → negative_reply 노드로 이동
 
 
 # ── 그래프 조립 ─────────────────────────────────────────────
 graph = StateGraph(MoodState)
-graph.add_node(&quot;analyze_mood&quot;, analyze_mood)
-graph.add_node(&quot;positive_reply&quot;, positive_reply)
-graph.add_node(&quot;negative_reply&quot;, negative_reply)
+graph.add_node("analyze_mood", analyze_mood)
+graph.add_node("positive_reply", positive_reply)
+graph.add_node("negative_reply", negative_reply)
 
-graph.add_edge(START, &quot;analyze_mood&quot;)
+graph.add_edge(START, "analyze_mood")
 
 # ★ 핵심: add_conditional_edges — 조건부 분기!
 # analyze_mood 실행 후 → route_by_mood 함수가 다음 경로를 결정
-graph.add_conditional_edges(&quot;analyze_mood&quot;, route_by_mood)
+graph.add_conditional_edges("analyze_mood", route_by_mood)
 
-graph.add_edge(&quot;positive_reply&quot;, END)
-graph.add_edge(&quot;negative_reply&quot;, END)
+graph.add_edge("positive_reply", END)
+graph.add_edge("negative_reply", END)
 
 app = graph.compile()
 
 
 # ── 테스트 ──────────────────────────────────────────────────
 test_inputs = [
-    &quot;오늘 정말 행복한 하루였어!&quot;,
-    &quot;시험을 망쳤어...&quot;,
-    &quot;친구랑 재밌는 영화 봤어&quot;,
-    &quot;회사에서 혼났어&quot;,
+    "오늘 정말 행복한 하루였어!",
+    "시험을 망쳤어...",
+    "친구랑 재밌는 영화 봤어",
+    "회사에서 혼났어",
 ]
 
 for text in test_inputs:
-    result = app.invoke({&quot;user_input&quot;: text, &quot;mood&quot;: &quot;&quot;, &quot;reply&quot;: &quot;&quot;})
-    print(f&quot;입력: {text}&quot;)
-    print(f&quot;감정: {result[&#x27;mood&#x27;]} → 응답: {result[&#x27;reply&#x27;]}\n&quot;)</code></pre>
+    result = app.invoke({"user_input": text, "mood": "", "reply": ""})
+    print(f"입력: {text}")
+    print(f"감정: {result['mood']} → 응답: {result['reply']}\n")</code></pre>
 <h3 id="sec-19">5-3. 핵심 문법 정리</h3>
 <pre><code># add_conditional_edges 사용법
 graph.add_conditional_edges(
-    &quot;출발_노드&quot;,       # 이 노드 실행이 끝나면
+    "출발_노드",       # 이 노드 실행이 끝나면
     라우팅_함수         # 이 함수를 호출하여 다음 노드를 결정
 )
 
-# 라우팅 함수는 반드시 &quot;노드 이름 문자열&quot;을 반환해야 한다
-def my_router(state) -&gt; Literal[&quot;nodeA&quot;, &quot;nodeB&quot;]:
+# 라우팅 함수는 반드시 "노드 이름 문자열"을 반환해야 한다
+def my_router(state) -&gt; Literal["nodeA", "nodeB"]:
     if 조건:
-        return &quot;nodeA&quot;   # → nodeA로 이동
+        return "nodeA"   # → nodeA로 이동
     else:
-        return &quot;nodeB&quot;   # → nodeB로 이동</code></pre>
+        return "nodeB"   # → nodeB로 이동</code></pre>
 <h2 id="sec-20">제6장. LLM 연결 — AI 챗봇 만들기</h2>
 <blockquote><strong>이론 연결</strong>: 이론 강의 2장(두뇌 = LLM)을 실제로 연결한다. 챗봇은 에이전트의 출발점이다.</blockquote>
 <h3 id="sec-21">6-1. MessagesState — 채팅 전용 상태</h3>
@@ -419,63 +419,73 @@ def my_router(state) -&gt; Literal[&quot;nodeA&quot;, &quot;nodeB&quot;]:
 # class MessagesState(TypedDict):
 #     messages: Annotated[list, add_messages]
 #
-# add_messages의 역할: 새 메시지를 기존 리스트에 &quot;추가&quot;(덮어쓰기가 아닌 누적)</code></pre>
+# add_messages의 역할: 새 메시지를 기존 리스트에 "추가"(덮어쓰기가 아닌 누적)</code></pre>
 <h3 id="sec-22">6-2. 기본 챗봇</h3>
 <pre><code># ============================================================
 # 실습 6-2: Gemini 연결 기본 챗봇
 # 이론 강의 2장: 에이전트의 두뇌(LLM)를 그래프에 연결
-# 이론 강의 1장: 아직은 &quot;챗봇&quot; 수준 — 도구도 없고 기억도 없다
+# 이론 강의 1장: 아직은 "챗봇" 수준 — 도구도 없고 기억도 없다
 # ============================================================
 
 from langgraph.graph import StateGraph, MessagesState, START, END
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # ── LLM 초기화 ─────────────────────────────────────────────
-# 이론 강의 2장: &quot;에이전트의 두뇌는 LLM이다&quot;
+# 이론 강의 2장: "에이전트의 두뇌는 LLM이다"
 # temperature: 0에 가까울수록 일관된 답변, 1에 가까울수록 창의적 답변
-llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash-lite&quot;, temperature=0.7)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0.7)
 
 
 # ── 챗봇 노드 ──────────────────────────────────────────────
-# state[&quot;messages&quot;]에 든 전체 대화 내역을 LLM에게 보내고,
+# state["messages"]에 든 전체 대화 내역을 LLM에게 보내고,
 # AI 응답을 messages 리스트에 추가하여 반환
 def chatbot(state: MessagesState) -&gt; dict:
-    response = llm.invoke(state[&quot;messages&quot;])  # LLM 호출
-    return {&quot;messages&quot;: [response]}           # 응답을 리스트에 추가
+    response = llm.invoke(state["messages"])  # LLM 호출
+    return {"messages": [response]}           # 응답을 리스트에 추가
 
 
 # ── 그래프 ──────────────────────────────────────────────────
 graph = StateGraph(MessagesState)
-graph.add_node(&quot;chatbot&quot;, chatbot)
-graph.add_edge(START, &quot;chatbot&quot;)
-graph.add_edge(&quot;chatbot&quot;, END)
+graph.add_node("chatbot", chatbot)
+graph.add_edge(START, "chatbot")
+graph.add_edge("chatbot", END)
 
 app = graph.compile()
 
 
 # ── 실행 ────────────────────────────────────────────────────
 result = app.invoke({
-    &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;LangGraph가 뭐야? 한 줄로 설명해줘.&quot;}]
+    "messages": [{"role": "user", "content": "LangGraph가 뭐야? 한 줄로 설명해줘."}]
 })
 
+# result는 아래와 같은 구조로 반환된다:
+# {
+#     'messages': [
+#         HumanMessage(content='LangGraph가 뭐야? 한 줄로 설명해줘.'),
+#         AIMessage(content='LangGraph는 복잡한 워크플로우를 그래프 형태로 정의하고
+#                            실행할 수 있게 해주는 라이브러리입니다.')
+#     ]
+# }
+# → messages 리스트에 사용자 메시지(HumanMessage)와 AI 응답(AIMessage)이 누적된다.
+
 # 마지막 메시지 = AI 응답
-print(result[&quot;messages&quot;][-1].content)</code></pre>
+print(result["messages"][-1].content)</code></pre>
 <h3 id="sec-23">6-3. 코드 흐름 이해</h3>
 <pre><code>사용자 메시지 입력
     ↓
-state[&quot;messages&quot;] = [HumanMessage(&quot;LangGraph가 뭐야?&quot;)]
+state["messages"] = [HumanMessage("LangGraph가 뭐야?")]
     ↓
 chatbot 노드에서 llm.invoke(messages) 호출
     ↓
 AI 응답을 messages 리스트에 추가
     ↓
-state[&quot;messages&quot;] = [HumanMessage(...), AIMessage(&quot;LangGraph는 ...&quot;)]</code></pre>
+state["messages"] = [HumanMessage(...), AIMessage("LangGraph는 ...")]</code></pre>
 <blockquote><strong>이론 강의 1장 복습</strong>: 이 챗봇은 아직 이론 강의에서 말한 "3가지 한계"를 그대로 가지고 있다 — ①도구 없음 ②기억 없음 ③계획 없음. 이후 장에서 하나씩 해결한다.</blockquote>
 <h2 id="sec-24">제7장. 도구(Tool)와 ReAct 에이전트</h2>
 <blockquote><strong>이론 연결</strong>: 이론 강의 4장(ReAct 루프)과 5장(Function Calling 원리)을 코드로 구현한다. 이 장이 "챗봇 → 에이전트"로 바뀌는 결정적 순간이다.</blockquote>
 <h3 id="sec-25">7-1. 복습: 이론에서 배운 ReAct</h3>
 <pre><code>이론 강의 4장의 ReAct 루프:
-  ① Thought (생각)  → &quot;어떤 도구를 쓸까?&quot;
+  ① Thought (생각)  → "어떤 도구를 쓸까?"
   ② Action (행동)   → 도구 호출
   ③ Observation (관찰) → 결과 수신
   → 충분하면 답변, 부족하면 ①로 돌아감</code></pre>
@@ -483,120 +493,120 @@ state[&quot;messages&quot;] = [HumanMessage(...), AIMessage(&quot;LangGraph는 .
 <h3 id="sec-26">7-2. 도구 정의하기</h3>
 <pre><code># ============================================================
 # 실습 7-2: 도구(Tool) 정의
-# 이론 강의 5장: &quot;LLM이 직접 도구를 실행하는 것이 아니다&quot;
-# → LLM은 &quot;어떤 도구를 쓸지&quot; JSON으로 지시하고,
+# 이론 강의 5장: "LLM이 직접 도구를 실행하는 것이 아니다"
+# → LLM은 "어떤 도구를 쓸지" JSON으로 지시하고,
 #   프레임워크(LangGraph)가 실제 실행을 담당한다
 # ============================================================
 
 from langchain_core.tools import tool
 
 # ── 도구 1: 날씨 검색 ──────────────────────────────────────
-# @tool 데코레이터: 일반 함수를 &quot;LLM이 호출 가능한 도구&quot;로 변환
-# 독스트링(&quot;&quot;&quot;...&quot;&quot;&quot;)이 매우 중요 — LLM이 이것을 읽고 도구 사용 여부를 판단
-# 이론 강의 5장: &quot;도구의 독스트링은 LLM이 읽는 사용 설명서&quot;
+# @tool 데코레이터: 일반 함수를 "LLM이 호출 가능한 도구"로 변환
+# 독스트링("""...""")이 매우 중요 — LLM이 이것을 읽고 도구 사용 여부를 판단
+# 이론 강의 5장: "도구의 독스트링은 LLM이 읽는 사용 설명서"
 @tool
 def search_weather(city: str) -&gt; str:
-    &quot;&quot;&quot;주어진 도시의 현재 날씨(기온, 상태)를 검색합니다.
+    """주어진 도시의 현재 날씨(기온, 상태)를 검색합니다.
     Args:
-        city: 날씨를 조회할 도시명 (예: &#x27;서울&#x27;, &#x27;부산&#x27;, &#x27;제주&#x27;)
+        city: 날씨를 조회할 도시명 (예: '서울', '부산', '제주')
     Returns:
         날씨 상태와 기온 문자열
-    &quot;&quot;&quot;
+    """
     # 실제로는 날씨 API를 호출하겠지만, 여기서는 예시 데이터 사용
     weather_data = {
-        &quot;서울&quot;: &quot;맑음, 25°C, 습도 45%&quot;,
-        &quot;부산&quot;: &quot;흐림, 22°C, 습도 70%&quot;,
-        &quot;제주&quot;: &quot;비, 20°C, 습도 85%&quot;,
-        &quot;대전&quot;: &quot;맑음, 26°C, 습도 40%&quot;,
+        "서울": "맑음, 25°C, 습도 45%",
+        "부산": "흐림, 22°C, 습도 70%",
+        "제주": "비, 20°C, 습도 85%",
+        "대전": "맑음, 26°C, 습도 40%",
     }
-    return weather_data.get(city, f&quot;{city}의 날씨 정보를 찾을 수 없습니다.&quot;)
+    return weather_data.get(city, f"{city}의 날씨 정보를 찾을 수 없습니다.")
 
 
 # ── 도구 2: 계산기 ─────────────────────────────────────────
 @tool
 def calculate(expression: str) -&gt; str:
-    &quot;&quot;&quot;수학 계산식을 실행합니다.
+    """수학 계산식을 실행합니다.
     Args:
-        expression: 파이썬 문법의 수학식 (예: &#x27;2 + 3 * 4&#x27;, &#x27;100 / 7&#x27;)
+        expression: 파이썬 문법의 수학식 (예: '2 + 3 * 4', '100 / 7')
     Returns:
         계산 결과 문자열
-    &quot;&quot;&quot;
+    """
     try:
         result = eval(expression)
-        return f&quot;계산 결과: {result}&quot;
+        return f"계산 결과: {result}"
     except Exception as e:
-        return f&quot;계산 오류: {e}&quot;
+        return f"계산 오류: {e}"
 
 
 # ── 도구 3: 뉴스 검색 (가상) ────────────────────────────────
 @tool
 def search_news(topic: str) -&gt; str:
-    &quot;&quot;&quot;주어진 주제에 대한 최신 뉴스 헤드라인을 검색합니다.
+    """주어진 주제에 대한 최신 뉴스 헤드라인을 검색합니다.
     Args:
-        topic: 검색할 뉴스 주제 (예: &#x27;AI&#x27;, &#x27;경제&#x27;, &#x27;스포츠&#x27;)
+        topic: 검색할 뉴스 주제 (예: 'AI', '경제', '스포츠')
     Returns:
         관련 뉴스 헤드라인 3개
-    &quot;&quot;&quot;
+    """
     news_db = {
-        &quot;AI&quot;: &quot;1) AI 에이전트 시장 525억 달러 전망\n2) 구글, 새 Gemini 모델 발표\n3) 국내 기업 AI 도입률 57% 돌파&quot;,
-        &quot;경제&quot;: &quot;1) 한국은행 기준금리 동결\n2) 코스피 3000선 돌파\n3) 수출 6개월 연속 증가&quot;,
-        &quot;스포츠&quot;: &quot;1) 손흥민 시즌 20호골\n2) MLB 류현진 복귀전 승리\n3) 파리 올림픽 메달 순위 발표&quot;,
+        "AI": "1) AI 에이전트 시장 525억 달러 전망\n2) 구글, 새 Gemini 모델 발표\n3) 국내 기업 AI 도입률 57% 돌파",
+        "경제": "1) 한국은행 기준금리 동결\n2) 코스피 3000선 돌파\n3) 수출 6개월 연속 증가",
+        "스포츠": "1) 손흥민 시즌 20호골\n2) MLB 류현진 복귀전 승리\n3) 파리 올림픽 메달 순위 발표",
     }
-    return news_db.get(topic, f&quot;&#x27;{topic}&#x27; 관련 뉴스를 찾을 수 없습니다.&quot;)
+    return news_db.get(topic, f"'{topic}' 관련 뉴스를 찾을 수 없습니다.")
 
-print(&quot;도구 3개 정의 완료: search_weather, calculate, search_news&quot;)</code></pre>
-<h3 id="sec-27">7-3. 방법 A: create_react_agent (가장 쉬운 방법)</h3>
+print("도구 3개 정의 완료: search_weather, calculate, search_news")</code></pre>
+<h3 id="sec-27">7-3. 방법 A: create_agent (LangChain 1.x 표준)</h3>
 <pre><code># ============================================================
 # 실습 7-3: ReAct 에이전트 — 한 줄 생성
 # 이론 강의 4장의 ReAct 루프가 내부적으로 자동 구성된다
 # ============================================================
 
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # 두뇌(LLM) 준비
-llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash-lite&quot;)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
 # 도구 목록 — 에이전트가 사용할 수 있는 도구들
 tools = [search_weather, calculate, search_news]
 
 # ★ 한 줄로 ReAct 에이전트 생성!
 # 내부적으로 이론 강의 4장의 Thought → Action → Observation 루프가 구성됨
-agent = create_react_agent(llm, tools)
+agent = create_agent(llm, tools)
 
 
 # ── 테스트 1: 도구 하나 사용 ────────────────────────────────
 result = agent.invoke({
-    &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;제주도 날씨가 어때?&quot;}]
+    "messages": [{"role": "user", "content": "제주도 날씨가 어때?"}]
 })
 # 전체 메시지 흐름 출력 — ReAct 루프를 직접 확인할 수 있다
-for msg in result[&quot;messages&quot;]:
-    role = getattr(msg, &#x27;type&#x27;, &#x27;unknown&#x27;)
-    content = getattr(msg, &#x27;content&#x27;, &#x27;&#x27;)
-    print(f&quot;[{role}] {content[:200]}&quot;)
+for msg in result["messages"]:
+    role = getattr(msg, 'type', 'unknown')
+    content = getattr(msg, 'content', '')
+    print(f"[{role}] {content[:200]}")
 print()
 
 
 # ── 테스트 2: 도구 두 개 순차 사용 ──────────────────────────
-# 이론 강의 4장 사례: &quot;서울과 부산 날씨를 비교해줘&quot;와 같은 구조
+# 이론 강의 4장 사례: "서울과 부산 날씨를 비교해줘"와 같은 구조
 result = agent.invoke({
-    &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;서울이랑 부산 날씨 비교해주고, 온도 차이도 계산해줘&quot;}]
+    "messages": [{"role": "user", "content": "서울이랑 부산 날씨 비교해주고, 온도 차이도 계산해줘"}]
 })
-print(&quot;최종 답변:&quot;, result[&quot;messages&quot;][-1].content)
+print("최종 답변:", result["messages"][-1].content)
 print()
 
 
 # ── 테스트 3: 도구 선택 판단 ────────────────────────────────
-# LLM이 &quot;어떤 도구를 쓸지&quot; 스스로 판단하는 것을 확인
+# LLM이 "어떤 도구를 쓸지" 스스로 판단하는 것을 확인
 result = agent.invoke({
-    &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;AI 관련 최신 뉴스 알려줘&quot;}]
+    "messages": [{"role": "user", "content": "AI 관련 최신 뉴스 알려줘"}]
 })
-print(&quot;최종 답변:&quot;, result[&quot;messages&quot;][-1].content)</code></pre>
+print("최종 답변:", result["messages"][-1].content)</code></pre>
 <h3 id="sec-28">7-4. 방법 B: 직접 그래프로 구현 (원리 이해용)</h3>
-<p><code>create_react_agent</code>가 내부에서 무엇을 하는지 직접 만들어 보면 ReAct 루프가 명확히 이해된다.</p>
+<p><code>create_agent</code>가 내부에서 무엇을 하는지 직접 만들어 보면 ReAct 루프가 명확히 이해된다.</p>
 <pre><code># ============================================================
 # 실습 7-4: ReAct 에이전트 — 직접 그래프 구현
-# create_react_agent의 내부 구조를 직접 만들어 본다
+# create_agent의 내부 구조를 직접 만들어 본다
 # 이론 강의 4장의 ReAct 루프를 그래프의 노드·엣지로 표현
 # ============================================================
 
@@ -605,37 +615,37 @@ from langgraph.prebuilt import ToolNode
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # ── LLM에 도구 목록 알려주기 ────────────────────────────────
-# bind_tools()는 LLM에게 &quot;너는 이 도구들을 사용할 수 있어&quot;라고 알려주는 것
-# 이론 강의 5장의 [1단계]: &quot;LLM에게 도구 목록을 알려준다&quot;
-llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash-lite&quot;)
+# bind_tools()는 LLM에게 "너는 이 도구들을 사용할 수 있어"라고 알려주는 것
+# 이론 강의 5장의 [1단계]: "LLM에게 도구 목록을 알려준다"
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 tools = [search_weather, calculate, search_news]
 llm_with_tools = llm.bind_tools(tools)
 
 
 # ── 노드 1: LLM 사고 ───────────────────────────────────────
-# 이론 강의 4장 ① Thought: &quot;무엇을 해야 할까? 어떤 도구를 쓸까?&quot;
+# 이론 강의 4장 ① Thought: "무엇을 해야 할까? 어떤 도구를 쓸까?"
 # LLM이 사고하고, 도구를 쓸지 말지를 결정한다
 def call_llm(state: MessagesState) -&gt; dict:
-    response = llm_with_tools.invoke(state[&quot;messages&quot;])
-    return {&quot;messages&quot;: [response]}
+    response = llm_with_tools.invoke(state["messages"])
+    return {"messages": [response]}
 
 
 # ── 노드 2: 도구 실행 ──────────────────────────────────────
 # 이론 강의 4장 ② Action: 도구 호출
-# 이론 강의 5장 [5단계]: &quot;시스템이 실제로 도구를 실행한다&quot;
+# 이론 강의 5장 [5단계]: "시스템이 실제로 도구를 실행한다"
 # ToolNode는 LangGraph가 제공하는 내장 노드 — 도구 실행을 자동 처리
 tool_node = ToolNode(tools)
 
 
 # ── 라우팅: 도구 호출이 필요한지 판단 ───────────────────────
-# 이론 강의 4장: &quot;충분한 정보를 얻었나? → 아직 부족 → ①로 돌아감&quot;
+# 이론 강의 4장: "충분한 정보를 얻었나? → 아직 부족 → ①로 돌아감"
 # LLM 응답에 tool_calls가 있으면 → 도구 실행으로
 # tool_calls가 없으면 → 답변 완성, 종료
 def should_use_tool(state: MessagesState):   # LLM의 판단 결과를 읽는 것이지, 스스로 판단하는 것이 아님.
-    last_msg = state[&quot;messages&quot;][-1]
+    last_msg = state["messages"][-1]
     # tool_calls 속성이 있고, 비어있지 않으면 → 도구 사용
-    if hasattr(last_msg, &quot;tool_calls&quot;) and last_msg.tool_calls:
-        return &quot;tools&quot;
+    if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
+        return "tools"
     # 도구 호출 없음 → 최종 답변 완성 → 종료
     return END
 
@@ -646,12 +656,12 @@ def should_use_tool(state: MessagesState):   # LLM의 판단 결과를 읽는 �
 #     │
 #     └──(완료)──→ [END]
 graph = StateGraph(MessagesState)
-graph.add_node(&quot;llm&quot;, call_llm)
-graph.add_node(&quot;tools&quot;, tool_node)
+graph.add_node("llm", call_llm)
+graph.add_node("tools", tool_node)
 
-graph.add_edge(START, &quot;llm&quot;)                         # 시작 → LLM
-graph.add_conditional_edges(&quot;llm&quot;, should_use_tool)   # LLM → 도구? or 종료?
-graph.add_edge(&quot;tools&quot;, &quot;llm&quot;)                        # 도구 결과 → 다시 LLM (루프!)
+graph.add_edge(START, "llm")                         # 시작 → LLM
+graph.add_conditional_edges("llm", should_use_tool)   # LLM → 도구? or 종료?
+graph.add_edge("tools", "llm")                        # 도구 결과 → 다시 LLM (루프!)
 
 app = graph.compile()
 
@@ -668,14 +678,14 @@ print(app.get_graph().draw_ascii())</code></pre>
 <blockquote><strong>이론 연결</strong>: 이론 강의 2장(에이전트의 기억)에서 배운 "단기 기억"을 구현한다. 이론 강의 1장의 한계②("기억하지 못한다")를 해결하는 장이다.</blockquote>
 <h3 id="sec-30">8-1. 문제 확인: 기억 없는 챗봇</h3>
 <pre><code># 메모리 없이 두 번 호출하면?
-result1 = app.invoke({&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;내 이름은 민수야&quot;}]})
-result2 = app.invoke({&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;내 이름이 뭐였지?&quot;}]})
-# → &quot;죄송합니다, 이름을 알려주시지 않으셨는데요.&quot; (기억 못함!)
+result1 = app.invoke({"messages": [{"role": "user", "content": "내 이름은 민수야"}]})
+result2 = app.invoke({"messages": [{"role": "user", "content": "내 이름이 뭐였지?"}]})
+# → "죄송합니다, 이름을 알려주시지 않으셨는데요." (기억 못함!)
 # invoke()를 할 때마다 상태가 초기화되기 때문!</code></pre>
 <h3 id="sec-31">8-2. 해결: Checkpointer (단기 기억)</h3>
 <pre><code># ============================================================
 # 실습 8-2: 단기 기억 챗봇
-# 이론 강의 2장: &quot;단기 기억 = 회의 중 화이트보드&quot;
+# 이론 강의 2장: "단기 기억 = 회의 중 화이트보드"
 # 같은 thread_id로 대화하면 이전 내용을 기억한다  
 
 # LangGraph에는 사용자 정보를 장기간 저장하는 Store(Long-Term Memory) 기능도 있다. 그러나 기사, 논문, 설문 데이터와 같은 분석 자료는 일반적으로 Vector DB나 데이터베이스에 저장하므로, 여기에서는 Checkpointer만 다룬다  
@@ -685,17 +695,17 @@ from langgraph.graph import StateGraph, MessagesState, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash-lite&quot;)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
 
 def chatbot(state: MessagesState) -&gt; dict:
-    return {&quot;messages&quot;: [llm.invoke(state[&quot;messages&quot;])]}
+    return {"messages": [llm.invoke(state["messages"])]}
 
 
 graph = StateGraph(MessagesState)
-graph.add_node(&quot;chatbot&quot;, chatbot)
-graph.add_edge(START, &quot;chatbot&quot;)
-graph.add_edge(&quot;chatbot&quot;, END)
+graph.add_node("chatbot", chatbot)
+graph.add_edge(START, "chatbot")
+graph.add_edge("chatbot", END)
 
 # ★ 핵심: MemorySaver를 체크포인터로 지정
 # 이론 강의 2장: 단기 기억 장치를 에이전트에 장착하는 것
@@ -707,31 +717,31 @@ app = graph.compile(checkpointer=memory)
 # 같은 thread_id = 같은 채팅방 → 이전 대화 기억
 # 다른 thread_id = 다른 채팅방 → 서로 독립
 # 카카오톡 채팅방과 같은 개념이다
-config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;student-minsu&quot;}}
+config = {"configurable": {"thread_id": "student-minsu"}}
 
 # 대화 1
 result1 = app.invoke(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;안녕! 내 이름은 민수야.&quot;}]},
+    {"messages": [{"role": "user", "content": "안녕! 내 이름은 민수야."}]},
     config=config
 )
-print(&quot;AI:&quot;, result1[&quot;messages&quot;][-1].content)
+print("AI:", result1["messages"][-1].content)
 
 # 대화 2 — 같은 thread_id이므로 이전 대화를 기억!
 result2 = app.invoke(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;내 이름이 뭐라고 했지?&quot;}]},
+    {"messages": [{"role": "user", "content": "내 이름이 뭐라고 했지?"}]},
     config=config
 )
-print(&quot;AI:&quot;, result2[&quot;messages&quot;][-1].content)
-# → &quot;민수님이라고 하셨죠!&quot; (기억함!)
+print("AI:", result2["messages"][-1].content)
+# → "민수님이라고 하셨죠!" (기억함!)
 
 # 대화 3 — 다른 thread_id는 독립된 대화
-config_other = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;student-jiyoung&quot;}}
+config_other = {"configurable": {"thread_id": "student-jiyoung"}}
 result3 = app.invoke(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;내 이름 아는?&quot;}]},
+    {"messages": [{"role": "user", "content": "내 이름 아는?"}]},
     config=config_other
 )
-print(&quot;AI:&quot;, result3[&quot;messages&quot;][-1].content)
-# → &quot;아직 이름을 알려주시지 않으셨는데요.&quot; (다른 채팅방이니까!)</code></pre>
+print("AI:", result3["messages"][-1].content)
+# → "아직 이름을 알려주시지 않으셨는데요." (다른 채팅방이니까!)</code></pre>
 <h3 id="sec-32">8-3. 시스템 메시지로 성격 부여</h3>
 <pre><code># ============================================================
 # 실습 8-3: 성격 있는 챗봇 (시스템 메시지 + 메모리)
@@ -739,31 +749,31 @@ print(&quot;AI:&quot;, result3[&quot;messages&quot;][-1].content)
 
 from langchain_core.messages import SystemMessage
 
-config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;korean-teacher&quot;}}
+config = {"configurable": {"thread_id": "korean-teacher"}}
 
-# 첫 대화에 시스템 메시지를 포함하면 챗봇의 &quot;성격&quot;이 설정된다
+# 첫 대화에 시스템 메시지를 포함하면 챗봇의 "성격"이 설정된다
 result = app.invoke(
-    {&quot;messages&quot;: [
+    {"messages": [
         # 시스템 메시지: 챗봇의 역할을 지정
-        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;너는 친절한 한국어 선생님이야. 모든 답변에 예문을 하나씩 포함해.&quot;},
-        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;&#x27;소확행&#x27;이 무슨 뜻이야?&quot;},
+        {"role": "system", "content": "너는 친절한 한국어 선생님이야. 모든 답변에 예문을 하나씩 포함해."},
+        {"role": "user", "content": "'소확행'이 무슨 뜻이야?"},
     ]},
     config=config
 )
-print(&quot;선생님:&quot;, result[&quot;messages&quot;][-1].content)
+print("선생님:", result["messages"][-1].content)
 
 # 이어지는 대화 — 시스템 메시지 성격이 유지됨
 result = app.invoke(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;비슷한 표현 하나 더 알려줘&quot;}]},
+    {"messages": [{"role": "user", "content": "비슷한 표현 하나 더 알려줘"}]},
     config=config
 )
-print(&quot;선생님:&quot;, result[&quot;messages&quot;][-1].content)</code></pre>
+print("선생님:", result["messages"][-1].content)</code></pre>
 <h2 id="sec-33">제9장. 사람의 개입 — Human-in-the-Loop</h2>
 <blockquote><strong>이론 연결</strong>: 이론 강의 6장 패턴⑤ "사람 개입"과 10장(안전성)을 구현한다.<br>이론 강의 10장에서 배웠다: *"되돌릴 수 없는 작업(이메일, 결제, 삭제)은 반드시 사람 승인을 거쳐야 한다."*</blockquote>
 <h3 id="sec-34">9-1. interrupt로 일시정지</h3>
 <pre><code># ============================================================
 # 실습 9-1: Human-in-the-Loop — 이메일 발송 전 사람 확인
-# 이론 강의 10장: &quot;높은 위험도 작업은 반드시 사람 승인&quot;
+# 이론 강의 10장: "높은 위험도 작업은 반드시 사람 승인"
 # ============================================================
 
 from langgraph.graph import StateGraph, MessagesState, START, END
@@ -773,8 +783,8 @@ from langgraph.types import interrupt, Command
 
 # ── 노드 1: AI가 이메일 초안 작성 ──────────────────────────
 def draft_email(state: MessagesState) -&gt; dict:
-    draft = &quot;김팀장님, 다음 주 회의 일정을 변경하고 싶습니다. 화요일 2시는 어떠신가요?&quot;
-    return {&quot;messages&quot;: [{&quot;role&quot;: &quot;ai&quot;, &quot;content&quot;: f&quot;이메일 초안:\n\n{draft}&quot;}]}
+    draft = "김팀장님, 다음 주 회의 일정을 변경하고 싶습니다. 화요일 2시는 어떠신가요?"
+    return {"messages": [{"role": "ai", "content": f"이메일 초안:\n\n{draft}"}]}
 
 
 # ── 노드 2: 사람의 승인을 기다린다 ─────────────────────────
@@ -782,50 +792,50 @@ def draft_email(state: MessagesState) -&gt; dict:
 # 사람이 Command(resume=...)로 응답할 때까지 대기
 def human_review(state: MessagesState) -&gt; dict:
     # 이 시점에서 실행이 멈추고, 사람의 입력을 기다린다
-    decision = interrupt(&quot;이메일을 보낼까요? (yes/no)&quot;)
+    decision = interrupt("이메일을 보낼까요? (yes/no)")
 
-    if decision == &quot;yes&quot;:
-        return {&quot;messages&quot;: [{&quot;role&quot;: &quot;ai&quot;, &quot;content&quot;: &quot;✅ 이메일을 전송했습니다!&quot;}]}
+    if decision == "yes":
+        return {"messages": [{"role": "ai", "content": "✅ 이메일을 전송했습니다!"}]}
     else:
-        return {&quot;messages&quot;: [{&quot;role&quot;: &quot;ai&quot;, &quot;content&quot;: &quot;❌ 전송을 취소했습니다.&quot;}]}
+        return {"messages": [{"role": "ai", "content": "❌ 전송을 취소했습니다."}]}
 
 
 # ── 그래프 조립 ─────────────────────────────────────────────
 graph = StateGraph(MessagesState)
-graph.add_node(&quot;draft&quot;, draft_email)
-graph.add_node(&quot;review&quot;, human_review)
-graph.add_edge(START, &quot;draft&quot;)
-graph.add_edge(&quot;draft&quot;, &quot;review&quot;)
-graph.add_edge(&quot;review&quot;, END)
+graph.add_node("draft", draft_email)
+graph.add_node("review", human_review)
+graph.add_edge(START, "draft")
+graph.add_edge("draft", "review")
+graph.add_edge("review", END)
 
 # interrupt를 쓰려면 반드시 checkpointer가 필요
 app = graph.compile(checkpointer=MemorySaver())
-config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;email-001&quot;}}
+config = {"configurable": {"thread_id": "email-001"}}
 
 # ── 1단계: 실행 → review 노드에서 멈춤 ─────────────────────
-print(&quot;--- 1단계: 그래프 실행 ---&quot;)
+print("--- 1단계: 그래프 실행 ---")
 result = app.invoke(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;팀장님께 회의 변경 이메일 보내줘&quot;}]},
+    {"messages": [{"role": "user", "content": "팀장님께 회의 변경 이메일 보내줘"}]},
     config=config
 )
 # 이 시점에서 draft는 실행 완료, review는 interrupt에서 일시정지 상태
-for msg in result[&quot;messages&quot;]:
-    print(f&quot;  {msg.content if hasattr(msg, &#x27;content&#x27;) else msg[&#x27;content&#x27;]}&quot;)
+for msg in result["messages"]:
+    print(f"  {msg.content if hasattr(msg, 'content') else msg['content']}")
 
 # ── 2단계: 사람이 승인 후 재개 ──────────────────────────────
-print(&quot;\n--- 2단계: 사람 승인 후 재개 ---&quot;)
+print("\n--- 2단계: 사람 승인 후 재개 ---")
 result = app.invoke(
-    Command(resume=&quot;yes&quot;),  # 사람의 결정
+    Command(resume="yes"),  # 사람의 결정
     config=config
 )
-print(f&quot;  {result[&#x27;messages&#x27;][-1].content}&quot;)</code></pre>
+print(f"  {result['messages'][-1].content}")</code></pre>
 <h3 id="sec-35">9-2. 실행 흐름 요약</h3>
 <pre><code>[START] → [draft] → [review] ──── ⏸ 일시정지
                                         │
-                                   사람: &quot;yes&quot; (Command)
+                                   사람: "yes" (Command)
                                         │
                                         ▼
-                                &quot;이메일 전송!&quot; → [END]</code></pre>
+                                "이메일 전송!" → [END]</code></pre>
 <h2 id="sec-36">제10장. 스트리밍 — 실시간 출력</h2>
 <blockquote><strong>이론 연결</strong>: UX 관점의 기능. 에이전트가 여러 단계를 거칠 때, 사용자에게 진행 상황을 보여준다.</blockquote>
 <h3 id="sec-37">10-1. 노드별 스트리밍</h3>
@@ -834,35 +844,35 @@ print(f&quot;  {result[&#x27;messages&#x27;][-1].content}&quot;)</code></pre>
 # 어떤 노드가 실행 완료되었는지 실시간으로 확인
 # ============================================================
 
-config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;stream-001&quot;}}
+config = {"configurable": {"thread_id": "stream-001"}}
 
-# stream_mode=&quot;updates&quot;: 노드가 실행 완료될 때마다 결과를 보내줌
+# stream_mode="updates": 노드가 실행 완료될 때마다 결과를 보내줌
 for event in app.stream(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;AI 에이전트란?&quot;}]},
+    {"messages": [{"role": "user", "content": "AI 에이전트란?"}]},
     config=config,
-    stream_mode=&quot;updates&quot;
+    stream_mode="updates"
 ):
     for node_name, output in event.items():
-        print(f&quot;--- {node_name} 노드 완료 ---&quot;)
-        if &quot;messages&quot; in output:
-            last_msg = output[&quot;messages&quot;][-1]
-            content = last_msg.content if hasattr(last_msg, &#x27;content&#x27;) else str(last_msg)
-            print(f&quot;  {content[:100]}...&quot;)</code></pre>
+        print(f"--- {node_name} 노드 완료 ---")
+        if "messages" in output:
+            last_msg = output["messages"][-1]
+            content = last_msg.content if hasattr(last_msg, 'content') else str(last_msg)
+            print(f"  {content[:100]}...")</code></pre>
 <h3 id="sec-38">10-2. 토큰 단위 스트리밍</h3>
 <pre><code># ============================================================
 # 실습 10-2: 토큰 단위 스트리밍 — ChatGPT처럼 글자가 하나씩 나타남
 # ============================================================
 
-config = {&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;stream-002&quot;}}
+config = {"configurable": {"thread_id": "stream-002"}}
 
 for event in app.stream(
-    {&quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;인공지능의 역사를 3문장으로 알려줘&quot;}]},
+    {"messages": [{"role": "user", "content": "인공지능의 역사를 3문장으로 알려줘"}]},
     config=config,
-    stream_mode=&quot;messages&quot;
+    stream_mode="messages"
 ):
     msg, metadata = event
     if msg.content:
-        print(msg.content, end=&quot;&quot;, flush=True)  # 줄바꿈 없이 연속 출력</code></pre>
+        print(msg.content, end="", flush=True)  # 줄바꿈 없이 연속 출력</code></pre>
 <h2 id="sec-39">제11장. RAG — 검색 증강 생성</h2>
 <blockquote><strong>이론 연결</strong>: 이론 강의 8장(RAG 개념)을 LangGraph 그래프로 구현한다.<br>이론 강의에서 배웠다: *"RAG는 에이전트에게 '참고 자료를 찾아보는 능력'을 부여하는 것"*</blockquote>
 <h3 id="sec-40">11-1. 이론 복습 → 코드 구조</h3>
@@ -877,7 +887,7 @@ LangGraph 그래프로 표현하면:
 <h3 id="sec-41">11-2. 구현</h3>
 <pre><code># ============================================================
 # 실습 11-2: 간단한 RAG 파이프라인
-# 이론 강의 8장: &quot;외부 문서를 검색 → LLM에게 참고 자료로 제공 → 답변&quot;
+# 이론 강의 8장: "외부 문서를 검색 → LLM에게 참고 자료로 제공 → 답변"
 # 이론 강의 10장: 할루시네이션 대응 — 근거 기반 답변 생성
 # ============================================================
 
@@ -885,7 +895,7 @@ from langgraph.graph import StateGraph, START, END
 from typing import TypedDict
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash-lite&quot;)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
 
 class RAGState(TypedDict):
@@ -897,78 +907,78 @@ class RAGState(TypedDict):
 # ── 가상 문서 데이터베이스 ──────────────────────────────────
 # 실무에서는 ChromaDB, Pinecone 같은 벡터 DB를 사용
 KNOWLEDGE_BASE = [
-    &quot;LangGraph는 LangChain 팀이 만든 에이전트 오케스트레이션 프레임워크이다.&quot;,
-    &quot;LangGraph는 상태(State), 노드(Node), 엣지(Edge) 3가지 요소로 구성된다.&quot;,
-    &quot;LangGraph의 Checkpointer(체크포인터)는 대화의 상태를 저장하여 단기 기억을 구현한다.&quot;,
-    &quot;ReAct는 Reasoning + Acting의 약자로, 추론과 행동을 번갈아 수행하는 에이전트 패턴이다.&quot;,
-    &quot;RAG는 Retrieval-Augmented Generation의 약자로, 검색 + 생성을 결합한 기법이다.&quot;,
-    &quot;Human-in-the-Loop은 AI의 작업에 사람이 개입하여 검토·승인하는 패턴이다.&quot;,
-    &quot;Python은 1991년 귀도 반 로섬이 만든 프로그래밍 언어이다.&quot;,
-    &quot;Supervisor 패턴은 관리자 에이전트가 전문 에이전트들에게 작업을 분배하는 멀티 에이전트 구조이다.&quot;,
+    "LangGraph는 LangChain 팀이 만든 에이전트 오케스트레이션 프레임워크이다.",
+    "LangGraph는 상태(State), 노드(Node), 엣지(Edge) 3가지 요소로 구성된다.",
+    "LangGraph의 Checkpointer(체크포인터)는 대화의 상태를 저장하여 단기 기억을 구현한다.",
+    "ReAct는 Reasoning + Acting의 약자로, 추론과 행동을 번갈아 수행하는 에이전트 패턴이다.",
+    "RAG는 Retrieval-Augmented Generation의 약자로, 검색 + 생성을 결합한 기법이다.",
+    "Human-in-the-Loop은 AI의 작업에 사람이 개입하여 검토·승인하는 패턴이다.",
+    "Python은 1991년 귀도 반 로섬이 만든 프로그래밍 언어이다.",
+    "Supervisor 패턴은 관리자 에이전트가 전문 에이전트들에게 작업을 분배하는 멀티 에이전트 구조이다.",
 ]
 
 
 # ── 노드 1: 검색 (Retrieval) ───────────────────────────────
-# 이론 강의 8장 ②: &quot;문서 DB에서 유사한 문서 검색&quot;
+# 이론 강의 8장 ②: "문서 DB에서 유사한 문서 검색"
 def retrieve(state: RAGState) -&gt; dict:
-    query = state[&quot;question&quot;]
+    query = state["question"]
     # 간단한 키워드 매칭 검색 (실무에서는 벡터 유사도 검색)
-    keywords = query.replace(&quot;?&quot;, &quot;&quot;).replace(&quot;이&quot;, &quot;&quot;).split()
+    keywords = query.replace("?", "").replace("이", "").split()
     relevant = [
         doc for doc in KNOWLEDGE_BASE
         if any(kw in doc for kw in keywords)
     ]
     if not relevant:
-        relevant = [&quot;관련 문서를 찾지 못했습니다.&quot;]
-    print(f&quot;  [retrieve] {len(relevant)}개 문서 검색됨&quot;)
-    return {&quot;documents&quot;: relevant}
+        relevant = ["관련 문서를 찾지 못했습니다."]
+    print(f"  [retrieve] {len(relevant)}개 문서 검색됨")
+    return {"documents": relevant}
 
 
 # ── 노드 2: 답변 생성 (Generation) ─────────────────────────
-# 이론 강의 8장 ③④: &quot;검색된 문서를 LLM에게 참고 자료로 전달&quot;
+# 이론 강의 8장 ③④: "검색된 문서를 LLM에게 참고 자료로 전달"
 def generate(state: RAGState) -&gt; dict:
-    context = &quot;\n&quot;.join(f&quot;- {doc}&quot; for doc in state[&quot;documents&quot;])
+    context = "\n".join(f"- {doc}" for doc in state["documents"])
 
-    # LLM에게 &quot;이 참고 자료만 보고 답해&quot;라고 지시
+    # LLM에게 "이 참고 자료만 보고 답해"라고 지시
     # → 할루시네이션(이론 강의 10장) 방지
-    prompt = f&quot;&quot;&quot;아래 참고 자료만을 바탕으로 질문에 답하세요.
-참고 자료에 없는 내용은 &quot;해당 정보가 없습니다&quot;라고 답하세요.
+    prompt = f"""아래 참고 자료만을 바탕으로 질문에 답하세요.
+참고 자료에 없는 내용은 "해당 정보가 없습니다"라고 답하세요.
 
 [참고 자료]
 {context}
 
 [질문]
-{state[&#x27;question&#x27;]}
+{state['question']}
 
-[답변]&quot;&quot;&quot;
+[답변]"""
     response = llm.invoke(prompt)
-    return {&quot;answer&quot;: response.content}
+    return {"answer": response.content}
 
 
 # ── 그래프 조립 ─────────────────────────────────────────────
 graph = StateGraph(RAGState)
-graph.add_node(&quot;retrieve&quot;, retrieve)
-graph.add_node(&quot;generate&quot;, generate)
-graph.add_edge(START, &quot;retrieve&quot;)
-graph.add_edge(&quot;retrieve&quot;, &quot;generate&quot;)
-graph.add_edge(&quot;generate&quot;, END)
+graph.add_node("retrieve", retrieve)
+graph.add_node("generate", generate)
+graph.add_edge(START, "retrieve")
+graph.add_edge("retrieve", "generate")
+graph.add_edge("generate", END)
 
 app = graph.compile()
 
 
 # ── 테스트 ──────────────────────────────────────────────────
 questions = [
-    &quot;LangGraph의 Checkpointer가 뭐야?&quot;,
-    &quot;ReAct 패턴을 설명해줘&quot;,
-    &quot;Supervisor 패턴은 어떤 구조야?&quot;,
-    &quot;양자 컴퓨터의 원리는?&quot;,  # ← 문서에 없는 질문 (할루시네이션 테스트)
+    "LangGraph의 Checkpointer가 뭐야?",
+    "ReAct 패턴을 설명해줘",
+    "Supervisor 패턴은 어떤 구조야?",
+    "양자 컴퓨터의 원리는?",  # ← 문서에 없는 질문 (할루시네이션 테스트)
 ]
 
 for q in questions:
-    print(f&quot;\n질문: {q}&quot;)
-    result = app.invoke({&quot;question&quot;: q, &quot;documents&quot;: [], &quot;answer&quot;: &quot;&quot;})
-    print(f&quot;답변: {result[&#x27;answer&#x27;]}&quot;)
-    print(&quot;-&quot; * 60)</code></pre>
+    print(f"\n질문: {q}")
+    result = app.invoke({"question": q, "documents": [], "answer": ""})
+    print(f"답변: {result['answer']}")
+    print("-" * 60)</code></pre>
 <h2 id="sec-42">제12장. 멀티 에이전트 — Supervisor 패턴</h2>
 <blockquote><strong>이론 연결</strong>: 이론 강의 7장(멀티 에이전트 아키텍처①: Supervisor)을 구현한다.<br>이론 강의에서 배웠다: *"팀장이 팀원에게 업무를 나눠주고, 결과를 모아서 보고서를 쓰는 구조"*</blockquote>
 <h3 id="sec-43">12-1. 구현</h3>
@@ -976,7 +986,7 @@ for q in questions:
 # 실습 12-1: Supervisor 멀티 에이전트
 # 이론 강의 7장 아키텍처①:
 #   [Supervisor 관리자] → 작업을 전문 에이전트에게 분배
-# 이론 강의 7장 소통 방식①: &quot;공유 상태&quot;를 사용
+# 이론 강의 7장 소통 방식①: "공유 상태"를 사용
 # ============================================================
 
 from langgraph.graph import StateGraph, START, END
@@ -990,75 +1000,182 @@ class TeamState(TypedDict):
 
 
 # ── Supervisor 노드: 누구에게 맡길지 결정 ───────────────────
-# 이론 강의 7장: &quot;관리자가 작업을 분배한다&quot;
+# 이론 강의 7장: "관리자가 작업을 분배한다"
 # 실무에서는 이 판단을 LLM이 하지만, 여기서는 키워드 기반으로 단순화
 def supervisor(state: TeamState) -&gt; dict:
-    task = state[&quot;task&quot;]
-    if &quot;검색&quot; in task or &quot;조사&quot; in task or &quot;뉴스&quot; in task:
-        assigned = &quot;researcher&quot;
-        print(f&quot;  [Supervisor] &#x27;{task}&#x27; → 리서처에게 배정&quot;)
-    elif &quot;코드&quot; in task or &quot;프로그램&quot; in task or &quot;개발&quot; in task:
-        assigned = &quot;coder&quot;
-        print(f&quot;  [Supervisor] &#x27;{task}&#x27; → 코더에게 배정&quot;)
-    elif &quot;번역&quot; in task or &quot;영어&quot; in task or &quot;한국어&quot; in task:
-        assigned = &quot;translator&quot;
-        print(f&quot;  [Supervisor] &#x27;{task}&#x27; → 번역가에게 배정&quot;)
+    task = state["task"]
+    if "검색" in task or "조사" in task or "뉴스" in task:
+        assigned = "researcher"
+        print(f"  [Supervisor] '{task}' → 리서처에게 배정")
+    elif "코드" in task or "프로그램" in task or "개발" in task:
+        assigned = "coder"
+        print(f"  [Supervisor] '{task}' → 코더에게 배정")
+    elif "번역" in task or "영어" in task or "한국어" in task:
+        assigned = "translator"
+        print(f"  [Supervisor] '{task}' → 번역가에게 배정")
     else:
-        assigned = &quot;researcher&quot;  # 기본값
-        print(f&quot;  [Supervisor] &#x27;{task}&#x27; → 리서처에게 배정 (기본)&quot;)
-    return {&quot;assigned_to&quot;: assigned}
+        assigned = "researcher"  # 기본값
+        print(f"  [Supervisor] '{task}' → 리서처에게 배정 (기본)")
+    return {"assigned_to": assigned}
 
 
 # ── 전문 에이전트 노드들 ────────────────────────────────────
-# 이론 강의 7장: &quot;전문 분야별로 에이전트를 나눈다&quot;
+# 이론 강의 7장: "전문 분야별로 에이전트를 나눈다"
 def researcher(state: TeamState) -&gt; dict:
-    result = f&quot;[리서처] &#x27;{state[&#x27;task&#x27;]}&#x27;에 대해 조사 완료:\n  - AI 에이전트 시장 525억 달러 전망\n  - 기업 도입률 57% 돌파&quot;
-    return {&quot;result&quot;: result}
+    result = f"[리서처] '{state['task']}'에 대해 조사 완료:\n  - AI 에이전트 시장 525억 달러 전망\n  - 기업 도입률 57% 돌파"
+    return {"result": result}
 
 def coder(state: TeamState) -&gt; dict:
-    result = f&quot;[코더] &#x27;{state[&#x27;task&#x27;]}&#x27; 코드 작성 완료:\n  - main.py (150줄)\n  - 단위 테스트 3개 통과&quot;
-    return {&quot;result&quot;: result}
+    result = f"[코더] '{state['task']}' 코드 작성 완료:\n  - main.py (150줄)\n  - 단위 테스트 3개 통과"
+    return {"result": result}
 
 def translator(state: TeamState) -&gt; dict:
-    result = f&quot;[번역가] &#x27;{state[&#x27;task&#x27;]}&#x27; 번역 완료:\n  - 원문 → 번역본 생성\n  - 자연스러운 표현으로 교정&quot;
-    return {&quot;result&quot;: result}
+    result = f"[번역가] '{state['task']}' 번역 완료:\n  - 원문 → 번역본 생성\n  - 자연스러운 표현으로 교정"
+    return {"result": result}
 
 
 # ── 라우팅 함수 ─────────────────────────────────────────────
-def route_task(state: TeamState) -&gt; Literal[&quot;researcher&quot;, &quot;coder&quot;, &quot;translator&quot;]:
-    return state[&quot;assigned_to&quot;]
+def route_task(state: TeamState) -&gt; Literal["researcher", "coder", "translator"]:
+    return state["assigned_to"]
 
 
 # ── 그래프 조립 ─────────────────────────────────────────────
 graph = StateGraph(TeamState)
-graph.add_node(&quot;supervisor&quot;, supervisor)
-graph.add_node(&quot;researcher&quot;, researcher)
-graph.add_node(&quot;coder&quot;, coder)
-graph.add_node(&quot;translator&quot;, translator)
+graph.add_node("supervisor", supervisor)
+graph.add_node("researcher", researcher)
+graph.add_node("coder", coder)
+graph.add_node("translator", translator)
 
-graph.add_edge(START, &quot;supervisor&quot;)
-graph.add_conditional_edges(&quot;supervisor&quot;, route_task)  # 조건부 분기
-graph.add_edge(&quot;researcher&quot;, END)
-graph.add_edge(&quot;coder&quot;, END)
-graph.add_edge(&quot;translator&quot;, END)
+graph.add_edge(START, "supervisor")
+graph.add_conditional_edges("supervisor", route_task)  # 조건부 분기
+graph.add_edge("researcher", END)
+graph.add_edge("coder", END)
+graph.add_edge("translator", END)
 
 app = graph.compile()
 
 
 # ── 테스트 ──────────────────────────────────────────────────
 test_tasks = [
-    &quot;AI 최신 트렌드 조사해줘&quot;,
-    &quot;계산기 프로그램 개발해줘&quot;,
-    &quot;이 보고서를 영어로 번역해줘&quot;,
-    &quot;주말 날씨 검색해줘&quot;,
+    "AI 최신 트렌드 조사해줘",
+    "계산기 프로그램 개발해줘",
+    "이 보고서를 영어로 번역해줘",
+    "주말 날씨 검색해줘",
 ]
 
 for task in test_tasks:
-    print(f&quot;\n작업: {task}&quot;)
-    result = app.invoke({&quot;task&quot;: task, &quot;assigned_to&quot;: &quot;&quot;, &quot;result&quot;: &quot;&quot;})
-    print(result[&quot;result&quot;])
-    print(&quot;=&quot; * 60)</code></pre>
-<h2 id="sec-44">제13장. 종합 실습 과제</h2>
+    print(f"\n작업: {task}")
+    result = app.invoke({"task": task, "assigned_to": "", "result": ""})
+    print(result["result"])
+    print("=" * 60)</code></pre>
+<h2 id="sec-plan">제13장. Plan-and-Execute — 계획 후 실행</h2>
+<blockquote><strong>이론 연결</strong>: 이론 강의 8장(고급 패턴 — Plan-and-Execute)을 구현한다.<br>ReAct가 "한 걸음씩 생각하며 진행"하는 방식이라면, Plan-and-Execute는 <strong>먼저 전체 계획을 세운 뒤 단계별로 실행</strong>하는 방식이다. 복잡한 다단계 작업에서 길을 잃지 않는다는 장점이 있다.</blockquote>
+<h3 id="sec-plan-1">13-1. 개념</h3>
+<pre><code>[목표 입력] → [Planner: 전체 계획 수립]
+                   ↓
+            [1단계 실행] → [2단계 실행] → [3단계 실행]
+                   ↓
+            [모든 단계 완료?] ──아니오──→ 다음 단계로
+                   ↓ 예
+              [최종 결과 종합]</code></pre>
+<p>핵심은 <strong>Planner(계획 수립)</strong>와 <strong>Executor(단계 실행)</strong>의 역할 분리다. Planner가 작업을 잘게 나눠 목록을 만들면, Executor가 그 목록을 하나씩 처리한다.</p>
+<h3 id="sec-plan-2">13-2. 구현</h3>
+<pre><code># ============================================================
+# 실습 13-2: Plan-and-Execute 에이전트
+# 이론 강의 8장: 먼저 계획을 세우고(Plan), 단계별로 실행(Execute)
+#   [Planner] → 작업을 단계 목록으로 분해
+#   [Executor] → 각 단계를 순서대로 실행
+# ============================================================
+
+from langgraph.graph import StateGraph, START, END
+from typing import TypedDict
+
+
+# ── 상태 정의 ──────────────────────────────────────────────
+# plan: 실행할 단계들의 목록
+# past_steps: 이미 완료한 단계와 그 결과
+# step_index: 현재 실행 중인 단계 번호
+class PlanExecuteState(TypedDict):
+    goal: str                # 사용자의 최종 목표
+    plan: list               # 단계 목록 (Planner가 채움)
+    past_steps: list         # 완료된 단계 결과
+    step_index: int          # 현재 단계 인덱스
+    final_answer: str        # 최종 종합 결과
+
+
+# ── Planner 노드: 목표를 단계로 분해 ────────────────────────
+# 실무에서는 LLM이 계획을 세우지만, 여기서는 키워드 기반으로 단순화
+def planner(state: PlanExecuteState) -&gt; dict:
+    goal = state["goal"]
+    # LLM이 목표를 보고 단계 목록을 생성하는 부분 (여기서는 예시 고정)
+    plan = [
+        "관련 자료 검색",
+        "핵심 내용 분석",
+        "결과 요약 정리",
+    ]
+    print(f"  [Planner] 목표 '{goal}'를 {len(plan)}단계로 분해:")
+    for i, step in enumerate(plan, 1):
+        print(f"      {i}. {step}")
+    return {"plan": plan, "past_steps": [], "step_index": 0}
+
+
+# ── Executor 노드: 현재 단계 실행 ───────────────────────────
+def executor(state: PlanExecuteState) -&gt; dict:
+    idx = state["step_index"]
+    step = state["plan"][idx]
+    # 실제로는 도구 호출이나 LLM 처리가 들어가는 부분
+    result = f"'{step}' 실행 완료"
+    print(f"  [Executor] {idx + 1}단계 — {result}")
+    past = state["past_steps"] + [result]
+    return {"past_steps": past, "step_index": idx + 1}
+
+
+# ── 라우팅: 모든 단계를 끝냈는지 판단 ───────────────────────
+# 남은 단계가 있으면 executor로 돌아가고(루프), 없으면 종합으로 간다
+def should_continue(state: PlanExecuteState) -&gt; str:
+    if state["step_index"] &lt; len(state["plan"]):
+        return "executor"      # 아직 단계가 남음 → 계속 실행
+    return "synthesize"        # 모든 단계 완료 → 결과 종합
+
+
+# ── 종합 노드: 모든 단계 결과를 합쳐 최종 답변 생성 ──────────
+def synthesize(state: PlanExecuteState) -&gt; dict:
+    steps_summary = "\n".join(
+        f"  {i + 1}. {r}" for i, r in enumerate(state["past_steps"])
+    )
+    answer = f"[최종 결과] 목표 '{state['goal']}' 달성\n{steps_summary}"
+    print(f"  [Synthesize] 모든 단계 종합 완료")
+    return {"final_answer": answer}
+
+
+# ── 그래프 조립 ─────────────────────────────────────────────
+graph = StateGraph(PlanExecuteState)
+graph.add_node("planner", planner)
+graph.add_node("executor", executor)
+graph.add_node("synthesize", synthesize)
+
+graph.add_edge(START, "planner")
+graph.add_edge("planner", "executor")
+# executor 실행 후 should_continue로 분기 (루프 또는 종료)
+graph.add_conditional_edges("executor", should_continue)
+graph.add_edge("synthesize", END)
+
+app = graph.compile()
+
+
+# ── 테스트 ──────────────────────────────────────────────────
+result = app.invoke({
+    "goal": "AI 에이전트 시장 보고서 작성",
+    "plan": [],
+    "past_steps": [],
+    "step_index": 0,
+    "final_answer": "",
+})
+
+print("\n" + "=" * 60)
+print(result["final_answer"])</code></pre>
+<blockquote><strong>ReAct vs Plan-and-Execute</strong>: ReAct(7장)는 매 단계마다 "다음에 뭘 할까?"를 그때그때 판단한다. 반면 Plan-and-Execute는 시작할 때 전체 계획을 한 번에 세우므로, 단계가 많고 복잡한 작업에서 더 안정적이다. 다만 도중에 상황이 바뀌면 계획을 수정해야 하는 부담이 있다.</blockquote>
+<h2 id="sec-44">제14장. 종합 실습 과제</h2>
 <blockquote>각 과제는 이론 강의의 특정 장과 연결된다. 해당 이론을 다시 읽고 코드로 옮겨 보자.</blockquote>
 <h3 id="sec-45">실습 1: 시간대별 인사봇 (난이도: ★☆☆)</h3>
 <p><strong>연결 이론</strong>: 이론 강의 6장 패턴② (조건부 분기) + 이 실습 5장</p>
@@ -1067,24 +1184,24 @@ for task in test_tasks:
 class GreetState(TypedDict):
     name: str                   # 사용자 이름
     hour: int                   # 현재 시각 (0~23)
-    time_of_day: str            # &quot;morning&quot; / &quot;afternoon&quot; / &quot;evening&quot;
+    time_of_day: str            # "morning" / "afternoon" / "evening"
     greeting: str               # 최종 인사말
 
 # 만들어야 할 노드:
 # - check_time: hour를 보고 time_of_day를 판단
-# - morning_greet: &quot;좋은 아침이에요, OO님!&quot;
-# - afternoon_greet: &quot;좋은 오후입니다, OO님!&quot;
-# - evening_greet: &quot;좋은 저녁이에요, OO님!&quot;
+# - morning_greet: "좋은 아침이에요, OO님!"
+# - afternoon_greet: "좋은 오후입니다, OO님!"
+# - evening_greet: "좋은 저녁이에요, OO님!"
 
 # 테스트:
-# invoke({&quot;name&quot;: &quot;민수&quot;, &quot;hour&quot;: 9, ...})  → &quot;좋은 아침이에요, 민수님!&quot;
-# invoke({&quot;name&quot;: &quot;지영&quot;, &quot;hour&quot;: 14, ...}) → &quot;좋은 오후입니다, 지영님!&quot;
-# invoke({&quot;name&quot;: &quot;철수&quot;, &quot;hour&quot;: 20, ...}) → &quot;좋은 저녁이에요, 철수님!&quot;</code></pre>
+# invoke({"name": "민수", "hour": 9, ...})  → "좋은 아침이에요, 민수님!"
+# invoke({"name": "지영", "hour": 14, ...}) → "좋은 오후입니다, 지영님!"
+# invoke({"name": "철수", "hour": 20, ...}) → "좋은 저녁이에요, 철수님!"</code></pre>
 <h3 id="sec-46">실습 2: 성격 있는 메모리 챗봇 (난이도: ★★☆)</h3>
 <p><strong>연결 이론</strong>: 이론 강의 2장 (기억) + 이 실습 8장</p>
 <p><strong>요구사항</strong>:</p>
 <pre><code>- MemorySaver + thread_id로 대화 기억 구현
-- 시스템 메시지로 챗봇 성격 부여: &quot;너는 유머러스한 과학 해설사야&quot;
+- 시스템 메시지로 챗봇 성격 부여: "너는 유머러스한 과학 해설사야"
 - 최소 4턴 대화를 이어가며 기억 유지 확인</code></pre>
 <h3 id="sec-47">실습 3: 멀티 도구 에이전트 (난이도: ★★★)</h3>
 <p><strong>연결 이론</strong>: 이론 강의 4장 (ReAct) + 5장 (Function Calling) + 이 실습 7장</p>
@@ -1094,10 +1211,13 @@ class GreetState(TypedDict):
 # @tool translate(text: str, target_lang: str) → 번역 결과
 # @tool summarize_text(text: str) → 요약
 
-# create_react_agent로 에이전트 생성
+# create_agent로 에이전트 생성
+# from langchain.agents import create_agent
+# agent = create_agent(llm, tools)
+# result = agent.invoke({"messages": [{"role": "user", "content": "질문"}]})
 
 # 테스트:
-# &quot;AI 관련 뉴스를 찾아서 영어로 번역해줘&quot;
+# "AI 관련 뉴스를 찾아서 영어로 번역해줘"
 # → search_news 호출 → translate 호출 → 최종 답변
 # (ReAct 루프가 도구를 2번 연속 호출하는지 확인)</code></pre>
 <h3 id="sec-48">실습 4: RAG + 조건부 분기 (난이도: ★★★★)</h3>
@@ -1109,28 +1229,29 @@ class GreetState(TypedDict):
 #
 # [START] → [retrieve] → [check_quality] ──(충분)──→ [generate] → [END]
 #                                          └──(부족)──→ [rewrite] → [retrieve]</code></pre>
-<h2 id="sec-49">제14장. 핵심 정리</h2>
-<h3 id="sec-50">14-1. 이론 → 구현 완성 매핑</h3>
+<h2 id="sec-49">제15장. 핵심 정리</h2>
+<h3 id="sec-50">15-1. 이론 → 구현 완성 매핑</h3>
 <pre><code>[이론 강의에서 배운 것]           [이 실습에서 코드로 만든 것]
 ─────────────────────────────────────────────────────────────
 1장 챗봇의 한계 3가지            6장 → 한계 있는 챗봇 확인
                                  7~8장 → 도구·메모리로 한계 해결
 2장 에이전트 5대 구성요소         3장 State + 6장 LLM + 7장 Tool + 8장 Memory
-4장 ReAct 루프                   7장 create_react_agent + 직접 구현
+4장 ReAct 루프                   7장 create_agent + 직접 구현
 5장 Function Calling             7장 @tool 데코레이터, bind_tools
-6장 워크플로우 5가지 패턴         4장(순차) 5장(분기) 7장(ReAct) 9장(사람개입)
+6장 워크플로우 5가지 패턴         4장(Sequential) 5장(Routing) 7장(Loop/ReAct) 9장(HITL)
 7장 Supervisor 아키텍처          12장 Supervisor 멀티 에이전트
+8장 Plan-and-Execute             13장 Planner + Executor 분리 구현
 8장 RAG 개념                     11장 retrieve → generate 파이프라인
 10장 안전성                      9장 interrupt + Human-in-the-Loop</code></pre>
-<h3 id="sec-51">14-2. API 치트시트</h3>
+<h3 id="sec-51">15-2. API 치트시트</h3>
 <pre><code># ─── 그래프 생성 ───
 graph = StateGraph(MyState)
 
 # ─── 노드 &amp; 엣지 ───
-graph.add_node(&quot;name&quot;, function)
-graph.add_edge(START, &quot;first_node&quot;)
-graph.add_edge(&quot;last_node&quot;, END)
-graph.add_conditional_edges(&quot;from&quot;, routing_function)
+graph.add_node("name", function)
+graph.add_edge(START, "first_node")
+graph.add_edge("last_node", END)
+graph.add_conditional_edges("from", routing_function)
 
 # ─── 컴파일 ───
 app = graph.compile()                              # 기본
@@ -1138,26 +1259,32 @@ app = graph.compile(checkpointer=MemorySaver())     # 메모리 사용
 
 # ─── 실행 ───
 result = app.invoke(initial_state)
-result = app.invoke(state, config={&quot;configurable&quot;: {&quot;thread_id&quot;: &quot;id&quot;}})
+result = app.invoke(state, config={"configurable": {"thread_id": "id"}})
 
 # ─── 스트리밍 ───
-for event in app.stream(state, config, stream_mode=&quot;updates&quot;): ...
+for event in app.stream(state, config, stream_mode="updates"): ...
 
-# ─── 간편 에이전트 ───
-agent = create_react_agent(llm, tools)
+# ─── 에이전트 생성 (LangChain 1.x 표준) ───
+# from langchain.agents import create_agent
+agent = create_agent(llm, tools)
+result = agent.invoke({"messages": [{"role": "user", "content": "질문"}]})
+print(result["messages"][-1].content)
 
 # ─── LLM 초기화 ───
 from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash-lite&quot;)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
 # ─── 도구 정의 ───
 from langchain_core.tools import tool
 @tool
 def my_tool(arg: str) -&gt; str:
-    &quot;&quot;&quot;도구 설명 (LLM이 읽는 사용 설명서)&quot;&quot;&quot;
-    return &quot;결과&quot;</code></pre>
-<h3 id="sec-52">14-3. 더 공부하려면</h3>
+    """도구 설명 (LLM이 읽는 사용 설명서)"""
+    return "결과"</code></pre>
+<h3 id="sec-52">15-3. 더 공부하려면</h3>
 <ul><li><a href="https://docs.langchain.com/oss/python/langgraph/overview" target="_blank">LangGraph 공식 문서</a></li><li><a href="https://academy.langchain.com/courses/intro-to-langgraph" target="_blank">LangChain Academy</a> — 무료 강의</li><li><a href="https://github.com/braincrew-lab/langgraph-tutorial" target="_blank">braincrew-lab/langgraph-tutorial</a> — 한국어 심화 튜토리얼</li><li><a href="https://github.com/langchain-ai/langgraph-101" target="_blank">LangGraph 101</a> — 공식 핸즈온</li></ul></article></main>
 </div>
-</body>
-</html>
+
+
+<div id="SplitView--wrapper" style="width: 81.3393vw;"><div id="SplitView--dragger"></div><div class="SplitView--wrapper-title"><a id="SplitView--title" class="SplitView--title" target="_blank"></a></div><iframe class="SplitView--iframe" src="./LangGraph 실습_files/saved_resource.html"></iframe><div class="SplitView--image-wrapper"><img class="SplitView--image"></div><div class="SplitView--actions"><div title="Close the preview" class="SplitView--action-close"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></div><div title="Switch to the other side" class="SplitView--action-switch-sides"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg></div><div title="Open in new tab" class="SplitView--action-open-in-new-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.4583 5.56767L6 18.026M19 14.776V5.39758C19 5.29214 18.9581 5.19101 18.8835 5.11645C18.809 5.04189 18.7079 5 18.6024 5H9.25" stroke="currentColor" stroke-width="2.16667" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div title="Open SplitView homepage" class="SplitView--action-open-sv-homepage"><svg width="16" height="13" viewBox="0 0 16 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.4 13V6.88235H0L8 0L16 6.88235H13.6V13H2.4ZM8 2.05706L4 5.49824V11.4706H8H12V5.49824L8 2.05706Z" fill="currentColor"></path>
+</svg></div></div></div></body></html>
