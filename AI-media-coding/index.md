@@ -195,8 +195,8 @@
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>
 
-- (강의) [에이전트_워크플로우:_설명](https://jonghhhh.github.io/2026_1/computational-methods/에이전트_워크플로_설명_060726.html)    
-- (강의) [에이전트_워크플로우:_langgraph](https://jonghhhh.github.io/2026_1/computational-methods/에이전트_워크플로_langgraph_060726.html)   
+- (강의) [에이전트_워크플로우:_설명](https://jonghhhh.github.io/2026_1/computational-methods/에이전트_워크플로_설명_060626.html)    
+- (강의) [에이전트_워크플로우:_langgraph](https://jonghhhh.github.io/2026_1/computational-methods/에이전트_워크플로_langgraph_060626.html)   
 - (실습) [langgraph: 실습코드](https://jonghhhh.github.io/2026_1/computational-methods/langgraph_실습코드.zip)         
   
 </details>
