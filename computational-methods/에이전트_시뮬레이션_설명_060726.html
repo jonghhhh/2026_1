@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>생성 에이전트 사회 시뮬레이션</title>
+<style>
+body{font-family:'Noto Sans KR',Arial,sans-serif;max-width:1200px;margin:auto;padding:40px;line-height:1.8;color:#222}
+h1{border-bottom:2px solid #ddd;padding-bottom:.4em}
+h2{border-bottom:1px solid #eee;padding-bottom:.2em;margin-top:2em}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ccc;padding:8px;vertical-align:top}
+th{background:#f5f5f5}
+pre{background:#f6f8fa;padding:14px;border-radius:6px;overflow:auto}
+blockquote{border-left:4px solid #999;padding-left:12px;margin-left:0}
+strong{font-weight:700}
+</style>
+</head><body>
+<h1 id="_1">생성 에이전트 사회 시뮬레이션</h1>
+<h3 id="langgraph-mesa">대화형(LangGraph)에서 집단·창발(Mesa)까지</h3>
+<blockquote>
+<p><strong>개념 → 이론 → 도구 선택 → 실습 코드</strong>
+두 모드를 다룬다: <strong>(1) 대화형(미시) 시뮬레이션 = 페르소나 토론</strong>, <strong>(2) 집단(거시) 시뮬레이션 = 페르소나 ABM</strong>.
+<strong>선행/병행 강의 안내: 에이전트 기초와 워크플로,  실리콘 샘플링은 별도 강의 참조. 여기서는 그 </strong>이론적 토대**만 짚고 넘어간다.</p>
+</blockquote>
+<hr>
+<h2 id="0">0. 이 강의가 답하려는 것 — 하나의 스펙트럼</h2>
+<p>두 질문을 강의의 두 축으로 삼는다.</p>
+<ol>
+<li><strong>페르소나 에이전트들끼리 토론을 시키려면?</strong></li>
+<li><strong>페르소나 에이전트 기반 ABM(행위자 기반 모형)을 만들려면?</strong></li>
+</ol>
+<h3 id="01">0.1 토론도 시뮬레이션이다</h3>
+<p>먼저 오해 하나를 짚는다. <strong>토론과 ABM은 "시뮬레이션이냐 아니냐"로 갈리는 것이 아니다.</strong> 둘 다 <em>생성 에이전트로 인간의 사회적 상호작용을 모사한다</em>는 점에서 모두 <strong>사회 시뮬레이션(social simulation)</strong> 이다. 실제로 이 강의 토론 실습의 모델인 Chuang et al.(2024)의 논문 제목부터 "Simulating Opinion Dynamics"다 — 토론을 시뮬레이션으로 본 것이다.</p>
+<p>둘은 <strong>규모와 관찰 대상</strong>이 다른, <strong>하나의 스펙트럼 위의 두 지점</strong>일 뿐이다.</p>
+<table>
+<thead>
+<tr>
+<th>축</th>
+<th><strong>대화형(미시) 시뮬레이션 — 토론</strong></th>
+<th><strong>집단(거시) 시뮬레이션 — ABM</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>규모</td>
+<td>소수(2~수 명)</td>
+<td>다수(수십~수백)</td>
+</tr>
+<tr>
+<td>상호작용 양식</td>
+<td>자연어 대화(턴을 주고받음)</td>
+<td>네트워크 위에서 반복 스텝</td>
+</tr>
+<tr>
+<td>보는 것</td>
+<td><strong>과정·내용</strong> (누가 무슨 말을 했나, transcript)</td>
+<td><strong>집단 패턴·창발</strong> (양극화 곡선 등)</td>
+</tr>
+<tr>
+<td>핵심 도구</td>
+<td><strong>LangGraph</strong></td>
+<td><strong>Mesa</strong></td>
+</tr>
+</tbody>
+</table>
+<p>즉 <strong>미시(대화) → 거시(집단)</strong> 로 이어지는 한 축이며, 강의는 이 축을 따라 흐른다.</p>
+<h3 id="02">0.2 도구 분업 — 그리고 한 가지 핵심 통찰</h3>
+<p>이 강의의 도구 분업은 단순하다.</p>
+<blockquote>
+<p><strong>토론 → LangGraph, 시뮬레이션(ABM) → Mesa.</strong></p>
+</blockquote>
+<p>왜 갈리는가? <strong>오케스트레이션(누가 언제, 누구와, 몇 번 상호작용하는가)의 성격이 다르기 때문</strong>이다.</p>
+<ul>
+<li><strong>토론</strong>은 소수가 차례로 말하고 "언제 멈출지·사회자가 끼어들지·합의됐는지"라는 <strong>흐름 제어</strong>가 본질이다 → LangGraph의 상태그래프·조건부 엣지가 적격.</li>
+<li><strong>ABM</strong>은 다수가 네트워크 위에서 반복 상호작용하며 <strong>창발</strong>을 보는 것이고, 스케줄·공간·데이터수집이 핵심이다 → Mesa의 본령.</li>
+</ul>
+<p>여기서 <strong>반드시 기억할 한 문장</strong>이 있다.</p>
+<blockquote>
+<p><strong>토론에서는 LangGraph가, ABM에서는 Mesa가 "바깥 루프(오케스트레이터)" 역할을 맡을 뿐, 각 에이전트의 "머리"는 양쪽 모두 똑같은 LLM 호출이다.</strong> 달라지는 것은 바깥 루프를 누가 도느냐일 뿐이다.</p>
+</blockquote>
+<p>그래서 ABM에는 LangGraph가 필요 없다. 바깥 루프를 이미 Mesa가 돌리고 있으므로, 거기에 LangGraph를 또 얹으면 <strong>스케줄러가 중복</strong>된다. (이 원칙의 예외 — 에이전트의 "머리" 자체가 다단계로 복잡해질 때 — 는 3.5에서 다룬다.)</p>
+<h3 id="03">0.3 도구 선택 의사결정표</h3>
+<table>
+<thead>
+<tr>
+<th>상황</th>
+<th>추천</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2~4명, 단순 라운드로빈 토론, <strong>원리 학습용</strong></td>
+<td><strong>Gemini SDK 직접</strong></td>
+<td>의존성 0, 코드가 투명해 원리 학습에 최적</td>
+</tr>
+<tr>
+<td>토론에 "사회자·종료조건·합의판정" 등 <strong>분기 로직</strong></td>
+<td><strong>LangGraph</strong></td>
+<td>상태그래프로 흐름 제어가 명시적, 디버깅·재현 용이</td>
+</tr>
+<tr>
+<td>다수 에이전트의 <strong>집단 동역학·창발</strong> 관찰</td>
+<td><strong>Mesa</strong></td>
+<td>스케줄·네트워크·데이터수집·시각화를 표준 제공</td>
+</tr>
+<tr>
+<td>"여러 에이전트가 자유롭게 대화·합의"하는 패턴 자체</td>
+<td>(참고) <strong>AG2</strong></td>
+<td>대화 프리미티브가 자유 토론에 자연스러움</td>
+</tr>
+<tr>
+<td>"역할 분담 파이프라인"(연구자→작성자→편집자)</td>
+<td>(참고) <strong>CrewAI</strong></td>
+<td>역할 기반이라 토론보다 <strong>협업 작업</strong>에 적합</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>조언</strong>
+- <strong>원리 체득 = Gemini SDK 직접</strong> (먼저 이걸로 "1 에이전트 = 1 LLM 호출"을 몸에 익힌다)
+- <strong>연구용 토론 = LangGraph</strong> (흐름·종료조건·기록을 통제해야 하므로)
+- <strong>집단 시뮬레이션 = Mesa</strong></p>
+<p>참고로 <em>자유 발언형</em> 토론은 AG2(대화 네이티브)가 더 자연스럽지만, <strong>연구용</strong>(턴 순서 고정·로그 저장·재현·시각화)에는 LangGraph가 낫다. AutoGen은 2026년 기준 Microsoft가 유지보수 모드로 전환해 더 넓은 Agent Framework로 흡수 중이므로, 신규 학습용 후속은 <strong>AG2</strong>다. 본 강의는 연구·재현을 중시하므로 토론에 <strong>LangGraph</strong>를 택한다.</p>
+</blockquote>
+<hr>
+<h2 id="part-1">Part 1 — 개념과 이론</h2>
+<h3 id="11">1.1 한 문장 정의</h3>
+<blockquote>
+<p><strong>Generative agent = "LLM에게 특정 인물(페르소나)의 역할을 부여하고, 기억을 갖게 하여, 자극에 대해 그 사람처럼 반응하게 만든 소프트웨어 객체."</strong></p>
+</blockquote>
+<p>기존 ABM의 에이전트는 숫자와 if-then 규칙으로 움직였다. Generative agent는 <strong>자연어로 생각하고 반응</strong>한다. 이 차이가 전부의 출발점이다.</p>
+<h3 id="12">1.2 두 개의 기둥 논문</h3>
+<p><strong>(A) Park et al. (2023), "Generative Agents: Interactive Simulacra of Human Behavior" — 스탠퍼드 "AI 마을(Smallville)"</strong></p>
+<p>25명의 AI 캐릭터가 가상 마을에서 살아간다. 핵심은 <strong>기억 흐름(Memory Stream)이라는 저장소와, 그 위에서 작동하는 세 가지 인지 과정</strong>이다.</p>
+<ul>
+<li><strong>Memory Stream(기억 흐름)</strong> — <em>저장소.</em> 에이전트가 겪은 모든 일을 자연어 일지로 쌓는다.</li>
+<li>그 위에서 작동하는 <strong>세 가지 인지 과정:</strong></li>
+</ul>
+<ol>
+<li><strong>Retrieval(인출)</strong> — 지금 상황에 관련된 기억을 <em>최근성·중요도·관련성</em> 3점수로 골라낸다.</li>
+<li><strong>Reflection(성찰)</strong> — 쌓인 기억을 주기적으로 요약해 더 추상적인 통찰(예: "나는 연구를 좋아한다")을 만든다.</li>
+<li><strong>Planning(계획)</strong> — 통찰을 바탕으로 하루 일정을 세우고 행동한다.</li>
+</ol>
+<blockquote>
+<p><strong>비유:</strong> 사람은 (1) 일기를 쓰고[기억] → (2) 필요할 때 관련 기억을 떠올리고[인출] → (3) 가끔 "내가 어떤 사람인지" 정리하고[성찰] → (4) 그에 맞게 계획한다[계획]. 이 흐름을 LLM 프롬프트로 흉내 낸 것이다.</p>
+</blockquote>
+<p>이 논문에서 그 유명한 <strong>"발렌타인 파티 창발(emergence)"</strong> 이 나온다. 연구자는 한 에이전트에게 "파티를 열고 싶다"는 의도만 심었는데, 에이전트들이 <strong>스스로 초대장을 돌리고, 데이트 신청을 하고, 시간 맞춰 모이는</strong> 집단 행동이 자연발생했다. 누구도 "초대해라"고 코딩하지 않았다.</p>
+<p><strong>(B) Park et al. (2024), "Generative Agent Simulations of 1,000 People" — 실존 인물 1,052명의 디지털 복제</strong></p>
+<p>이번엔 가상 캐릭터가 아니라 <strong>실제 사람 1,052명을 2시간씩 인터뷰</strong>하고, 그 인터뷰 전문을 LLM에 넣어 "그 사람 에이전트"를 만들었다.</p>
+<ul>
+<li>결과: 에이전트가 General Social Survey(종합사회조사) 응답을, <strong>사람이 2주 뒤 자기 답을 재현하는 정확도의 약 85% 수준</strong>으로 재현했다.</li>
+<li>핵심 발견: <strong>인터뷰 기반 에이전트 &gt; 인구통계(나이/성별/지역) 기반 에이전트 &gt; 짧은 페르소나 설명 기반 에이전트.</strong> 즉 <strong>"이 사람이 누구인지 풍부하게 알수록 시뮬레이션이 정확"</strong> 하다.</li>
+<li>부수 효과: 인터뷰 기반이 인종·이념 집단 간 <strong>정확도 편향(bias)도 줄였다.</strong></li>
+</ul>
+<blockquote>
+<p><strong>핵심 메시지:</strong> <strong>페르소나의 질이 곧 시뮬레이션의 질이다.</strong> "보수 성향 50대 남성" 같은 한 줄짜리 페르소나와 진짜 인터뷰 전문 사이엔 거대한 차이가 있다. 공개 코드: <code>github.com/joonspk-research/genagents</code></p>
+<p><em>(이처럼 개인의 설문 응답을 에이전트로 예측·대체하는 기법이 "실리콘 샘플링"이며, 자세한 방법론은 별도 강의에서 다룬다. 여기서는 "페르소나가 풍부할수록 정확하다"는 이론적 교훈만 가져간다.)</em></p>
+</blockquote>
+<h3 id="13">1.3 방법론적 정당성 — "이게 진짜 연구방법인가?"</h3>
+<p><strong>Anthis et al. (2025), "LLM social simulations are a promising research method"</strong> 가 이 질문에 정면으로 답한다.</p>
+<ul>
+<li>주장: LLM 사회 시뮬레이션은 (실제 사람 실험 대비) <strong>싸고, 빠르고, 윤리적 위험이 낮은</strong> 사전 탐색 도구로서 유망하다.</li>
+<li>단, <strong>검증(validation), 편향, 재현성</strong>의 한계를 분명히 인식하고 써야 한다.</li>
+</ul>
+<blockquote>
+<p><strong>강조할 균형점:</strong> "사람을 대체"하는 게 아니라 <strong>"가설을 싸게 미리 테스트(pilot)"</strong> 하는 도구다. 본실험 전 시뮬레이션으로 설계를 다듬는 용도가 가장 정당하다.</p>
+</blockquote>
+<h3 id="14">1.4 토론·여론 동역학의 두 선행연구</h3>
+<p><strong>Chuang et al. (2024), "Simulating Opinion Dynamics with Networks of LLM-based Agents"</strong> — 본 강의 실습의 직접적 모델</p>
+<ul>
+<li>설계: 여러 LLM 에이전트가 각자 페르소나를 갖고 <strong>네트워크로 연결</strong>되어, 트윗을 쓰고 이웃의 글을 읽으며 <strong>의견을 갱신</strong>한다.</li>
+<li>발견 1: LLM은 본능적으로 <strong>"정확한 정보(과학적 합의)로 수렴"하려는 강한 편향</strong>이 있다 → 그냥 두면 의견이 다 한쪽으로 모여버린다(현실의 양극화를 재현 못 함).</li>
+<li>발견 2: <strong>프롬프트로 "확증편향(confirmation bias)"을 인위적으로 주입</strong>하자, 비로소 현실처럼 <strong>의견이 파편화·양극화</strong>됐다.</li>
+<li>고전 ABM과의 대비: 고전 ABM은 의견을 <em>숫자</em>로 두고 <em>수식</em>으로 갱신한다. 여기선 <em>자연어 신념</em>을 <em>LLM</em>이 갱신한다. <strong>이것이 generative ABM의 본질.</strong></li>
+<li>공개 코드: <code>github.com/yunshiuan/llm-agent-opinion-dynamics</code></li>
+</ul>
+<blockquote>
+<p><strong>교훈:</strong> LLM 에이전트는 "기본값"이 너무 착하고 합리적이라 현실의 갈등을 잘 재현 못 한다. <strong>편향·고집·정체성을 프롬프트로 명시적으로 넣어줘야</strong> 현실적인 시뮬레이션이 된다. — 이 교훈은 Part 2(페르소나 프롬프트)와 Part 3(<code>confirmation_bias</code> 토글) 양쪽에서 그대로 회수된다.</p>
+</blockquote>
+<p><strong>Törnberg et al. (2023), "Simulating Social Media Using LLMs to Evaluate Alternative News Feed Algorithms"</strong> — 응용의 정점</p>
+<ul>
+<li>설계: LLM 페르소나들에게 (정치 성향 등) 실제 설문 기반 정체성을 부여하고, <strong>가상의 소셜미디어 피드</strong> 위에서 상호작용시켰다.</li>
+<li>목적: <strong>"어떤 추천 알고리즘이 정치적 적대(toxicity)를 줄이는가"</strong> 를 사람 대상 실험 없이 시뮬레이션으로 비교.</li>
+<li>의의: 시뮬레이션이 <strong>정책·플랫폼 설계의 사전 실험실</strong> 역할을 할 수 있음을 보였다 → 저널리즘·미디어 연구와 직결.</li>
+</ul>
+<h3 id="15-part-1">1.5 Part 1 요약 (한 장의 표로)</h3>
+<table>
+<thead>
+<tr>
+<th>차원</th>
+<th>고전 ABM (Schelling 등)</th>
+<th>Generative Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>에이전트의 머릿속</td>
+<td>숫자 변수</td>
+<td>자연어 신념·기억</td>
+</tr>
+<tr>
+<td>행동 규칙</td>
+<td>사람이 짠 수식/if-then</td>
+<td>LLM이 페르소나 따라 생성</td>
+</tr>
+<tr>
+<td>강점</td>
+<td>빠름, 수백만 명, 투명</td>
+<td>풍부함, 현실적 언어, 창발</td>
+</tr>
+<tr>
+<td>약점</td>
+<td>단순, 비현실적</td>
+<td>느림, 비쌈, 편향, 검증 어려움</td>
+</tr>
+<tr>
+<td>핵심 위험</td>
+<td>—</td>
+<td>LLM이 "너무 합리적"이라 갈등 과소재현</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="part-2-langgraph">Part 2 — 대화형(미시) 시뮬레이션: 페르소나 토론  〔도구: LangGraph〕</h2>
+<p>소수의 페르소나가 자연어로 의견을 주고받는 시뮬레이션이다. 두 단계로 가르친다: <strong>(단계 1) Gemini SDK 원형으로 원리를 익히고 → (단계 2) LangGraph로 흐름을 통제</strong>한다. 단계 1을 건너뛰면 안 된다. 거기서 익히는 <strong>"에이전트 1명 = LLM 호출 하나"</strong> 가 Part 3(Mesa)에서 각 시민의 "머리"로 그대로 재등장하기 때문이다.</p>
+<h3 id="21-1-gemini-sdk">2.1 단계 1 — Gemini SDK 원형 (가장 먼저 학습)</h3>
+<p>원리: <strong>에이전트 1명 = <code>chat</code> 세션 1개.</strong> 각 세션은 자기 페르소나(<code>system_instruction</code>)와 대화 기록을 갖는다. 사회자(오케스트레이터) 역할은 <strong>평범한 파이썬 for-loop</strong> 가 맡아, 발언을 모아 다음 사람에게 넘긴다.</p>
+<pre><code class="language-python"># pip install google-genai
+from google import genai
+from google.genai import types
+
+client = genai.Client()  # GOOGLE_API_KEY 환경변수 사용
+
+# 1) 페르소나 정의 — 이 부분이 시뮬레이션의 질을 결정 (1.2절 교훈)
+PERSONAS = {
+    &quot;보수성향 자영업자 김씨&quot;: (
+        &quot;당신은 55세 자영업자입니다. 경제적 안정과 질서를 중시하며, &quot;
+        &quot;급격한 변화에 회의적입니다. 토론에서 자기 입장을 쉽게 바꾸지 않고, &quot;
+        &quot;자신의 경험을 근거로 반박합니다. 1~2문장으로 짧게 말하세요.&quot;
+    ),
+    &quot;진보성향 대학원생 이씨&quot;: (
+        &quot;당신은 28세 대학원생입니다. 사회적 약자 보호와 변화를 중시합니다. &quot;
+        &quot;데이터와 공정성을 근거로 주장하며, 상대 논리의 허점을 짚습니다. &quot;
+        &quot;1~2문장으로 짧게 말하세요.&quot;
+    ),
+}
+
+# 2) 에이전트별 chat 세션 생성 (각자 독립된 기억)
+agents = {}
+for name, persona in PERSONAS.items():
+    agents[name] = client.chats.create(
+        model=&quot;gemini-2.5-flash&quot;,
+        config=types.GenerateContentConfig(
+            system_instruction=persona,
+            temperature=0.9,   # 토론은 다양성이 필요 → 높게
+        ),
+    )
+
+# 3) 토론 진행 (라운드로빈 + 직전 발언 전달)
+TOPIC = &quot;정부가 모든 시민에게 월 50만원 기본소득을 지급해야 하는가?&quot;
+transcript = [f&quot;[주제] {TOPIC}&quot;]
+last_utterance = f&quot;오늘 토론 주제는 '{TOPIC}' 입니다. 의견을 말씀해 주세요.&quot;
+
+ROUNDS = 3
+for r in range(ROUNDS):
+    for name, chat in agents.items():
+        prompt = (
+            f&quot;지금까지의 토론 맥락:n{last_utterance}nn&quot;
+            f&quot;당신({name})의 차례입니다. 위 발언에 반응하며 의견을 말하세요.&quot;
+        )
+        resp = chat.send_message(prompt)
+        line = f&quot;[{r+1}라운드] {name}: {resp.text.strip()}&quot;
+        print(line)
+        transcript.append(line)
+        last_utterance = line   # 다음 사람에게 직전 발언 전달
+
+# 4) 결과 저장 (분석용)
+with open(&quot;debate_log.txt&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+    f.write(&quot;n&quot;.join(transcript))
+</code></pre>
+<p><strong>이 코드에서 초보가 반드시 이해할 4가지</strong></p>
+<ol>
+<li><code>chats.create()</code> 하나가 곧 <strong>"한 사람의 머리"</strong>. <code>chat.history</code>에 기억이 쌓인다. ← <em>이 개념이 Part 3 Mesa 에이전트의 머리로 재등장한다.</em></li>
+<li><code>system_instruction</code>(페르소나)이 행동을 지배한다 — 여기에 <strong>편향·고집을 명시</strong>해야 토론이 살아난다(Chuang 교훈).</li>
+<li><code>temperature</code>를 높이면 다양·창의, 낮추면 일관·보수적. 토론엔 0.8~1.0 권장.</li>
+<li><strong>오케스트레이션(누가 언제 말하나)은 결국 평범한 파이썬 for-loop.</strong> 프레임워크가 자동화해 주는 게 바로 이 부분이다.</li>
+</ol>
+<p><strong>한계 체험시키기:</strong> 라운드가 늘면 (a) 누가 언제 멈출지(종료조건), (b) 사회자가 중간 요약을 해야 할지, (c) 4명 이상이면 누구에게 발언권을 줄지 — 이 로직이 for-loop 안에서 점점 지저분해진다. <strong>바로 이 지점에서 LangGraph가 필요하다.</strong></p>
+<h3 id="22-2-langgraph">2.2 단계 2 — LangGraph로 흐름을 통제하는 토론</h3>
+<blockquote>
+<p><strong>전제:</strong> LangGraph의 원리(State·Node·Edge·조건부 엣지)는 「에이전트 기초와 워크플로」 강의에서 이미 배웠다고 가정한다. 여기서는 그것을 <strong>토론에 적용</strong>하는 데만 집중한다. (복습용 한 줄 요약 — <strong>State</strong>: 그래프가 공유하는 메모장 / <strong>Node</strong>: 메모장을 고쳐 쓰는 함수 / <strong>Edge</strong>: 노드 간 화살표, <em>조건부 엣지</em>로 분기·종료.)</p>
+</blockquote>
+<p>토론에 적용할 때의 설계는 다음과 같다.</p>
+<ul>
+<li><strong>State</strong> = 토론 전체의 공유 메모리: 발언 기록(<code>transcript</code>), 라운드 수(<code>round</code>).</li>
+<li><strong>Node</strong> = "각 페르소나의 발언 생성", "사회자(라운드 카운트)".</li>
+<li><strong>조건부 엣지</strong> = "라운드가 다 차면 종료, 아니면 계속".</li>
+</ul>
+<pre><code class="language-python"># pip install langgraph langchain-google-genai
+from typing import TypedDict, Annotated
+import operator
+from langgraph.graph import StateGraph, END
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+llm = ChatGoogleGenerativeAI(model=&quot;gemini-2.5-flash&quot;, temperature=0.9)
+
+# 1) 공유 상태 정의
+class DebateState(TypedDict):
+    topic: str
+    transcript: Annotated[list, operator.add]  # 발언이 누적됨(add 누산기)
+    round: int
+
+PERSONAS = {
+    &quot;김씨&quot;: &quot;55세 보수성향 자영업자. 변화에 회의적, 입장을 잘 안 바꿈. 1~2문장.&quot;,
+    &quot;이씨&quot;: &quot;28세 진보성향 대학원생. 데이터·공정성 중시. 1~2문장.&quot;,
+}
+
+# 2) 페르소나 노드를 만드는 공장(factory)
+def make_agent_node(name, persona):
+    def node(state: DebateState):
+        context = &quot;n&quot;.join(state[&quot;transcript&quot;][-4:])  # 최근 4발언만 맥락으로
+        msg = llm.invoke(
+            f&quot;당신은 '{name}'입니다. 성격: {persona}n&quot;
+            f&quot;주제: {state['topic']}n최근 토론:n{context}n&quot;
+            f&quot;위에 반응해 의견을 말하세요.&quot;
+        )
+        return {&quot;transcript&quot;: [f&quot;{name}: {msg.content.strip()}&quot;]}
+    return node
+
+# 3) 사회자 노드 (라운드 증가 + 종료 판단용 카운터)
+def moderator(state: DebateState):
+    return {&quot;round&quot;: state[&quot;round&quot;] + 1}
+
+# 4) 조건부 엣지: 3라운드 끝나면 종료
+def should_continue(state: DebateState):
+    return &quot;continue&quot; if state[&quot;round&quot;] &lt; 3 else &quot;end&quot;
+
+# 5) 그래프 조립
+g = StateGraph(DebateState)
+g.add_node(&quot;김씨&quot;, make_agent_node(&quot;김씨&quot;, PERSONAS[&quot;김씨&quot;]))
+g.add_node(&quot;이씨&quot;, make_agent_node(&quot;이씨&quot;, PERSONAS[&quot;이씨&quot;]))
+g.add_node(&quot;moderator&quot;, moderator)
+g.set_entry_point(&quot;김씨&quot;)
+g.add_edge(&quot;김씨&quot;, &quot;이씨&quot;)
+g.add_edge(&quot;이씨&quot;, &quot;moderator&quot;)
+g.add_conditional_edges(&quot;moderator&quot;, should_continue,
+                        {&quot;continue&quot;: &quot;김씨&quot;, &quot;end&quot;: END})
+app = g.compile()
+
+# 6) 실행
+result = app.invoke({&quot;topic&quot;: &quot;기본소득을 도입해야 하는가?&quot;,
+                     &quot;transcript&quot;: [], &quot;round&quot;: 0})
+for line in result[&quot;transcript&quot;]:
+    print(line)
+</code></pre>
+<p><strong>SDK 버전 대비 무엇이 좋아졌나</strong> </p>
+<ul>
+<li>"언제 멈출지"가 <strong><code>should_continue</code> 한 곳에 명시</strong> → for-loop 안에 흩어지지 않는다.</li>
+<li>상태(<code>transcript</code>, <code>round</code>)가 <strong>한 곳에 모여</strong> 추적·디버깅·저장이 쉽다.</li>
+<li>나중에 "합의 점수가 0.8 넘으면 종료" 같은 <strong>복잡한 조건도 함수 하나만 고치면 된다.</strong></li>
+<li>그래프 구조라 <strong>시각화·재현·발표</strong>에 유리하다(연구·강의용 큰 장점). <code>app.get_graph().draw_mermaid()</code>로 그림을 뽑을 수 있다.</li>
+</ul>
+<h3 id="23">2.3 (참고) 무엇을 언제 쓸지 한눈에</h3>
+<pre><code>원리 학습 ───────────────▶ Gemini SDK 직접
+연구용 토론(흐름 통제) ───▶ LangGraph   (★ 본 강의 권장)
+집단 동역학(다수·창발) ──▶ Mesa         (→ Part 3)
+자유 대화·합의 패턴 ─────▶ AG2 (참고)
+역할분담 작업 파이프라인 ─▶ CrewAI (참고)
+</code></pre>
+<hr>
+<h2 id="part-3-abm-mesa">Part 3 — 집단(거시) 시뮬레이션: 페르소나 ABM  〔도구: Mesa〕</h2>
+<h3 id="31-mesa">3.1 왜 Mesa인가, 그리고 무엇을 연계하나</h3>
+<ul>
+<li><strong>Mesa = 파이썬 표준 ABM 프레임워크</strong> (Mesa 3, 2025). 에이전트 스케줄링·공간(격자/네트워크)·데이터 수집·시각화를 모두 제공한다.</li>
+<li>토론(Part 2)과의 차이: 토론은 "소수가 대화"하는 것. ABM은 <strong>"다수가 규칙적으로 반복 상호작용하며 집단 패턴(창발)을 본다"</strong> 는 것이다.</li>
+<li>
+<p><strong>연계 방식 = "Mesa가 골격, LLM이 두뇌":</strong></p>
+</li>
+<li>
+<p><strong>Mesa</strong> — 누가 언제 활성화되는가(스케줄), 누가 누구와 이웃인가(공간/네트워크), 매 스텝 데이터 기록.</p>
+</li>
+<li><strong>LLM</strong> — 각 에이전트가 매 스텝 <strong>무엇을 생각하고 어떻게 의견을 바꾸는가</strong>.</li>
+<li>실제로 Mesa 진영도 <strong>Mesa-LLM</strong>(LLM 기반 generative ABM) 통합을 GSoC 등에서 추진 중이라, 이 설계는 커뮤니티 방향과 일치한다.</li>
+</ul>
+<blockquote>
+<p><strong>비유:</strong> Mesa는 "체스판과 규칙(턴 순서, 칸)"이고, LLM은 "각 말을 두는 사람의 머리"다. 고전 ABM은 머리 자리에 간단한 수식이 들어갔는데, 우리는 거기에 LLM을 끼운다.</p>
+<p><strong>Part 2와의 연결 (핵심):</strong> Part 2 토론에서 만든 "에이전트 1명 = LLM 호출 하나"가, 여기서는 각 시민의 <code>step()</code> 안에 들어가는 LLM 호출로 <strong>그대로 재등장</strong>한다. 달라진 것은 <strong>바깥 루프를 누가 도느냐</strong> 뿐이다 — 토론에서는 LangGraph(또는 for-loop)가, ABM에서는 <strong>Mesa</strong>가 그 바깥 루프를 맡는다. <strong>그래서 ABM에는 LangGraph가 따로 필요 없다.</strong> 바깥 루프가 이미 Mesa이기 때문이다(중복 방지).</p>
+</blockquote>
+<h3 id="32-mesa-3-4">3.2 Mesa 3 핵심 개념 4개</h3>
+<table>
+<thead>
+<tr>
+<th>개념</th>
+<th>역할</th>
+<th>한 줄 설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Agent</code></td>
+<td>행위자</td>
+<td><code>step()</code> 메서드에 "한 턴에 할 일"을 적는다</td>
+</tr>
+<tr>
+<td><code>Model</code></td>
+<td>세계</td>
+<td>에이전트를 만들고, 매 스텝 모두를 활성화</td>
+</tr>
+<tr>
+<td><code>agents.shuffle_do("step")</code></td>
+<td>스케줄</td>
+<td>매 스텝 에이전트들을 무작위 순서로 행동시킴</td>
+</tr>
+<tr>
+<td><code>DataCollector</code></td>
+<td>기록</td>
+<td>매 스텝 지표(예: 평균 의견)를 표로 저장</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-llm-abm-chuang">3.3 쉬운 예제 — "LLM 여론 양극화 ABM" (Chuang 논문의 교육용 축소판)</h3>
+<p>목표: 네트워크로 연결된 페르소나 에이전트들이 매 스텝 이웃의 의견을 보고 자기 의견(0~10 척도)을 갱신 → <strong>시간에 따라 수렴하는가, 양극화하는가</strong>를 관찰한다.</p>
+<p><strong>비용 안전장치 포함:</strong> LLM 호출은 돈이 드므로, <code>USE_LLM=False</code>면 규칙기반(무료)으로, <code>True</code>면 Gemini로 동작하게 설계했다. 강의에서는 먼저 무료 모드로 구조를 보이고, 그다음 LLM 모드로 전환한다.</p>
+<pre><code class="language-python"># pip install &quot;mesa&gt;=3.0&quot; networkx google-genai
+import re, random
+import mesa
+import networkx as nx
+
+USE_LLM = False   # 먼저 False로 구조 학습 → 이후 True로 전환
+if USE_LLM:
+    from google import genai
+    from google.genai import types
+    client = genai.Client()
+
+# 헬퍼: 표준편차 (값이 클수록 의견이 흩어짐 = 양극화)
+def _std(xs):
+    mu = sum(xs) / len(xs)
+    return (sum((x - mu) ** 2 for x in xs) / len(xs)) ** 0.5
+
+# ── 1) 에이전트: 한 명의 시민 ────────────────────────────
+class CitizenAgent(mesa.Agent):
+    def __init__(self, model, persona, opinion):
+        super().__init__(model)          # Mesa 3: unique_id는 자동 부여
+        self.persona = persona           # 페르소나 텍스트
+        self.opinion = opinion           # 0(강한 반대) ~ 10(강한 찬성)
+        self.confirmation_bias = True    # Chuang 교훈: 편향 주입해야 현실적
+
+    def step(self):
+        # (a) 이웃들의 의견 수집 (Mesa의 네트워크 공간 활용)
+        neighbors = self.model.grid.get_neighbors(self.pos, include_center=False)
+        if not neighbors:
+            return
+        neighbor_views = [n.opinion for n in neighbors]
+        avg_neighbor = sum(neighbor_views) / len(neighbor_views)
+
+        if not USE_LLM:
+            # ── 규칙기반(무료): 확증편향 모델 ──
+            # 내 의견과 가까운 이웃에게만 끌린다(편향) → 양극화 유도
+            close = [v for v in neighbor_views if abs(v - self.opinion) &lt;= 3]
+            if close and self.confirmation_bias:
+                target = sum(close) / len(close)
+                self.opinion += 0.3 * (target - self.opinion)
+            else:
+                self.opinion += 0.1 * (avg_neighbor - self.opinion)
+        else:
+            # ── LLM 모드: 자연어로 의견 갱신 (머리 = LLM 호출 하나) ──
+            bias_note = (&quot;당신은 자기 신념과 비슷한 의견은 신뢰하고, &quot;
+                         &quot;반대 의견엔 회의적입니다. 쉽게 흔들리지 않습니다.&quot;
+                         if self.confirmation_bias else &quot;&quot;)
+            prompt = (
+                f&quot;{self.persona}n{bias_note}n&quot;
+                f&quot;주제: 기본소득 도입(0=강한반대, 10=강한찬성).n&quot;
+                f&quot;현재 당신 입장: {self.opinion:.1f}점.n&quot;
+                f&quot;이웃들의 입장: {[round(v, 1) for v in neighbor_views]}n&quot;
+                f&quot;이웃 의견을 들은 뒤 당신의 새 입장을 정하세요. &quot;
+                f&quot;반드시 '점수: X' 형식으로 0~10 숫자 하나만 마지막 줄에 쓰세요.&quot;
+            )
+            resp = client.models.generate_content(
+                model=&quot;gemini-2.5-flash&quot;,
+                contents=prompt,
+                config=types.GenerateContentConfig(temperature=0.7),
+            )
+            m = re.search(r&quot;점수:s*([0-9]+.?[0-9]*)&quot;, resp.text)
+            if m:
+                self.opinion = max(0, min(10, float(m.group(1))))
+
+# ── 2) 모델: 세계 전체 ──────────────────────────────────
+class PolarizationModel(mesa.Model):
+    def __init__(self, n=10, seed=42):
+        super().__init__(seed=seed)
+        # 작은세계 네트워크(현실 사회망과 유사)
+        G = nx.watts_strogatz_graph(n=n, k=4, p=0.3, seed=seed)
+        self.grid = mesa.space.NetworkGrid(G)
+
+        personas = [
+            &quot;보수성향 50대 자영업자, 안정 중시.&quot;,
+            &quot;진보성향 20대 대학원생, 공정성 중시.&quot;,
+            &quot;중도성향 40대 회사원, 실용 중시.&quot;,
+        ]
+        for node in G.nodes():
+            persona = random.choice(personas)
+            opinion = random.uniform(0, 10)   # 초기 의견 랜덤
+            a = CitizenAgent(self, persona, opinion)
+            self.grid.place_agent(a, node)
+
+        # 매 스텝 '평균 의견'과 '의견 표준편차(양극화)' 기록
+        self.datacollector = mesa.DataCollector(
+            model_reporters={
+                &quot;평균의견&quot;: lambda m: sum(a.opinion for a in m.agents) / len(m.agents),
+                &quot;양극화(표준편차)&quot;: lambda m: _std([a.opinion for a in m.agents]),
+            }
+        )
+
+    def step(self):
+        self.datacollector.collect(self)
+        self.agents.shuffle_do(&quot;step&quot;)   # 무작위 순서로 전원 행동
+
+# ── 3) 실행 &amp; 결과 ──────────────────────────────────────
+model = PolarizationModel(n=10)
+for _ in range(15):       # 15스텝(=15번의 의견 교환 라운드)
+    model.step()
+
+df = model.datacollector.get_model_vars_dataframe()
+print(df)
+# 해석: '양극화(표준편차)'가 시간이 지나며 커지면 → 의견이 갈라짐(양극화)
+#       작아지면 → 합의로 수렴. Chuang의 핵심 실험을 직접 재현하는 것.
+</code></pre>
+<p><strong>이 예제로 가르칠 핵심 흐름</strong></p>
+<ol>
+<li><strong>무료 모드(<code>USE_LLM=False</code>)로 먼저 실행</strong> → Mesa의 골격(Agent/Model/네트워크/DataCollector)을 비용 0으로 이해.</li>
+<li><strong><code>confirmation_bias</code>를 켜고/끄고 비교</strong> → 켜면 양극화, 끄면 수렴. <strong>Chuang 논문의 핵심 발견</strong>을 직접 재현.</li>
+<li><strong><code>USE_LLM=True</code>로 전환</strong> → 같은 구조에서 머리만 LLM으로 교체. "규칙기반 → 생성형"의 차이를 체감.</li>
+<li><strong><code>n</code>(에이전트 수)·네트워크 종류·스텝 수를 바꿔보며</strong> 결과 변화 관찰(실습 과제).</li>
+</ol>
+<h3 id="34">3.4 비용·속도 현실</h3>
+<ul>
+<li>LLM ABM은 <strong>호출 수 = 에이전트 수 × 스텝 수</strong>로 폭증한다. 10명 × 15스텝 = 150회. 100명 × 50스텝 = 5,000회.</li>
+<li><strong>수업 권장 기본값:</strong> 에이전트 5~15명, 스텝 10~20, <code>gemini-2.5-flash</code>(저렴·빠름).</li>
+<li>대규모는 (a) 무료 규칙기반으로 먼저 검증 → (b) 소규모만 LLM으로 확인 → (c) 필요 시 비동기 병렬 호출.</li>
+<li><strong>재현성:</strong> <code>seed</code> 고정 + 호출 로그 저장. LLM은 비결정적이므로 여러 번 돌려 평균을 보는 습관.</li>
+</ul>
+<h3 id="35-abm-langgraph">3.5 그렇다면 ABM에는 LangGraph가 필요 없나? — 한 가지 예외</h3>
+<p>원칙은 3.1에서 정리했다: ABM의 바깥 루프는 Mesa가 맡으므로 LangGraph는 불필요하다. 위 예제처럼 각 에이전트의 <code>step()</code>이 <strong>단일 LLM 호출</strong>(이웃 보고 → 점수 갱신)이면 <code>generate_content</code> 한 번이면 충분하다.</p>
+<p><strong>예외는 단 하나</strong> — 각 에이전트의 "머리" 자체가 <strong>다단계로 복잡해질 때</strong>다. 예컨대 1.2(A)에서 본 Park식 인지 사이클(관련 기억 <strong>인출</strong> → <strong>성찰</strong> → <strong>계획</strong> → 행동)을 매 스텝 돌리되, "중요한 사건이 생기면 성찰을 촉발" 같은 <strong>조건 분기·루프</strong>까지 넣는다면, 그 <strong>에이전트 한 명의 내부 사고 과정</strong>을 LangGraph 그래프로 짤 수 있다. 그때 구도는 이렇게 깔끔하게 갈린다.</p>
+<blockquote>
+<p><strong>Mesa = 바깥 루프</strong> (인구·스케줄·네트워크·데이터 수집)
+<strong>LangGraph = 안쪽 루프</strong> (에이전트 1명의 다단계 사고 사이클)
+→ <code>CitizenAgent.step()</code> 안에서 LangGraph 그래프를 <code>invoke</code></p>
+</blockquote>
+<p>정리하면: <strong>단발 의견 갱신이면 LangGraph 불필요(이 강의 예제), 에이전트의 머리가 다단계 인지면 Mesa(바깥) + LangGraph(안쪽) 조합.</strong> 입문 단계에서는 전자로 충분하다.</p>
+<hr>
+<h2 id="part-4-faq">Part 4 — 자주 나올 질문 대비 (FAQ)</h2>
+<p><strong>Q. 토론도 시뮬레이션인데 왜 ABM과 따로 다루나?</strong>
+둘 다 사회 시뮬레이션이 맞다(0.1 참조). 다만 <strong>규모·관찰 대상·도구</strong>가 달라 따로 익히는 게 효율적이다. 토론은 소수의 <em>대화 과정·내용</em>을 보고(LangGraph), ABM은 다수의 <em>집단 패턴·창발</em>을 본다(Mesa). 미시 → 거시의 한 스펙트럼이다.</p>
+<p><strong>Q. Gemini SDK만으로 충분한데 왜 LangGraph를 배우나?</strong>
+소수·단순이면 SDK로 충분하다. 하지만 종료조건·사회자·합의판정·기록처럼 <strong>흐름이 복잡해지면</strong> SDK 코드가 지저분해진다. LangGraph는 그 흐름을 <strong>명시적 그래프</strong>로 만들어 연구·발표·재현에 유리하다.</p>
+<p><strong>Q. 그럼 ABM(Mesa)에도 LangGraph를 얹어야 하나?</strong>
+아니다. ABM의 바깥 루프(스케줄·네트워크·반복)는 <strong>이미 Mesa가</strong> 맡으므로, LangGraph를 또 얹으면 스케줄러가 중복된다. 각 에이전트의 머리가 단발 LLM 호출이면 LangGraph는 불필요하다. <strong>예외</strong>는 에이전트의 머리를 다단계 인지로 짤 때뿐이다(3.5).</p>
+<p><strong>Q. CrewAI/AutoGen은 토론에 안 맞나?</strong>
+CrewAI는 "역할 분담 작업"(연구자→작성자→편집자)에 최적화된 <strong>협업</strong> 프레임워크라 자유 토론엔 1순위가 아니다. <em>자유 발언형</em> 토론 자체는 AG2(대화 네이티브)가 자연스럽지만, <strong>연구용 재현·통제</strong>에는 LangGraph가 낫다. AutoGen은 유지보수 모드이므로 신규 학습은 AG2 또는 LangGraph로 간다.</p>
+<p><strong>Q. 왜 ABM에 꼭 Mesa인가? 그냥 for-loop로 안 되나?</strong>
+된다. 그러나 Mesa는 <strong>스케줄링·공간(네트워크)·데이터수집·시각화</strong>를 표준화해 줘서, 연구로 확장할 때 코드가 깔끔하고 재현 가능하다. 교육적으로도 ABM의 정석 개념(에이전트 활성화 순서 등)을 자연스럽게 익힌다.</p>
+<p><strong>Q. 결과가 매번 다른데 연구로 쓸 수 있나?</strong>
+LLM은 비결정적이다. <strong>시드 고정·여러 번 반복·평균과 분산 보고</strong>가 필수이며, Anthis et al.(2025)이 강조하듯 <strong>검증(validation)</strong> 을 반드시 병행해야 연구로서 정당하다.</p>
+<hr>
+<h2 id="a">부록 A — 참고문헌과 공개 코드</h2>
+<p><strong>핵심 논문</strong></p>
+<ul>
+<li>Park et al. (2023). <em>Generative Agents: Interactive Simulacra of Human Behavior.</em> UIST '23.</li>
+<li>Park et al. (2024). <em>Generative Agent Simulations of 1,000 People.</em> arXiv:2411.10109. → 코드: <code>github.com/joonspk-research/genagents</code></li>
+<li>Anthis et al. (2025). <em>LLM Social Simulations Are a Promising Research Method.</em> arXiv:2504.02234.</li>
+<li>Chuang et al. (2024). <em>Simulating Opinion Dynamics with Networks of LLM-based Agents.</em> Findings of NAACL 2024. → 코드: <code>github.com/yunshiuan/llm-agent-opinion-dynamics</code></li>
+<li>Törnberg et al. (2023). <em>Simulating Social Media Using LLMs to Evaluate Alternative News Feed Algorithms.</em> arXiv:2310.05984.</li>
+</ul>
+<p><strong>프레임워크·도구</strong></p>
+<ul>
+<li>Mesa 3 (ter Hoeven et al., 2025, JOSS): <code>github.com/projectmesa/mesa</code> — Mesa-LLM 통합 논의는 mesa Discussions 참고.</li>
+<li>Google Gen AI Python SDK: <code>github.com/googleapis/python-genai</code></li>
+<li>LangGraph: 상태그래프 기반 워크플로. 원리는 「에이전트 기초와 워크플로」 강의 참조.</li>
+<li>큐레이션 목록: <code>github.com/giammy677dev/LLM-Agents-for-Simulation</code></li>
+</ul>
+<p><strong>관련 강의 (분업)</strong></p>
+<ul>
+<li>「에이전트 기초와 워크플로」 — LangGraph 원리·설계 패턴. <em>이 강의의 Part 2 토론은 그 적용편이다.</em></li>
+<li>실리콘 샘플링(개인 응답 예측) — Park et al.(2024) 방법론의 심화. <em>이 강의 1.2(B)는 그 이론적 토대만 다룬다.</em></li>
+</ul>
+</body></html>
