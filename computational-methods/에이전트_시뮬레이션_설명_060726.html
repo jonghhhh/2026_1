@@ -16,12 +16,11 @@ blockquote{border-left:4px solid #999;padding-left:12px;margin-left:0}
 strong{font-weight:700}
 </style>
 </head><body>
-<h1 id="_1">생성 에이전트 사회 시뮬레이션</h1>
+<h1 id="_1">생성형 에이전트 시뮬레이션(generative agent simulation)</h1>
 <h3 id="langgraph-mesa">대화형(LangGraph)에서 집단·창발(Mesa)까지</h3>
 <blockquote>
 <p><strong>개념 → 이론 → 도구 선택 → 실습 코드</strong>
-두 모드를 다룬다: <strong>(1) 대화형(미시) 시뮬레이션 = 페르소나 토론</strong>, <strong>(2) 집단(거시) 시뮬레이션 = 페르소나 ABM</strong>.
-<strong>선행/병행 강의 안내: 에이전트 기초와 워크플로,  실리콘 샘플링은 별도 강의 참조. 여기서는 그 </strong>이론적 토대**만 짚고 넘어간다.</p>
+<br>두 모드를 다룬다: <strong>(1) 대화형(미시) 시뮬레이션 = 페르소나 토론</strong>, <strong>(2) 집단(거시) 시뮬레이션 = 페르소나 ABM</strong>.
 </blockquote>
 <hr>
 <h2 id="0">0. 이 강의가 답하려는 것 — 하나의 스펙트럼</h2>
@@ -131,8 +130,8 @@ strong{font-weight:700}
 <p><strong>Generative agent = "LLM에게 특정 인물(페르소나)의 역할을 부여하고, 기억을 갖게 하여, 자극에 대해 그 사람처럼 반응하게 만든 소프트웨어 객체."</strong></p>
 </blockquote>
 <p>기존 ABM의 에이전트는 숫자와 if-then 규칙으로 움직였다. Generative agent는 <strong>자연어로 생각하고 반응</strong>한다. 이 차이가 전부의 출발점이다.</p>
-<h3 id="12">1.2 두 개의 기둥 논문</h3>
-<p><strong>(A) Park et al. (2023), "Generative Agents: Interactive Simulacra of Human Behavior" — 스탠퍼드 "AI 마을(Smallville)"</strong></p>
+<h3 id="12">1.2 기둥 논문</h3>
+<p><strong>Park et al. (2023), "Generative Agents: Interactive Simulacra of Human Behavior" — 스탠퍼드 "AI 마을(Smallville)"</strong></p>
 <p>25명의 AI 캐릭터가 가상 마을에서 살아간다. 핵심은 <strong>기억 흐름(Memory Stream)이라는 저장소와, 그 위에서 작동하는 세 가지 인지 과정</strong>이다.</p>
 <ul>
 <li><strong>Memory Stream(기억 흐름)</strong> — <em>저장소.</em> 에이전트가 겪은 모든 일을 자연어 일지로 쌓는다.</li>
@@ -147,17 +146,6 @@ strong{font-weight:700}
 <p><strong>비유:</strong> 사람은 (1) 일기를 쓰고[기억] → (2) 필요할 때 관련 기억을 떠올리고[인출] → (3) 가끔 "내가 어떤 사람인지" 정리하고[성찰] → (4) 그에 맞게 계획한다[계획]. 이 흐름을 LLM 프롬프트로 흉내 낸 것이다.</p>
 </blockquote>
 <p>이 논문에서 그 유명한 <strong>"발렌타인 파티 창발(emergence)"</strong> 이 나온다. 연구자는 한 에이전트에게 "파티를 열고 싶다"는 의도만 심었는데, 에이전트들이 <strong>스스로 초대장을 돌리고, 데이트 신청을 하고, 시간 맞춰 모이는</strong> 집단 행동이 자연발생했다. 누구도 "초대해라"고 코딩하지 않았다.</p>
-<p><strong>(B) Park et al. (2024), "Generative Agent Simulations of 1,000 People" — 실존 인물 1,052명의 디지털 복제</strong></p>
-<p>이번엔 가상 캐릭터가 아니라 <strong>실제 사람 1,052명을 2시간씩 인터뷰</strong>하고, 그 인터뷰 전문을 LLM에 넣어 "그 사람 에이전트"를 만들었다.</p>
-<ul>
-<li>결과: 에이전트가 General Social Survey(종합사회조사) 응답을, <strong>사람이 2주 뒤 자기 답을 재현하는 정확도의 약 85% 수준</strong>으로 재현했다.</li>
-<li>핵심 발견: <strong>인터뷰 기반 에이전트 &gt; 인구통계(나이/성별/지역) 기반 에이전트 &gt; 짧은 페르소나 설명 기반 에이전트.</strong> 즉 <strong>"이 사람이 누구인지 풍부하게 알수록 시뮬레이션이 정확"</strong> 하다.</li>
-<li>부수 효과: 인터뷰 기반이 인종·이념 집단 간 <strong>정확도 편향(bias)도 줄였다.</strong></li>
-</ul>
-<blockquote>
-<p><strong>핵심 메시지:</strong> <strong>페르소나의 질이 곧 시뮬레이션의 질이다.</strong> "보수 성향 50대 남성" 같은 한 줄짜리 페르소나와 진짜 인터뷰 전문 사이엔 거대한 차이가 있다. 공개 코드: <code>github.com/joonspk-research/genagents</code></p>
-<p><em>(이처럼 개인의 설문 응답을 에이전트로 예측·대체하는 기법이 "실리콘 샘플링"이며, 자세한 방법론은 별도 강의에서 다룬다. 여기서는 "페르소나가 풍부할수록 정확하다"는 이론적 교훈만 가져간다.)</em></p>
-</blockquote>
 <h3 id="13">1.3 방법론적 정당성 — "이게 진짜 연구방법인가?"</h3>
 <p><strong>Anthis et al. (2025), "LLM social simulations are a promising research method"</strong> 가 이 질문에 정면으로 답한다.</p>
 <ul>
