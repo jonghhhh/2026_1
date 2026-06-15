@@ -206,7 +206,7 @@
 ### 15주차 (6/10, 6/15): LLM 에이전트 & 배포
 
 <details markdown="1">
-<summary>📖 강의 내용 보기</summary>
+<summary>📖 강의 내용 보기</summary>    
 - (실습) [langgraph_streamlit: 실습코드](https://jonghhhh.github.io/2026_1/computational-methods/langgraph_streamlit.zip)         
             
 
