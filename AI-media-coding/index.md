@@ -207,7 +207,8 @@
 
 <details markdown="1">
 <summary>📖 강의 내용 보기</summary>    
-- (실습) [langgraph_streamlit: 실습코드](https://jonghhhh.github.io/2026_1/computational-methods/langgraph_streamlit.zip)         
+  
+- (실습) [langgraph_streamlit: 실습코드](https://jonghhhh.github.io/2026_1/computational-methods/langgraph_streamlit.zip)       
             
 
 </details>
