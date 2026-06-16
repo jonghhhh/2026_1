@@ -215,7 +215,7 @@
 - (실습 자료) [Gemini + RAG 분석: 실습 자료](https://jonghhhh.github.io/2026_1/2026_공정선거보도_안내서_중앙선거관리위원회.txt)     
 
 **📄 논문 발표**
-- 이종혁 (세미나 발표문, 별도 배포). 한국어 팩트체크 필요성 탐지 모델 및 RAG 기반 팩트체크 자동화 시스템 개발: 대선 후보자 토론회 적용  
+- 이종혁 (2026). 한국어 팩트체크 필요성 탐지 모델 및 RAG 기반 팩트체크 자동화 시스템 개발: 대선 후보자 토론회 적용. 한국언론학보, 70(2), 86–123.     
 
 </details>
 
@@ -273,7 +273,7 @@
 - (자료) [nemotron 일부](https://jonghhhh.github.io/2026_1/computational-methods/nemotron_first100.xlsx)   
 
 **📄 논문 발표**
-- 이문혁, 이두황, 이종혁 (세미나 발표문, 별도 배포). AI 에이전트를 활용한 뉴스 윤리 심의문 자동 생성 시스템의 개발 및 적용: 네이버 '많이 본 뉴스' 분석을 중심으로
+- 이문혁, 이두황, 이종혁. (2026). AI 에이전트를 활용한 뉴스 윤리 심의문 자동 생성 시스템의 개발 및 적용: 네이버 ‘많이 본 뉴스’ 분석을 중심으로. 한국언론학보, 70(2), 49–85.    
 - Xi, Z., Chen, W., Guo, X., He, W., Ding, Y., Hong, B., ... & Gui, T. (2025). The rise and potential of large language model based agents: A survey. Science China Information Sciences, 68(2), 121101.  
 
 </details>
