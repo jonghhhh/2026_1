@@ -246,4 +246,5 @@
 - [2026년 데이터저널리즘 프로젝트](https://jonghhhh.github.io/2026_1/data-journalism/finalprojects.html)     
 - [2025년 데이터저널리즘 프로젝트](https://sites.google.com/khu.ac.kr/2025datajour-projects/%ED%99%88)  
 - [2024년 데이터저널리즘 프로젝트](https://sites.google.com/khu.ac.kr/datajour2024/%ED%99%88)  
-- [조별 데이터저널리즘 프로젝트 제출과  평가 가이드라인](https://docs.google.com/document/d/1f1FttS7dG9aAQ9kd4menLzrDeBFY9-HD/edit#heading=h.gjdgxs)
+- [조별 데이터저널리즘 프로젝트 제출과  평가 가이드라인](https://docs.google.com/document/d/1f1FttS7dG9aAQ9kd4menLzrDeBFY9-HD/edit#heading=h.gjdgxs)   
+- [2026년 조원평가](https://script.google.com/macros/s/AKfycbyChnbQ_bXTtNQNGLPnfO0Xi5HP353aWFgl9_7I8lrI4EF2QKrnnc_suJqpH1r5wtV4/exec)   
